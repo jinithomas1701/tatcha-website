@@ -1,0 +1,102 @@
+<isscript>
+importScript("int_tatcha_dis:common/GetImageUrl.ds");
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+var giftProducts = ProductUtils.giftBuilderProductList(pdict.mainGiftProduct,false);
+</isscript>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal"
+		aria-label="Close">
+		<i class="fal fa-times"></i>
+	</button>
+	<h4 class="modal-title">
+		<strong>${Resource.msg('giftbuilder.chooseminis','product',null)}</strong>
+	</h4>
+</div>
+<div class="modal-body container-fluid">
+<isif condition="${!empty(giftProducts) && !empty(giftProducts.offerProducts) && giftProducts.offerProducts.size() > 0}">
+	<isscript>
+	  var pCounter = 0;
+	</isscript>
+	<div class="row">
+	<isloop items="${giftProducts.offerProducts}" var="rec" status="smStatus">
+				<div class="col-xs-6 col-md-3 product-slot">
+					<isset name="giftProduct" value="${rec}" scope="pdict"/>
+					<isset name="Product" value="${rec}" scope="pdict"/>
+					<div class="product-img-block">
+						<isif condition="${pdict.giftProduct.master && pdict.giftProduct.getVariationModel()}">
+							<isset name="imageProduct" value="${pdict.giftProduct.variationModel.defaultVariant}" scope="page"/>
+						<iselseif condition="${pdict.giftProduct.variant && !empty(pdict.giftProduct.getVariationModel())}">
+							<isset name="imageProduct" value="${pdict.giftProduct.getVariationModel()}" scope="page"/>
+						<iselse>
+							<isset name="imageProduct" value="${pdict.giftProduct}" scope="page"/>
+						</isif>
+						<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+							<isset name="imageUrl" value="${getImageUrl(imageProduct,'medium')}" scope="page"/>
+						<iselse/>
+							<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+						</isif>										
+						<img class="img-responsive product-img" src="${imageUrl}">
+					</div>
+					<span itemprop="productID" style="display: none"><isprint value="${pdict.giftProduct.ID}"/></span>
+					<h5 class="product-name">
+						<isprint value="${pdict.giftProduct.name.substring(0,44)}"/> 
+						 <isif condition="${!empty(pdict.giftProduct.custom.secondaryName)}">
+							<span class="product-subtitle">
+							<isprint value="${pdict.giftProduct.custom.secondaryName.substring(0,44)}"/>
+							</span>
+						  </isif>
+					</h5>
+				   <div class="product-price">
+						<isset name="showSpecialPrice" value="false" scope="page" />
+						<isinclude template="product/components/pricing.isml"/>
+					</div>
+					<div class="product-select" data-toggle="buttons">
+						<isif condition="${pdict.selected.indexOf(pdict.giftProduct.ID) != -1}"> 
+							<label class="btn btn-default btn-promo-select btn-sm control-label active">
+								<input type="checkbox" autocomplete="off" checked value="${pdict.giftProduct.ID}"> 
+								<span class="btn-status">${Resource.msg('giftbuilder.selected','product',null)}</span>
+							</label>
+						<iselse>  
+							<label class="btn btn-default btn-promo-select btn-sm control-label">
+								<input type="checkbox" autocomplete="off" value="${pdict.giftProduct.ID}"> 
+								<span class="btn-status">${Resource.msg('giftbuilder.add','product',null)}</span> 
+							</label>
+						</isif>
+					</div>
+				</div>
+		<isif condition="${pCounter % 4 == 3}">
+			</div><div class="row">
+		</isif>
+		<isscript>
+			pCounter++;
+		</isscript>
+	</isloop>
+	</div>
+</isif>
+</div>
+<div class="modal-footer">
+	<div class="row">
+		<div class="col-sm-6 col-md-8">
+			<div class="product-count"><span id="product-count-value"><isprint value="${pdict.selected.size()}" /></span> ${Resource.msg('giftbuilder.ofselected','product',null)} | Subtotal: $<span class="subtotal">0</span></div>
+		</div>
+		<div class="col-sm-6 col-md-4">
+			<div class="product-cta">
+				
+				<isif condition="${!empty(pdict.selected) && pdict.selected.length > 0}"> 
+					<isscript>
+						var items = new Array();
+						for(var q=0; q < pdict.selected.length; q++) {
+							items.push('"'+pdict.selected[q]+'"');
+						}
+						var itemList = pdict.selected.join(',');
+						var tArr = "["+items+"]";
+					</isscript>
+					<input type="hidden" name="selectedItems" id="selectedItems" value="${itemList}">
+				<iselse>
+					<input type="hidden" name="selectedItems" id="selectedItems" value="">
+				</isif>
+				<button type="button" class="btn btn-primary demo-apply btn-block" data-url="${URLUtils.url('GiftBuilder-GetSelectedProducts')}" id="apply-selected-gift" data-dismiss="modal">${Resource.msg('giftbuilder.addtoset','product',null)}</button>
+			</div>
+		</div>
+	</div>
+</div>

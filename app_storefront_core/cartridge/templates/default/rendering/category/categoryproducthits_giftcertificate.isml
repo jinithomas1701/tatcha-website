@@ -1,0 +1,242 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<link rel="stylesheet" href="https://use.typekit.net/axu1woh.css">
+<style type="text/css">
+	.nl-filter select {
+    	/* padding-left: 6px; */
+    	border-width: 0 0 2px 0;
+    	background-color: transparent;
+    	height: 32px;
+    	display: inline;
+    }
+</style>
+    
+<isdecorate template="search/pt_productsearchresult_giftcertificate">
+	<isscript>
+		var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+		var TagManagerUtils = require('~/cartridge/scripts/util/GoogleTagManager.js');
+		<!-- GTM for category page view -->
+		var gtmData = TagManagerUtils.getCategoryPageDataLayer();
+		if (!empty(gtmData)) {
+		  var gtmCategoryView = JSON.stringify(gtmData);
+		}
+		var Site = require('dw/system/Site');
+		
+	</isscript>
+	<script>
+	    try {
+	    	if (!window.dataLayer) {
+				window.dataLayer = [];
+			}
+	    	dataLayer.push(<isprint value="${gtmCategoryView}" encoding="off"/>);
+	    	dataLayer.push({'event': 'tatcha_category_view'}); 
+	    } catch (e) {
+
+	    }
+	</script>
+
+	<iscache type="relative" minute="30" varyby="price_promotion"/>
+	<isinclude template="util/modules"/>
+	<iscomment>create reporting event</iscomment>
+	<isinclude template="util/reporting/ReportSearch.isml"/>
+
+	<iscomment> Add to bag error container </iscomment>
+	<div class="container">
+		<div class="alert alert-danger page-alert m-top" role="alert" style="display: none;">Add to Bag Errors can go here.</div>
+	</div>
+
+	<isif condition="${!(pdict.ProductPagingModel == null) && !pdict.ProductPagingModel.empty}">
+	
+		<iscomment>render compare controls if we present in a category context</iscomment>
+		<isinclude template="util/yotpomodules.isml" />		
+		<isyotpocategorybottomlineheader />
+		
+		<iscomment> Product Grid </iscomment>
+		<isif condition="${!empty(pdict.ProductSearchResult.category)}">
+			<isset name="searchResultsCss" value="" scope="page" />
+		<iselse>	
+			<isset name="searchResultsCss" value="search-products" scope="page" />
+		</isif>
+			
+		<div class="container w-100 pb-2">
+			<div class="product-list-row">
+				<div class="row search-products search-result-content ${searchResultsCss}" style="overflow: hidden; padding-top:5px;">
+					<isset name="categoryName" value="about_auto_delivery" scope="page" />
+					<isproductgridv1 pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}" page="${categoryName}" isgiftlandingpage="true"/>
+				</div>
+			</div>
+		</div>
+		
+		<isif condition="${!empty(pdict.ProductSearchResult.category)}">
+			<isif condition="${!empty(pdict.ProductSearchResult.category.custom.categoryDescription)}">
+				<div class="container">
+					<div class="row justify-content-center">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="product-list-description">
+								<p> <isprint value="${pdict.ProductSearchResult.category.custom.categoryDescription}" encoding="off"/> </p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</isif>
+		</isif>		
+
+	<iselse/>
+
+		<iscomment>display no results</iscomment>
+		<div class="no-results">
+			${Resource.msg('productresultarea.noresults','search',null)}
+		</div>
+
+	</isif>
+	
+	
+
+</isdecorate>
+<script type="text/javascript">
+	function copyLink() {
+		var copyText = document.getElementById("shareGiftCardNum");
+		copyText.select();
+		document.execCommand("copy");
+		alert("Copied the text: " + copyText.value);
+	}
+	if(window.location.href.search("[?&]prefn") == -1){
+		$('.loader-preventive').show();
+	}
+	if(window.location.href.search("[?&]prefn3") != -1){
+		$('.loader-preventive').show();
+	}
+	// demo greeting
+    $(window).on('load',function(){
+    	$(".eventWrapper").fadeIn();
+    	$(".eventWrapper").addClass("startAnimation");
+    	
+    	if((window.location.href.search("[?&]prefn") !== -1)) {
+            var headerHeight = 0;
+            if($('.tatcha-pre-nav').length > 0) { 
+				headerHeight += $('.tatcha-pre-nav').height();
+			}
+			headerHeight += $('.tatcha-navbar').height();
+    		var filterOffsetTop = $('.gc-filter-wrap').offset().top - headerHeight;
+    		$('html,body').animate({
+				scrollTop: filterOffsetTop
+			},100);
+    	}
+    	
+		if((window.location.href.search("[?&]prefn") == -1) && !sessionStorage.animationStatus){
+			sessionStorage.setItem("animationStatus", true);
+			$('#greetingModal').modal('show');
+			$('.loader-preventive').hide();
+			var animation = false,
+			  animationstring = "animation",
+			  keyframeprefix = "",
+			  domPrefixes = "Webkit Moz O ms Khtml".split(" "),
+			  pfx = "",
+			  elem = document.createElement("div");
+
+			if (elem.style.animationName !== undefined) {
+			  animation = true;
+			}
+
+			if (animation === false) {
+			  for (var i = 0; i < domPrefixes.length; i++) {
+			    if (elem.style[domPrefixes[i] + "AnimationName"] !== undefined) {
+			      pfx = domPrefixes[i];
+			      animationstring = pfx + "Animation";
+			      keyframeprefix = "-" + pfx.toLowerCase() + "-";
+			      animation = true;
+			      break;
+			    }
+			  }
+			}
+			if (!animation) {
+			  $(window).on("load", function() {
+			    // Gift box top sliding right
+			    setTimeout(function() {
+			      $(".giftBoxTop").animate(
+			        {
+			          left: "300%",
+			          right: "-300%"
+			        },
+			        1000
+			      );
+			    }, 1000);
+
+			    // Change box border z-index
+			    setTimeout(function() {
+			      $(".giftBoxUBorder").css({
+			        "z-index": "1"
+			      });
+			    }, 2000);
+
+			    // Card animations
+			    setTimeout(function() {
+			      $(".cards").animate(
+			        {
+			          top: "25%",
+			          left: "-5%",
+			          width: "110%"
+			        },
+			        500
+			      );
+			    }, 2500);
+			    setTimeout(function() {
+			      $(".cards").animate(
+			        {
+			          top: "52%"
+			        },
+			        500
+			      );
+			      $(".card-top > img, .card-bottom > div img ").css({
+			        visibility: "visible"
+			      });
+			    }, 3500);
+
+			    setTimeout(function() {
+			      $(".card .front, .card .card-top").css({
+			        transform: "rotateX(180deg)"
+			      });
+			    }, 3500);
+
+			    setTimeout(function() {
+			      $(".eventBox img.gift-card-image").css({
+			        width: "47%"
+			      });
+			    }, 3500);
+
+			    // Hide box shadow
+			    setTimeout(function() {
+			      $(".giftBoxBottom > img").css({
+			        boxShadow: "none"
+			      });
+			    }, 3500);
+
+			    // Show card contents
+			    setTimeout(function() {
+			      $(".card-contents > div").css({
+			        visibility: "visible"
+			      });
+			    }, 3500);
+			  });
+			} else {
+			  console.log("CSS Animation is working");
+			}
+		}else{
+			$('.loader-preventive').hide();
+		}
+    });
+
+    // demo thank you messafge
+    $('.send-thankyou').click( function() {
+      $('.btn-thankyou').hide();
+      $('.alert-thankyou').show();
+    } );
+
+    //smooth scroll
+    $("a.anchor-link").click(function(e) {
+		e.preventDefault();
+		var position = $($(this).attr("href")).offset().top - 96;
+		$("body, html").animate({
+			scrollTop: position
+		} /* speed */ );
+	});
+</script>

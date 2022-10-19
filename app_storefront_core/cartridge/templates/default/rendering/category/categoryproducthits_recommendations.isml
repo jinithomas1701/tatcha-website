@@ -1,0 +1,366 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<isinclude template="util/modules"/>
+	<isinclude template="components/header/htmlhead"/>
+</head>
+
+<style>
+* { box-sizing: border-box; }
+
+.carousel img {
+  display: block;
+  height: 232px;
+}
+
+@media screen and ( min-width: 768px ) {
+  .carousel img {
+    height: 232px;
+  }
+}
+</style>
+
+<body>
+<isinclude template="components/header/header"/>
+
+<iscache type="relative" minute="30" varyby="price_promotion"/>
+<isinclude template="util/modules"/>
+<isscript>
+	var Tatcha = require('app_storefront_core/cartridge/scripts/util/Tatcha');
+	var recommendations = Tatcha.getRecommendations(pdict.ProductSearchResult);
+	var prds = (request.httpParameterMap.prds.stringValue)?request.httpParameterMap.prds.stringValue:'';
+	var value1 = (request.httpParameterMap.value1.stringValue)?request.httpParameterMap.value1.stringValue:'';
+	var value2 = (request.httpParameterMap.value2.stringValue)?request.httpParameterMap.value2.stringValue:'';
+	var showresults = (request.httpParameterMap.showresults.stringValue)?request.httpParameterMap.showresults.stringValue:'false';
+	
+</isscript>
+</br>
+<h3><center>Recommendations POC</center></h3>
+
+<main id="main" role="main" class="product" tabindex="-1">
+</br></br>
+<div class="container">
+<isset name="Refinements" value="${pdict.ProductSearchResult.refinements}" scope="page"/>
+<isif condition="${Refinements != null && Refinements.refinementDefinitions.size() > 0}">
+	
+	<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+	
+	<div class="container">
+		<div class="row">
+	  	<a href="#demo" class="btn view-option-btn" data-toggle="collapse">Skin Type&nbsp;</a>
+	  	<div id="demo" class="collapse">
+
+			
+			<select style="width:170px;margin-left: 30px;padding-left:10px;" id="rskinType">
+				<option value="">Select skin type</option>
+				<isif condition="${value1.indexOf('Dry') >=0}"> 
+					<option selected value="Dry">Dry</option>
+				<iselse>
+					<option value="Dry">Dry</option>
+				</isif>	
+								
+				<isif condition="${value1 == 'Normal to Dry'}"> 
+					<option selected value="Normal to Dry">Normal to Dry</option>
+				<iselse>
+					<option value="Normal to Dry">Normal to Dry</option>
+				</isif>	
+
+				<isif condition="${value1 == 'Normal to Oily'}"> 
+					<option selected value="Normal to Oily">Normal to Oily</option>
+				<iselse>
+					<option value="Normal to Oily">Normal to Oily</option>
+				</isif>
+
+				<isif condition="${value1 == 'Oily'}"> 
+					<option selected value="Oily">Oily</option>
+				<iselse>
+					<option value="Oily">Oily</option>
+				</isif>	
+
+				<isif condition="${value1 == 'Sensitive'}"> 
+					<option selected value="Sensitive">Sensitive</option>
+				<iselse>
+					<option value="Sensitive">Sensitive</option>
+				</isif>																
+			</select>
+			
+	  	</div>
+	  	</div>
+
+		<div class="row">
+	  	<a href="#demo1" class="btn view-option-btn" data-toggle="collapse">Solutions&nbsp;</a>
+	  	<div id="demo1" class="collapse">
+			<ul class="list-unstyled" style="padding-left: 30px;" id="rsolutions">
+
+				<isif condition="${value2.indexOf('Acne, Acne Scars, Dark Spots') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Acne, Acne Scars, Dark Spots"  value="Acne, Acne Scars, Dark Spots">&nbsp;Acne, Acne Scars, Dark Spots</li>							
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Acne, Acne Scars, Dark Spots"  value="Acne, Acne Scars, Dark Spots">&nbsp;Acne, Acne Scars, Dark Spots</li>							
+				</isif>	
+							
+				<isif condition="${value2.indexOf('Brightening, Even Tone, Dullness') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Brightening, Even Tone, Dullness"  value="Brightening, Even Tone, Dullness">&nbsp;Brightening, Even Tone, Dullness</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Brightening, Even Tone, Dullness"  value="Brightening, Even Tone, Dullness">&nbsp;Brightening, Even Tone, Dullness</li>
+				</isif>	
+			
+				<isif condition="${value2.indexOf('Dryness') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Dryness"  value="Dryness">&nbsp;Dryness</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Dryness"  value="Dryness">&nbsp;Dryness</li>
+				</isif>
+						
+				<isif condition="${value2.indexOf('Eczema, Redness') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Eczema, Redness"  value="Eczema, Redness">&nbsp;Eczema, Redness</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Eczema, Redness"  value="Eczema, Redness">&nbsp;Eczema, Redness</li>
+				</isif>							
+
+				<isif condition="${value2.indexOf('Elasticity, Firmness') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Elasticity, Firmness"  value="Elasticity, Firmness">&nbsp;Elasticity, Firmness</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Elasticity, Firmness"  value="Elasticity, Firmness">&nbsp;Elasticity, Firmness</li>
+				</isif>
+				
+				<isif condition="${value2.indexOf('Even Texture') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Even Texture"  value="Even Texture">&nbsp;Even Texture</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Even Texture"  value="Even Texture">&nbsp;Even Texture</li>
+				</isif>
+				
+				<isif condition="${value2.indexOf('Fine lines/wrinkles') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Fine lines/wrinkles"  value="Fine lines/wrinkles">&nbsp;Fine lines/wrinkles</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Fine lines/wrinkles"  value="Fine lines/wrinkles">&nbsp;Fine lines/wrinkles</li>				
+				</isif>	
+
+				<isif condition="${value2.indexOf('Hydration, Plumping') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Hydration, Plumping"  value="Hydration, Plumping">&nbsp;Hydration, Plumping</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Hydration, Plumping"  value="Hydration, Plumping">&nbsp;Hydration, Plumping</li>
+				</isif>	
+
+				<isif condition="${value2.indexOf('Pores') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Pores"  value="Pores">&nbsp;Pores</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Pores"  value="Pores">&nbsp;Pores</li>
+				</isif>	
+
+				<isif condition="${value2.indexOf('Puffiness, dark circles') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Puffiness, dark circles"  value="Puffiness, dark circles">&nbsp;Puffiness, dark circles</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Puffiness, dark circles"  value="Puffiness, dark circles">&nbsp;Puffiness, dark circles</li>
+				</isif>
+
+				<isif condition="${value2.indexOf('Sun Care') >=0}"> 
+					<li><input type="checkbox" name="skinConcernsCheckbox"  checked data-filter-code="Sun Care"  value="Sun Care">&nbsp;Sun Care</li>
+				<iselse>
+					<li><input type="checkbox" name="skinConcernsCheckbox"  data-filter-code="Sun Care"  value="Sun Care">&nbsp;Sun Care</li>
+				</isif>												
+			</ul>
+	  	</div>
+	  	</div>	  	 	
+  	
+	</div>
+	
+	</div>	
+	</div>
+	
+
+	
+	<div class="row">
+	<div class="col-md-8 col-md-offset-2">
+	<label class="control-label"><span>I have the following products </span></label>
+	<div class="field-wrapper"><input class="input-text form-control" id="productIDs" value="${prds}" placeholder="Enter , separated ProductID (POC)" autocomplete="disabled" data-msg-required="Please enter a valid email." maxlength="50" aria-required="true" aria-invalid="true" aria-describedby="dwfrm_login_username-error"></div>
+	</br>
+	<button type="button"  class="btn btn-primary btn-lg btn-block" id="findRecommendations">Find recommendations</button>
+	</div>
+	</div>
+
+
+</div>
+
+</isif>
+
+<div class="container" style="display:none;">
+</br></br>
+<small><i><b>Search results (Debugging)</b></i></small>
+<hr>
+<isloop items="${recommendations}" var="item" status="loopstate"> 
+<isif condition="${item.index >= 0 }"> 
+<isif condition="${item.selected == true }"> 
+<small><b><isprint value="${item.name}" /> &nbsp;| &nbsp; <isprint value="${item.ID}" />&nbsp;| &nbsp; <isprint value="${item.selected}" /></b></small></br>
+<iselse>
+<small><i><isprint value="${item.name}" /> &nbsp;| &nbsp; <isprint value="${item.ID}" />&nbsp;| &nbsp; <isprint value="${item.selected}" /></i></small></br>
+</isif>
+</isif>
+</isloop>	
+</div>	
+</br></br>
+
+<isif condition="${showresults == 'true'}"> 
+
+
+
+<hr> 
+<h5><center>Recommendations results</center></h5>
+<isif condition="${!empty(value1) && value1 != 'Select skin type'}"> 
+	<center><h5>Skin Type : <isprint value="${value1}" /> </h5></center>
+</isif>
+<isif condition="${!empty(value2)}"> 
+	<center><h5>Solutions : <isprint value="${value2}" /> </h5></center>
+</isif>
+<hr>
+<div class="container">
+<div class="row">
+<div class="col-md-8 col-md-offset-2">
+<isset name="category" value="" scope="page" />
+<table class="table table-bordered" style="width:40%;">
+<isloop items="${recommendations}" var="item" status="loopstate"> 
+<isif condition="${item.index > 0 }"> 
+	
+	<isif condition="${item.selected == true }"> 
+		<isset name="selectedItem" value="Purchased product" scope="page" />
+	<iselse>
+		<isset name="selectedItem" value="" scope="page" />
+	</isif>
+	<isif condition="${item.name != category}"> 
+		
+		<isif condition="${item.type == 'core'}">
+			<tr>
+	      		<th scope="col" style="  background-color: #4D186E; color: white;"><isprint value="${item.name}" /> &nbsp;&nbsp;<i><isprint value="${item.recommendedCat}" /></i> </th>
+		  		<th scope="col" style="  background-color: #4D186E; color: white;">Score</th>	
+	    	</tr>
+		<iselse>	
+			<tr>
+	      		<th scope="col" style="  background-color: #e67b7b; color: white;"><isprint value="${item.name}" /> &nbsp;&nbsp;<i><isprint value="${item.recommendedCat}" /></i> </th>
+		  		<th scope="col" style="  background-color: #e67b7b; color: white;">Score</th>	
+	    	</tr>			
+		</isif>
+	    
+	    <tr>
+	      <td>&nbsp;&nbsp;<small><isprint value="${item.ID}" /> &nbsp; <b><isprint value="${selectedItem}" /></b></small></td>
+	      <td>&nbsp;&nbsp;<small><isprint value="${item.score}" formatter="#"/></td>
+	    </tr>
+	<iselse>
+	    <tr>
+      		<td>&nbsp;&nbsp;<small><isprint value="${item.ID}" />&nbsp;&nbsp;&nbsp;<b><isprint value="${selectedItem}" /></b></small></td>
+      		<td>&nbsp;&nbsp;<small><isprint value="${item.score}" formatter="#" /></td>
+    	</tr>
+	</isif>
+    <isset name="category" value="${item.name}" scope="page" />
+    
+    
+</isif>
+</isloop>
+</table>
+
+</div>
+</div>
+</div>
+
+</isif>	
+		
+</div>	
+
+
+
+</main>	
+<isset name="pageName" value="search" scope="page" />
+<isinclude template="product/components/modals"/>
+<isinclude template="components/footer/footer"/>
+<isinclude template="search/pt_productsearchresult_UI"/>
+<isinclude template="search/pt_productsearchresult_VARS"/>		
+			
+</body>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	  $("#findRecommendations").click(function(){
+		  buildRecommendationUrl();
+	  });
+});
+	
+function buildRecommendationUrl(){
+	var skinConcerns = [];
+	var skinType  = [];
+	$('.loader-preventive').show();
+	/*$('#rskinType').find('input').each(function(index,checkbox){
+	 	   if(checkbox.checked){
+	 		  skinType.push($(checkbox).attr('data-filter-code'));
+	 	   }
+	 });*/
+	
+	if($("#rskinType option:selected").text()!=''){
+		skinType.push($("#rskinType option:selected").text());
+	}
+
+	
+	$('#rsolutions').find('input').each(function(index,checkbox){
+	 	   if(checkbox.checked){
+	 		  skinConcerns.push($(checkbox).attr('data-filter-code'));
+	 	   }
+	 });
+	
+	 var refinement = {};
+	 refinement['skinType'] =  skinType.join('|');
+	 refinement['skinConcerns'] = skinConcerns.join('|');
+	 
+	 var index = 0,q=[];
+	 for(var type in refinement){
+		if(refinement[type]){
+			index++;
+			//q.push('prefn'+index+'='+type);
+			//q.push('prefv'+index+'='+refinement[type]);	
+			q.push('key'+index+'='+type);
+			q.push('value'+index+'='+refinement[type]);			
+		}
+	 }	 
+	 
+    var url = window.location.origin+window.location.pathname;
+    var q = encodeURI(q.join('&'));    
+    var prdIDs = $('#productIDs').val();
+    
+    var finalUrl = url;
+    var delimeter = '?';
+    
+    if(finalUrl.indexOf("?")!= -1){
+    	delimeter = '&';
+    }
+    
+    if(q!=''){
+    	finalUrl = url+delimeter+q;
+    	delimeter = '&';
+    }
+    
+
+    if(prdIDs!=''){
+    	finalUrl = finalUrl+delimeter+'prds='+prdIDs.toUpperCase();
+    }
+    
+    if(finalUrl.indexOf("?")!= -1){
+    	delimeter = '&';
+    }
+    
+    finalUrl = finalUrl+delimeter+'showresults=true';
+    
+	window.location = finalUrl;
+
+
+}	
+	
+	
+</script>
+</html>			
+			
+			
+			
+			
+			
+

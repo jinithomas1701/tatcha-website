@@ -1,0 +1,14 @@
+<tr style="display:${isSearchByOrderNo ? 'block' : 'none'}" id="braintree_search_order_by_id">
+<td class="infobox_item_search" colspan="2">
+    <form action="${URLUtils.https('BraintreeAdmin-Orders')}" method="post">
+        <table style="width:inherit">
+            <tr>
+                <td class="infobox_item_search braintree_order_search_title" nowrap="nowrap"><span>${Resource.msg('search.order.number', 'braintreebm', null)}</span>&nbsp;</td>
+                <td class="infobox_item_search"><input type="text" name="orderNo" value="${pdict.CurrentHttpParameterMap.orderNo.submitted ? pdict.CurrentHttpParameterMap.orderNo.stringValue : ''}" maxlength="350" size="35" class="inputfield_en"></td>
+                <td class="infobox_item_search">&nbsp;</td>
+                <td class="infobox_item_search"><button name="simpleSearch" value="true" class="button">${Resource.msg('search.submitbutton', 'braintreebm', null)}</button></td>
+            </tr>
+        </table>
+    </form>
+</td>
+</tr>

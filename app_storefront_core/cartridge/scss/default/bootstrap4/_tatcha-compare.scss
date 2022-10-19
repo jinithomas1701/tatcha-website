@@ -1,0 +1,103 @@
+.compare-page {
+	padding-bottom: 1.5 * $g-unit;
+    .breadcrumb-container {
+	    background-color: $gray-100;
+	    .breadcrumb {
+	    	background-color: $gray-100;
+	    	padding: 8px 0px;
+	    	@include media-breakpoint-up(lg) {
+	    		padding: 8px 15px;
+	    	}
+
+	    	a {
+	    		color: $gray;
+				text-transform: uppercase;
+				font-size: 0.75 * $font-size-base;
+				text-decoration: none;
+	    	}
+	    }
+    }
+    
+    .product-comparison {
+	    .comp-page-header {
+	    	h1 { 
+	    		font-size: 28px !important;
+	    		font-weight: normal !important;
+	    		@include media-breakpoint-up(lg) {
+		    		margin-top: 40px;
+				    font-size: 44px !important;
+				    font-weight: $font-weight-light !important;
+				}
+	    	}
+	    }
+	    
+	    .table-responsive {
+	    	@include media-breakpoint-down(sm) {
+	    		margin-bottom: 16.5px;
+		    }
+
+		    .comparison-table {
+		    	.product-name {
+		    		a {
+		    			text-decoration: none;
+	    				color: $black;
+		    		}
+		    	}
+		    	
+		    	.compare-product-more-info {
+		    		color: $gray-700;
+				    text-decoration: underline;
+				    font-weight: $font-weight-normal;
+		    	}
+		    	
+		    	.productIdInput {
+		    		.no-variant {
+		    			height: 37.5px;
+					    margin-top: 8px;
+					    margin-bottom: 8px;
+		    		}
+			    	.product-variant-container {
+			    		select {
+			    			border-radius: 4px;
+						    margin: 8px auto;
+						    width: 75%;
+						    height: 30px;
+						    padding: 6px 16px;
+						    font-size: 12px;
+			    		}
+			    	}
+			    	
+			    	.compare-add-to-bag {
+			    		border-color: $black;
+			    	}
+			    	
+			    	.color-variant {
+			    		height: 35px;
+					    margin-bottom: 8px;
+					    align-items: center;
+					    .color-img {
+					    	cursor: pointer;
+					    	.color-radio {
+					    		display: none;
+					    	}					    	
+					    	
+					    	label {
+					    		cursor: pointer;
+					    		&.checked {
+					    			border: 1px solid black;
+								    padding: 2px;
+								    border-radius: 50%;
+					    		}
+					    	}
+					    	
+					    	img {
+					    		width: 24px;
+    							border-radius: 50%;
+					    	}
+					    }
+			    	}
+			    }
+		    }
+		}
+	}
+}

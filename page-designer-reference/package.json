@@ -1,0 +1,19 @@
+{
+  "name": "page-designer-reference",
+  "description": "Shows use of Page Designer APIs as a plugin cartridge.",
+  "version": "0.2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SalesforceCommerceCloud/page-designer-reference"
+  },
+  "dependencies": {},
+  "license": "SEE LICENSE IN License.md",
+  "devDependencies": {
+    "glob": "^7.1.2",
+    "eslint": "^7.5.0"
+  },
+  "scripts": {
+    "lint": "./node_modules/.bin/eslint test/**/*.js; ./node_modules/.bin/eslint cartridges/**/*.js; ./node_modules/.bin/eslint scripts/**/*.js",
+    "lint:fix": "./node_modules/.bin/eslint --fix test/**/*.js; ./node_modules/.bin/eslint --fix cartridges/**/*.js; ./node_modules/.bin/eslint --fix scripts/**/*.js"
+  }
+}

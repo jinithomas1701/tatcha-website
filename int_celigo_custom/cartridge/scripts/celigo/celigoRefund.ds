@@ -1,0 +1,94 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+*
+* Puropose:	It is an transactional script file, which updates orders with the refunded amount.
+*			It reads an XML file, configured as an input parameter, iterates over it to extract 
+*			all the included orders.
+*
+*@input fileName : String cancellation xml file path
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.io );
+importPackage( dw.util );
+importPackage( dw.value );
+var Transaction = require('dw/system/Transaction');
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var filePath : String = args.fileName;
+	var sourceFile : File = new File(File.IMPEX + File.SEPARATOR  + "src" +filePath);
+	
+	var fileReader : FileReader = new FileReader(sourceFile, "UTF-8");
+	var xmlStreamReader : XMLStreamReader = new XMLStreamReader(fileReader);
+	
+	if(xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT && "refunds" == xmlStreamReader.getLocalName()){
+		while (xmlStreamReader.hasNext()){
+	  		if (xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT){
+		    	var localElementName : String = xmlStreamReader.getLocalName();
+		    	if (localElementName == "refund"){
+			      // read single "order" as XML
+			      var refundNode : XML = xmlStreamReader.readXMLObject();
+				  // read refundNode
+				  var orderId : String = refundNode["order-no"];
+				  var orderObj : Order = OrderMgr.getOrder(orderId);
+				
+				  var invoices : Collection = orderObj.getInvoices();
+				  var invoice : Invoice;
+
+				  if( invoices == null || invoices == undefined || invoices.length == 0 ){
+				  	var invoiceNum : String = orderObj.getInvoiceNo();
+				    var shippingOrderTab : ShippingOrder = orderObj.createShippingOrder();
+				    invoice = shippingOrderTab.createInvoice(invoiceNum);
+				  } else {
+				  	invoice = invoices[0];
+				  }
+				  
+				  var payments : Collection = orderObj.getPaymentInstruments();
+				  if( payments == null || payments == undefined || payments.length == 0 ){
+				  	// TODO: ideally should never happen. but its good to include safe check. todo in future. return with error.
+				  	return PIPELET_ERROR;
+				  }
+				  //TODO: read amount and currency from xml.
+				  var amount = refundNode["Amount"];
+				  var currency = refundNode["Currency"];
+				 
+				  try{	
+				      var refundTransaction : PaymentTransaction = invoice.addRefundTransaction(payments[0], new Money(amount, currency));
+					  fullRefund(orderObj);
+					  	
+				  } catch(e){
+				  	var errmsg = e.message
+				  }
+			    }
+	  		}
+		}
+	}else{
+		// TODO: confirm from Tarun.
+	}
+	
+	xmlStreamReader.close();
+	fileReader.close();
+
+   return PIPELET_NEXT;
+}
+function fullRefund(orderObj){
+	if(dw.system.Site.getCurrent().getCustomPreferenceValue("SignifydRefundEnable") === true){
+	  var date1 = new Date(orderObj.creationDate);
+	  var date2 = new Date();
+	  var Difference_In_Time = date2.getTime() - date1.getTime();
+	  var Difference_In_Days =  Math.round(Difference_In_Time / (1000 * 60 * 60 * 24));
+	  Difference_In_Days = Difference_In_Days.toFixed(0);
+	  if (dw.system.Site.getCurrent().getCustomPreferenceValue("SignifydEnableCartridge") &&
+	      orderObj.custom.SignifydCaseID != null &&
+	      orderObj.totalGrossPrice.value == orderObj.refundedAmount.value &&
+	      Difference_In_Days <= dw.system.Site.getCurrent().getCustomPreferenceValue("SignifydCancelGuaranteeRefundWindow")){
+		  Logger.getLogger("Signifyd", "signifyd-extend-job").info("Set SignifydCeligoRefundStatus for  Order No {0}, caseid ={1} reach refund window {2} in Days, Processing the cancel guarantee",  orderObj.orderNo,orderObj.custom.SignifydCaseID,  Difference_In_Days);
+		  Transaction.wrap(function () {
+	                orderObj.custom.FullRefundStatus = true;
+	      });  
+	   }else{
+		   Logger.getLogger("Signifyd", "signifyd-extend-job").info("Not Processing Order No {0}, caseid ={1} reach refund window {2} in Days, Processing the cancel guarantee,  Refund Amt {3}  Order Amount {4}",  orderObj.orderNo,orderObj.custom.SignifydCaseID,  Difference_In_Days, orderObj.refundedAmount.value, orderObj.totalGrossPrice.value);	
+	   }
+	}
+}

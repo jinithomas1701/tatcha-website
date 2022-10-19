@@ -1,0 +1,55 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isif condition="${!empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+
+	<iscomment>calculated correct index position to separate the result columns</iscomment>
+	<isscript>
+		var count = pdict.ContentSearchResult.count;
+		if(count > 6)
+		{
+			count = 6;
+		}
+		var cutIndex = Math.ceil( count / 2 ) - 1;
+		var endIndex = cutIndex + (cutIndex + 1);
+	</isscript>
+	<isset name="contentCount" value="${0}" scope="page"/>
+	<isloop items="${pdict.ContentSearchResult.content}" var="asset" status="loopstate" end="${endIndex}">
+		<isset name="contentCount" value="${contentCount+1}" scope="page"/>	
+		<div class="row search-content-row d-flex justify-content-center">
+			<div class="col-sm-3 col-md-2 col-md-offset-2">
+				<isif condition="${!empty(asset.custom.postImage)}">
+					<img class="search-content-img img-responsive img-fluid" src="${asset.custom.postImage.getURL()}" alt="${asset.custom.blogTitle}">
+				</isif>
+			</div>
+			<div class="col-sm-9 col-md-5">
+				<h4 class="search-content-prefix">
+					<isset name="assetFolders" value="${asset.getFolders().toArray()}" scope="page" />
+					<isscript>
+					    var isBlog = false;
+						for(var i=0;i<assetFolders.length;i++){
+							if(assetFolders[i].ID === 'blog') {
+								isBlog = true;
+								break;
+							}
+						}
+					</isscript>
+					<isif condition="${isBlog}">
+						<a href="${URLUtils.url('Page-Show','cid', asset.ID)}">
+							<span>${Resource.msg('search.suggest.blog','search',null)}</span>
+						</a>
+					<iselse>
+						<a href="${URLUtils.url('Page-Show','cid', asset.ID)}">
+							<span>${Resource.msg('search.suggest.information','search',null)}</span>
+						</a>
+					</isif>
+				</h4>
+				<h3 class="search-content-title">
+					<a href="${URLUtils.url('Page-Show','cid', asset.ID)}">
+						<isprint value="${asset.name}" />
+					</a>
+				</h3>
+				<a href="${URLUtils.url('Page-Show','cid', asset.ID)}" class="btn-link">${Resource.msg('press.home.readmore','content',null)}</a>
+			</div>
+		</div>
+	</isloop>
+</isif>

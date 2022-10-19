@@ -1,0 +1,4 @@
+<!--- TEMPLATENAME: modules.isml --->
+<ismodule template="/extole/zonetag" name="extolezonetag" attribute="name" attribute="element_id" attribute="customer" attribute="order" attribute="product" attribute="category">
+<iscomment>define reusable credit card view</iscomment><ismodule template="account/payment/minicreditcard.isml" name="minicreditcard" attribute="card" attribute="show_expiration">
+<iscontent type="text/html" charset="UTF-8" compact="true"><iscomment>Insert a content asset into the page</iscomment><ismodule template="components/content/contentAsset" name="contentAsset" attribute="aid">

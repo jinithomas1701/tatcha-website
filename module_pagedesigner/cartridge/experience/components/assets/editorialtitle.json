@@ -1,0 +1,105 @@
+{
+  "name": "Editorial Title",
+  "description": "Shows Editorial Title",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "images",
+      "name": "Image Content",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "desktopImage",
+          "name": "Desktop Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "mobileImage",
+          "name": "Mobile Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "textcontent",
+      "name": "Text Content",
+      "description": "The text content to show in this component",
+      "attribute_definitions": [
+      	{
+          "id": "anchorid",
+          "name": "Anchor id",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "mainHeading",
+          "name": "Lead Text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "textColor",
+          "name": "Text Color",
+          "description": "Text Color.",
+          "type": "enum",
+          "values": [
+            "black",
+            "white"
+          ],
+          "required": true,
+          "default_value": "black"
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+      {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

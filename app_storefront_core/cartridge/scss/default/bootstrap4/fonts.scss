@@ -1,0 +1,27 @@
+@font-face {
+  font-family: 'minion-pro', serif;
+  font-style: normal;
+  font-weight: 400;
+  src: local(''),
+  url('../../fonts/playfair-display-v22-latin-regular.woff2') format('woff2'),url('../../fonts/playfair-display-v22-latin-regular.woff') format('woff');
+  font-display: swap;
+}
+/* inter-300 - latin */
+@font-face {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica Neue, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-style: normal;
+  font-weight: 300;
+  src: local(''),
+  url('../../fonts/Inter-Light.woff2') format('woff2'),url('../../fonts/Inter-Light.woff') format('woff');
+  font-display: swap;
+}
+/* inter-600 - latin */
+@font-face {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica Neue, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-style: normal;
+  font-weight: 600;
+  src: local(''),
+  url('../../fonts/Inter-SemiBold.woff2') format('woff2'),
+  url('../../fonts/Inter-SemiBold.woff') format('woff');
+  font-display: swap;
+}

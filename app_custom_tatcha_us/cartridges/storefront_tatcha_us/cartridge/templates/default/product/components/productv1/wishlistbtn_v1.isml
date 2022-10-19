@@ -1,0 +1,34 @@
+<isscript>
+var product = pdict.product;
+</isscript>
+<isif condition="${(product.getPriceModel().getPrice().value != '0.0') && (product.custom.oosProductStatus != 'notavailable')}">
+	<isif condition="${session.customer.authenticated}">
+		<isscript>
+			var Tatcha = require('~/cartridge/scripts/util/TatchaSfra');
+			var pid = pdict.pid;
+			var isWishListItem = Tatcha.isWishlistItem(pid);
+		</isscript>
+        <div class="wishlist-btn-container">
+            <button type="button" <isif condition="${isWishListItem == true}">style="display: none"</isif> data-url="${URLUtils.https('WishlistSfra-AddItemJson', 'pid', pdict.pid, 'source', 'productdetail')}" class="wishlist-additem no-scroll btn-wishlist wishlist-off" data-toggle="tooltip" data-placement="top" title="Add to Wishlist" data-pid=${pdict.pid}>
+                <span class="fa-layers fa-fw">
+                    <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                </span>
+                <span class="pl-1"> ${Resource.msg('product.wishlist','product',null)}</span>
+            </button>
+            <button type="button" <isif condition="${isWishListItem != true}">style="display: none"</isif> data-url="${URLUtils.https('WishlistSfra-RemoveItemJson', 'pid', pdict.pid, 'source', 'productdetail')}" class="wishlist-removeitem no-scroll btn-wishlist wishlist-on wishlist-active mt-0" data-toggle="tooltip" data-placement="top" title="Remove from Wishlist" data-pid=${pdict.pid}>
+                <span class="fa-layers fa-fw">
+                    <i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                </span>
+                <span class="pl-1"> ${Resource.msg('product.wishlist','product',null)}</span>
+            </button>
+            <div class="sr-only" id="wishlist-action-sr-${pdict.pid}" role="status" aria-live="polite" aria-atomic="true"></div>
+        </div>
+	<iselse/>
+		<button type="button" data-pid="${pdict.pid}" class="wishlist-login-btn no-scroll btn-wishlist wishlist-off" data-toggle="modal" data-target="#loginModal" title="Add to Wishlist">
+			<span class="fa-layers fa-fw">
+				<i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+			</span>
+			<span class="pl-1"> ${Resource.msg('product.wishlist','product',null)}</span>
+		</button>
+	</isif>
+</isif>

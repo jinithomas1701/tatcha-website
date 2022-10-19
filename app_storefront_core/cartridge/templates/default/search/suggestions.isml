@@ -1,0 +1,231 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<iscomment>
+    This template renders the search suggestions popup.
+</iscomment>
+
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+    var SearchSuggest = require('~/cartridge/scripts/search/SearchSuggest');
+    var suggest = SearchSuggest(pdict.CurrentHttpParameterMap.q.value, 5);    
+    var suggestionsAvailable = suggest.product.available || suggest.brand.available || suggest.category.available || suggest.content.available || suggest.custom.available;
+    var searchquery ="";
+    var termCount = 0;
+    var termsArrayMob = [];
+    var termsArrayDesk = [];
+    var productcount = 0;
+    var contentcount = 0;
+    var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+    var mParticleEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('mParticleEnabled') ? true : false;	
+</isscript>
+<div aria-live="assertive" aria-atomic="true">
+<isif condition="${suggestionsAvailable}">
+	   <isif condition="${suggest.product.products.hasNext()}">
+	   	  <ul class="list-unstyled" role="listbox" id="search-results">
+	       <li class="dropdown-header">Best Matches</li>
+	       <li>
+	         <ul class="list-unstyled dropdown-list dropdown-product-list">
+	          <isif condition="${suggest.product.products.hasNext()}">
+		          <isloop items="${suggest.product.products}" alias="suggestedProduct" status="status">
+		             <isset name="productcount" value="${status.count}" scope="page"/>
+		             <isset name="productSearchHit" value="${suggestedProduct.getProductSearchHit()}" scope="page"/>
+	                 <isset name="product" value="${productSearchHit.getProduct()}" scope="page"/>
+	                  <isset name="hide" value="" scope="page"/>
+	                  <isif condition="${productcount>3}">
+	                   	<isset name="hide" value="hide" scope="page"/>
+	                  </isif>
+	                  <isscript>
+                  		// Added for mParticle and other analytics 
+                 		if(mParticleEnabled){
+							var productInfo = mParticleUtil.getProductInfo(product);
+                  		}
+                  	   </isscript>
+			           <li class="${hide} move-search" data-pid="${product.getID()}" data-product-info="${JSON.stringify(productInfo)}">
+			             <a class="product-link" data-pid="${product.getID()}" href="${URLUtils.url('Product-Show', 'pid', product.getID())}">
+			             <isset name="productImage" value="${product.getImage('large')}" scope="page"/>
+			               <div class="row">
+			                 <div class="col-xs-3 col-3 dropdown-product-col">
+	                           <isif condition="${productImage != null}">
+	                               <img  class="img-responsive product-img img-fluid" src="${getImageUrl(product, 'small')}" alt="image - ${productImage.alt}" title="${productImage.title}" />
+	                           <iselse/>
+	                               <img class="img-responsive product-img img-fluid" src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="image - ${product.name}" title="${product.name}" />
+	                            </isif>
+			                 </div>
+			                 <div class="col-xs-9 col-9 dropdown-product-col">
+			                   <h2 class="product-name">
+			                     <isprint value="${product.name.substring(0,48)}" />
+			                     <span class="product-subtitle">
+			                     <isif condition="${!empty(product.custom.secondaryName)}"> 
+			                     	<isprint value="${product.custom.secondaryName.substring(0,44)}" />
+			                     </isif>
+			                     </span>
+			                   </h2>
+			                 </div>
+			               </div>
+			             </a>
+			           </li>
+			       </isloop>
+			  </isif>
+	         </ul>
+	       </li>
+	       <isif condition="${suggest.content.content.hasNext()}">
+	       		<li role="separator" class="divider"></li>
+	       <iselse>
+	       		<li role="separator" class="divider hidden-short-height"></li>
+	       </isif>
+       </isif>
+       <isif condition="${suggest.content.content.hasNext()}">
+       		<isif condition="${productcount === 0}">
+       			<ul class="list-unstyled" >
+       		</isif>
+		   <li class="dropdown-header">Articles</li>
+	       <li class="article-list">
+	   		<ul class="list-unstyled dropdown-list dropdown-search-term-list gtm-search-articles">
+	          <isloop items="${suggest.content.content}" var="content" status="status" end="1">
+	          	<isset name="contentData" value="${content.getContent()}" scope="page" />
+	             <isset name="contentcount" value="${status.count}" scope="page"/>
+		           <li class="move-search">
+		             <a href="${URLUtils.url('Page-Show', 'cid', contentData.ID)}">
+		               <isprint value="${contentData.name}" />
+		             </a>
+		           </li>
+		       </isloop>
+	       	</ul>
+	       </li>
+	       <li role="separator" class="divider hidden-short-height"></li>
+       </isif>
+       <isif condition="${suggest.product.terms.hasNext() || suggest.content.terms.hasNext()}">
+       	   <div class="hidden-short-height hidden-md hidden-lg hidden-xl d-block d-sm-block d-md-none">
+       	   		<!-- For mobile view -->
+		       <li class="dropdown-header">Suggested Terms</li>
+		       <li class="move-search">  
+	             <isif condition="${suggest.product.terms.hasNext()}">
+		       		<isloop items="${suggest.product.terms}" alias="terms" >
+	                   <isscript>var termArray = []</isscript>
+	                 	<isloop items="${terms}" alias="term"  status="termStatus">
+	                     	<isscript>
+	                 	        termArray.push(term.value);
+	                 	    </isscript>
+	                 	</isloop>
+	                      	<isscript>
+	                 	        termsArrayMob.push(termArray);
+	                 	        termArray = null;
+	                 	    </isscript>                	
+	                 </isloop>
+	             <iselseif condition="${suggest.content.terms.hasNext()}" >
+	            	<isloop items="${suggest.content.terms}" alias="terms" >
+	                   <isscript>var termArray = []</isscript>
+	                 	<isloop items="${terms}" alias="term"  status="termStatus">
+	                     	<isscript>
+	                 	        termArray.push(term.value);
+	                 	    </isscript>
+	                 	</isloop>
+	                      	<isscript>
+	                 	        termsArrayMob.push(termArray);
+	                 	        termArray = null;
+	                 	    </isscript>                	
+	                 </isloop>
+		       	  </isif>
+	                 
+	              <isif condition="${termsArrayMob.length==1}">    	                         
+			         <ul class="list-unstyled dropdown-list dropdown-search-term-list gtm-search-suggested-terms">
+		                 <isloop items="${termsArrayMob}" alias="terms">
+		                 	<isloop items="${terms}" alias="term" end="1">  
+		                 	      <isscript>
+		                 	        termCount++;
+		                 	      </isscript>
+		                     	<li><a href="${URLUtils.url('Search-Show', 'q', term)}"><isprint value="${term}" /></a></li>
+		                 	</isloop>
+		                 </isloop>
+			         </ul>
+			    </isif> 
+			                
+	             <isif condition="${termsArrayMob.length>1}">    	                         
+			         <ul class="list-unstyled dropdown-list dropdown-search-term-list gtm-search-suggested-terms">
+		                 <isloop items="${termsArrayMob}" alias="terms" end="1">
+		                 	<isloop items="${terms}" alias="term"  status="termStatus" end="0">
+		                 	     <isif condition="${termStatus.count==1}">
+			                 	      <isscript>
+			                 	        termCount++;
+			                 	      </isscript>
+		                 	     </isif>
+		                     	<li><a href="${URLUtils.url('Search-Show', 'q', term)}"><isprint value="${term}" /></a></li>
+		                 	</isloop>
+		                 </isloop>
+			         </ul>
+			    </isif>     
+		       </li>
+	       </div>
+	       <div class="hidden-xs hidden-sm d-none d-sm-none d-md-block">
+	       		<!-- For desktop view -->
+		       <li class="dropdown-header">Suggested Terms</li>
+		       <li>
+		       	<isif condition="${suggest.product.terms.hasNext()}">
+		       		<isloop items="${suggest.product.terms}" alias="terms" >
+	                   <isscript>var termArray = []</isscript>
+	                 	<isloop items="${terms}" alias="term"  status="termStatus">
+	                     	<isscript>
+	                 	        termArray.push(term.value);
+	                 	    </isscript>
+	                 	</isloop>
+	                      	<isscript>
+	                 	        termsArrayDesk.push(termArray);
+	                 	        termArray = null;
+	                 	    </isscript>                	
+	                 </isloop>
+	            <iselseif condition="${suggest.content.terms.hasNext()}" >
+	            	<isloop items="${suggest.content.terms}" alias="terms" >
+	                   <isscript>var termArray = []</isscript>
+	                 	<isloop items="${terms}" alias="term"  status="termStatus">
+	                     	<isscript>
+	                 	        termArray.push(term.value);
+	                 	    </isscript>
+	                 	</isloop>
+	                      	<isscript>
+	                 	        termsArrayDesk.push(termArray);
+	                 	        termArray = null;
+	                 	    </isscript>                	
+	                 </isloop>
+		       	</isif>
+	             
+	                 
+	              <isif condition="${termsArrayDesk.length==1}">    	                         
+			         <ul class="list-unstyled dropdown-list dropdown-search-term-list gtm-search-suggested-terms">
+		                 <isloop items="${termsArrayDesk}" alias="terms">
+		                 	<isloop items="${terms}" alias="term" end="1">  
+		                 	      <isscript>
+		                 	        termCount++;
+		                 	      	searchquery = searchquery +" "+term;
+		                 	      </isscript>
+		                     	<li><a href="${URLUtils.url('Search-Show', 'q', term)}"><isprint value="${term}" /></a></li>
+		                 	</isloop>
+		                 </isloop>
+			         </ul>
+			    </isif> 
+			                
+	             <isif condition="${termsArrayDesk.length>1}">    	                         
+			         <ul class="list-unstyled dropdown-list dropdown-search-term-list gtm-search-suggested-terms">
+		                 <isloop items="${termsArrayDesk}" alias="terms" end="1">
+		                 	<isloop items="${terms}" alias="term"  status="termStatus" end="0">
+		                 	     <isif condition="${termStatus.count==1}">
+			                 	      <isscript>
+			                 	        termCount++;
+			                 	      	searchquery = searchquery +" "+term;
+			                 	      </isscript>
+		                 	     </isif>
+		                     	<li><a href="${URLUtils.url('Search-Show', 'q', term)}"><isprint value="${term}" /></a></li>
+		                 	</isloop>
+		                 </isloop>
+			         </ul>
+			    </isif>     
+		       </li>
+	       </div>
+	   </isif>
+     <isif condition="${productcount>3 || termCount == 2 || contentcount>2}">
+       <li role="separator" class="divider"></li>
+       <li class="search-see-all move-search" aria-label="End of the list.Press escape to close the list."><a href="${URLUtils.url('Search-Show', 'q',searchquery)}">See All Results</a></li>
+	</isif>	
+	  </ul>     
+ </isif>
+ </div>

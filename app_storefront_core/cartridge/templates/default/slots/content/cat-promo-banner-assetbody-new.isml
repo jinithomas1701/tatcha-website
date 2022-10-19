@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<iscomment>
+	This template renders the slot content of a content asset
+	using only the body of the content.
+	Note, only one content asset body is rendered.
+</iscomment>
+
+<iscomment>make sure we have content at all</iscomment>
+<isscript>
+	var catPromoBannerAssets = [];
+</isscript>
+
+<isif condition="${slotcontent != null}">
+	<isloop items="${slotcontent.content}" var="contentAsset" status="catLoop" >
+		<isif condition="${contentAsset.custom.catPromoType && contentAsset.custom.catPromoType.value != null}">
+			<isif condition="${catLoop.index < 4}"> 
+			    <isscript>
+			    	catPromoBannerAssets.push(contentAsset.ID);		    	
+			    </isscript>	
+			 </isif>
+		</isif>
+	</isloop>
+	<isif condition="${catPromoBannerAssets.length > 0}">
+		<isset name="catPromoBannerAssetsArray" value="${(catPromoBannerAssets.join('&&'))}" scope="session" />
+		<isset name="hasPromoContent" value="true" scope="session"/>
+	<iselse>
+		<isset name="catPromoBannerAssetsArray" value="" scope="session" />
+		<isset name="hasPromoContent" value="" scope="session"/>
+	</isif>	
+</isif>

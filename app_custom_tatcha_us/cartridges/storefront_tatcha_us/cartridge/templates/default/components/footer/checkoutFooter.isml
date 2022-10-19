@@ -1,0 +1,45 @@
+<div class="checkout-footer d-block py-4 text-center">
+    <div class="siteseal mx-auto text-center my-3"><span id="siteseal"><script async type="text/javascript" src="https://seal.godaddy.com/getSeal?sealID=hUvANrxHeSE0RTFCA9i6MYZkszJcvUCh3uz5uDZyC53zjLEEJnJDWO7cmcsJ"></script></span></div>
+    <div class="mb-3 d-lg-none checkout-footer-ph">Need help? Call (877) 322-8633 Ext. 1</div>
+</div>
+
+
+
+<iscomment>app resource includes</iscomment>
+<script type="text/javascript"><isinclude template="resources/appresourcesSFRA"/></script>
+
+
+<isinclude url="${URLUtils.url('KlaviyoSfra-RenderKlaviyo',
+	'title', request.pageMetaData.title,
+  	'pagecontexttype', (!empty(pdict.pageContext) ? ''+pdict.pageContext : null),
+  	'searchterm', request.httpParameterMap.q.stringValue,
+'searchresultscount', (!empty(pdict.productSearch) ? ''+pdict.productSearch.count : null),
+'productid', request.httpParameterMap.pid.stringValue,
+'pagecgid',  request.httpParameterMap.cgid.stringValue,
+'orderno', (!empty(pdict.order) ? pdict.order.orderNumber : null)
+)}"/>
+
+
+<iscomment> Afterpay Express Includes : RDMP-3458 change </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled')}">
+    <isinclude template="afterpay/afterpayExpressIncludes" />
+</isif>
+
+<iscomment> Afterpay Widget Includes </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableAfterpay')}">
+    <isinclude template="checkout/afterpayWidgetIncludes" />
+</isif>
+
+<iscomment> mParticle JS includes </iscomment>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('mParticleEnabled')}">
+    <isinclude template="mParticle/mParticle_footer_checkout"/>
+    <isinclude url="${URLUtils.url('MParticleSFRA-RenderMParticleTags',
+		'isProfileUpdated', pdict.isProfileUpdated,
+		'pagecontexttype', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.type : null,
+  		'pagecontexttitle', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.title : null,
+  		'checkoutState', (pdict.currentStage) ? pdict.currentStage : '',
+  		'checkoutMode', (pdict.currentStage !== 'placeOrder') ? 'edit' : '',
+  		'paymentMethod', (pdict.order && !empty(pdict.order.billing) && !empty(pdict.order.billing.payment) && !empty(pdict.order.billing.payment.selectedPaymentInstruments)) ? pdict.order.billing.payment.selectedPaymentInstruments[0].paymentMethod : '')}"/>
+</isif>
+
+<isinclude template="product/components/modalslegal"/>

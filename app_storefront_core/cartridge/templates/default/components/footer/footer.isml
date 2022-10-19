@@ -1,0 +1,79 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	This is the footer for all pages. Be careful caching it if it contains
+	user dependent information. Cache its elements instead if necessary (do not forget
+	to change the isinclude into a pipeline include for that).
+</iscomment>
+<isinclude template="util/modules"/>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('enableGTM')}">
+	<isinclude template="googletagmanager/googletagmanager"/>
+</isif>
+<iscomponent pipeline ="DisplayFooterComp-Show" extole_zone_name="${request.httpParameterMap.extole_zone_name.stringValue}"/>
+<footer class="tatcha-footer">
+	<div class="container-fluid">
+        <div class="row">
+            <div class="footer-list col-sm-3 col-md-2 col-lg-2">
+                <iscontentasset aid="tatcha-footer-pure-promise"/>
+            </div>
+            <div class="footer-list col-sm-3 col-md-2 col-lg-2">
+                <iscontentasset aid="tatcha-footer-service"/>
+            </div>
+            <div class="footer-list col-sm-3 col-md-2 col-lg-2">
+                <iscontentasset aid="tatcha-footer-consultion"/>
+            </div>
+            <div class="footer-list col-sm-3 col-md-2 col-lg-2">
+                <iscontentasset aid="tatcha-footer-company"/>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 col-xl-3 col-xl-offset-1" style="margin: auto 0;padding:0;float:right;">
+            	<div class="container-fluid">
+            		<div class="row">
+		                <div class="col-xs-12 col-sm-6 col-md-12"><iscomponent pipeline ="DisplayFooterComp-FooterSubscribe" /></div>
+						<iscomment> Region selector </iscomment>
+						<div class="col-xs-12 col-sm-3 col-md-6 col-lg-6  col-md-offset-0 col-lg-offset-0 region-selector-contain">
+							<iscontentasset aid="footer-region-selector"/>
+						</div>
+		                <div class="footer-link-list social col-xs-6 col-sm-3 col-md-6 col-lg-6">
+							<div class="footer-link-container">
+							<div>
+							<iscontentasset aid="tatcha-footer-social"/>
+							</div>
+							</div>
+						</div>
+						
+						
+					</div>
+				</div>
+            </div>
+        </div>
+    </div>
+    <div class="copyright container-fluid">
+		<iscontentasset aid="tatcha-footer-copyright"/>
+	</div>
+</footer>
+
+<iscomment>
+	Customer registration can happen everywhere in the page flow. As special tag in the pdict
+	is indicating it. So we have to check on every page, if we have to report this event for
+	the reporting engine.
+</iscomment>
+
+<isinclude url="${URLUtils.url('Login-LoginModal')}"/>
+<isscript>
+	if(!empty(pdict.CurrentHttpParameterMap.original.value)) {
+		var originalUrl = pdict.CurrentHttpParameterMap.original.value;
+		originalUrl = originalUrl.replace('!$', '?');
+		originalUrl = originalUrl.split('^^').join('&');
+		session.custom.TargetLocation = originalUrl;
+	}
+	session.custom.showCreateAccountSuccess = false;
+</isscript>
+<isinclude template="util/reporting/ReportUserRegistration.isml"/>
+<isinclude template="components/footer/footer_UI"/>
+
+
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('mParticleEnabled')}">
+	<isinclude template="mParticle/mParticle_footer"/>
+</isif>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_footer"/>
+</isif>

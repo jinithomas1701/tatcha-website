@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline type="process">
+  <branch basename="FlushProductCache">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="FlushProductCache" secure="false"/>
+        <node-display x="0" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="InvalidateWebCache" pipelet-set-identifier="bc_api">
+          <config-property key="InvalidatePageCache" value="true"/>
+          <config-property key="InvalidateStaticCache" value="false"/>
+          <key-binding alias="null" key="SiteID"/>
+          <key-binding alias="ProductPage" key="PageCachePartitionIDs"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

@@ -1,0 +1,141 @@
+					<isscript>
+						var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');						
+					</isscript>
+					<isloop items="${pdict.ReorderList}" var="Product" status="productloopstate">
+						<isset name="product" value="${Product.product}" scope="page" />
+						<isset name="PriceModel" value="${Product.product.getPriceModel()}" scope="page"/>
+				        <isset name="SalesPrice" value="${PriceModel.getPrice()}" scope="page"/>
+						<isscript>
+							importScript("int_tatcha_dis:common/GetImageUrl.ds");
+							let availability = ProductUtils.getAvailability(product,1);												
+							var relatedFullSizeProductID = Product.product.custom.relatedFullSizeProduct;
+							var relatedFullSizeProductStockStatus = false;
+							if(!empty(relatedFullSizeProductID)){
+								var relatedFullSizeProduct = ProductUtils.getFullSizeProduct(product);
+								relatedFullSizeProductStockStatus = relatedFullSizeProduct.getAvailabilityModel().isInStock();
+							}
+							let purchaseableSamplePrds = ((SalesPrice.valueOrNull != null && SalesPrice.value == '0') && relatedFullSizeProductStockStatus) ? true : false;
+							let isSample = (SalesPrice.valueOrNull != null && SalesPrice.value > 0) ? false : true; 												
+
+						</isscript>
+						
+						<isif condition="${!empty(Product.product) && Product.product.getImage('large',0) != null}">
+							<isset name="imageUrl" value="${getImageUrl(Product.product,'medium')}" scope="page"/>
+						<iselse/>
+							<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+						</isif>						
+						
+						<iscomment>Order date header </iscomment>
+			            <isif condition="${Product.showDate === true}"> 
+			            	<div class="order-group-date-header">
+			              		<p>Order Placed On <isprint value="${Product.dateOrdered}" /></p>
+			            	</div>
+			            </isif>
+			            						
+						<div class="card panel-default product-stack-list-unit">
+							<div class="card-body panel-split">
+								<div class="order-items-detail product">
+									<div class="row">
+										<div class="col-xs-12 col-sm-3 col-md-2">
+											<isif condition="${(SalesPrice.valueOrNull != null && SalesPrice.value > 0)}">
+													<a href="${URLUtils.http('Product-Show','pid', Product.product.ID)}" style="display: block;">
+														<img class="product-img img-responsive img-fluid" src="${imageUrl}">
+													</a>
+											<iselse>
+													<isif condition="${relatedFullSizeProductID}">
+														<a href="${URLUtils.http('Product-Show','pid', relatedFullSizeProductID)}" style="display: block;">
+															<img class="product-img img-responsive img-fluid" src="${imageUrl}">
+														</a>
+													<iselse>
+														<img class="product-img img-responsive img-fluid" src="${imageUrl}">
+													</isif>													
+											</isif>
+										</div>
+										<div class="col-xs-12 col-sm-6 col-md-7 product-text-col">
+											<h5 class="product-name">
+												<isif condition="${(SalesPrice.valueOrNull != null && SalesPrice.value > 0)}">
+													<a href="${URLUtils.http('Product-Show','pid', Product.product.ID)}">
+														<isprint value="${Product.product.name}" />
+													</a>												
+												<iselse>
+													<isif condition="${(SalesPrice.valueOrNull != null && SalesPrice.value > 0)}">
+														<a href="${URLUtils.http('Product-Show','pid', Product.product.ID)}">
+															<isprint value="${Product.product.name}" />
+														</a>												
+													<iselse>
+														<isif condition="${relatedFullSizeProductID}">
+															<a href="${URLUtils.http('Product-Show','pid', relatedFullSizeProductID)}" style="display: block;">
+																<isprint value="${Product.product.name}" />
+															</a>
+														<iselse>
+															<isprint value="${Product.product.name}" />
+														</isif>	
+													</isif>
+												</isif>												
+												<isif condition="${!empty(Product.product.custom.secondaryName)}"> 
+													<span class="product-subtitle"><isprint value="${Product.product.custom.secondaryName.substring(0,44)}" encoding="on"/></span>
+												</isif>
+											</h5>
+											
+											<iscomment>Variants Information </iscomment>	
+											<div class="product-variants">
+												<isloop items="${Product.product.variationModel.getProductVariationAttributes()}" var="VA" status="status">
+													<isset name="SelectedVariationValue" value="${Product.product.variationModel.getSelectedValue(VA)}" scope="page"/>
+													<span class="product-variant">
+														<isif condition="${SelectedVariationValue != null}">
+															<isprint value="${SelectedVariationValue.displayValue}"/>
+														</isif>					
+													</span>
+													<isif condition="${!(status.last)}"><span class="separator">|</span></isif>
+												</isloop>
+				                                <br>
+				                                <isif condition="${(SalesPrice.valueOrNull != null && SalesPrice.value >0)}">			                                     
+													<span class="product-price"><isprint value="${SalesPrice}" formatter="*#0"/></span>
+												</isif>
+											</div>											
+										</div>
+										<div class="col-xs-12 col-sm-3 col-sm-offset-0 stack-list-action">
+											<isinclude template="account/showrefillflag" />
+											<isif condition="${(availability.ats > 0 && !isSample) || purchaseableSamplePrds}">
+												<iscomment>Instock conditions </iscomment>											
+													<isif condition="${purchaseableSamplePrds}">
+														<button class="btn btn-outline-secondary btn-block reorder-prd-add-qv"  data-url="${URLUtils.https('Product-Show','pid', relatedFullSizeProduct.ID)}" data-pid="${relatedFullSizeProduct.ID}" data-productname="${relatedFullSizeProduct.name}" data-price="${relatedFullSizeProduct.getPriceModel().getPrice()}">${Resource.msg('account.orders.reorder.buyfullsize','account',null)}</button>													
+													<iselse>
+														<button class="btn btn-outline-secondary btn-block reorder-prd-add-qv"  data-url="${URLUtils.https('Product-Show','pid', Product.product.ID)}" data-pid="${Product.product.ID}" data-productname="${Product.product.name}" data-price="${Product.product.priceModel.price.value}">${Resource.msg('account.orders.reorder.buyagain','account',null)}</button>													
+													</isif>
+													<iscomment>Reviews </iscomment>
+													<isif condition="${(Product.product.custom.enableReviewsRatings == true)}">												
+														<a class="btn btn-link btn-block btn-sm btn-review" href="${URLUtils.http('Product-Show','pid', Product.product.ID,'reviews','true')}">${Resource.msg('global.writeareview','locale',null)}</a>												
+													</isif>	
+												
+											<iselse>
+												<isif condition="${!isSample}">
+													<iscomment>OOS conditions </iscomment>
+													<isif condition="${(Product.product.custom.oosProductStatus.value == 'comingsoon')}">
+														<div class="product-stock-message" ><isprint value="${Resource.msg('global.comingsoon.button', 'locale', null)}" /></div>
+													<iselse/>
+													    <isif condition ="${(Product.product.custom.oosProductStatus.value == 'comingsoon')}">
+	      													<div class="product-stock-message" ><isprint value="${Resource.msg('global.comingsoon.button', 'locale', null)}" /></div>
+	       												<iselseif condition ="${(Product.product.custom.oosProductStatus.value == 'notifymy')}">
+															<div class="product-stock-message" ><isprint value="${Resource.msg('global.outofstock', 'locale', null)}" /></div>
+	       												<iselseif condition ="${(Product.product.custom.oosProductStatus.value == 'notavailable')}">
+															<div class="product-stock-message"><span class="discontinued"><isprint value="${Resource.msg('global.outofstock.reorder.nolonger', 'locale', null)}" /></span></div>														
+		 												<iselse>
+															<div class="product-stock-message" ><isprint value="${Resource.msg('global.outofstock', 'locale', null)}" /></div>
+	    												</isif>
+	    											</isif>
+	    										</isif>	
+											</isif>
+										</div>
+										
+									</div>
+								</div>									
+							</div>
+						</div>
+				</isloop>
+
+<isif condition="${pdict.HasNextPage == true}"> 
+	<div class="reorder-see-more">
+		<div class="m-top text-center see-more"><a href="#" class="reorder-more btn btn-lg btn-outline-secondary" data-api-url="${URLUtils.https('Order-Reorder','currentPage',pdict.CurrentPage,'type','ajax')}"  class="btn btn-default">See More</a></div>
+	</div>
+</isif>

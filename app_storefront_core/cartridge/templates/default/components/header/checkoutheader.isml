@@ -1,0 +1,44 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isscript>
+	var Site = require('dw/system/Site');
+	var headerText = Site.getCurrent().getCustomPreferenceValue('CheckoutHeaderText');
+</isscript>
+
+<iscomment> Full page loader</iscomment>
+<div class="loader loader-preventive loader-fullpage" style="display: none;">
+	<div class="loader-centering">
+		<div class="loader-animation"></div>
+		<div class="loader-text">Please wait</div>	
+	</div>
+</div>
+
+<header>
+      <nav class="navbar navbar-default navbar-fixed-top navbar-checkout" role="navigation" id="mainNav">
+        <div class="container">
+          <div class="row">
+            <div class="col-sm-4 col-xs-3">
+              <div class="checkout-back">
+                <a href="${URLUtils.url('Cart-Show')}">
+                  <i class="fal fa-angle-double-left fa-lg checkout-back-arrow"></i>
+                  <span>${Resource.msg('cart.title','checkout',null)}</span>
+                </a>
+              </div>
+            </div>
+            <div class="col-sm-4 col-xs-6">
+              <div class="navbar-checkout-header">
+              	            <a class="navbar-checkout-brand" href="${URLUtils.url('Home-Show')}" aria-label="tatcha-logo image"><img class="tatcha-logo" src="${URLUtils.staticURL('/images/bs4/tatcha-logo-nav.png')}" alt="Tatcha Official Site"></a>
+              
+              </div>
+            </div>
+            <div class="col-sm-4 col-xs-3 text-right">
+              <div class="navbar-checkout-help"><isprint value="${headerText}"/></div>
+            </div>
+          </div>
+        </div>
+      </nav> 
+    </header>
+   
+<iscomment>Preventive loader </iscomment>
+<isset name="showLoader" value="" scope="page" />
+

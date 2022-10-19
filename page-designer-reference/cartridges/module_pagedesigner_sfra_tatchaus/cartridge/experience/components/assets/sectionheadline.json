@@ -1,0 +1,69 @@
+{
+  "name": "Section Heading",
+  "description": "Section Heading",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "heading",
+      "name": "Heading",
+      "description": "The heading values for the content.",
+      "attribute_definitions": [
+        {
+          "id": "title",
+          "name": "Heading",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "anchorid",
+      "name": "Anchor Id",
+      "description": "The Anchor Id for the content.",
+      "attribute_definitions": [
+        {
+          "id": "anchorid",
+          "name": "Anchor Id",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margin options for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

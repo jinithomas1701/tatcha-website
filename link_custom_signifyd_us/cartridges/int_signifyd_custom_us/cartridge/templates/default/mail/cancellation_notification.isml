@@ -1,0 +1,25 @@
+<!--- TEMPLATENAME: errornotification.isml --->
+<iscontent type="text/html " charset="UTF-8"/>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<iscomment>The "subject" tag contains the mail subject and can contain dynamic information, like the order number.</iscomment>
+<subject><isprint value="${pdict.Subject}" encoding="on"/></subject>
+
+<iscomment>
+	The "to" tag contains the email address of the recipient, the "from" tag the email address of the sender. 
+	Each tag is to be specified max. once. Multiple email address can be separated by "," (see RFC2822).
+</iscomment>
+<to>
+	<p>
+		<isprint value="${pdict.MailTo}" encoding="on"/>
+	</p>
+</to>
+<head>
+
+<isinclude template="util/modules"/>
+</head>
+<body>  
+	<p>Order Number - <isprint value="${pdict.OrderNo}" encoding="on"/></p>
+	<p>Signifyd Case ID - <isprint value="${pdict.SignifydCaseID}" encoding="on"/></p>
+	<p>Reason - <isprint value="${pdict.Reason}" encoding="on"/></p>
+</body>
+</html>

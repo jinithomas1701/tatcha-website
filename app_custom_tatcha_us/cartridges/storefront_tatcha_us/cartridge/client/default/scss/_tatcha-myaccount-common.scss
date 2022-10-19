@@ -1,0 +1,502 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "node_modules/bootstrap/scss/mixins";
+@import "tatcha-custom";
+@import "mixins/common";
+@import "functions/common";
+
+$brand-primary: #4D186E;
+
+.my-account {
+
+	min-height: 480px;
+	padding-bottom: 28px;
+	.breadcrumb-container {
+		background-color: #F7F9FA;
+	}
+	select{
+		&.floating__input{
+			padding-left: 1rem;
+	   	 	padding-top: 1rem;
+		}
+	}
+	.myaccount-return {
+		background-color: #f7f9fa;
+		margin-top: 1.5rem;
+		margin-bottom: 0;
+		padding: 8px 0px;
+
+		li {
+			 display: inline-block;
+		}
+		a {
+			color: #495257;
+		    text-transform: uppercase;
+		    font-size: 12px;
+		    text-decoration: none;
+		}
+	}
+
+	.clearfix-form-login{
+		.form-group{
+			&.has-error{
+				margin-bottom: 1.5rem;
+			}
+		}
+	}
+
+	.control-label{
+		text-transform: none;
+	}
+
+	.see-more{
+		.orders-see-more-ajax-btn{
+			color:#869196 !important;
+		}
+		.orders-see-more-ajax-btn:hover{
+			color: white !important;
+		}
+	}
+
+	@media (min-width: 769px){
+		.reset-password-title{
+			width:100%;
+			font-weight:300;
+			font-size: 44px;
+			margin: 40px 0;
+		}
+	}
+
+	@media (max-width: 768px){
+		.reset-password-title{
+			width:100%;
+			font-weight:300;
+			font-size: 36px;
+			margin: 24px 0;
+		}
+	}
+
+	.password-reset-options {
+	    @include clearfix;
+	    .radio-box-option {
+			border: 2px solid #ccd4d9;
+		    margin: 0 0 8px;
+		    position: relative;
+	        label {
+	            padding-top: 12px;
+	            padding-left: 12px;
+				padding-bottom: 6px;
+				padding-right: 8px;
+	        }
+			&.selected{
+				border: 2px solid #4d186e;
+			}
+	        &.selected .radio-text-block {
+	            color: $brand-primary;
+	        }
+			&.selected .selected-icon{
+				position: absolute;
+			    right: 4px;
+			    top: 0;
+			    color: #4d186e;
+				display: block;
+			}
+	        .selected-icon {
+				position: absolute;
+			    right: 4px;
+			    top: 0;
+			    color: #4d186e;
+				display: none;
+	            padding-top: 12px;
+	        }
+	        .radio-icon, .radio-text-header {
+	            float: left;
+	            font-size: 18px;
+	        }
+	        .radio-text-header {
+	            margin-left: 8px;
+	        }
+			input[type="radio"] {
+			    position: absolute;
+			    opacity: 0;
+			    height: 100%;
+			    width: 100%;
+			    padding: 0;
+			    margin: 0;
+			    cursor: pointer;
+			}
+	    }
+	}
+
+	.reset-state-email,.reset-state-text{
+		.btn-lg{
+		    padding: 12px 24px;
+		    font-size: 20px;
+		    line-height: 1.33333;
+		    border-radius: 0;
+		}
+	}
+
+	.reset-state-text{
+		.has-error{
+			.control-label{
+				color: unset;
+			}
+
+		}
+	}
+
+	.create-account-container{
+		.floating__input:placeholder-shown:not([style*="display: none"]):not([style*="display:none"]):not([class*='d-none']) ~ .float-label::before {
+			top:0.2rem;
+		}
+		.form-group .has-error{
+			margin-bottom: 25px;
+		}
+
+		.help-block{
+			margin-top:unset;
+		}
+
+		.registration-header {
+			margin-bottom: 0;
+			font-size: 44px;
+			font-weight: $font-weight-light;
+			margin: 40px 0 40px;
+		}
+	}
+
+	.compact-h1-group {
+		margin: 24px 0;
+		h1 {
+			margin: 0;
+		    font-size: 28px;
+		    font-weight: 600;
+		    letter-spacing: 2.5px;
+		}
+	}
+
+	//loading indicator
+	.btn.loading-btn{
+		background-image: url(../../images/ajax-loader.gif);
+	    background-repeat: no-repeat;
+	    background-size: 35px;
+	    text-indent: -999999%;
+	    pointer-events: none;
+	    background-position: center;
+	}
+
+	.btn.plp-list-quick-view.loading-btn{
+		text-indent: 0;
+		color: #fff;
+	}
+
+	.place-order.loading-btn {
+		text-indent: 150%;
+	    overflow: hidden;
+	    width: 161px;
+	}
+
+	.form-control {
+	    /*display: block;
+	    width: 100%;
+	    height: 46px;
+	    font-size: 16px;
+	    line-height: 1.42857;
+	    color: #495257;
+	    background-color: #fff;
+	    background-image: none;
+	    border: 1px solid #CCD4D9;
+	    border-radius: 4px;*/
+		border-color: #495257;
+		&.braintree-hosted-fields-invalid {
+			border-color: #a94442;
+		}
+	}
+
+	.card {
+		border-width: 3px 1px 1px 1px;
+	    margin-bottom: 22px;
+	    border-radius: 0;
+		border-color: #CCD4D9;
+		border-style: solid;
+	}
+
+	.card-header{
+		margin: 0 8px;
+		padding: 16px 8px;
+    	border-bottom: 1px solid #CCD4D9;
+		background:transparent;
+	}
+
+	.card-header-inner {
+	    margin-top: 0;
+	    margin-bottom: 0;
+	    color: inherit;
+	}
+
+	.card-text {
+	    line-height: 1.4;
+		font-size: 12px;
+		dt{
+			color:#495257;
+			font-weight: $font-weight-normal;
+			text-transform: uppercase;
+		}
+		dd{
+			font-size: 16px;
+			line-height: 1.1;
+			padding-bottom: 16px;
+			margin-bottom: 4px;
+		}
+	}
+
+	/*.btn {
+	    display: inline-block;
+	    margin-bottom: 0;
+	    font-weight: $font-weight-light;
+	    text-align: center;
+	    white-space: nowrap;
+	    vertical-align: middle;
+	    cursor: pointer;
+	    background-image: none;
+	    border: 1px solid transparent;
+	    padding: 8px 16px;
+	    font-size: 16px;
+	    line-height: 1.42857;
+	}*/
+
+	/*.btn-default {
+	    color: #343C40;
+	    background-color: #fff;
+	    border-color: #AEB8BD;
+	}*/
+
+	.edit-state{
+		margin-top:48px;
+	}
+
+	.radio label{
+		    min-height: 22px;
+		    margin-bottom: 0;
+		    font-weight: $font-weight-normal;
+		    cursor: pointer;
+			font-size:14px;
+	}
+	.radio{
+		    position: relative;
+		    display: block;
+		    margin-top: 10px;
+		    margin-bottom: 10px;
+			margin-left: 1rem;
+	}
+
+	.bdaySave{
+		@media (min-width: 768px){
+			.form-control{
+				display: inline-block;
+			    width: auto;
+			    vertical-align: middle;
+				margin: 0 5px 0 0;
+			}
+		}
+
+		@media (max-width: 767px){
+			select:not([multiple]) {
+				margin-bottom: 8px;
+			}
+		}
+
+
+	}
+
+	.product-list-unit  {
+		.product-name {
+			text-transform: uppercase;
+		    font-size: 14px;
+		    font-weight: $font-weight-normal;
+			text-decoration: underline;
+		}
+
+		.carousel-rating-container {
+
+			@include media-breakpoint-up(sm) {
+				margin-left: 0;
+	      }
+
+			@include media-breakpoint-up(md) {
+				margin-left: 0;
+	      }
+
+			@include media-breakpoint-up(xl) {
+				margin-left: 25px;
+	      }
+		}
+		.product-price {
+			padding-top: 0;
+		}
+		.price-sales {
+			font-size: 12px;
+		    font-weight: 600;
+		    color: #495257;
+		}
+
+		.product-cta {
+			margin-top: 8px;
+
+			.btn-outline-dark {
+				background-color: rgb(239, 239, 239);
+				&:hover {
+					 color: unset;
+				}
+			}
+		}
+	}
+
+	.empty-state{
+		color: #343C40;
+	    background-color: #F7F9FA;
+	    border-color: #CCD4D9;
+	}
+
+	.my-account-login {
+		h1 {
+			margin-bottom: 0;
+			font-size: 44px;
+			font-weight: $font-weight-light;
+		}
+
+		p {
+			margin: 0 0 11px;
+		}
+
+		.tatcha-login-rememberme {
+			label {
+				font-size: 14px;
+    			text-transform: none;
+			}
+			.form-group {
+				margin-left: 0;
+			}
+
+			input[type="checkbox"] {
+				margin: 2px 5px 0 0;
+			}
+
+			span{
+				line-height:1.3;
+			}
+		}
+
+		.form-actions {
+			margin: 16px 0;
+			a {
+				text-decoration: underline;
+				color: #495257;
+			}
+		}
+
+	}
+
+	.cta-container {
+			margin: 16px 0;
+		}
+	.btn-facebook {
+		color: #4267b2;
+	    background-color: #FFF;
+	    border-color: #4267b2;
+	    text-transform: uppercase;
+	    font-size: 14px;
+	    font-weight: $font-weight-normal;
+	}
+
+	.tatcha-registration-email-list {
+		&.tatcha-registration-join{
+			span {
+				line-height:1.3;
+			}
+		}
+		span {
+			font-size: 14px;
+    		text-transform: none;
+			margin-left: 1rem;
+		}
+
+		input[type="checkbox"] {
+			    position: absolute;
+   			    margin-top: 2px;
+		}
+	}
+
+	.privacy-policy, .privacy-note {
+
+		a {
+			color: #495257;
+			text-decoration: underline;
+		}
+	}
+	input[type="checkbox"]{
+	&.floating__input{
+	margin: 2px 5px 0 0;
+}
+}
+}
+
+// Password reset
+
+.authentication-wrap{
+		min-height: 480px;
+}
+
+.account-main-title {
+	font-weight: $font-weight-light !important;
+    font-size: 44px !important;;
+    margin: 2rem 0 !important;;
+}
+
+.my-account-reset-password, .create-account-container {
+	.form-group.has-error {
+		margin-bottom: 25px;
+		#phoneText, #resetEmail {
+			border-color: #dc3545 !important;
+		}
+	}
+
+	.float-label::before{
+		min-width: 300px;
+	}
+
+	#dwfrm_profile_customer_phoneMobile {
+		padding-top: 0.6rem;
+	}
+
+	.has-phoneMobile-error-border {
+		margin-bottom: 25px;
+		input {
+			border-color: #b82e67 !important;
+		}
+
+		.help-block {
+			color: #b82e67;
+		}
+	}
+}
+
+//Edit password
+.account-step-password label{
+	min-width: 201px;
+}
+
+.account-step-password{
+	#ChangePassowrdForm{
+		.form-group{
+			&.has-error{
+				margin-bottom: 1.5rem;
+			}
+		}
+
+		.float-label::before {
+			min-width: 215px;
+		}
+
+	}
+}

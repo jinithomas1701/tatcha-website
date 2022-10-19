@@ -1,0 +1,169 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+* 
+* Purpose:	It is a transaction script file which updates shipment details of orders.
+*			This script iterates over the input xml file to extract the included orders. It reads
+*			the shipment details from the xml file and accordingly updates the Order object.
+*
+*@input fileName : String shipping xml file path
+*/
+
+
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.io );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var filePath : String = args.fileName;
+	var sourceFile : File = new File(File.IMPEX + File.SEPARATOR  + "src" +filePath);
+
+	var fileReader : FileReader = new FileReader(sourceFile, "UTF-8");
+	var xmlStreamReader : XMLStreamReader = new XMLStreamReader(fileReader);
+	var emailUtils = require('*/cartridge/scripts/utils/klaviyo/emailUtils');
+
+	var isLincEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('LincEnabled');
+	
+	var isBlutagTrackingEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('enableBlutagTracking');
+
+	var orderShippingStatusMap : Map = new HashMap();
+	orderShippingStatusMap.put("NOTSHIPPED", Order.SHIPPING_STATUS_NOTSHIPPED);
+	orderShippingStatusMap.put("PARTSHIPPED", Order.SHIPPING_STATUS_PARTSHIPPED);
+	orderShippingStatusMap.put("SHIPPED", Order.SHIPPING_STATUS_SHIPPED);
+
+	var shipmentShippingStatusMap : Map = new HashMap();
+	shipmentShippingStatusMap.put("NOTSHIPPED", Shipment.SHIPPING_STATUS_NOTSHIPPED);
+	shipmentShippingStatusMap.put("SHIPPED", Shipment.SHIPPING_STATUS_SHIPPED);
+
+
+	if(xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT && "orders" == xmlStreamReader.getLocalName()){
+		while (xmlStreamReader.hasNext()){
+	  		if (xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT){
+	  			var shippingMethodMapping = JSON.parse(Site.getCurrent().getCustomPreferenceValue('shippingMethodMapping'));
+		    	var localElementName : String = xmlStreamReader.getLocalName();
+		    	if (localElementName == "order"){
+			      // read single "order" as XML
+			      var myOrder : XML = xmlStreamReader.readXMLObject();
+				  // read myOrder
+				 var OrderMgr = require('dw/order/OrderMgr');
+				  var orderId : String = myOrder.attribute("order-no");
+				   var myOrderObj : Order = OrderMgr.getOrder(orderId);
+
+				  var orderShippingStatus : String = myOrder["shipping-status"];
+
+				  // shipDate is not required for now
+				  //var shipDate : Date = myOrder["ship-date"];
+
+				  var shipmentsXml : XML = myOrder["shipments"];
+				  var shipments : XML = shipmentsXml["shipment"];
+				  var shipmentsCount : Number = shipments.length();
+
+				  // update order shipping status
+				  // without converting explicitly key to string, map gives null.
+				  orderShippingStatus = orderShippingStatus.toString();
+				  if(orderShippingStatusMap.containsKey(orderShippingStatus)){
+				  	myOrderObj.setShippingStatus(orderShippingStatusMap.get(orderShippingStatus));
+				  }else{
+				  	throw "shipping status does not match";
+				  }
+
+				  for(var i = 0 ; i < shipmentsCount; i++){
+
+				  	var shipment : XML = shipments[i];
+				  	var trackingNum : String = shipment["tracking-number"];
+				  	var shippingStatus : String = shipment["shipping-status"];
+				  	// for now shippingMethod is not used
+				  	var shippingMethod : String = shipment["shipping-method"];
+				  	var gift : String = shipment["gift"];
+				  	gift = gift.toString();
+				  	var booleanGift : boolean = false;
+				  	// type casted boolean is not working. also new Boolean('false') is misbehaving : returng obj with true. and setGift() does not accept object. so creating a boolean literal
+				  	if(gift == 'true' || gift == 'T' )
+				  		booleanGift = true;
+
+					//Afterpay shipping update
+				  	if(myOrderObj.custom.apIsAfterpayOrder){
+	       				 dw.system.Logger.info('Starting afterpay shipping update: Order number : {0}',myOrderObj.orderNo);
+	       				 var afterpayShippingStatusUpdate = require('int_afterpay_custom_tatcha_us/cartridge/scripts/util/afterpayShippingStatusUpdate');
+						 afterpayShippingStatusUpdate.shippingUpdate(orderId , shippingMethod.toString() , trackingNum.toString());
+	        		}
+
+				  	var giftMessage : String = shipment["gift-message"];
+				  	giftMessage = giftMessage.toString();
+				  	var shipmentId : String = shipment.attribute("shipment-id");
+				  	var shipmentObj : Shipment = null;
+				  	shipmentId = shipmentId.toString();
+				  	if(shipmentId == null || shipmentId == '' || shipmentId == undefined)
+					  	continue;
+
+				  	if(shipmentObj == null || shipmentObj == undefined){
+				  		var shipmentsCol : Collection = myOrderObj.getShipments();
+				  		for each(var shipObj: Shipment in shipmentsCol){
+					    	if(shipObj.getShipmentNo() == shipmentId){
+					    		shipmentObj = shipObj;
+					    		break;
+					    	}
+    					}
+				  	}
+
+				  	if(shipmentObj == null || shipmentObj == undefined)
+				  		continue;
+
+					  	shippingStatus = shippingStatus.toString();
+					  	if(shippingStatus && shipmentShippingStatusMap.containsKey(shippingStatus))
+					  		shipmentObj.setShippingStatus(shipmentShippingStatusMap.get(shippingStatus));
+					  	else
+					  		shipmentObj.setShippingStatus(Shipment.SHIPPING_STATUS_SHIPPED);
+
+						dw.system.Logger.info('Updated shipping status for Order number : {0}', myOrderObj.orderNo);
+						if (dw.system.Site.current.ID === 'tatcha') {
+							shipmentObj.setTrackingNumber(trackingNum);
+						} else {
+							var updatedTrackingNum = trackingNum[0];
+						    updatedTrackingNum = updatedTrackingNum.toString();
+							if (!empty(updatedTrackingNum)) {
+								if (updatedTrackingNum.indexOf('<BR>') > -1) {
+									updatedTrackingNum = updatedTrackingNum.replace("<BR>", ", ");
+								}
+								shipmentObj.setTrackingNumber(updatedTrackingNum);
+								dw.system.Logger.info('Updated tracking number for Order number : {0}', myOrderObj.orderNo);
+							}
+						}
+					  	// TODO : have a null check for all below properties
+					  	// these null/empty checks does not work unless these (gift/giftMessage) xml converted variables are explicitly casted.
+					  	if(gift != null && gift != ''&& gift != undefined)
+					  		shipmentObj.setGift(booleanGift);
+
+					  	if(giftMessage != null && giftMessage != '' && giftMessage != undefined)
+					  		shipmentObj.setGiftMessage(giftMessage);
+
+					  		var CustomerEmail = myOrderObj.getCustomerEmail();
+					  // Send Shipping Confirmation mail
+
+					   	var klaviyoShipmentTxnlEnabled = Site.getCurrent().getCustomPreferenceValue('klaviyo_shipment_transactional_enabled');
+						if (klaviyoShipmentTxnlEnabled) {
+					   		emailUtils.sendOrderEmail(myOrderObj, 'Shipping Confirmation');
+						}
+
+					 if(isLincEnabled){
+					 	require('int_linc/cartridge/scripts/helpers/lincShipmentHelper').callLincShipmentAPI(myOrderObj,shipmentObj);
+					 }
+					 
+					 
+					 if(isBlutagTrackingEnabled){
+					 	require('int_blutag/cartridge/scripts/helpers/blutagTrackingHelper').callBlutagTrackingAPI(myOrderObj,shipmentObj);	
+					 }
+					 
+				  }
+			    }
+	  		}
+		}
+	}else{
+		// TODO: confirm from Tarun.
+	}
+
+	xmlStreamReader.close();
+	fileReader.close();
+   return PIPELET_NEXT;
+}

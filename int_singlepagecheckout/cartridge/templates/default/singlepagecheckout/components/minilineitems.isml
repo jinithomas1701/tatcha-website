@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="LineItemCtnr" value="${pdict.p_lineitemctnr}" scope="page"/>
+<isif condition="${LineItemCtnr != null}">
+	<isscript>
+			var pliList : dw.util.Collection = new dw.util.ArrayList(LineItemCtnr.productLineItems);
+			importScript("int_tatcha_dis:common/GetImageUrl.ds");
+			var Site = require('dw/system/Site');
+ 			var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+ 			var samplesPromoID = Site.getCurrent().getCustomPreferenceValue('samplePromotionID'); 			
+	</isscript>
+
+	<iscomment>product line items with price greater than $0 (only rendered if we haven't add a gift certificate to the basket)</iscomment>
+	<isloop items="${pliList}" var="productLineItem" status="loopstate">
+		<isif condition="${productLineItem.adjustedPrice > 0}">
+			<isspsummaryminilineitem p_samplepromoid="${samplesPromoID}" p_productitem="${productLineItem}"/>
+ 		</isif>
+	</isloop>
+			
+	<iscomment>product line items with price $0 (only rendered if we haven't add a gift certificate to the basket)</iscomment>
+	<isloop items="${pliList}" var="productLineItem" status="loopstate">
+		<isif condition="${productLineItem.product.ID == giftWrapId}"><iscontinue/></isif>
+		<isif condition="${productLineItem.adjustedPrice <= 0}">
+			<isspsummaryminilineitem p_samplepromoid="${samplesPromoID}" p_productitem="${productLineItem}"/>		
+		</isif>
+	</isloop>
+	
+	<iscomment>gift certificate line items</iscomment>
+	<isloop items="${LineItemCtnr.giftCertificateLineItems}" var="gcLI" status="loopstate">
+		<div class="product-item">
+			<isif condition="${!empty(gcLI.custom.giftCertificateImage)}">
+				<isset name="imageAlt" value="${gcLI.lineItemText}" scope="page"/>
+				<img class="product-img img-fluid" src="${gcLI.custom.giftCertificateImage}" alt="${imageAlt}" />
+			<iselse/>
+				<isset name="imageUrl" value="${getImageUrl(giftproduct,'large')}" scope="page"/>
+				<img class="product-img img-fluid" src="${imageUrl}" alt="<isprint value="${gcLI.lineItemText}"/>" />
+			</isif>
+			<div class="product-content">
+				<div class="product-name"><isprint value="${gcLI.lineItemText}"/></div>
+			</div>
+			<div class="price">
+				<isprint value="${gcLI.price}"/>
+			</div>
+		</div>	
+	</isloop>
+</isif>

@@ -1,0 +1,32 @@
+/**
+*
+* This is the main script called by the pipeline to export orders to Yotpo.
+* It delegates the request to ExportOrderModel for processing.
+*
+*/
+importPackage( dw.system );
+
+function execute( args : PipelineDictionary ) : Number {
+
+	let YotpoUtils = require('/int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+
+	if(!YotpoUtils.isCartridgeEnabled()){
+		return PIPELET_ERROR;
+	}
+	
+	let YotpoLogger = require('/int_yotpo/cartridge/scripts/yotpo/utils/YotpoLogger');
+	var logLocation =  "ExportOrder~Start-ExportOrder";
+	
+	try{
+		
+		let ExportOrderModel = require('/int_yotpo/cartridge/scripts/yotpo/model/orderexport/ExportOrderModel');
+		ExportOrderModel.exportOrder();
+	
+	}
+	catch(ex) {
+		YotpoLogger.logMessage("Something went wrong while executing exporting orders, Exception code is: " + ex, "error", logLocation);
+		return PIPELET_ERROR;
+	}
+
+   return PIPELET_NEXT;
+}

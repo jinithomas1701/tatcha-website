@@ -1,0 +1,98 @@
+<iscomment> Billing Summary </iscomment>
+<isscript>
+	var billingAddress = pdict.p_checkoutobj.billingInfo.billingAddress;
+	var paymentInstruments = pdict.p_checkoutobj.paymentInfo.paymentInstruments;
+</isscript>
+
+<div class="payment-info-submitted">
+    <div class="row no-gutters space-around mt-0">
+    
+    	
+  		
+  		
+    	<iscomment>Credit card </iscomment>
+    	<isif condition="${((paymentInstruments.length > 0) && (paymentInstruments[0].paymentMethod != 'PayPal') && (paymentInstruments[0].paymentMethod != 'ApplePay') && (paymentInstruments[0].paymentMethod != 'AFTERPAY_PBI')) || paymentInstruments.length > 1}">
+    		<iscomment>Gift Certificate</iscomment>
+    	
+		    <isloop items="${paymentInstruments}" alias="paymentInstrument">
+	  			<isif condition="${paymentInstrument.paymentMethod == 'GIFT_CERTIFICATE'}">
+		  			<div class="col-md-6 giftcert-payment-type">
+		  				<div class="payment-type-title">
+		  				${Resource.msg('checkout.summary.giftcard','checkout',null)}
+						</div>
+		  				<div class="checkout-summary-data">
+				  			<isprint value="${paymentInstrument.paymentTransaction.amount}"> ${Resource.msg('checkout.summary.giftcardapplied','checkout',null)}<br>
+				  		</div>
+		  	        </div>
+		  		</isif>
+	  		</isloop>
+	  		
+			<isloop items="${paymentInstruments}" alias="paymentInstrument">
+	  			<isif condition="${paymentInstrument.paymentMethod == 'CREDIT_CARD' && paymentInstrument.paymentTransaction.amount.value > 0}">
+		  			<div class="col-md-6">
+			  			<div class="payment-type-title">
+			           		Credit Card
+			            </div>
+			  			<div>
+					  		<span class="card-icon">
+								<isif condition="${('Master' == paymentInstrument.creditCardType)}">
+									<i class="fab fa-cc-mastercard fa-lg" aria-hidden="true" alt="Mastercard logo"></i>
+								</isif>
+								<isif condition="${('JCB' == paymentInstrument.creditCardType)}">
+									<i class="fab fa-cc-jcb fa-lg" aria-hidden="true" alt="JCB logo"></i>
+								</isif>
+								<isif condition="${('Visa' == paymentInstrument.creditCardType)}">
+									<i class="fab fa-cc-visa fa-lg" aria-hidden="true" alt="Visa logo"></i>
+								</isif>
+								<isif condition="${('Amex' == paymentInstrument.creditCardType)}">
+									<i class="fab fa-cc-amex fa-lg" aria-hidden="true" alt="Amex logo"></i>
+								</isif>
+								<isif condition="${('Discover' == paymentInstrument.creditCardType)}">
+									<i class="fab fa-cc-diners-club fa-lg" aria-hidden="true" alt="Discover logo"></i>
+						        </isif>
+					  		</span> 
+							</span> ending in ${paymentInstrument.creditCardNumberLastDigits}<br>
+					  	</div>
+				  	</div>
+				</isif>
+			</isloop>
+	        
+	        <iscomment>Billing Address</iscomment>
+        	<div class="col-md-6 mt-3 mt-md-0">
+	            <div class="billing-title">
+	                Billing address
+	            </div>
+	            <isif condition="${(pdict.CurrentForms.billing.billingAddress.sameasshipping.value === true) && (pdict.p_checkoutobj.orderType !='giftcard')}">
+		  			<div>${Resource.msg('checkout.sameasshipping','checkout',null)}</div>
+	  			<iselse/>
+	  				<div>
+		  				<isprint value="${billingAddress.firstName + ' ' + billingAddress.lastName}"><br>
+				  		<isprint value="${billingAddress.address1}"><br>
+						<isif condition="${!empty(billingAddress.address2)}"><isprint value="${billingAddress.address2}"><br></isif>
+						<isprint value="${billingAddress.city + ', ' + billingAddress.state + ', ' + billingAddress.postal}"><br>
+						<isprint value="${billingAddress.country}"><br>
+					</div>
+				</isif>
+	        </div>
+	        
+    	</isif>
+        
+        <isif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'PayPal'}">
+	        <div class="col-md-12">
+	            Pay with <img style="height: 50px" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/pp-acceptance-large.png')}" id="paypalLogoReview" alt="PayPal Acceptance">
+	        </div>
+        </isif>
+        
+        <isif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'ApplePay'}">
+	        <div class="col-md-12">
+	            Pay with <img style="height: 50px;" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/applePayPaymentMark.png')}" id="appleLogoReview" alt="Apple Pay Logo">
+	        </div>
+        </isif>
+        <isif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI'}">
+        	<input type="hidden" name="afterpay-token" id="afterpay-token" value="${session.privacy.afterpaytoken}"/>
+			<input type="hidden" name="afterpay-widget-amount" id="afterpay-widget-amount" value="${session.custom.afterpayamount}"/>
+			<input type="hidden" name="getAfterpayPaymentChecksum" id="getAfterpayPaymentChecksum" value="${URLUtils.url('Afterpay-AfterPayPaymentChecksum')}" />
+        	<div id="afterpay-widget-container"></div>
+        </isif>
+    </div>
+</div>

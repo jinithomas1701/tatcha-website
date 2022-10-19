@@ -1,0 +1,25 @@
+<header class="pt-3 pt-lg-3">
+    <iscomment>
+    <isinclude template="/components/header/skipNav" />
+    </iscomment>
+    <div class="text-center">
+        <div class="d-lg-inline-block float-left goto-bag">
+            <a class="goback-to-bag-icon" href="${URLUtils.url('CartSFRA-Show')}"><i class="fas fa-arrow-left"></i> Bag</a>
+        </div>
+        <div class="d-inline-block mx-auto tatcha-logo">
+            <a href="${URLUtils.url('Home-Show')}" aria-label="tatcha-logo image">
+                <img class="tatcha-logo" src="${URLUtils.staticURL('/images/bs4/tatcha-logo-nav.png')}" alt="Tatcha Official Site">
+            </a>
+        </div>
+        <div class="d-none float-right d-lg-block header-contact-info">
+            Need Help? Call (877) 322-8633
+        </div>
+    </div>
+</header>
+<iscomment> Full page loader</iscomment>
+<div class="loader loader-preventive loader-fullpage" style="display: none;">
+    <div class="loader-centering">
+        <div class="loader-animation"></div>
+        <div class="loader-text">Please wait</div>
+    </div>
+</div>

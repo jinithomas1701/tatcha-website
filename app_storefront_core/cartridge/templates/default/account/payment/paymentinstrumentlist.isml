@@ -1,0 +1,232 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isdecorate template="account/pt_account_bs">
+
+<isinclude template="util/modules" /> 
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/paymentInstruments.js');
+    assets.addCss('/css/braintree.css');
+    assets.addCss('/css/account/payment.css');
+
+    if (pdict.braintree.isGooglePaySavingAllowed) {
+        assets.addJs(pdict.braintree.prefs.googlePaySdkUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+        assets.addJs(pdict.braintree.prefs.braintreeGooglePaySdkUrl);
+        }
+    if (pdict.braintree.isCreditCardSavingAllowed) {
+        assets.addJs(pdict.braintree.prefs.clientSdk3HostedFieldsUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3ThreeDSecureUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+        }
+    if (pdict.braintree.isSrcSavingAllowed) {
+        assets.addJs(pdict.braintree.prefs.srcSdkUrl);
+        assets.addJs(pdict.braintree.prefs.braintreeSrcSdkUrl);
+        }
+ </isscript>
+<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict" />
+	
+<ol class="breadcrumb view-state" style="display: none;">
+	<li><a href="prototype-my-account.html">
+	<i class="fal fa-angle-double-left"></i> Back</a></li>
+</ol>
+<div class="my-account my-account-payment">
+	<div class="container view-state account-payment-container">
+		<div class="compact-h1-group">
+			<h1 class="text-center">${Resource.msg('account.paymentinstrumentlist.header','account',null)}</h1>
+			<p class="text-center">Manage your saved credit cards.</p>
+		</div>
+		<isscript> 
+		var addCardUrl : String = URLUtils.url('PaymentInstruments-Add');
+		var deleteCardUrl : String = URLUtils.url('PaymentInstruments-Delete');
+		var isAllowedAddCard : Boolean = true;
+		if(dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID() == 'BRAINTREE_CREDIT') { 
+			addCardUrl = URLUtils.url('Braintree-AccountAddCreditCard');
+			var braintreePrefs = require('int_braintree/cartridge/config/braintreePreferences');
+			deleteCardUrl = URLUtils.url('Braintree-AccountDeleteCreditCard');
+			isAllowedAddCard = braintreePrefs.BRAINTREE_Vault_Mode != 'not';
+		}
+		var defaultCard = null;
+		for(var key in pdict.CurrentForms.paymentinstruments.creditcards.storedcards) {
+			var card = pdict.CurrentForms.paymentinstruments.creditcards.storedcards[key];
+			if(card.object.custom.braintreeDefaultCard == true) {
+				defaultCard = card;
+			}
+		}
+		var autoRefillToken = customer.profile.custom.OsfSorSubscriptionToken;
+		</isscript>
+		<isinclude template="braintree/account/paymentsBlock" />
+		 <isinclude template="account/payment/deletePaymentModal"/>
+		<iscomment>
+		<div class="row">
+			<div class="col-md-6 col-lg-5 offset-lg-1">
+			<isif condition="${isAllowedAddCard}">
+			 <a	href="${addCardUrl}" class="panel-clickable d-md-none d-lg-none d-xl-none addcreditcard-panel-click">
+					<div class="add-card-panel">
+						<div class="card-body">
+							<i class="fal fa-plus fa-3x"></i>
+							<p><isprint value="${Resource.msg('account.paymentinstrumentlist.addcard','account',null)}" /></p>
+						</div>
+					</div>
+				</a> </isif>
+				
+				
+				<div class="default-card">
+					<div class="card-header">
+						<h5 class="card-header-inner"><isprint value="${Resource.msg('account.paymentinstrumentlist.defaultcard','account',null)}" /></h5>
+					</div>
+					<div class="card-body d-flex justify-content-between">
+						<isif condition="${!empty(defaultCard)}"> 
+						<isminicreditcard card="${defaultCard.object}" show_expiration="${true}" /> 
+						<div class="panel-action">
+							<a href="#" class="icon-default" data-toggle="modal"
+								data-target="${'#myModal-' + defaultCard.object.UUID}">
+								<i class="fal fa-times fa-lg"></i>
+							</a>
+						</div>
+						<iselse>
+						<div class="card-text">
+							<p><em><isprint value="${Resource.msg('account.paymentinstrumentlist.selectdefault','account',null)}" /></em></p>
+						</div></isif>
+ 					</div>
+				</div>
+				<isif condition="${!empty(defaultCard)}"> 
+					<div class="modal fade modal-primary creditcard-delete-modal"
+						id="${'myModal-' + defaultCard.object.UUID}" tabindex="-1"
+						role="dialog" aria-labelledby="myModalLabel">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal"
+										aria-label="Close">
+										<i class="fal fa-times"></i>
+									</button>
+									<h4 class="modal-title" id="myModalLabel">
+										<strong><isprint value="${Resource.msg('account.paymentinstrumentlist.areyousure','account',null)}" /></strong>
+									</h4>
+								</div>
+								<div class="modal-body">
+									<p>
+										<em><isprint value="${Resource.msg('account.paymentinstrumentlist.confirmdelete','account',null)}" /></em>
+									</p>
+									<isif condition="${defaultCard.object.custom.braintreePaymentMethodToken == autoRefillToken}">
+										<p><isprint value="${Resource.msg('account.autodelivery.confirmdelete','account',null)}" /></p>
+									</isif>
+									<div class="card data-group creditcard-delete-modal-card">
+										<div class="card-body panel-split d-flex justify-content-start">
+											<isminicreditcard card="${defaultCard.object}"
+												show_expiration="${true}" />
+										</div>
+									</div>
+	
+								</div>
+								<div class="modal-footer">
+	
+									<form action="${deleteCardUrl}" name="payment-remove"
+										method="post">
+										<fieldset>
+											<button type="button" class="btn btn-outline-secondary rounded"
+												data-dismiss="modal"><isprint value="${Resource.msg('global.cancel','locale',null)}" /></button>
+											<button type="submit" class="btn btn-primary delete rounded"
+												value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}"
+												name="${defaultCard.remove.htmlName}">
+												<isprint value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}" />
+											</button>
+											<input type="hidden"
+												name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}"
+												value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}" />
+										</fieldset>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</isif>
+			</div>
+
+			<div class="col-md-6 col-lg-5">
+				<isif condition="${isAllowedAddCard}"> <a
+					href="${addCardUrl}" class="panel-clickable d-none d-sm-none d-md-block">
+					<div class="add-card-panel">
+						<div class="card-body">
+							 <i class="fal fa-plus fa-3x"></i>
+							<p><isprint value="${Resource.msg('account.paymentinstrumentlist.addcard','account',null)}" /></p>
+						</div>
+					</div>
+				</a> </isif>
+
+				<isif condition="${pdict.PaymentInstruments.size() > 0}"> <isloop
+					items="${pdict.CurrentForms.paymentinstruments.creditcards.storedcards}"
+					var="creditcard" status="loopstate"> <isif
+					condition="${(creditcard.object.custom.braintreeDefaultCard != true)}">
+				<div class="card data-group option-card">
+					<div class="card-body panel-split d-flex justify-content-between">
+						<isminicreditcard card="${creditcard.object}"
+							show_expiration="${true}" />
+						<div class="panel-action">
+							<a href="#" class="icon-default" data-toggle="modal"
+								data-target="${'#myModal-' + creditcard.object.UUID}">
+								<i class="fal fa-times fa-lg"></i>
+							</a>
+						</div>
+					</div>
+					<div class="panel-footer add-credit-card-footer">
+						<a
+							href="${URLUtils.url('Braintree-MakeDefault', 'Token', creditcard.object.custom.braintreePaymentMethodToken)}"
+							class="btn btn-outline-secondary btn-sm add-credit-card-footer-button"><isprint value="${Resource.msg('account.paymentinstrumentlist.makedefault','account',null)}" /></a>
+					</div>
+				</div>
+				<div class="modal fade modal-primary"
+					id="${'myModal-' + creditcard.object.UUID}" tabindex="-1"
+					role="dialog" aria-labelledby="myModalLabel">
+					<div class="modal-dialog" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal"
+									aria-label="Close">
+									<i class="fal fa-times"></i> 
+								</button>
+								<h4 class="modal-title" id="myModalLabel">
+									<strong><isprint value="${Resource.msg('account.paymentinstrumentlist.areyousure','account',null)}" /></strong>
+								</h4>
+							</div>
+							<div class="modal-body">
+								<p>
+									<em><isprint value="${Resource.msg('account.paymentinstrumentlist.confirmdelete','account',null)}" /></em>
+								</p>
+								<isif condition="${creditcard.object.custom.braintreePaymentMethodToken == autoRefillToken}">
+									<p><isprint value="${Resource.msg('account.autodelivery.confirmdelete','account',null)}" /></p>
+								</isif>
+								<div class="card data-group">
+									<div class="card-body panel-split d-flex justify-content-start">
+										<isminicreditcard card="${creditcard.object}"
+											show_expiration="${true}" />
+									</div>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<form action="${deleteCardUrl}" name="payment-remove"
+									method="post" id="creditcards_${loopstate.count}">
+									<button type="button" class="btn btn-outline-secondary rounded"
+										data-dismiss="modal"><isprint value="${Resource.msg('global.cancel','locale',null)}" /></button>
+									<button type="submit" class="btn btn-primary delete rounded"
+										value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}"
+										name="${creditcard.remove.htmlName}">
+										<isprint value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}" />
+									</button>
+									<input type="hidden"
+										name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}"
+										value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}" />
+
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				</isif> </isloop> </isif>
+			</div>
+		</div>
+		</iscomment>
+	</div>
+</div>
+</isdecorate>

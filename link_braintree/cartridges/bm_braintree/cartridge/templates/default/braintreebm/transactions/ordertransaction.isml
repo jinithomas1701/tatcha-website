@@ -1,0 +1,49 @@
+<isdecorate template="braintreebm/util/pt_transactions">
+
+<isinclude template="inc/Modules">
+
+<isscript>
+    var helper = require('~/cartridge/scripts/braintree/bmBraintreeHelper');
+    var transaction = pdict.Transaction;
+    var order = pdict.Order;
+    var currency = transaction.currency;
+
+    // single transaction refund info
+    var refundedAmount = transaction.refundedAmount;
+    var leftToRefund = transaction.leftToRefund;
+
+    // total order info
+    var settledAmount = transaction.settledAmount;
+    var transactionsRefundedAmount = transaction.transactionsRefundedAmount;
+    var initialOrderTransactionAmount = transaction.initialOrderTransactionAmount;
+    var leftToSettle = transaction.leftToSettle;
+</isscript>
+
+<div class="braintree_header">
+    <isset name="ordersUrl" value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', 'orders')}" scope="page">
+    <isbreadcrumb name1="Ordering" url1="${ordersUrl}" name2="${Resource.msg('transactions.title', 'braintreebm', null)}">
+    <table>
+        <tr><td width="100%" class="table_title w e s n">${Resource.msg('transactions.title', 'braintreebm', null)}</td></tr>
+        <tr><td class="w e s"></td></tr>
+        <tr><td class="table_title_description e w"><p>${Resource.msg('transactions.description', 'braintreebm', null)}</p></td></tr>
+    </table>
+</div>
+
+<div class="js_braintree_order_detail" data-orderNo="${order.orderNo}" data-ordertoken="${order.orderToken}">
+    <isinclude template="braintreebm/transactions/components/orderinfo" />
+</div>
+
+<div class="js_braintree_transaction">
+    <isinclude template="braintreebm/transactions/components/transactioninfo" />
+</div>
+
+<isinclude template="braintreebm/transactions/components/actionsettleform"/>
+<isinclude template="braintreebm/transactions/components/actionrefundform"/>
+<isinclude template="braintreebm/transactions/components/actionvoidform"/>
+<isinclude template="braintreebm/transactions/components/actionnewsettleform"/>
+
+<div class="braintree_footer">
+    <a class="button" href="${ordersUrl}">&lt;&lt; ${Resource.msg('transactions.backordering', 'braintreebm', null)}</a>
+</div>
+
+</isdecorate>

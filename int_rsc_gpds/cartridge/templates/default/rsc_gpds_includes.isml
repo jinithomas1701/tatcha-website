@@ -1,0 +1,14 @@
+<!--- TEMPLATENAME: rsc_adc_includes.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isset name="rscAdcUrl" value="${dw.system.Site.current.getCustomPreferenceValue('RSCADCUrl')}" scope="page"/>
+<isset name="rscConfig" value="${dw.system.Site.current.getCustomPreferenceValue('RSCConfig')}" scope="page"/>
+<isset name="displayRSCGPDS" value="${dw.system.Site.current.getCustomPreferenceValue('DisplayRSCGPDS')}" scope="page"/>
+<script>
+(function(){
+    window.rscAdcUrl = <isprint value="${JSON.stringify(rscAdcUrl)}" encoding="off"/>;
+    window.rscConfig = <isprint value="${JSON.parse(JSON.stringify(rscConfig))}" encoding="off"/>;
+    window.displayRSCGPDS = <isprint value="${JSON.stringify(displayRSCGPDS)}" encoding="off"/>;
+    window.rscCurrencyCode = "USD";
+}());</script>
+<script type="text/javascript" src="${URLUtils.absStatic('/js/rsc-adc-c90377b8ddbb2101e21e.js')}"></script>

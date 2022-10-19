@@ -1,0 +1,9 @@
+<isloop items="${ require('*/cartridge/scripts/assets.js').styles }" var="style">
+    <link rel="stylesheet" href="${style}" />
+</isloop>
+
+<isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="script">
+    <script defer type="text/javascript" src="${script}"></script>
+</isloop>
+
+<isreplace/>

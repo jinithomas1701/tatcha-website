@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type = "relative" hour = "24">
+<isinclude template="util/modules"/>
+<isset name="DecoratorTemplate" value="content/blog/pt_blog" scope="page"/>
+<isdecorate template="${DecoratorTemplate}">
+	<iscomment> New exposed mobile nav </iscomment>
+	<iscontentasset aid="mobile-exposed-nav"/>
+<main class="blog blog-index" tabindex="-1">
+	<div class="container">
+		<div class="blog-title" style="margin-top: 20px; margin-bottom: 20px;">
+			<img class="blog-logo lazyImage" alt="T house logo" data-src="${URLUtils.staticURL('/images/t-house-logo-2x-new.png')}" />
+			<h1 class="blog-heading" style="margin-top: 16px !important; margin-bottom: 8px !important; font-weight: 400 !important; letter-spacing: 5px;" aria-label="T House" >T⬝House</h1>
+			<hr aria-hidden="true"/>
+			<div class="blog-tagline" style="font-family: 'minion-pro', serif; text-transform: uppercase; font-size: 14px; font-weight: 600; color: #869196;letter-spacing: 2px;" aria-label="Beauty found & shared" >
+				Beauty found & shared
+			</div>
+		</div>
+	</div>
+	<isbloggrid pagingmodel="${pdict.ContentPagingModel}" searchresult="${pdict.ContentSearchResult}"/>
+</main>
+</isdecorate>

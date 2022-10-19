@@ -1,0 +1,54 @@
+<!--- TEMPLATENAME: pairsWith.isml --->
+<input type="hidden"  class="add-to-cart-url" id="addToCartUrl" value="${URLUtils.url('CartSFRA-AddProduct')}">
+<isset name="cartProduct" value="${lineItem.id}" scope="page" />
+
+<div class="pairs-block popup-unit">
+    <div class="pairs-body popup-body">
+        <input type="hidden"  class="quantity-select-pairsWith" value="1">
+        <div class="d-flex flex-row pairs-with-flex">
+            <div class="product-image">
+             <a href="${URLUtils.url('Product-Show', 'pid', lineItem.pairsWithProduct.id)}" class="pairs-with-image" tabindex="-1">
+                <img src="${lineItem.pairsWithProduct.images.large &&  lineItem.pairsWithProduct.images.large[0] ? lineItem.pairsWithProduct.images.large[0].lineItemImageURL : URLUtils.staticURL('/images/noimagemedium.png')}"
+                     alt="${lineItem.pairsWithProduct.productName}"
+                     title="${lineItem.pairsWithProduct.images.large[0].title}" class="pair-product-img img-fluid">
+            </a>
+            </div>
+            <div class="product-content mt-md-0" role="cell">
+                <div class="product-name">
+                    <a tabindex="-1" class="pairs-with-name" href="${URLUtils.url('Product-Show', 'pid', lineItem.pairsWithProduct.id)}">
+                    ${lineItem.pairsWithProduct.productName}</a>
+                </div>
+
+                    <div class="why use-before-heading py-2">
+                        <isif condition="${lineItem.why}">${lineItem.why}</isif>
+                    </div>
+
+                <div class="d-none d-flex">
+                    <button tabindex="-1" class="btn btn-sm  d-none btn-outline-dark d-md-inline-block btn-pairsWith add-to-cart pairs-with-addtobagone pairs-with-main" data-product-info="${lineItem.pairsWithProduct.cartButtonTaggingData.dataProductInfo}" data-pid="${lineItem.pairsWithProduct.id}" aria-label="Add to bag">Add to Bag - <isprint value="${(lineItem.pairsWithProduct.price.sales.formatted).split('.')[0]}" encoding="off" formatter="*0"/></button>
+                    <isif condition="${!empty(lineItem.pairsWithProduct.travelProductVariant) && (lineItem.pairsWithProduct.travelProductVariant.price > 0)}">
+                        <isscript>
+                            var productInfo = JSON.parse(lineItem.pairsWithProduct.cartButtonTaggingData.dataProductInfo);
+                            productInfo.price = lineItem.pairsWithProduct.travelProductVariant.price ? lineItem.pairsWithProduct.travelProductVariant.price.value.toString() : '';
+                            productInfo.variant = "Travel Size";
+                        </isscript>
+                        <a href="#" class="btn-pairsWith  add-to-cart  add-travel-size-span d-none hidden-xs d-md-inline-block pl-2 pairs-with-travelsizeone pairs-with-travel" tabindex="-1" data-product-info="${JSON.stringify(productInfo)}" data-pid="${lineItem.pairsWithProduct.travelProductVariant.id}" >Add Travel Size - <isprint value="${lineItem.pairsWithProduct.travelProductVariant.price}" encoding="off" formatter="*0"/></a>
+                    </isif>
+                </div>
+            </div>
+        </div>
+        <div class="mt-3 d-md-none">
+            <button class="btn btn-sm btn-pairsWith add-to-cart btn-outline-dark letter-spacing-normal" data-product-info="${lineItem.pairsWithProduct.cartButtonTaggingData.dataProductInfo}" data-pid="${lineItem.pairsWithProduct.id}">Add to Bag - <isprint value="${(lineItem.pairsWithProduct.price.sales.formatted).split('.')[0]}" encoding="off" formatter="*0"/></button>
+            <isif condition="${!empty(lineItem.pairsWithProduct.travelProductVariant) && (lineItem.pairsWithProduct.travelProductVariant.price > 0)}">
+                <isscript>
+                    var productInfo = JSON.parse(lineItem.pairsWithProduct.cartButtonTaggingData.dataProductInfo);
+                    productInfo.price = lineItem.pairsWithProduct.travelProductVariant.price ? lineItem.pairsWithProduct.travelProductVariant.price : '';
+                    productInfo.variant = "Travel Size";
+                </isscript>
+                <a href="#" class="btn btn-sm btn-link pl-2 btn-pairsWith travel-size-btn letter-spacing-normal add-to-cart pairs-with-travel add-travel-size-span" tabindex="-1" data-product-info="${JSON.stringify(productInfo)}" data-pid="${lineItem.pairsWithProduct.travelProductVariant.id}">Add Travel Size - <isprint value="${lineItem.pairsWithProduct.travelProductVariant.price}" encoding="off" formatter="*0"/></a>
+            </isif>
+        </div>
+        <div data-closesuggestion="${cartProduct}" aria-label="close pairs best with" class="product-suggestion-close delete-product" role="button" tabindex="-1">
+			<i class="fal fa-times"></i>
+		</div>
+    </div>
+</div>

@@ -1,0 +1,10 @@
+fragment customerFields on Customer {
+    id
+    legacyId
+    firstName
+    lastName
+    company
+    createdAt
+    phoneNumber
+    email
+}

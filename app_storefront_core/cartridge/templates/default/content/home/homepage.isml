@@ -1,0 +1,56 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<isdecorate template="content/home/pt_storefront_bs3">
+<isinclude template="util/modules"/>
+
+<iscomment>this is the template rendering the homepage</iscomment>
+<!-- +1.888.553.XXXX --><!--This phone is a requirement to support existing Gomez monitor of SiteGenesis. Demadware customers can remove this.-->
+	<div id="oc"></div>
+	<isscript>
+		var TagManagerUtils = require('~/cartridge/scripts/util/GoogleTagManager.js');
+		<!-- GTM for category page view -->
+		var gtmData = TagManagerUtils.getHomePageDatalayer();
+		if (!empty(gtmData)) {
+		  var gtmHomeView = JSON.stringify(gtmData);
+		}
+	</isscript> 
+	<script>
+		try {
+	    	if (!window.dataLayer) {
+				window.dataLayer = [];
+			}
+	    	dataLayer.push(<isprint value="${gtmHomeView}" encoding="off"/>);
+	    	dataLayer.push({'event': 'tatcha_homepage_event'}); 
+	    } catch (e) {
+	
+	    }
+	</script>
+	<iscomment>Home page Hero banner slot </iscomment>
+		<isslot id="home-main" description="Flash Banner in homepage" context="global" />
+
+		<div class="container product-merchandise-cross-sell ">
+		    <isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnHomePage')}">
+		    	<isslot id="einstein-home-carousel-products" description="Einstein Product Carousel" context="global" />
+	    	<iselse>
+	    		<isslot id="home-carousel-products" description="Product Carousel" context="global" />
+	    	</isif>
+			<isslot id="home-category-links" description="Category Link" context="global" />
+		</div>
+
+	   <isslot id="home-content-units" description="Column Layouts" context="global" />
+	   <isslot id="home-stacked-units" description="Column Layouts" context="global" />
+		
+		<div class="container product-purity-promise">
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2  product-purity-promise-col">
+			   <iscontentasset aid="tatcha-product-puritypromise" />
+			</div>
+		</div>
+	</div>
+</isdecorate>
+<script type="text/javascript">
+	$(".hero-standard, .content-unit-stacked").click(function() {
+	  window.location = $(this).find("a").attr("href"); 
+	  return false;
+	});
+</script>

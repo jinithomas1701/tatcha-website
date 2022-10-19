@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isinclude template="/components/modules" sf-toolkit="off" />
+
+<!DOCTYPE html>
+<html lang="${require('dw/util/Locale').getLocale(request.getLocale()).getLanguage()}">
+<head>
+    <isscript>
+        var pageContext = {
+            title: 'Checkout',
+            type: 'checkout',
+            ns: 'checkout'
+        };
+    </isscript>
+    <!--[if gt IE 9]><!-->
+    <isinclude sf-toolkit="off" template="/common/scripts_checkout" />
+    <!--<![endif]-->
+    <isinclude template="/common/checkoutHtmlHead" />
+    <isactivedatahead/>
+</head>
+<body>
+${dw.system.HookMgr.callHook('app.template.beforeHeader', 'beforeHeader', pdict) || ''}
+
+<iscomment>GTM includes</iscomment>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('enableGTM')}">
+    <isinclude template="googletagmanager/googletagmanager"/>
+</isif>
+
+<div class="page">
+    <isinclude template="/components/header/checkoutHeader" />
+    <div role="main" id="maincontent" class="checkout-page">
+        <isreplace/>
+    </div>
+    <isinclude template="/components/footer/checkoutFooter" />
+</div>
+<!--[if lt IE 10]>
+<isinclude sf-toolkit="off" template="/common/scripts_checkout" />
+<![endif]-->
+
+<iscomment>
+    hook for Marketing Cloud connector & other integration which need to inject
+    logic at the page end
+    IMPORTANT: Note that this hook will be called to cached as well as uncached pages
+    which means you need to put privacy information into another remote include
+</iscomment>
+${dw.system.HookMgr.callHook('app.template.afterFooter', 'afterFooter', pdict) || ''}
+</body>
+</html>

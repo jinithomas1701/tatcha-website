@@ -1,0 +1,97 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+	<isscript>
+		var browsing = require('app_storefront_controllers/cartridge/scripts/util/Browsing');
+		var links, title;
+		// User has session, but not authenticated
+		if (customer.registered && !customer.authenticated) {
+			title = Resource.msg('global.accountlink', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('Login-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			}];
+		// User has session and is validated
+		} else if (customer.registered) {
+			title = Resource.msgf('global.user.name', 'locale', null, customer.profile.firstName,"");
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('Order-History'),
+				title: Resource.msg('global.link.orders', 'locale', null)
+			}, {
+				href: URLUtils.https('Wishlist-Show'),
+				title: Resource.msg('global.header.wishlistlink', 'locale', null)
+			}, {
+				href: URLUtils.https('GiftRegistry-Start'),
+				title: Resource.msg('global.header.registrylink', 'locale', null)
+			}, {
+				href: URLUtils.https('Login-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			}];
+		// user has no session
+		} else {
+			title = Resource.msg('global.login', 'locale', null) + ' /  ' + Resource.msg('global.register', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.login', 'locale', null)
+			}, {
+				href: URLUtils.https('Account-StartRegister'),
+				title: Resource.msg('global.register', 'locale', null)
+			}];
+		}
+		var accountFlag = pdict.CurrentHttpParameterMap.myaccount.stringValue;
+	</isscript>
+	<isif condition="${!customer.authenticated}">
+		<li class="navbar-item" role="listitem">
+			<isif condition="${!empty(accountFlag) && accountFlag == 'true'}">
+				<a href="${URLUtils.https('Account-Show')}" aria-label="account -link mobile">
+			<iselse/>
+				<a href="#" data-toggle="modal" data-target="#loginModal" data-original="" aria-label="login modal link mobile" class="gtm-login">
+			</isif>
+			<i class="fal fa-sm fa-user-circle mr-1"></i> Login</a>
+		</li>
+		 <li  class="navbar-item" role="listitem">
+       		<a href="${URLUtils.https('Order-ShowTrackOrder')}">
+           		<i class="fal fa-sm fa-truck mr-1"></i> Track an order
+           	</a>
+       	</li>
+       	<isif condition="${request.httpCookies['dw_order_placed']}">
+			<li  class="navbar-item" role="listitem">
+       			<a href="${URLUtils.https('Order-Reorder')}" class="prenav-reorder-mobile-link" aria-label="go to reorder page"><i class="fal fa-repeat mr-1"></i> Reorder</a>
+       		</li>
+       	<iselse>
+			<li  class="navbar-item" role="listitem">
+	       		<a href="${URLUtils.https('Page-Show', 'cid', 'consultation')}" aria-label="skincare consultation" class="prenav-consultation-mobile-link">
+	           		<i class="fal fa-sm fa-comments mr-1"></i> Consultation
+	           	</a>
+	       	</li>
+	    </isif>
+        
+  	<iselse>
+  		<li class="navbar-item" role="listitem">
+			<a href="${URLUtils.https('Account-Show')}" class="mobile-nav-username">
+				<i class="fal fa-user-circle mr-1"></i> ${Resource.msg('account.header.hi','account',null)},  ${title.substr(0,10)}
+			</a>
+		</li>
+       	<li  class="navbar-item" role="listitem">
+       		<a class="trackorder-link" href="${URLUtils.https('Order-ShowTrackOrder')}">
+          		<i class="fal fa-truck fa-fw"></i> Track An Order
+          	</a>
+       	</li>
+       	<li  class="navbar-item" role="listitem">
+       		<a href="${URLUtils.https('Order-Reorder')}" class="prenav-reorder-mobile-link" aria-label="go to reorder page"><i class="fal fa-repeat mr-1"></i> Reorder</a>
+       	</li>
+       	<li  class="navbar-item" role="listitem">
+       		<a href="${URLUtils.https('Wishlist-Show')}" class="prenav-wishlist-mobile-link">
+              <span class="fa-layers fa-fw ml-1 mr-1"><i class="fal fa-heart" data-fa-transform="left-8 shrink-2"></i><i class="fal fa-list" data-fa-transform="right-3 down-5 shrink-9"></i></span>Wishlist
+            </a>
+       	</li>
+       	<li  class="navbar-item" role="listitem">
+       		<a href="${URLUtils.https('Login-Logout')}" class="prenav-logout-mobile-link"><i class="fal fa-sign-out mr-1"></i> Logout</a>
+       	</li>
+  </isif>

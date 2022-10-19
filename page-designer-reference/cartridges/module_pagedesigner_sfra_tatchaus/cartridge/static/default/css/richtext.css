@@ -1,0 +1,19 @@
+.region div.experience-component {
+    position: unset;
+}
+
+div.region_landscape-large:before {
+    padding-top:unset;
+}
+
+div.region_square:before {
+    padding-top:unset;
+}
+
+div.region_landscape-small:before {
+    padding-top:unset;
+}
+
+div.region_portrait-small:before {
+    padding-top:unset;
+}

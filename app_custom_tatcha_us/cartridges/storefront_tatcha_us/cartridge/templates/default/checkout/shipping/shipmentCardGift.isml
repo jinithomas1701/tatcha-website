@@ -1,0 +1,51 @@
+<div class="shipping-content">
+    <form class="shipping-form" autocomplete="on" novalidate
+          action="${URLUtils.url('CheckoutShippingServices-UpdateCustomerEmail')}" >
+
+        <h5 class="section-title">Contact Info</h5>
+        <div class="shipping-address">
+        	<input type="hidden" value="${false}" id="validAddress"/>
+			<input type="hidden" value="${true}" id="newAddress"/>
+			<input type="hidden" value="${request.getGeolocation().getCountryCode()}" id="geoLocCountryCode"/>
+        	<isset name="addressFields" value="${pdict.forms.shippingForm.shippingAddress.addressFields}" scope="page"/>
+            <div class="contact-shipping">
+                <input type="hidden" value="${true}" id="validCustomer"/>
+                <div class="shipping-address-block contact-info-container">
+				    <div class="form-row">
+				        <div class="form-group required col-12 checkout-email-input">
+				            <input type="email" value="${pdict.order.orderEmail ||''}" required class="form-control  form-control-lg floating__input emailaddress" id="emailaddress" data-missing-error="${Resource.msg('validate.email','forms',null)}" data-pattern-mismatch="${Resource.msg('error.message.parse.email.profile.form','forms',null)}"
+				                aria-labelledby="Enter email address" autocomplete="email Id" aria-describedby="emailHelp"
+				                placeholder="Enter email" aria-required="true"
+				                <isprint value="${addressFields.emailaddress.attributes}" encoding="off"/>>
+				            <label class="float-label" for="emailaddress"data-content="Email*"></label>
+				            <div class="invalid-feedback" id="guestEmailInvalidMessage"></div>
+				
+				            <div class="mt-2 ml-4 keep-me-update-check" id="addtoemaillist_container">
+				                <input class="form-check-input" type="checkbox" id="addtoemaillist" name="addtoemaillist" aria-label="Select if you want to join our email list to receive special promotion, early access to new products" />
+				                <span>Keep me up to date on news and offers</span>
+				            </div>
+				        </div>
+				    </div>
+                </div>
+            </div>
+            <div class="delivery-container">
+                <div class="next-step-cta">
+                    <button class="btn btn-primary submit-shipping" type="submit" name="submit" aria-label="Continue  to payment" value="submit-shipping">
+                        Continue to payment
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+	    <span class="outer-section disabled-pay" tabindex="0">
+	        <div class="section-heading outer-section-inner" tabindex="-1">2. Payment
+	        </div>
+	    </span>
+	    <span class="outer-section disabled-s-po" tabindex="0">
+	        <div class="section-heading outer-section-inner" tabindex="-1">3. Place Order
+	        </div>
+	    </span>
+    </form>
+
+</div>

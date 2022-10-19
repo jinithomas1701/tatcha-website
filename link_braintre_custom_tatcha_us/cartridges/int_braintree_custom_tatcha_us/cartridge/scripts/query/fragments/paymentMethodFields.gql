@@ -1,0 +1,32 @@
+fragment paymentMethodFields on PaymentMethod {
+    id
+    legacyId
+    usage
+    customer {
+        legacyId
+        firstName
+        lastName
+        phoneNumber
+    }
+    createdAt
+        details {
+        __typename
+        ... on CreditCardDetails {
+            brandCode
+            expirationMonth
+            expirationYear
+            last4
+            bin
+            uniqueNumberIdentifier
+            cardholderName
+        }
+        ... on PayPalAccountDetails {
+            email
+            payerId
+        }
+        ... on VenmoAccountDetails {
+            username
+            venmoUserId
+        }
+    }
+}

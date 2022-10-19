@@ -1,0 +1,58 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Creates a mini credit card display.
+	Only shown if Owner, Type and Number are not empty.
+
+	Parameters:
+		card: the PaymentInstrument object to display
+		show_expiration: whether the expiration date should be displayed
+</iscomment>
+<isscript>
+	var ccType, ccNumber, ccMonth, ccYear, ccOwner;
+
+	if (pdict.card) {
+		ccType = pdict.card.creditCardType;
+		ccNumber = pdict.card.maskedCreditCardNumber;
+		ccMonth = pdict.card.creditCardExpirationMonth;
+		ccYear = pdict.card.creditCardExpirationYear;
+		ccOwner = pdict.card.creditCardHolder;
+	}
+	var autoRefillToken = customer.profile.custom.OsfSorSubscriptionToken;
+</isscript>
+<isif condition="${ccOwner && ccType && ccNumber}">
+	<div class="panel-icon">
+		<isif condition="${('Master' == pdict.card.creditCardType)}">
+			<i class="fab fa-cc-mastercard fa-2x"></i>
+		</isif>
+		<isif condition="${('JCB' == pdict.card.creditCardType)}">
+			<i class="fab fa-cc-jcb fa-2x"></i>
+		</isif>
+		<isif condition="${('Visa' == pdict.card.creditCardType)}">
+			<i class="fab fa-cc-visa fa-2x"></i>
+		</isif>
+		<isif condition="${('Amex' == pdict.card.creditCardType)}">
+			<i class="fab fa-cc-amex fa-2x"></i>
+		</isif>
+		<isif condition="${('Discover' == pdict.card.creditCardType)}">
+			<i class="fab fa-cc-dinners-club fa-2x"></i>
+        </isif>
+	</div>
+
+	<div class="card-body-main">
+		<dl class="row">			
+			<dt class="col-4 text-md-right text-sm-left pr-0">ending in</dt>
+			<dd class="col-md-8 col-sm-12">
+				<isprint value="${ccNumber.toString().substring(11)}"/>
+			</dd>
+			<isif condition="${pdict.show_expiration}">
+				<dt class="col-4 text-md-right text-sm-left pr-0">Expires</dt>
+				<dd class="col-md-8 col-sm-12">
+					<isprint value="${ccMonth}"/> /
+                	<isprint value="${ccYear.toString().substring(2)}"/>            
+				</dd>
+			</isif>
+		</dl>
+	</div>	
+</isif>		
+
+

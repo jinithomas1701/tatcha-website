@@ -1,0 +1,48 @@
+/**
+* Updates some attributes for the given WorkflowDefinition
+*
+* @input ExecutionWeekdays : dw.util.Collection The ExecutionWeekdays.
+* @input NotificationStatuses : dw.util.Collection The NotificationStatuses
+* @input SiteIds : dw.util.Collection The SiteIds
+* @input NotificationEmails : dw.util.Collection The NotificationEmails
+* @input WorkflowScheduleDefinition : dw.object.CustomObject The WorkflowScheduleDefinition that needs to be updated
+*/
+importPackage( dw.system );
+importPackage( dw.object );
+
+function execute( args : PipelineDictionary ) : Number {
+
+	var workflowScheduleDefinition : dw.object.CustomObject = args.WorkflowScheduleDefinition;
+	if ( !workflowScheduleDefinition ) {
+		Logger.error( "workflowScheduleDefinition not available" );
+		return PIPELET_ERROR;
+	}
+
+	workflowScheduleDefinition.custom.executionWeekdays = args.ExecutionWeekdays;
+	workflowScheduleDefinition.custom.notificationStatuses = args.NotificationStatuses;
+
+	var siteIds : String = args.SiteIds;
+	var result : Array = [];
+	if ( !empty(siteIds) ) {
+		for each(var siteId in siteIds) {
+		    if (!empty(siteId)) {
+		        result.push(siteId);
+		    }
+		}	
+	} 
+	workflowScheduleDefinition.custom.siteIds = result;
+	
+	var notificationEmails : String = args.NotificationEmails;
+	var result : Array = [];
+	if ( !empty(notificationEmails) ) {
+		for each(var notificationEmail in notificationEmails) {
+		    if (!empty(notificationEmail)) {
+		        result.push(notificationEmail);
+		    }
+		}	
+	} 
+	workflowScheduleDefinition.custom.notificationEmails = result;
+
+
+    return PIPELET_NEXT;
+}

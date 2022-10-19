@@ -1,0 +1,617 @@
+<isinclude template="util/modules" />
+<h2 class="bag-main-heading">
+    ${Resource.msg('cart.title','checkout',null)}
+</h2>
+<div class="bag-sample-wrap">
+    <isset name="samplePromoID" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('samplePromotionID')}" scope="page"/>
+    <isset name="samplePromotion" value="${dw.campaign.PromotionMgr.getPromotion(samplePromoID)}" scope="page"/>
+    <isif condition="${pdict.hasOnlyGiftCertificate != true}">
+        <isif condition="${samplePromotion.active}">
+
+            <isinclude template="checkout/cart/sampleItems.isml" />
+            <iselse>
+                <div class="mobile-shipping-text text-lg-left pb-2"><isprint value="${samplePromotion.details}" encoding="off" /></div>
+                <iscomment> Added for GWP promotion</iscomment>
+        </isif>
+    </isif>
+</div>
+<isif condition="${typeof showAdWarning != 'undefined' && showAdWarning === true}">
+    <isinclude template="checkout/components/autodeliveryinternationalshippingwarning" />
+</isif>
+
+<isset name="giftWrapId" value="${dw.system.Site.current.getCustomPreferenceValue('GiftWrapId')}" scope="page"/>
+<div class="bag-table" role="table" aria-label="bag item list" aria-describedby="bag_item_list_table_desc">
+    <hr class="mb-0"/>
+    <div class="bag-item-list">
+        <iscomment>	LOOP TO SEPARATE DIFFERENT SHIPMENTS ex: Gift Registry Shipments Etc.</iscomment>
+        <isloop items="${pdict.items}" alias="FormLi" status="loopstate">
+            <isset name="lineItem" value="${FormLi}" scope="page" />
+            <iscomment>Displaying gift options
+                <isif condition="${lineItem.product.ID == giftWrapId}"><iscontinue/></isif>
+            </iscomment>
+            <isset name="product" value="${lineItem.product}" scope="page" />
+
+            <div class="bag-product-item d-none d-md-block product-info ${lineItem.gwpProduct ? 'gwpProductItem' : ''} mobile-item uuid-${lineItem.UUID} ${(lineItem.bonusDiscountLineItem || lineItem.bonusProductLineItem) ? 'bag-item-promo promo-state' : ''}" data-uuid="${lineItem.uuid}" data-product-info="${lineItem.cartButtonTaggingData.dataProductInfo}" data-index="${loopstate.count}" role="rowgroup" data-prod-lineitem-uuid="${lineItem.UUID}" <isif condition="${lineItem.gwpProduct}">data-pid=${lineItem.id}</isif> >
+
+            <div class="bag-item-container" role="row">
+                <div class="d-flex flex-row justify-content-between">
+                    <div class="product-image bag-item-img-block" role="cell">
+                        <isif condition="${(lineItem.id !== giftWrapId) && !(lineItem.isBonusProductLineItem)}">
+                            <isif condition="${session.customer.authenticated}">
+                                <div class="wishlist-btn-container">
+                                    <button tabindex="0" data-pid="${lineItem.id}" aria-label="Add product ${typeof lineItem.product !== "undefined" ? lineItem.product.name : ''} to wishlist" <isif condition="${lineItem.isWishlistItem == true}">style="display: none"</isif>
+                                    class="no-scroll btn btn-link btn-wishlist wishlist-off wishlist-additem outline-global"
+                                    data-url="${URLUtils.https('Wishlist-AddItemJson', 'pid', lineItem.id)}"
+                                    data-toggle="tooltip" data-placement="top" title="" data-original-title="Add to Wishlist">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                                                <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                                                <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                                            </span>
+                                    </button>
+                                    <button tabindex="0" data-pid="${lineItem.id}" aria-label="Remove product ${typeof lineItem.product !== "undefined" ? lineItem.product.name : ''} from wishlist" <isif condition="${lineItem.isWishlistItem != true}">style="display: none"</isif>
+                                    class="no-scroll btn btn-link btn-wishlist wishlist-on wishlist-active wishlist-removeitem outline-global" data-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', lineItem.id)}"
+                                    data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from Wishlist">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                                                <i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                                                <i class="fa fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                                            </span>
+                                    </button>
+                                </div>
+                                <iselse/>
+                                <button tabindex="0" aria-label="Login to add product to wishlist" data-pid="${lineItem.id}" data-toggle="modal" data-target="#loginModal"
+                                        class="wishlist-login-btn no-scroll btn btn-link btn-wishlist wishlist-off outline-global">
+                                                        <span class="fa-layers fa-fw fa-sm">
+                                                            <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                                            <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                                        </span>
+                                </button>
+                            </isif>
+                        </isif>
+                        <a href="${URLUtils.http('Product-Show','pid', lineItem.id)}">
+                            <isif condition="${lineItem != null && lineItem.images && lineItem.images.large[0].url != null}">
+                                <isset name="imageUrl" value="${lineItem.images.large[0].lineItemImageURL}" scope="page"/>
+                                <isset name="imageAlt" value="${lineItem.images.large[0].alt}" scope="page"/>
+                                <isset name="imageTitle" value="${lineItem.images.large[0].title}" scope="page"/>
+                                <img class="img-responsive product-img img-fluid" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" />
+                                <iselse/>
+                                <img class="img-responsive product-img img-fluid" src="${URLUtils.staticURL('/images/noimagemedium.png')}" alt="${imageAlt}" title="${imageTitle}" />
+                            </isif>
+                        </a>
+                    </div>
+
+                    <div class="product-contnet bag-item-detail" role="cell">
+
+                        <iscomment>Call module to render product</iscomment>
+                        <isdisplayliproductbs p_productli="${lineItem}" p_formli="${FormLi}" p_editable="${true}" p_hideprice="${true}" p_hidepromo="${false}" />
+
+                        <iscomment>
+                            <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp')}">
+                                <div class="item-delivery-options" style="display: none">
+                                    <isinclude template="checkout/cart/storepickup/deliveryoptions" />
+                                </div>
+                            </isif>
+                        </iscomment>
+
+                        <div class="item-total" style="display: none">
+                            <isif condition="${lineItem.bonusProductLineItem}">
+                                                    <span class="bonus-item">
+                                                        ${Resource.msg('global.freewithpurchase','locale',null)}
+                                                    </span>
+                                <iselse/>
+                                <iscomment>Display the unadjusted price if the line item has price adjustments.</iscomment>
+                                <isif condition="${lineItem.priceAdjustments && lineItem.priceAdjustments.length > 0}">
+                                                        <span class="price-adjusted-total">
+                                                            <span><isprint value="${lineItem.getAdjustedPrice ? lineItem.getAdjustedPrice() : 0}" /></span>
+                                                        </span>
+                                    <span class="price-unadjusted">
+                                                            <span><isprint value="${lineItem.getPrice()}" /> </span>
+                                                        </span>
+                                    <iscomment>Display the promotion name for each price adjustment.</iscomment>
+                                    <isloop	items="${lineItem.priceAdjustments}" var="pa" status="prAdloopstatus">
+                                        <div class="promo-adjustment">
+                                            <isif condition="${lineItem.quantityValue > 1 && lineItem.quantityValue != pa.quantity}">
+                                                <isprint value="${pa.quantity}" /> x
+                                            </isif>
+                                            <isprint value="${pa.promotion.calloutMsg}" encoding="off"/>
+                                        </div>
+                                    </isloop>
+                                    <iscomment>Display	the adjusted item total.</iscomment>
+                                    <iselse/>
+                                    <iscomment>Display non-adjusted item total.</iscomment>
+                                    <span class="price-total-${lineItem.UUID}">
+                                                            <isprint value="${lineItem.getAdjustedPrice ? lineItem.getAdjustedPrice() : 0}" />
+                                                        </span>
+
+                                </isif>
+                            </isif>
+
+                            <iscomment>Options</iscomment>
+                            <isif condition="${lineItem.optionProductLineItems && lineItem.optionProductLineItems.size() > 0}">
+                                <isloop items="${lineItem.optionProductLineItems}" var="oli">
+                                    <isif condition="${oli.price > 0}">
+                                        <isif condition="${oli.price > oli.adjustedPrice}">
+                                            <div class="price-option">
+                                                                    <span class="label">
+                                                                        ${Resource.msg('cart.option','checkout',null)}:
+                                                                    </span>
+                                                <span class="value">
+                                                                        <strike>
+                                                                            <isprint value="${oli.price}" />
+                                                                        </strike>
+                                                                        + <isprint value="${oli.adjustedPrice}" />
+                                                                    </span>
+                                            </div>
+                                            <iselse/>
+                                            <div class="price-option">
+                                                                    <span class="label">
+                                                                        ${Resource.msg('cart.option','checkout',null)}:
+                                                                    </span>
+                                                <span class="value">
+                                                                        + <isprint value="${oli.price}" />
+                                                                    </span>
+                                            </div>
+                                        </isif>
+                                    </isif>
+                                </isloop>
+                            </isif>
+                        </div>
+                        <isif condition="${(lineItem.available) && !empty(lineItem.pairsWithProduct) && !empty(lineItem.upsellDisplay) && (lineItem.upsellDisplay == 'bagminibag' || lineItem.upsellDisplay == 'both')}">
+							<button type="button" data-pairswith="${lineItem.id}" data-html="true" class="btn btn-sm btn-outline-dark go-to-bag-wrap pairs-with-box pairs-with-old pairs-with-btn" tabindex="0">
+								${Resource.msg('global.bestpairswith','locale',null)}
+							</button>
+						</isif>
+
+                    </div>
+
+                    <isset name="giftBuilderSKU" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('giftBuilderSKU')}" scope="page"/>
+
+                    <isscript>
+                        var qtyDisabled = '';
+                        if(lineItem.id == giftBuilderSKU || lineItem.custom && lineItem.custom.giftBuilderSku == 'GiftSetMaster' || lineItem.id == giftWrapId){
+                            qtyDisabled = 'disabled'
+                        }
+                    </isscript>
+
+                    <isif condition="${qtyDisabled === ''}">
+                        <div class="sr-only sr-only-focusable" id="pdt-qty" aria-live="assertive" aria-atomic="true">${Resource.msg('global.pageupdate','locale',null)}</div>
+                    </isif>
+
+
+                </div>
+            </div>
+
+
+            <iscomment>'Pairs Best With' button and 'What A Treasure' link is below</iscomment>
+            <iscomment> <isif condition="${!empty(lineItem.pairsWithProduct) && !empty(lineItem.upsellDisplay) && (lineItem.upsellDisplay == 'bagminibag' || lineItem.upsellDisplay == 'both')}">
+                <div class="col-md-12 go-to-bag-wrap pairs-with-box pair-with-btn">
+                    <div class="row toggle-pairs">
+                        <div class="col-10 pairs-bestwith-header">
+                            <span data-treasurelink="${lineItem.id}" class="pairs-with-treasure pairs-with-text btn-sm text-normal">Pairs Best With ${lineItem.productName}</span>
+                        </div>
+                        <div class="col-2 pairs-action-btn">
+                            <div data-closesuggestion="${lineItem.id}" class="product-suggestion-close delete-product pairs-with-treasure btn">
+                                <i class="fal fa-minus" style="display:none" aria-hidden="true"></i>
+                                <i class="fal fa-plus" aria-hidden="true"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </isif> </iscomment>
+
+            <iscomment>pairswith.isml is included below</iscomment>
+            <isif condition="${!empty(lineItem.pairsWithProduct) && !empty(lineItem.upsellDisplay) && (lineItem.upsellDisplay == 'bagminibag' || lineItem.upsellDisplay == 'both')}">
+                <isinclude template="cart/pairsWith" />
+            </isif>
+    </div>
+
+
+    <iscomment> mobile view product line items </iscomment>
+    <div class="bag-product-item mobile-item d-md-none ${lineItem.gwpProduct ? 'gwpProductItem' : ''} uuid-${lineItem.UUID} ${(lineItem.discountLineItems || lineItem.isBonusProductLineItem) ? 'bag-item-promo promo-state' : ''}" data-uuid="${lineItem.uuid}" data-product-info="${lineItem.cartButtonTaggingData.dataProductInfo}" data-index="${loopstate.count}" data-prod-lineitem-uuid="${lineItem.UUID}" <isif condition="${lineItem.gwpProduct}">data-pid=${lineItem.id}</isif> >
+    <div class="bag-item-container">
+
+        <div class="product-image bag-item-img-block d-inline-block">
+            <a href="${URLUtils.http('Product-Show','pid', lineItem.id)}">
+                <isif condition="${lineItem.images!= null && lineItem.images.large[0] != null &&  lineItem.images.large[0].lineItemImageURL != null}">
+                    <isset name="imageUrl" value="${lineItem.images.large[0].lineItemImageURL}" scope="page"/>
+                    <isset name="imageAlt" value="${lineItem.images.large[0].alt}" scope="page"/>
+                    <isset name="imageTitle" value="${lineItem.images.large[0].title}" scope="page"/>
+                    <img class="img-responsive product-img img-fluid" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" />
+                    <iselse/>
+                    <img class="img-responsive product-img img-fluid" src="${URLUtils.staticURL('/images/noimagemedium.png')}" alt="${lineItem.productName}" title="${lineItem.productName}" />
+                </isif>
+            </a>
+
+            <isif condition="${(lineItem.id !== giftWrapId) && !(lineItem.isBonusProductLineItem)}">
+                <isif condition="${session.customer.authenticated}">
+                    <div class="wishlist-btn-container">
+                        <button aria-label="Add product ${lineItem.productName} to wishlist" <isif condition="${lineItem.isWishlistItem == true}">style="display: none"</isif>
+                        class="no-scroll btn btn-link btn-wishlist wishlist-off wishlist-additem"
+                        data-url="${URLUtils.https('Wishlist-AddItemJson', 'pid', lineItem.id)}"
+                        data-toggle="tooltip" data-placement="top" title="" data-original-title="Add to Wishlist">
+                        <span class="fa-layers fa-fw fa-sm">
+                                                                <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                                                <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                                            </span>
+                        </button>
+                        <button aria-label="Remove product ${lineItem.productName} from wishlist" 
+                        <isif condition="${lineItem.isWishListItem != true}">style="display: none"</isif>
+                        class="no-scroll btn btn-link btn-wishlist wishlist-on wishlist-active wishlist-removeitem"
+                        data-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', lineItem.id)}"
+                        data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from Wishlist">
+                        <span class="fa-layers fa-fw fa-sm">
+                                                                <i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                                                <i class="fa fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                                            </span>
+                        </button>
+                    </div>
+                    <iselse/>
+                    <button aria-label="Login to add product to wishlist" data-pid="${lineItem.id}" data-toggle="modal" data-target="#loginModal"
+                            class="wishlist-login-btn no-scroll btn btn-link btn-wishlist wishlist-off" aria-label="${lineItem.productName + ' add to wishlist'}">
+                                                        <span class="fa-layers fa-fw fa-sm">
+                                                            <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                                            <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                                        </span>
+                    </button>
+                </isif>
+            </isif>
+        </div>
+
+        <div class="product-contnet bag-item-detail d-inline-block pl-2">
+
+            <iscomment>Call module to render product</iscomment>
+            <isdisplayliproductbs p_productli="${lineItem}" p_formli="${FormLi}" p_editable="${true}" p_hideprice="${true}" p_hidepromo="${false}" />
+            <div class="price">
+                <iscomment>Product Existence and Product Availability</iscomment>
+                <isif condition="${!lineItem.isBonusProductLineItem || lineItem.discountLineItems != null}">
+                    <div class="cart-item-quantity-details">
+                        <isif condition="${!lineItem.available}"><iscomment>
+                                                                    <span class="not-available">
+                                                                        ${Resource.msg('cart.removeditem','checkout',null)}
+                                                                    </span></iscomment>
+                            <iselse/>
+                            <iscomment>
+                                <isinclude template="checkout/cart/cartavailability" /></iscomment>
+                        </isif>
+                    </div>
+                </isif>
+                <isif condition="${typeof levels !== 'undefined' && !(levels.equals(null)) && levels.notAvailable.value <= 0}">
+                    <isif condition="${lineItem.bonusProductLineItem}">
+                                                                <span class="bonus-item">
+                                                                    ${Resource.msg('global.freewithpurchase','locale',null)}
+                                                                </span>
+                        <iselse/>
+                        <iscomment>Display the unadjusted price if the line item has price adjustments.</iscomment>
+                        <isif condition="${lineItem.priceAdjustments && lineItem.priceAdjustments.length > 0}">
+                            <iscomment>Display	the adjusted item total.</iscomment>
+                            <span class="price-adjusted-total">
+                                                                        <span><isprint value="${lineItem.getAdjustedPrice ? lineItem.getAdjustedPrice() : 0}" /></span>
+                                                                    </span>
+                            <span class="price-unadjusted">
+                                                                        <span><isprint value="${lineItem.getPrice()}" /> </span>
+                                                                    </span>
+
+                            <iscomment>Display the promotion name for each price adjustment.</iscomment>
+                            <isloop	items="${lineItem.priceAdjustments}" var="pa" status="prAdloopstatus">
+                                <div class="promo-adjustment">
+                                    <isif condition="${lineItem.quantityValue > 1 && lineItem.quantityValue != pa.quantity}">
+                                        <isprint value="${pa.quantity}" /> x
+                                    </isif>
+                                    <isprint value="${pa.promotion.calloutMsg}" encoding="off"/>
+                                </div>
+                            </isloop>
+                            <iselseif condition="${lineItem.getPrice().value != lineItem.getTaxBasis().value}">
+                                                                    <span class="price-total">
+                                                                        <isif condition="${lineItem.getPrice()}">
+                                                                            <span class="price-unadjusted stike">
+                                                                                <isprint value="${lineItem.getPrice()}" />
+                                                                            </span>
+                                                                            <br>
+                                                                        </isif>
+                                                                        <isprint value="${lineItem.getTaxBasis()}" />
+                                                                    </span>
+                                <iselse/>
+                                <iscomment>Display non-adjusted item total.</iscomment>
+                                <span class="price-total">
+                                                                        <isif condition="${!empty(lineItem.custom.sordeliveryoption)}">
+                                                                            <span class="price-unadjusted stike">
+                                                                                <isprint value="${lineItem.product.priceModel.getPrice().multiply(lineItem.quantity)}" />
+                                                                            </span>
+                                                                            <br>
+                                                                        </isif>
+                                                                        <isprint value="${lineItem.getAdjustedPrice ? lineItem.getAdjustedPrice() : 0}" />
+                                                                    </span>
+                        </isif>
+                    </isif>
+
+                    <iscomment>Options</iscomment>
+                    <isif condition="${lineItem.optionProductLineItems && lineItem.optionProductLineItems.size() > 0}">
+                        <isloop items="${lineItem.optionProductLineItems}" var="oli">
+                            <isif condition="${oli.price > 0}">
+                                <isif condition="${oli.price > oli.adjustedPrice}">
+                                    <div class="price-option">
+                                                                                <span class="label">
+                                                                                    ${Resource.msg('cart.option','checkout',null)}:
+                                                                                </span>
+                                        <span class="value">
+                                                                                    <strike>
+                                                                                        <isprint value="${oli.price}" />
+                                                                                    </strike>
+                                                                                    + <isprint value="${oli.adjustedPrice}" />
+                                                                                </span>
+                                    </div>
+                                    <iselse/>
+                                    <div class="price-option">
+                                                                                <span class="label">
+                                                                                    ${Resource.msg('cart.option','checkout',null)}:
+                                                                                </span>
+                                        <span class="value">
+                                                                                    + <isprint value="${oli.price}" />
+                                                                                </span>
+                                    </div>
+                                </isif>
+                            </isif>
+                        </isloop>
+                    </isif>
+                </isif>
+            </div>
+
+            <div class="bag-item-qty">
+                <input type="hidden" value="" class="prd-qty" name="prdQtyMob">
+                <input type="hidden" value="" class="prd-id" name="prdIdMob">
+                <div class="product-qty mt-2">
+                    <isif condition="${!lineItem.bonusProductLineItem}">
+
+                        <isif condition="${lineItem.bonusProductLineItem}">
+                            <isprint value="${lineItem.quantity}" />
+                        </isif>
+                        <iselseif condition="${lineItem.bonusProductLineItem &&
+                                                                    (empty(lineItem.bonusDiscountLineItem) || lineItem.bonusDiscountLineItem.promotionID !== samplePromoID)}" >
+
+                            <select name="${FormLi.quantity.htmlName}" value="${lineItem.quantity.value.toFixed()}" disabled="disabled" class="form-control input-sm qty-field-mob">
+                                <isloop items="${qtys}" alias="qty">
+                                    <option <isif condition="${(lineItem.quantity == qty)}">selected</isif>><isprint value="${qty}" style="INTEGER"/></option>
+                                </isloop>
+                            </select>
+                    </isif>
+                </div>
+                <div class="item-quantity-details" style="display: none;">
+                    <iscomment>Product Existence and Product Availability</iscomment>
+                    <isif condition="${!lineItem.bonusProductLineItem || lineItem.getBonusDiscountLineItem() != null}">
+                        <isif condition="${lineItem.product == null}">
+                                                                <span class="not-available">
+                                                                    ${Resource.msg('cart.removeditem','checkout',null)}
+                                                                </span>
+                            <iselse/>
+                            <isset name="product" value="${lineItem.product}" scope="page" />
+                            <isset name="quantity"	value="${pdict.Basket.getAllProductQuantities().get(lineItem.product).value}" scope="page" />
+                            <isinclude template="checkout/cart/cartavailability" />
+                        </isif>
+                    </isif>
+
+                    <div class="item-user-actions">
+                        <isif condition="${empty(pdict.ProductAddedToWishlist) || pdict.ProductAddedToWishlist != lineItem.id}">
+                            <isif condition="${!lineItem.isInWishList}">
+                                <a class="add-to-wishlist" href="${URLUtils.https('Cart-AddToWishlist', 'pid', lineItem.id)}" name="${FormLi.addToWishList ? FormLi.addToWishList.htmlName : ""}" title="${Resource.msg('global.addthisitemtowishlist.title','locale',null)}">
+                                    ${Resource.msg('global.addtowishlist','locale',null)}
+                                </a>
+                            </isif>
+                            <iselse/>
+                            <div class="in-wishlist">
+                                ${Resource.msg('global.iteminwishlist','locale',null)}
+                            </div>
+                        </isif>
+                    </div>
+                </div>
+
+
+
+            </div>
+            <iscomment>Giftwrap Eligibility</iscomment>
+            <isif condition="${!empty(lineItem.bonusProductLineItem) && lineItem.bonusProductLineItem == false
+                                                && !empty(lineItem.product.custom.isEligibleForGiftWrap) && lineItem.product.custom.isEligibleForGiftWrap == false}">
+                <div class="bag-alert no-eligible gifwrap-no-eligible-msg mt-2" <isif condition="${!hasGiftWrap}"> style="display: none"</isif>>
+                <div class="btn btn-sm btn-danger">Not eligible for gift box</div>
+        </div>
+        </isif>
+
+        <isif condition="${typeof levels !== 'undefined' && !(levels.equals(null)) && levels.notAvailable.value > 0}">
+            <input type="hidden" class="outofstock" value="true" />
+            <div class="btn btn-sm btn-danger mt-2"> ${Resource.msg('global.outofstockmsg','locale',null)} </div>
+            <iselse>
+
+                <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp')}">
+                    <div class="item-delivery-options" style="display: none">
+                        <isinclude template="checkout/cart/storepickup/deliveryoptions" />
+                    </div>
+                </isif>
+
+        </isif>
+
+        <div class="item-total" style="display: none">
+            <isif condition="${lineItem.bonusProductLineItem}">
+                                                    <span class="bonus-item">
+                                                        ${Resource.msg('global.freewithpurchase','locale',null)}
+                                                    </span>
+                <iselse/>
+                <iscomment>Display the unadjusted price if the line item has price adjustments.</iscomment>
+                <isif condition="${lineItem.priceAdjustments && lineItem.priceAdjustments.length > 0}">
+                                                        <span class="price-adjusted-total">
+                                                            <span><isprint value="${lineItem.getAdjustedPrice ? lineItem.getAdjustedPrice() : 0}" /></span>
+                                                        </span>
+                    <span class="price-unadjusted">
+                                                            <span><isprint value="${lineItem.getPrice()}" /> </span>
+                                                        </span>
+                    <iscomment>Display the promotion name for each price adjustment.</iscomment>
+                    <isloop	items="${lineItem.priceAdjustments}" var="pa" status="prAdloopstatus">
+                        <div class="promo-adjustment">
+                            <isif condition="${lineItem.quantityValue > 1 && lineItem.quantityValue != pa.quantity}">
+                                <isprint value="${pa.quantity}" /> x
+                            </isif>
+                            <isprint value="${pa.promotion.calloutMsg}" encoding="off"/>
+                        </div>
+                    </isloop>
+                    <iscomment>Display	the adjusted item total.</iscomment>
+                    <iselse/>
+                    <iscomment>Display non-adjusted item total.</iscomment>
+                    <span class="price-total-${lineItem.UUID}">
+                                                            <isprint value="${lineItem.getAdjustedPrice ? lineItem.getAdjustedPrice() : 0}" />
+                                                        </span>
+
+                </isif>
+            </isif>
+
+            <iscomment>Options</iscomment>
+            <isif condition="${lineItem.optionProductLineItems && lineItem.optionProductLineItems.size() > 0}">
+                <isloop items="${lineItem.optionProductLineItems}" var="oli">
+                    <isif condition="${oli.price > 0}">
+                        <isif condition="${oli.price > oli.adjustedPrice}">
+                            <div class="price-option">
+                                                                    <span class="label">
+                                                                        ${Resource.msg('cart.option','checkout',null)}:
+                                                                    </span>
+                                <span class="value">
+                                                                        <strike>
+                                                                            <isprint value="${oli.price}" />
+                                                                        </strike>
+                                                                        + <isprint value="${oli.adjustedPrice}" />
+                                                                    </span>
+                            </div>
+                            <iselse/>
+                            <div class="price-option">
+                                                                    <span class="label">
+                                                                        ${Resource.msg('cart.option','checkout',null)}:
+                                                                    </span>
+                                <span class="value">
+                                                                        + <isprint value="${oli.price}" />
+                                                                    </span>
+                            </div>
+                        </isif>
+                    </isif>
+                </isloop>
+            </isif>
+        </div>
+
+    </div>
+
+</div>
+<iscomment>'Pairs Best With' button and 'What A Treasure' link is below</iscomment>
+
+<isif condition="${!empty(lineItem.pairsWithProduct) && !empty(lineItem.upsellDisplay) && (lineItem.upsellDisplay == 'bagminibag' || lineItem.upsellDisplay == 'both')}">
+    <iscomment> <div data-pairswith="${lineItem.id}" data-html="true" class="col-md-12 go-to-bag-wrap pairs-with-box" tabindex="0">
+        <div class="row toggle-pairs">
+
+            <div class="col-10 pairs-bestwith-header">
+                <span data-treasurelink="${lineItem.id}" class="pairs-with-treasure pairs-with-text text-normal btn-sm">Pairs Best With ${lineItem.productName}</span>
+            </div>
+            <div class="col-2 pairs-action-btn">
+                <div data-closesuggestion="${lineItem.id}" class="product-suggestion-close delete-product pairs-with-treasure btn">
+                    <i class="fal fa-minus" style="display:none" aria-hidden="true"></i>
+                    <i class="fal fa-plus" aria-hidden="true"></i>
+                </div>
+            </div>
+        </div>
+    </div> </iscomment>
+    <button type="button" data-pairswith="${lineItem.id}" data-html="true" class="btn btn-sm btn-outline-dark go-to-bag-wrap pairs-with-box pairs-with-old pairs-with-btn" tabindex="0">
+		${Resource.msg('global.bestpairswith','locale',null)}
+	</button>
+    <div data-treasurelink="${lineItem.id}" style="display: none;">
+        <span class="pairs-with-treasure pairs-with-btn">${Resource.msg('global.bestpairswith','locale',null)}</span>
+    </div>
+
+</isif>
+
+<iscomment>pairswith.isml is included below</iscomment>
+<isif condition="${!empty(lineItem.pairsWithProduct) && !empty(lineItem.upsellDisplay) && (lineItem.upsellDisplay == 'bagminibag' || lineItem.upsellDisplay == 'both')}">
+    <isinclude template="cart/pairsWith" />
+</isif>
+
+</div>
+
+
+
+<iscomment>Bundles</iscomment>
+<isif condition="${lineItem.bundledProductLineItems && lineItem.bundledProductLineItems.size() > 0}">
+<isloop items="${lineItem.bundledProductLineItems}" var="bli">
+
+    <iscomment>same color</iscomment>
+    <div class="rowbundle">
+        <div class="item-image"><!-- Blank to create bundle indent --></div>
+        <div class="item-details">
+            <isif condition="${bli.product != null}">
+                <a href="${URLUtils.url('Product-Show','pid', bli.productID)}" title="${bli.productName}">
+                    <isif condition="${bli.product.getImage('large',0) != null}">
+                        <isif condition="${!empty(imagesize)}">
+                            <isset name="blImageUrl" value="${getImageUrl(bli.product, imagesize)}" scope="page"/>
+                            <iselse>
+                                <isset name="blImageUrl" value="${getImageUrl(bli.product,'medium')}" scope="page"/>
+                        </isif>
+                        <isset name="blImageAlt" value="${getImageAlt(bli.product)}" scope="page"/>
+                        <isset name="blImageTitle" value="${getImageTitle(bli.product)}" scope="page"/>
+                        <img src="${blImageUrl}" alt="${blImageAlt}" title="${blImageTitle}" />
+                        <iselse/>
+                        <img src="${URLUtils.staticURL('/images/noimagemedium.png')}" alt="${bli.productName}" title="${bli.productName}" />
+                    </isif>
+                </a>
+                <iselse/>
+                <img src="${URLUtils.staticURL('/images/noimagemedium.png')}" alt="${bli.productName}" title="${bli.productName}" />
+            </isif>
+            <div class="name">
+                <a href="${URLUtils.url('Product-Show','pid', bli.productID)}" title="${bli.productName}">
+                    <isprint value="${bli.lineItemText}" />
+                </a>
+            </div>
+            <div class="itemnumber">
+                                                    <span class="label">
+                                                        ${Resource.msg('global.itemno','locale',null)}
+                                                    </span>
+                <span class="value">
+                                                        <isprint value="${bli.productID}" />
+                                                    </span>
+            </div>
+        </div>
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp')}">
+            <div class="item-delivery-options">
+                <isinclude template="checkout/cart/storepickup/deliveryoptions" />
+            </div>
+        </isif>
+        <div class="item-quantity">
+                                                <span class="bundleqtyincluded">
+                                                    <isprint value="${bli.quantity}" />
+                                                </span>
+        </div>
+        <div class="item-quantity-details">
+            ${Resource.msg('global.included','locale',null)}
+
+            <iscomment>Product Existence and Product Availability</iscomment>
+            <isif condition="${!bli.bonusProductLineItem}">
+                <isif condition="${bli.product == null}">
+                                                        <span class="notavailable">
+                                                            ${Resource.msg('cart.removeditem','checkout',null)}
+                                                        </span>
+                    <iselse/>
+                    <isset name="product" value="${bli.product}" scope="page" />
+                    <isset name="quantity" value="${pdict.Basket.getAllProductQuantities().get(bli.product).value}" scope="page" />
+                    <isinclude template="checkout/cart/cartavailability" />
+                </isif>
+            </isif>
+        </div>
+        <div class="item-price"></div>
+        <div class="item-total"/>
+    </div>
+</isloop>
+</isif>
+
+</isloop>
+
+
+<iscomment>Gift Certificates</iscomment>
+<isinclude template="cart/giftcert/giftCert" />
+
+<iscomment>Gift Wrap / Gift Message</iscomment>
+<isif condition="${(pdict.giftWrapEnabled) && !pdict.hasOnlyGiftCertificate}">
+<isinclude template="cart/giftWrapMsg"/>
+</isif>
+
+</div>
+</div>
+

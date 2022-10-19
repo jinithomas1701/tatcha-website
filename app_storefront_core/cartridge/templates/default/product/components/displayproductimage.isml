@@ -1,0 +1,46 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Creates the image tag for the product.
+	p_productli : the product line item to render
+	p_email : a boolean that indicates this is used inside an email template
+				if true, display absolute url for image, otherwise use relative
+	p_size : size of image, example: "small", "medium", "large", etc... - default: "medium"
+</iscomment>
+
+<iscomment>Create page variable representing the product line item</iscomment>
+<isset name="p_productli" value="${pdict.p_productli}" scope="page"/>
+<iscomment>Create page variable representing if this is used in an email template</iscomment>
+<isset name="p_email" value="${pdict.p_email}" scope="page"/>
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+
+<isif condition="${p_productli.product != null}">
+	<isscript>
+		var productUrl = URLUtils.http('Product-Show','pid', p_productli.product.ID);
+		if(p_productli.product.custom.relatedFullSizeProduct) {
+			productUrl = URLUtils.http('Product-Show','pid', p_productli.product.custom.relatedFullSizeProduct);
+		}	
+		var imageThumbLabel = p_productli.product && p_productli.product.name ? "image-thumb-" + p_productli.product.name : 'image-thumb';
+	</isscript>
+	<isif condition="${p_productli.product != null && p_productli.product.getImage('large',0) != null}">
+		<isset name="imageUrl" value="${getImageUrl(p_productli.product,'medium')}" scope="page"/>
+		<isset name="imageAlt" value="${getImageAlt(p_productli.product)}" scope="page"/>
+		<isset name="imageTitle" value="${getImageTitle(p_productli.product)}" scope="page"/>
+		<isif condition="${pdict.p_isimageclickable}" >
+			<a class="thumb-link product-view-link" aria-label="imageThumbLabel" href="${productUrl}" title="${p_productli.product.name}">
+				<img class="img-fluid <isif condition="${!pdict.p_history_thumbnail}">img-responsive</isif> product-img" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}"/>
+			</a>
+		<iselse>
+			<img class="imog-fluid <isif condition="${!pdict.p_history_thumbnail}">img-responsive</isif> product-img" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" />
+		</isif>
+	<iselse/>
+		<isif condition="${pdict.p_isimageclickable}" >
+			<a class="thumb-link product-view-link" aria-label="imageThumbLabel" href="${productUrl}" title="${p_productli.product.name}">
+				<img class="img-fluid <isif condition="${!pdict.p_history_thumbnail}">img-responsive</isif> product-img" src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${p_productli.productName}" title="${p_productli.productName}" />
+			</a>
+		<iselse>
+			<img class="<isif condition="${!pdict.p_history_thumbnail}">img-responsive</isif> product-img" src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${p_productli.productName}" title="${p_productli.productName}" />
+		</isif>
+	</isif>
+</isif>

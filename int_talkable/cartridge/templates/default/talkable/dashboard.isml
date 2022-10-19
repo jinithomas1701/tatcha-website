@@ -1,0 +1,6 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isdecorate template="account/pt_account">
+  <div id="talkable-offer"></div>
+</isdecorate>

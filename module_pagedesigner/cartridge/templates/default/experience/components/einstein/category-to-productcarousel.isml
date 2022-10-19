@@ -1,0 +1,29 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/producttile.css');
+    assets.addCss('/css/carousel.css');
+    assets.addCss('/css/component.css');
+    assets.addJs('/js/jquery-3.3.1.min.js');
+    assets.addJs('/js/bootstrap.min.js');
+    assets.addJs('/js/einstein-recommendations.js');
+</isscript>
+
+<div id="${pdict.id}" class="einstein-carousel carousel slide" data-ride="carousel" data-interval="5000">
+    <div class="carousel-inner einstein-category-recommendations"
+        data-recommender="${pdict.recommender}" 
+        data-category-id="${pdict.categoryId}" 
+        data-template="assets/productcarouselitem"
+        data-product-load-url="${pdict.productLoadUrl}"
+        data-limit="${pdict.limit}">
+    </div>
+    <a class="carousel-control-prev" href="${'#' + pdict.id}" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+    </a>
+
+    <a class="carousel-control-next" href="${'#' + pdict.id}" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+    </a>
+</div>
+

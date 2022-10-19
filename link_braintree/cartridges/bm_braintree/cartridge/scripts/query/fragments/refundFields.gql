@@ -1,0 +1,9 @@
+fragment refundFields on Refund {
+    id
+    legacyId
+    amount {
+        value
+        currencyCode
+    }
+    status
+}

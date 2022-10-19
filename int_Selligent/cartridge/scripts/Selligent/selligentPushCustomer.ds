@@ -1,0 +1,61 @@
+/**
+* Push a customer object in json format to the Selligent Web Service 
+*
+*   @input newCustomer : dw.customer.Customer 
+*
+*/
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.ws );
+importPackage( dw.svc);
+importScript("Selligent/selligentExportCustomers.ds");
+importScript("Selligent/selligentExportBase.ds");
+/**
+* Main function of the script.
+*
+* @param {PipelineDictionary} pdict contains the new customer
+*/
+function execute( args : PipelineDictionary ) : Number
+{
+	try
+	{
+		
+		var newCustomer : Customer = args.newCustomer;
+		var profile : Profile = newCustomer.profile;
+		var fielsToExport : Array = getCustomerFieldsToExport();
+		var json : String = exportCustomer(profile, fielsToExport);
+		// push the customer	
+		
+		var result : Result = ServiceRegistry.get("SelligentAddCustomer").call(json);
+		if(result.status == "ERROR") {
+		   throw result.errorMessage;
+		}
+		 
+	}
+	catch(e) 
+	{
+		Logger.error("Selligent Error : Unable to create customer in SIM User list :" + e.message);	
+		return PIPELET_ERROR;
+	}
+   return PIPELET_NEXT;
+}
+
+
+/**
+* Get the properties list to export from the config file 
+*
+* @returns an array of properties to export 
+*/
+function getCustomerFieldsToExport() : Array
+{
+	var fielsToExport : Array;
+	if (configFileExist("customer") === false)
+	{	
+		var result : Result = ServiceRegistry.get("SelligentGetSettings").call();
+		if(result.status == 'ERROR') {
+		   throw result.errorMessage;
+		}	
+	}
+	fielsToExport = getFieldsToExport("customer");
+	return fielsToExport;
+}

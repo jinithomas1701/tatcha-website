@@ -1,0 +1,172 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="content/giftfinder/pt_giftfinder" scope="page"/>
+<isinclude template="util/modules"/>
+<isdecorate template="${DecoratorTemplate}">
+
+	<isscript>
+		var giftfinderContent = dw.content.ContentMgr.getContent('giftfinder');
+	</isscript>
+	
+	<iscomment> taking images from content asset </iscomment>
+	<style>
+		.gift-finder-bg{
+			background: url('${giftfinderContent.custom.SetBannerImage.getURL()}');
+			background-repeat: no-repeat;
+    		background-size: cover;
+    		background-position: center center;
+    		background-attachment: fixed;
+		}
+		@media (max-width: 767.98px) {
+			.gift-finder-bg{
+				background: url('${giftfinderContent.custom.SetImage.getURL()}');
+				background-repeat: no-repeat;
+    			background-size: cover;
+    			background-position: center center;
+    			background-attachment: fixed;
+			}
+		}
+	</style>
+	
+	<section class="gift-finder-result gift-finder-bg">
+	<div class="results-wrapper">	
+		<div class="gift-finder-content">
+	        <h1 class="gift-finder-heading"><isprint value="${pdict.gfname}" />&rsquo;s gift list</h1>
+	        <div class="gift-finder-text">Surprise and delight with these <br class=" d-md-none">options curated just for <isprint value="${pdict.gfname}" />.</div>
+	        <button class="btn btn-primary gift-finder-btn emailResultsBtn" aria-label="Email Results" data-toggle="modal" data-target="#giftFinderModal">Email Results</button>
+	        <div class="gift-finder-text2">Discover more gift ideas for a</div>
+	        <div class="gift-finder-dropbox">
+	          
+	          <form action="${URLUtils.url('GiftFinder-RetriveProducts')}" method="get" name="giftfinderResultform" id="giftfinderResultform">
+	              <div class="form-row">
+	              <input type="hidden" name="gfname" id="gfname" value="${pdict.gfname}">
+	              <select id="gfPersona" name="category">
+	                <isloop items="${pdict.CategoryDisplayName}" status="catLoop" var="subCategory" >
+						<option value="${pdict.CategoryDisplayID[catLoop.index]}" <isif condition="${pdict.category === pdict.CategoryDisplayID[catLoop.index]}">selected</isif> >${subCategory}</option>
+					</isloop>
+	              </select>
+	              <span class="forTxt">for</span>
+	              <select id="gfPricerange" name="priceRange">
+					<option value="0-50" <isif condition="${pdict.priceRange === '0-50'}">selected</isif>>Below $50</option>
+					<option value="50-100" <isif condition="${pdict.priceRange === '50-100'}">selected</isif>>$50-$100</option>
+					<option value="100-200" <isif condition="${pdict.priceRange === '100-200'}">selected</isif>>$100-$200</option>
+					<option value="anyamount" <isif condition="${pdict.priceRange === 'anyamount'}">selected</isif>>Any Amount</option>
+	              </select>
+	             </div>
+	             <button style="display: none;" type="submit" id="giftfindersearch"> Search</button>
+	          </form>
+	        </div>
+	      </div>
+		
+		<isif condition="${!empty(pdict.ProductPagingModel) || !empty(pdict.gfPagingModel)}">
+			<div class="container wd100 categoryProducts gift-listing-wrapper">
+				<div class="row product-list-row">				
+					<isgiftfinderproductgrid pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}"/>
+					<isgiftfinderproductgrid pagingmodel="${pdict.gfPagingModel}" category="${pdict.gfSearchResult.category}"/>
+				</div>				
+			</div>
+		</isif>
+		
+		<div class="modal fade" id="giftFinderModal" tabindex="-1" role="dialog" aria-labelledby="giftFinderModal" aria-hidden="true">
+		    <div class="modal-dialog modal-md" role="document">
+		        <div class="modal-content giftFinder-content-modal">
+		            <div class="modal-body"> 
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">
+									<i class="fal fa-times close-spec ml-3"></i>
+								</span>
+							</button>
+							<div class="text-center m-3 modal-title giftFinder-title">
+								Share Gift list
+							</div>
+		                	<div class="giftFinder-email-modal">
+								<form id="giftfinderEmail">
+									<div class="form-row">
+										<div class="form-group col-12">
+											<label class="float-label" for="giftFinderEmailInput">Email Address</label>
+											<input type="email" class="form-control  form-control-lg" id="giftFinderEmailInput" name= "giftFinderEmailInput" aria-describedby="emailHelp" aria-labelledby="Enter email address" placeholder="Enter email">
+											<span id="giftFinderEmailInputError" class="err">Email Id is required.</span>
+											<div class="mt-2"><input type="checkbox" id="addtoemaillistGF" aria-label="Select if you want to join our email list to receive special promotion, early access to new products.">
+												<span>Join our email list to receive early access to new treasures.</span>
+											</div>
+										</div>
+									</div>
+								</form>
+		                    </div>
+							<div class="actions sendEmailbtn">
+								<button class="btn btn-primary giftFinderEmailbutton" data-url="${URLUtils.url('Klaviyo-GFResultsMail')}">Send</button>
+							</div>
+							<div class="mailSentTxt" style="display:none;">
+								<i class="fal fa-check-circle"></i>Your email has been sent.
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<iscomment>Pearl select modal </iscomment>
+			<div class="modal modal-primary modal-quickview" id="addAllPearlSelect">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content product-detail-container">
+				<div class="modal-body">
+					<button type="button" class="close outline-global focus-outline-purple" data-dismiss="modal" aria-label="Close Button" tabindex="0">
+						<i class="fal fa-times"></i>
+					</button>
+					<div class="row d-block d-lg-none d-xl-none d-xxl-none">
+						<h1 class="h3 text-center" style="margin-top: 0;">
+							Please select a color to continue
+						</h1>
+					</div>
+					<div class="row">
+						<div class="col-lg-4">
+							<div class="product-img-main" style="min-height: unset!important;">
+								<img class="img-fluid" alt="product image" src="https://via.placeholder.com/250x250/F7F9FA?text=Product+Medium">
+							</div>
+						</div>
+						<div class="col-lg-8">
+							<h1 class="h3 d-none d-lg-block add-all-modal-title focus-outline-purple" style="margin-top: 0;" tabindex="0">
+								Please select a color to continue
+							</h1>
+							<div class="product-description-block focus-outline-purple" tabindex="0">
+								<p>Your regimen includes the Pearl. Select a color to continue adding to your bag.</p>
+							</div>
+							<isscript>
+								var product = dw.catalog.ProductMgr.getProduct('MED-PEARL-EYE');
+								pdict.Product = product;
+							</isscript>
+							<input type="hidden" id="selectedvariant" value=""/>
+							<isinclude template="product/components/variations"/>
+							<hr>
+							<div class="product-add-to-bag">
+								<div class="row">
+									<div class="col-md-6 btn-col">
+										<a class="btn btn-primary btn-block focus-outline-purple" id="add-pearl" data-callback="addtocart" role="button" tabindex="0">Add Selection</a>
+									</div>
+									<div class="col-md-6 btn-col">
+										<a class="btn btn-default btn-block focus-outline-purple" id="skip-to-bag" data-callback="addtocart" role="button" tabindex="0">Skip</a>
+									</div>		
+								</div>
+								<div class="alert alert-danger add-to-bag-alert" role="alert" style="display: none;">Contextual Add to Bag Errors here.</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+			</div>
+			<style>
+		body{
+		overflow:hidden;
+		}
+		.results-wrapper{
+		height:100%;
+		overflow:auto;
+		}
+		.gift-finder-result{
+		height:0;
+		}
+		
+	</style>
+	</section>
+</isdecorate>
+

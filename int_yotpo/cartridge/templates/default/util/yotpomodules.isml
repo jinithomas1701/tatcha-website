@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Add conversion tracking 
+</iscomment>
+<ismodule template="tracking/yotpoconversiontracking.isml"
+	name="yotpoconversiontracking"
+	attribute="order"
+/>
+
+<iscomment>
+	Add review widget 
+</iscomment>
+<ismodule template="widgets/yotporeviewswidget.isml"
+	name="yotporeviewswidget"
+	attribute="product"
+	attribute="ispipeline"
+	attribute="yotporeviewspage"
+	attribute="isreview"
+/>
+
+<iscomment>
+	Add bottomline widget for PDP
+</iscomment>
+<ismodule template="widgets/yotpoproductbottomlinewidget.isml"
+	name="yotpoproductbottomlinewidget"
+	attribute="product"
+/>
+
+<iscomment>
+	Add bottomline header widget for category/search
+</iscomment>
+<ismodule template="widgets/yotpocategorybottomlineheader.isml"
+	name="yotpocategorybottomlineheader"
+/>
+
+<iscomment>
+	Add bottomline widget for category/search
+</iscomment>
+<ismodule template="widgets/yotpocategorybottomlinewidget.isml"
+	name="yotpocategorybottomlinewidget"
+	attribute="product"
+/>
+<ismodule template="widgets/yotpocategorybottomlinewidgetsfra.isml"
+	name="yotpocategorybottomlinewidgetsfra"
+	attribute="product"
+/>
+

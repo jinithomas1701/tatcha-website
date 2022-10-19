@@ -1,0 +1,102 @@
+<iscomment>Smart Order Refill details</iscomment>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isif condition="${!empty(pdict.HasRefillProducts) && pdict.HasRefillProducts == true || !empty(pdict.ORIsFutureOrder) && pdict.ORIsFutureOrder == true}">
+    <isset name="Calendar" value="${require('dw/util/Calendar')}" scope="page"/>
+    <p><b>${(Resource.msg('order.smartorderrefill.summary_title', 'order', null))}</b></p>
+    <p>
+        ${Resource.msg('order.smartorderrefill.manage', 'order', null)} <a href="${URLUtils.abs('SmartOrderRefillController-Manage')}">${Resource.msg('order.smartorderrefill.smart_order_refill_anchor', 'order', null)}</a>
+    </p>
+    <isloop items="${pdict.RefillList}" var="refill">
+        <isif condition="${empty(refill)}" >
+            <iscontinue/>
+        </isif>
+        <isif condition="${!empty(refill.isLastOrder) && refill.isLastOrder}"> 
+            <p style="color: #989898; margin-top: 20px;">
+                ${Resource.msg('order.smartorderrefill.lastordernotice1', 'order', null)}
+            </p>
+            <p style="color: #989898;">
+                ${Resource.msg('order.smartorderrefill.lastordernotice2', 'order', null)}
+            </p>
+        </isif>
+
+        <table style="background:#ffffff;border:1px solid #999999;width:680px;">
+            <thead>
+                <tr>
+                    <th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('order.smartorderrefill.item_name', 'order', null)}</th>
+                    <th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('order.smartorderrefill.item_refill_interval', 'order', null)}</th>
+                    <th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('order.smartorderrefill.item_next_shipment_date', 'order', null)}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <isloop items="${refill.products}" var="productItem">
+                    <isset name="product" value="${dw.catalog.ProductMgr.getProduct(productItem.ID)}" scope="page"/>
+                    <tr>
+                        <td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+                            <div class="name"><a href="${URLUtils.http('Product-Show','pid', product.ID)}" title="${product.name}"><isprint value="${product.name}"/></a></div>
+                            <div class="sku">
+                                <span class="label">${Resource.msg('smartorderrefill.itemno', 'smartorderrefill', null)} </span>
+                                <span class="value">${product.ID}</span>
+                            </div>
+                            <isif condition="${product.isVariant()}">
+                                <isloop items="${product.variationModel.getProductVariationAttributes()}" var="VA">
+                                    <isset name="SelectedVariationValue" value="${product.variationModel.getSelectedValue(VA)}" scope="page"/>
+                                    <div class="attribute">
+                                        <span class="label">${VA.displayName}:</span>
+                                        <span class="value">
+                                            <isif condition="${SelectedVariationValue != null}">
+                                                <isprint value="${SelectedVariationValue.displayValue}"/>
+                                            <iselse/>
+                                                -
+                                            </isif>
+                                        </span>
+                                    </div>
+                                </isloop>
+                            </isif>
+                            <div class="quantity">
+                                <span class="label">${Resource.msg('smartorderrefill.quantity', 'smartorderrefill', null)}</span>
+                                <span class="value">${productItem.quantity}</span>
+                            </div>
+                        </td>
+                        <td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+                            <isif condition="${productItem.periodicity === productItem.constructor.PERIODICITY_MONTH}">
+                                <isif condition="${productItem.interval == 1}">
+                                    ${Resource.msg('order.smartorderrefill.interval_monthly', 'order', null)}
+                                <iselse>
+                                    ${Resource.msgf('order.smartorderrefill.interval_months', 'order', null, productItem.interval)}
+                                </isif>
+                            <iselseif condition="${productItem.periodicity === productItem.constructor.PERIODICITY_WEEK}">
+                                <isif condition="${productItem.interval == 1}">
+                                    ${Resource.msg('order.smartorderrefill.interval_weekly', 'order', null)}
+                                <iselse>
+                                    ${Resource.msgf('order.smartorderrefill.interval_weeks', 'order', null, productItem.interval)}
+                                </isif>
+                            </isif>
+                        </td>
+                        <td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+                            <isif condition="${!empty(refill.isLastOrder) && refill.isLastOrder}">
+                                -
+                            <iselse/>
+                                <isif condition="${pdict.ORIsFutureOrder}" >
+                                    <isset name="nextRefill" value="${new Calendar(new Date(refill.createdAt))}" scope="page"/>
+                                <iselse/>
+                                    <isset name="nextRefill" value="${new Calendar(new Date(refill.lastRefillDate))}" scope="page"/>
+                                </isif>
+                                <isif condition="${productItem.periodicity == productItem.constructor.PERIODICITY_WEEK}" >
+                                    <isset name="daysInterval" value="${productItem.interval * 7}" scope="page"/>
+                                    <isset name="result" value="${nextRefill.add(Calendar.DAY_OF_MONTH, daysInterval)}" scope="page"/>
+                                <iselse/>
+                                    <isset name="result" value="${nextRefill.add(Calendar.MONTH, productItem.interval)}" scope="page"/>
+                                    <isset name="result" value="${nextRefill.set(Calendar.DAY_OF_MONTH, productItem.orderDay)}" scope="page"/>
+                                </isif>
+                                <isprint value="${nextRefill.getTime().toDateString()}" />
+                            </isif>
+                        </td>
+                    </tr>
+                </isloop>
+            </tbody>
+        </table>
+    </isloop>
+</isif>

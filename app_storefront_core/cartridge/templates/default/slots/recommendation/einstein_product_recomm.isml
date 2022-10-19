@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> should not be cached, the tiles are cached individually.</iscomment>
+
+<isif condition="${slotcontent}">
+<div class="product-merchandise-cross-sell ">
+	<h2 class="bag-has-contents">${Resource.msg('global.youmayalsolike', 'locale', null)}</h2>
+		<div class="carousel product-merchandise-carousel" data-flickity='{ "cellAlign": "left", "contain": true, "imagesLoaded": true, "percentPosition": false, "freeScroll": true, "pageDots": true, "groupCells": true, "arrowShape": { "x0": 10, "x1": 60, "y1": 50, "x2": 65, "y2": 45, "x3": 20 } }'>
+                <isloop items="${slotcontent.content}" var="product" begin="0" end="9">
+              			<isif condition="${product.master}">
+							<isset name="Product" value="${product.getVariationModel().getDefaultVariant()}" scope="pdict"/>
+						<iselse/>
+							<isset name="Product" value="${product}" scope="pdict"/>
+						</isif>
+                        <isobject object="${product}" view="recommendation">
+                          <isinclude url="${URLUtils.url('Product-HitCarousel',
+                                                'pid', pdict.Product.ID)}"/>
+                        </isobject>
+                </isloop>
+        </div>
+</div>
+</isif>
+
+<script>
+var elem = document.querySelector('.product-merchandise-carousel');
+var flkty = new Flickity( elem, {  
+	   cellAlign:"left",
+	   wrapAround:true ,
+	   contain:true,
+	   imagesLoaded:true,
+	   percentPosition:false,
+	   freeScroll:true,
+	   pageDots:false,
+	   groupCells:true
+	});
+</script>

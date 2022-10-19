@@ -1,0 +1,15 @@
+<isinclude template="bm/util/sorModules" />
+<isinclude template="components/header" />
+
+<form action="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', pdict.listTypeParam, pdict.listID,'client',pdict.client,'action', 'addProductToBMShow')}" method="post"
+    id="addProductToBMForm">
+    ${Resource.msgf('forms.sorsubscriptions.addProduct.text','smartorderrefill',null)}
+    <div class="sor-addProduct-checkbox">
+        <input type="radio" id="addProductWithCommitment" name="addProductType" value="addP" checked>
+        ${Resource.msgf('forms.sorsubscriptions.addProduct.withcommitment.text','smartorderrefill',null)}
+    </div>
+    <div class="sor-addProduct-checkbox">
+        <input type="radio" id="addProductWithoutCommitment" name="addProductType" value="addPWOC">
+        ${Resource.msgf('forms.sorsubscriptions.addProduct.withoutcommitment.text','smartorderrefill',null)}
+    </div>
+</form>

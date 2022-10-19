@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="form-row sor-form-row ${pdict.formfield.formId} ${pdict.rowclass == null ? '' : pdict.rowclass}">
+    <isif condition="${pdict.dynamicname}" >
+        <isset name="htmlName" value="${pdict.formfield.dynamicHtmlName}" scope="page"/>    
+    <iselse/>
+        <isset name="htmlName" value="${pdict.formfield.htmlName}" scope="page"/>    
+    </isif>
+    <label for="${htmlName}">
+        <isif condition="${pdict.formfield.mandatory}" >
+            <span class="required-indicator">&#8226; </span>
+        </isif>
+        <span>${dw.web.Resource.msg(pdict.formfield.label, 'forms', null)}</span>
+    </label>
+    <isif condition="${pdict.type !== 'select'}" >
+        <div class="field-wrapper">
+            <input id="${htmlName}" ${pdict.formfield.mandatory ? 'required' : ''} minlength="${pdict.formfield.minLength}" maxlength="${pdict.formfield.maxLength}" type="${pdict.type}" name="${htmlName}" value="${pdict.formfield.htmlValue}" <isprint value="${!empty(pdict.formfield.regEx) ? 'pattern=' + pdict.formfield.regEx : ''}" encoding="htmlcontent" /> />
+            <isif condition="${pdict.formfield.mandatory}" >
+                <label id="${htmlName}-error" class="error missing-error hide" for="${htmlName}">${pdict.requiredtext}</label>
+            </isif>
+            <isif condition="${pdict.type !== 'checkbox' && pdict.type !== 'radio'}" >
+                <label id="${htmlName}-error-invalid" class="error value-error hide" for="${htmlName}">${dw.web.Resource.msg('address.field.invalid', 'forms', null)}</label>
+            </isif>
+        </div>
+        <isif condition="${!empty(pdict.formfield.description)}">
+            <div class="form-caption">${dw.web.Resource.msg(pdict.formfield.description, 'forms', null)}</div>
+        </isif> 
+    <iselseif condition="${pdict.type == 'select'}" >
+        <div class="field-wrapper">
+            <select ${pdict.formfield.mandatory ? 'required' : ''} id="${htmlName}" name="${htmlName}">
+            <isloop items="${pdict.formfield.options}" var="option">
+                <option label="${dw.web.Resource.msg(option.label, 'forms', null)}" <isprint value="${option.selected ? 'selected="selected"' : ''}" encoding="htmlcontent" /> value="${option.value == null ? '' : option.value}">${dw.web.Resource.msg(option.label, 'forms', null)}</option>
+            </isloop>
+            </select>
+            
+            <isif condition="${pdict.formfield.mandatory}" >
+                <label id="${htmlName}-error" class="error missing-error hide" for="${htmlName}">${pdict.requiredtext}</label>
+            </isif>
+        </div>
+        <isif condition="${!empty(pdict.formfield.description)}">
+            <div class="form-caption">${dw.web.Resource.msg(pdict.formfield.description, 'forms', null)}</div>
+        </isif> 
+    </isif>
+</div>

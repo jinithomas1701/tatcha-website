@@ -1,0 +1,3 @@
+<div class="">
+    <isinclude template="checkout/shipping/shipmentSelectorOptions" />
+</div>

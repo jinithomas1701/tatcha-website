@@ -1,0 +1,10 @@
+<!--- TEMPLATENAME: core.isml --->
+
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	var ExtoleSettings = require('int_extole/cartridge/scripts/extole/libExtole');
+</isscript>
+
+<isif condition="${ExtoleSettings.isExtoleEnabled() && ExtoleSettings.getClientName()}">
+	<script type="text/javascript" src="https://origin.extole.io/${ExtoleSettings.getClientName()}/core.js" defer></script>
+</isif>

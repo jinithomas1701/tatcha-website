@@ -1,0 +1,44 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Order History',
+			type: 'OrderHistory',
+			ns: 'account'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<iscomment>Include all important information globally , e.g. meta-data, link information, and javascript.</iscomment>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableCSSLazyload')}">
+			<isinclude template="components/header/htmlhead_account_bs"/>
+		<iselse>
+			<isinclude template="components/header/htmlhead_bs"/>
+	</isif>
+	<isinclude template="account/orderhistory/pt_orderhistory_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+	<isinclude template="components/header/header_bs"/>
+	<div id="main" role="main" class="my-account my-account-order-history my-account-order-detail">
+		<isreplace/>
+	</div><!-- /main -->
+	<isset name="pageName" value="orderhistory" scope="page" />
+	<isinclude template="product/components/modals"/>
+	<isinclude template="components/footer/footer_bs"/>
+	<isinclude template="account/orderhistory/pt_orderhistory_VARS"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+</body>
+</html>

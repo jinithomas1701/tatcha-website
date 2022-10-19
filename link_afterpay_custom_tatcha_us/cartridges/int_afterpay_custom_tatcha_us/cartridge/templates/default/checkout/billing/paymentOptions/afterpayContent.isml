@@ -1,0 +1,15 @@
+<div class="tab-pane afterpay_pbi-content" id="afterpay_pbi-content" role="tabpanel">
+    <fieldset class="payment-form-fields">
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="AFTERPAY_PBI">
+        <input type="hidden" class="form-control" name="${pdict.forms.afterpayForm.isAfterpayUrl.htmlName}" value="${URLUtils.url('AfterpayRedirect-IsAfterpay')}">
+        <input type="hidden" class="form-control" name="${pdict.forms.afterpayForm.redirectAfterpayUrl.htmlName}" value="${URLUtils.url('AfterpayRedirect-Redirect')}">
+    </fieldset>
+    <input type="hidden" class="updated-widget" value="${URLUtils.https('AfterpayWidget-GetUpdatedWidget')}">
+    
+    <iscomment>Afterpay widget</iscomment>
+    <input type="hidden" name="afterpay-token" id="afterpay-token" value="${session.privacy.afterpaytoken}"/>
+    <input type="hidden" name="afterpay-widget-amount" id="afterpay-widget-amount" value="${pdict.order.totals.grandTotal.replace(/\$/g, '').trim()}"/>
+    <input type="hidden" name="getAfterpayPaymentChecksum" id="getAfterpayPaymentChecksum" value="${URLUtils.url('Afterpay-AfterPayPaymentChecksum')}" />
+    <div id="afterpay-widget-container"></div>
+    <isslot id="afterpay-checkout-pbi" description="Afterpay checkout PBI content" context="global" />
+</div>

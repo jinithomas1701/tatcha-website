@@ -1,0 +1,9 @@
+<isscript>
+	var Site = dw.system.Site.getCurrent();
+	var storeKey = Site.getCustomPreferenceValue('LincStoreKey');
+	var locale = Site.getCustomPreferenceValue('LincLocale');
+	var testMode = Site.getCustomPreferenceValue('LincTestMode');
+
+</isscript>
+<div class="linc" data-source="orderdetails" data-order-id="${pdict.Order.orderNo}" data-email="${pdict.Order.getCustomerEmail()}"
+	data-st="${storeKey}" data-locale="${locale}" <isif condition="${testMode}">data-staging="true"</isif>></div>

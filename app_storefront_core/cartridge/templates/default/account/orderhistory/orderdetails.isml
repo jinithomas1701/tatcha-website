@@ -1,0 +1,106 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/orderhistory/pt_orderhistory">
+<isscript>
+	var lincEnabled = dw.system.Site.getCurrent().getCustomPreferenceValue('LincEnabled');
+	var datediff = require('int_linc/cartridge/scripts/common/Utils').checkOrderDate(pdict.Order.creationDate);
+	var whitelistedEmails = dw.system.Site.getCurrent().getCustomPreferenceValue('LincWhitelistedEmails');
+	if(lincEnabled && (empty(whitelistedEmails) || whitelistedEmails.indexOf(session.customer.profile.email) >= 0 || whitelistedEmails.indexOf(pdict.Order.customerEmail) >= 0)) {
+		lincEnabled = true;
+	} else {
+		lincEnabled = false;
+	}
+</isscript>
+<isinclude template="util/modules"/>
+	<isif condition="${pdict.CurrentCustomer.authenticated}">
+		<div class="container-fluid breadcrumb-container">
+			<ol id="myaccount-breadcrumb" class="breadcrumb container myaccount-return">
+		  		<li>
+		  			<a href="${URLUtils.https('Order-History')}" title="${Resource.msg('account.orderdetails.returnorder','account',null)}">
+					<i class="fal fa-angle-double-left"></i>
+					<isprint value="${Resource.msg('account.orderdetails.back','account',null)}" />
+				</a>
+		  		</li>
+			</ol>
+		</div>
+	</isif>
+	<div class="container myaccount-order-details">
+		<h1 class="text-center">
+			<div class="data-label"><isprint value="${Resource.msg('order.orderdetails.ordernumber','order',null)}" /></div>
+			<div class="order-number">
+				<isprint value="${pdict.Order.orderNo}" />
+			</div>
+		</h1>
+		<div class="row">
+		<isif condition="${!lincEnabled || datediff < 0}">
+			<isif condition="${((pdict.Order.status==dw.order.Order.ORDER_STATUS_NEW || pdict.Order.status == dw.order.Order.ORDER_STATUS_OPEN) && pdict.Order.shippingStatus == dw.order.Order.SHIPPING_STATUS_SHIPPED) || pdict.Order.status==dw.order.Order.ORDER_STATUS_COMPLETED}">
+				<div class="order-status order-status-shipped">
+					<span class="fa-layers fa-fw fa-2x">
+						<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+						<i class="fal fa-truck fa-inverse" data-fa-transform="shrink-3"></i>
+					</span>
+					<div class="order-status-text">Shipped</div>
+					<div class="row order-status-btn-row">
+						<div class="col-xs-10 col-xs-offset-1 col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+							<isloop items="${pdict.Order.shipments}" var="shipment" status="shipmentloopstate">
+								<isif condition="${shipment.shippingStatus==dw.order.Shipment.SHIPPING_STATUS_SHIPPED}">
+									<isif condition="${shipment.shippingMethod.custom.shippingMethodCarrier=='USPS'}">
+										<a href="${Resource.msgf('tracking.USPS','order',null, shipment.trackingNumber)}" class="btn btn-default btn-block" target="blank">${Resource.msg('tracking.trackingpackage','order',null)}</a>
+									<iselseif condition="${shipment.shippingMethod.custom.shippingMethodCarrier=='UPS'}">
+										<a href="${Resource.msgf('tracking.UPS','order',null, shipment.trackingNumber)}" class="btn btn-default btn-block" target="blank">${Resource.msg('tracking.trackingpackage','order',null)}</a>
+									<iselseif condition="${shipment.trackingNumber}" >
+										<a href="${Resource.msgf('tracking.Fedex','order',null,'english',shipment.shippingAddress.countryCode.value, shipment.trackingNumber)}" class="btn btn-default btn-block" target="blank">Track Package</a>
+									</isif>
+								</isif>
+							</isloop>
+						</div>
+					</div>
+				</div>
+			<iselseif condition="${(pdict.Order.status==dw.order.Order.ORDER_STATUS_NEW || pdict.Order.status==dw.order.Order.ORDER_STATUS_OPEN) && pdict.Order.shippingStatus != dw.order.Order.SHIPPING_STATUS_SHIPPED}">
+				<div class="order-status order-status-process">
+					<span class="fa-layers fa-fw fa-2x">
+						<i class="fa fa-circle text-muted" data-fa-transform="grow-12"></i>
+						<i class="fal fa-clock fa-inverse" data-fa-transform="shrink-3"></i>
+					</span>
+					<div class="order-status-text">In Process</div>
+				</div>
+			<iselseif condition="${pdict.Order.status==dw.order.Order.ORDER_STATUS_CANCELLED}">
+				<div class="order-status order-status-cancelled">
+				<span class="fa-layers fa-fw fa-2x">
+					<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+					<i class="fal fa-times fa-inverse" data-fa-transform="shrink-3"></i>
+				</span>
+				<div class="order-status-text">Cancelled</div>
+			</div>
+			<iselse/>
+				<span class="value clearfix"><isprint value="${Order.status}"/></span>
+			</isif>
+		<iselse>
+			<div class="col-lg-10 offset-lg-1">
+				<isinclude template="account/orderhistory/lincorderdetails"/>
+			</div>
+		</isif>
+		</div>
+		<div class="row">
+			<div class="col-lg-10 offset-lg-1">
+				<isif condition="${!empty(pdict.Order)}">
+					<isorderdetails order="${pdict.Order}" orderstatus="true"/>
+					
+				<iselse/>
+				
+					<isif condition="${pdict.CurrentCustomer.authenticated}">
+						<div class="back">
+							<a href="${URLUtils.https('Order-History')}" title="${Resource.msg('account.orderdetails.returnorder','account',null)}">
+								<isprint value="${Resource.msg('account.orderdetails.returnorder','account',null)}" />
+							</a>
+						</div>
+					</isif>
+					<div class="not-found">
+						<isprint value="${Resource.msg('account.orders.notfound','account',null)}" />
+					</div>
+				
+				</isif>
+			</div>
+		</div>
+	</div>
+
+</isdecorate>

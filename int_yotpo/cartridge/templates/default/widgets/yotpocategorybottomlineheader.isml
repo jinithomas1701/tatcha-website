@@ -1,0 +1,29 @@
+<!--- TEMPLATENAME: yotpobottomlineheader.isml --->
+<iscomment>This templated load common variables required by bottom line widget for search/category page. 
+This will save variables in session so that wiget can reuse it later. It is imporatnt to keep in session because
+product tiles are loaded through remote include therefore variables will be lost if have any other scope</iscomment>
+<iscontent type="text/html" />
+
+<isscript>
+	var yotpoCartridgeEnabled = dw.system.Site.getCurrent().preferences.custom.yotpoCartridgeEnabled;
+</isscript>
+
+<isset name="yotpoCartridgeEnabled" value="${yotpoCartridgeEnabled}" scope="session" />
+
+<isif condition="${session.custom.yotpoCartridgeEnabled}">
+	<isscript>
+		var YotpoUtils = require('int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+		var currentLocaleID = YotpoUtils.getCurrentLocale(request);
+		var yotpoAppKey = YotpoUtils.getAppKeyForCurrentLocale(currentLocaleID);
+		var isBottomLineEnabled = YotpoUtils.isBottomLineEnabledForCurrentLocale(currentLocaleID);
+		var productInformationFromMaster = dw.system.Site.getCurrent().preferences.custom.producInformationFromMaster;
+	</isscript>
+	
+	<isset name="yotpoAppKey" value="${yotpoAppKey}" scope="session" />
+	<isset name="isBottomLineEnabled" value="${isBottomLineEnabled}" scope="session" />
+	<isset name="productInformationFromMaster" value="${productInformationFromMaster}" scope="session" />
+	
+</isif>
+
+
+

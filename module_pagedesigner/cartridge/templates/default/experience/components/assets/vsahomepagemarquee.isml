@@ -1,0 +1,130 @@
+<iscache type="relative" hour="24"/>
+<div class="container-fluid container-fluid-max container-flush">
+	<section class="col-xs-12 position-relative vsa-hero-container hero-container ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+		<div class="vsa-hero-image">
+			<isif condition="${pdict.btnStyle && !empty(pdict.buttonText) && !empty(pdict.buttonText1)}">
+				<img data-src="${pdict.desktopImage.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="hero-image img-fluid d-none d-lg-block lazyImage" alt="${pdict.imageAlt}"/> 
+				<img data-src="${pdict.mobileImage.src.mobile}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="hero-image img-fluid d-sm-block d-lg-none lazyImage" alt="${pdict.imageAlt}"/>
+			<iselse>
+				<img data-src="${pdict.desktopImage.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="hero-image img-fluid d-none d-md-block lazyImage" alt="${pdict.imageAlt}"/> 
+				<img data-src="${pdict.mobileImage.src.mobile}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="hero-image img-fluid d-sm-block d-md-none lazyImage" alt="${pdict.imageAlt}"/>
+			</isif>
+		</div>
+
+		<div class="vsa-hero-content hero-content hero-content-home ${pdict.blockPositionHorizontal} ${pdict.blockPositionVertical} ${pdict.textAlignment} col-md-6 h-auto" style="color: ${pdict.textColor};">
+			<isif condition="${pdict.headerType === 'H1'}">
+				<h1 class="hero-heading" role="heading" aria-level="1">
+					<div class="pre-header"><isprint value="${pdict.overline}" encoding="off" /> <isif condition="${pdict.rec_name}" > ${pdict.rec_name}</isif></div>
+					<isprint value="${pdict.mainHeading}" encoding="off" />
+				</h1>
+			<iselseif condition="${pdict.headerType === 'H2'}" >
+				<h2 class="hero-heading">
+					<div class="pre-header"><isprint value="${pdict.overline}" encoding="off" /> <isif condition="${pdict.rec_name}" > ${pdict.rec_name}</isif></div>
+					<isprint value="${pdict.mainHeading}" encoding="off" />
+				</h2>
+			</isif>
+			<div class="vsa-cta-container">
+				<isif condition="${pdict.body}" >
+					<p><isprint value="${pdict.body}" encoding="off" /></p>
+				</isif>
+				<isif condition="${pdict.btnStyle}" >
+					<div tabindex="0" class="vsa-action-btn ${pdict.btnStyle} ${(pdict.btnStyle != 'btn btn-link')?((pdict.textColor == 'black') ? 'btn-outline-dark' : 'btn-outline-light'):((pdict.textColor == 'black') ? 'btn-link-black' : 'btn-link-white')}">${pdict.buttonText}</div>	
+				</isif>
+			</div>
+		</div>
+		
+	</section>
+</div>
+
+<iscomment> Automat VSA widget script </iscomment>
+<isscript>
+	var Site = require('dw/system/Site');
+	var webChatID ='';
+	webChatID = Site.getCurrent().getCustomPreferenceValue('AUTOMAT_Webchat_ID');
+</isscript>
+
+<input type="hidden" id="wechatID" value="${webChatID}" />
+
+<script>
+
+	window.onload = function() {
+		  window.ga(function (tracker) {
+		    /*
+		     *   update this var with an id or class that ONLY your
+		     *   hero banner has
+		     **/
+		    var heroDiv = ".vsa-hero-image";
+
+		    /*
+		     *   update this var with an id or class that ONLY the
+		     *   button on hero banner has
+		     **/
+		    var heroButton = ".vsa-action-btn";
+
+		    var webchatId = $("#wechatID").val();
+		    var cid = tracker.get("clientId");
+		    var sulfurId = (document.cookie.match(/aaiid=([a-z0-9-]+)/) || [
+		      null,
+		      "none",
+		    ])[1];
+		    var hasSession = !!document.cookie.split(/;\s/).filter(function (c) {
+		      return c.match(new RegExp(webchatId + ".session"));
+		    }).length;
+
+		    var isMobileDevice =
+		      typeof window.orientation !== "undefined" ||
+		      navigator.userAgent.indexOf("IEMobile") !== -1;
+
+		    var options = {
+		      mode: "banner",
+		      target: isMobileDevice ? "body" : heroDiv,
+            lure: 'hidden',
+		      ctaTarget: heroButton,
+		      width: isMobileDevice ? window.innerWidth : window.innerWidth * 0.45,
+		      height: isMobileDevice
+		        ? window.innerHeight
+		        : '100%',
+		      entryPoint: hasSession
+		        ? undefined
+		        : {
+		            id: "tatchabanner",
+		            payload: {
+		              cid: 'tatcha',
+		              sulfur_id: sulfurId,
+		            },
+		          },
+		      addToCartHandler: function addToCartHandler(skus) {
+		        var ids = skus.join();
+		        var baseurl = window.location.origin;
+		        var carturl = "/on/demandware.store/Sites-tatcha-Site/default/Cart-AddProductsGetJson?productIds=".concat(
+		          ids
+		        );
+		        fetch(baseurl + carturl).then(function () {
+		          window.open(baseurl + "/bag", "_self");
+		        });
+		      },
+		    };
+
+		    (function (a, u, t, o, m, at, ai) {
+		      var script = u.getElementById(o);
+		      if (script) return;
+		      script = u.createElement(t);
+		      script.id = o;
+		      script.src = "https://cda.automat-ai.com/webchat/c/customer";
+		      script.async = true;
+		      script.onload = function onload() {
+		        a.AutomatWebChat.create(
+		          a,
+		          u,
+		          "https://cda.automat-ai.com/webchat/c/frame",
+		          o,
+		          m
+		        );
+		      };
+		      var fs = u.getElementsByTagName(t)[0];
+		      fs.parentNode.appendChild(script);
+		    })(window, document, "script", webchatId, options);
+		  });
+	};
+   
+</script>

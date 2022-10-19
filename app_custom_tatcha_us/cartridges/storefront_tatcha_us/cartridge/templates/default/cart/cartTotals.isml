@@ -1,0 +1,84 @@
+<div class="row mb-2">
+    <div class="col-8">
+        <div>${Resource.msg('label.ordersummary.merchandisetotal','cart',null)}</div>
+    </div>
+    <div class="col-4">
+        <div class="text-right sub-total">${pdict.totals ? pdict.totals.subTotal : '0.00'}</div>
+    </div>
+</div>
+
+<!--- Order Discount --->
+
+<div class="order-discount ${pdict.totals&&pdict.totals.orderLevelDiscountTotal.value == 0 ? 'hide-order-discount' : ''}">
+    <div class="row order-discount mb-2">
+    <div class="col-8">
+        <div class="text-success coupon-code">Discount: ${appliedPromoCode}</div>
+    </div>
+    <div class="col-4">
+        <div class="text-right order-discount-total text-success"> - ${pdict.totals.orderLevelDiscountTotal.formatted}</div>
+    </div>
+    </div>
+
+    <div>
+        <hr>
+    </div>
+
+    <div class="row mb-2">
+        <div class="col-8">
+            <div>${Resource.msg('label.ordersummary.subtotal','cart',null)}</div>
+        </div>
+        <div class="col-4">
+            <div class="text-right sub-total-IncludingOrderDiscount">${pdict.totals.subTotalIncludingOrderDiscount}</div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-2">
+    <div class="col-8">
+        <div>${Resource.msg('label.ordersummary.shipping','cart',null)}</div>
+    </div>
+    <div class="col-4">
+        <div class="text-right shipping-cost">${pdict.totals ? pdict.totals.noShippingCost ? 'Free' : pdict.totals.adjustedShippingCost : ''}</div>
+    </div>
+</div>
+
+<!--- Shipping Discount --->
+<iscomment>
+<div class="row shipping-discount <isif condition="${pdict.totals.shippingLevelDiscountTotal.value === 0}">hide-shipping-discount</isif>">
+<div class="col-8">
+    <p>${Resource.msg('label.shipping.discount', 'common', null)}</p>
+</div>
+<div class="col-4">
+    <p class="text-right shipping-discount-total">- ${pdict.totals.shippingLevelDiscountTotal.formatted}</p>
+</div>
+</div>
+</iscomment>
+
+
+<!-- Sales Tax -->
+<div class="row mb-2">
+    <div class="col-8">
+        <div>${Resource.msg('label.ordersummary.tax','cart',null)}</div>
+    </div>
+    <div class="col-4">
+        <div class="text-right tax-total">TBD</div>
+    </div>
+</div>
+
+<hr class="seperator">
+
+<div class="row">
+    <div class="col-8 estimated-total">
+        ${Resource.msg('label.estimatedtotal','cart',null)}
+    </div>
+    <div class="col-4 estimated-total">
+        <div class="text-right grand-total">${ pdict && pdict.totals ? pdict.totals.grandTotal : '0.00'}</div>
+    </div>
+</div>
+
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled') && dw.system.Site.getCurrent().getCustomPreferenceValue('enableAfterpay')}">
+    <div class="learn-more">
+        <iscomment>Afterpay message</iscomment>
+        <isafterpaythreshold totalprice="${pdict.totals.subTotalIncludingOrderDiscount.replace(/\$|,/g, '').trim()}" classname="cart-afterpay-message" />
+    </div>
+</isif>

@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<isdecorate template="common/layout/page">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('/js/app-page-designer.js');
+        assets.addCss('/css/tatcha-pagedesigner.css');
+        var pageContext = {
+            title: 'Storefront',
+            type: 'storefront',
+            ns: 'storefront'
+        };
+        pdict.showCountrySelector = true;
+    </isscript>
+    <isinclude template="util/modules"/>
+	<!--- the page markup --->
+    <div id="homepage">
+        <isprint value="${pdict.regions.main.render()}" encoding="off"/>
+    </div>
+</isdecorate>

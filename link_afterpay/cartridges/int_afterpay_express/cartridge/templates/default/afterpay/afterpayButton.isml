@@ -1,0 +1,1 @@
+<button type="button" id="afterpay-express-button" aria-label="afterpay express checkout" class="btn btn-block afterpay-express-btn" ><img class="img-fluid afterpay-express-bag-button" src="${URLUtils.staticURL('/images/afterpay-express-logo.svg')}" alt="AfterPay logo" /></button>

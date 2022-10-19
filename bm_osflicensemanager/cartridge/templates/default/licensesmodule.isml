@@ -1,0 +1,100 @@
+<section>
+    <h2 class="section-title">
+        ${Resource.msg('license.osf.title', 'license', null)}
+    </h2>
+    <div class="add-license js-add-license">
+        <button class="button button-success">${Resource.msg('license.addlicense', 'license', null)}</button>
+    </div>
+    <isloop items="${pdict.osfLicenses}" var="license" status="loopstate">
+        <div class='license <isif condition="${loopstate.odd}">odd-row</isif>' >
+            <isif condition="${license.isValid}">
+                <p class="message success-message">${Resource.msg('license.isvalid', 'license', null)}</p>
+            <iselse>
+                <p class="message error-message">${Resource.msg('license.isnotvalid', 'license', null)}</p>
+            </isif>
+            <input type="hidden" class="license-unique-id inputfield" value="${license.licenseUniqueID}"> 
+            <input type="hidden" class="product-unique-id inputfield" value="${license.productID}">
+            <input type="hidden" class="product-code inputfield" value="${license.productCode}">
+            <div class="input-block">
+                <label>${Resource.msg('license.productname', 'license', null)}</label>
+                <input type="text" class="license-name inputfield" value="${license.productName}" disabled> 
+            </div>
+            <div class="input-block">
+                <label>${Resource.msg('license.licensekey','license', null)}</label>
+                <input type="text" class="license-activation-key inputfield" value="${license.activationKey}"> 
+            </div>
+            <div class="input-block">
+                <label>${Resource.msg('license.soraco.email', 'license', null)}</label>
+                <input type="text" class="license-email inputfield" value="${license.email}">
+            </div>
+            <div class="buttons-row">
+                <input type="button" class="soraco-update-dialog button button-success" data-action="${URLUtils.https('OSFLicenses-UpdateLicense')}" value="${Resource.msg('license.save', 'license', null)}">
+                <input type="button" class="license-remove-dialog button button-danger" data-action="${URLUtils.https('OSFLicenses-RemoveLicense')}" value="${Resource.msg('license.remove', 'license', null)}">
+            </div>
+            <isif condition="${license.expiryDate != 0}" >
+                <div class="input-block" >
+                    <label>${Resource.msg('license.soraco.expirydate', 'license', null)}</label>
+                    <label class="license-expirydate">${license.expiryDate}</label>
+                </div>
+            </isif>
+        </div>
+    </isloop>
+    <div class="license new-license js-osf-license">
+        <h4>${Resource.msg('license.add.soraco.title', 'license', null)}</h4>
+        <div class="input-row">
+            <label>${Resource.msg('license.productname', 'license', null)}</label>
+            <select class="soraco_product_list inputfield">
+                <isloop items="${pdict.productList}" var="product" status="loopstate">
+                    <option value="${product.ID}" <isif condition="${pdict.installedProducts.indexOf(product.Name) > -1}">disabled="disabled"</isif>>${product.Name}</option>
+                </isloop>  
+            </select>
+        </div>
+        <div class="input-row">
+            <label>${Resource.msg('license.licensekey', 'license', null)}</label>
+            <input type="text" class="license-activation-key inputfield">
+        </div>
+        <div class="input-row">
+            <label>${Resource.msg('license.soraco.email', 'license', null)}</label>
+            <input type="text" class="license-email inputfield">
+        </div>
+        <div class="buttons-row">
+            <input type="button" class="soraco-license-save button button-primary" data-action="${URLUtils.https('OSFLicenses-SaveLicense')}" value="${Resource.msg('license.save', 'license', null)}">
+            <button type="button" class="button button-clear btn-cancel">${Resource.msg('license.cancel', 'license', null)}</button>
+        </div>
+    </div>
+    <div class="license new-license confirm-save-dialog">
+        <h4>${Resource.msg('license.confirm.question.save', 'license', null)}</h4>
+        <div class="buttons-row">
+            <input type="button" class="soraco-license-update button button-success" data-action="${URLUtils.https('OSFLicenses-UpdateLicense')}" value="${Resource.msg('license.save', 'license', null)}">
+            <button type="button" class="button button-clear btn-cancel">${Resource.msg('license.confirm.answer.disagree', 'license', null)}</button>
+
+            <input type="hidden" class="license-name inputfield">
+            <input type="hidden" class="product-unique-id inputfield">
+            <input type="hidden" class="product-code inputfield">
+            <input type="hidden" class="license-unique-id inputfield">
+            <input type="hidden" class="license-activation-key inputfield">
+            <input type="hidden" class="license-email inputfield">
+            <input type="hidden" class="license-expirydate inputfield">
+        </div>
+    </div>
+    <div class="license new-license confirm-delete-dialog">
+        <h4>${Resource.msg('license.confirm.question.delete', 'license', null)}</h4>
+        <div class="buttons-row">
+            <input type="button" class="license-remove button button-danger" data-action="${URLUtils.https('OSFLicenses-RemoveLicense')}" value="${Resource.msg('license.confirm.answer.agree', 'license', null)}">
+            <button type="button" class="button button-clear btn-cancel">${Resource.msg('license.confirm.answer.disagree', 'license', null)}</button>
+
+            <input type="hidden" class="license-unique-id inputfield">
+        </div>
+    </div>
+</section>
+
+</div>
+<div class="loader-wrapper">
+    <div class="loader" id="loader">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      </div>
+</div>

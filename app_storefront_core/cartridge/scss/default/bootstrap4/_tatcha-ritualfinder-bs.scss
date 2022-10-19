@@ -1,0 +1,217 @@
+.whats-next .btn-primary  {
+	border-radius: 27px;
+	font-size: 20px;	
+}
+
+#add-all-to-bag-medium{
+	font-size: 12px !important;
+	border-radius: 15px !important;
+	letter-spacing: 0 !important;
+}
+
+.question-body h2.question{
+	text-transform: none;
+}
+.whats-next .gtm-ritual-builder-question-skip-btn{
+	border-radius: 15px;
+	line-height: 1.5 !important;
+	font-size: 12px !important;
+	padding: 6px 12px !important;
+	letter-spacing: unset !important;
+	font-weight: $font-weight-light !important;
+}
+
+.whats-next.whats-next-questions {
+	height: auto !important;
+}
+
+.whats-next-main {
+  .select-product-list .collapsible-section .category-header{
+  	width: -webkit-fill-available;
+    border: unset;
+    background-color: unset;
+    -webkit-appearance: none; 
+  }	
+  .product-selector-name{
+  	text-transform: capitalize !important;
+  }
+  .collapse.show {
+    margin-top: 3px;
+  }
+  .disabled-concern {
+  	color: #DFE3E6;
+  }
+ }
+ 
+.caret-rotator {
+  transition: all 0.5s; 
+}
+
+a:not(.collapsed) .caret-rotator, button:not(.collapsed) .caret-rotator {
+  /* IE 9 */
+  /* Chrome, Safari, Opera */
+  transform: rotate(-180deg); 
+}
+
+.caret-rotator-accordion {
+  transition: all 0.5s; 
+}
+
+a[aria-expanded="true"] .caret-rotator-accordion, button[aria-expanded="true"] .caret-rotator-accordion {
+  /* IE 9 */
+  /* Chrome, Safari, Opera */
+  transform: rotate(-180deg); 
+}
+
+.fixed-cta {
+	.btn-primary{
+		border-radius: 0;
+	}
+	.show-recomnd-results.btn-primary{
+		color: #fff;
+	}
+}
+ 
+.rf-email-add-block{
+	
+	display: none;
+	@include media-breakpoint-up(xl){
+		display: block;
+	}
+	margin: 30px;
+	
+	#add-all-to-bag{
+		font-size: 11px;
+	}
+	#rf-email-btn {
+		font-size: 11px;
+		border-color: #000000;
+		margin-left: 8px;
+		border-radius: 20px;
+	}
+	@include media-breakpoint-up(xl) {
+		button {
+			font-size: 16px !important;
+		}
+	}
+}
+.rf-email-block{
+	@include media-breakpoint-up(xl){
+			display: none;
+		}
+	border-color: #000000;
+	border-radius: 15px;
+	letter-spacing: 0px !important;
+}
+.add-rf-bag {
+	@include media-breakpoint-up(md){
+		display: none;
+	}
+	height: 72px;
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    z-index: 3;
+    border-radius: unset !important;
+}
+.whats-next-main {
+	.view-tools-level-1 {
+		.col-left {
+			margin-bottom: 0 !important;
+		}
+		//.col-right {
+			//#add-all-to-bag {
+				//@include media-breakpoint-up(md) {
+				//	display: inline-block;
+				//}
+				//@include media-breakpoint-up(xl){
+				//	display: none;
+				//}
+			//}
+		//}
+		.col-left , .col-right {
+    		width: 50%;
+		}
+		#add-all-to-bag {
+			font-size: 12px;
+		}
+	}
+	.product-img-col .product-img-lifestyle {
+		display: block;
+    	max-width: 100%;
+    	height: auto;
+	}	  
+	div.view-tools-block{
+		height: 100%;
+	} 
+	.results-panel .product-info-col {
+		 .caret-icon{
+		 	top: -40px !important;
+		 }
+		 .step-info .step-number{
+		 	top: -90px !important;
+		 	@include media-breakpoint-up(lg){
+				top: 24px !important;
+			}
+		 }
+	}
+	.results-panel a.more-info{
+		padding: 6px 12px;
+    	border-radius: 20px;
+	}
+}
+
+.whats-next .btn-primary.btn-add-to-bag{
+	font-size: 16px;
+	padding: 8px 16px;
+}
+
+.whats-next-results {
+	.modal .product-detail-container{
+		.product-img-main{
+			min-height: unset !important;
+			text-align: center;
+			height: auto;
+    		opacity: 1;
+		}
+		.product-add-to-bag .btn{
+			font-size: 0.875rem;
+			border-radius: 0.25rem;
+		}
+	}	
+}
+
+//email modal
+#saveRegimen , #skinTypeInfo {
+	.modal-header button.close{
+		border-radius: 16px;
+	    background-color: #000000;
+	    color: #FFFFFF;
+	    height: 24px;
+	    width: 24px;
+	    font-size: 16px;
+	    display: -ms-flexbox;
+	    display: flex;
+	    -ms-flex-align: center;
+	    align-items: center;
+	    -ms-flex-pack: center;
+	    justify-content: center;
+	    //top: 20px;
+	    padding: 0;
+	 }   
+     #saveEmail button#emailSend{
+     	border-radius: 20px;
+     	padding: 8px 16px;
+     	font-size: 16px;
+     }
+     div.modal-footer{
+     	justify-content: center;
+     	button{
+     		border-radius: 20px;
+     	}
+     	.row , .btn{
+     		width: 100%;
+     	}
+     }
+}

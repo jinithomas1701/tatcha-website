@@ -1,0 +1,25 @@
+.content-basic {
+	.content-editor-container {
+		h2 {
+			font-weight: $font-weight-light;
+		    text-transform: none;
+		    font-size: 28px;
+			margin: 32px 0 11px;
+		}
+		
+		p {
+			margin-bottom: 11px;
+		}
+		
+		a {
+			text-decoration: underline;
+			color: #495257;
+		}
+	}
+	
+	.ourstory-container {
+		.row {
+			margin-bottom: 1rem !important;
+		}
+	}
+}

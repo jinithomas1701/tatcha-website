@@ -1,0 +1,36 @@
+
+<isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
+    <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
+        <div class="payment-details-summary">
+            <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
+        </div>
+    </isif>
+    <isif condition="${payment.paymentMethod === 'GIFT_CERTIFICATE'}">
+        <div class="giftcert-payment-type">
+            <div class="payment-type-title">
+                Gift Card
+            </div>
+            <div class="checkout-summary-data">
+                ${Resource.msgf('summary.giftcertsummary','checkout',null, payment.amount)} <br>
+            </div>
+        </div>
+    </isif>
+    <isif condition="${payment.paymentMethod === 'AFTERPAY_PBI'}"/>
+        <div class="${pdict.checkoutType != null ? pdict.checkoutType : 'afterpayregular' }">
+            <iscomment>Afterpay widget</iscomment>
+            <input type="hidden" id="reviewtype" value="${pdict.checkoutType}">
+            <div id="afterpay-widget-container-placeOrder"></div>
+        </div>
+    </isif>
+    <isif condition="${payment.paymentMethod == 'PayPal'}">
+        <div class="col-md-12">
+            Pay with <img style="height: 50px" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/pp-acceptance-large.png')}" id="paypalLogoReview" alt="PayPal Acceptance">
+        </div>
+    </isif>
+    <isif condition="${payment.paymentMethod == 'ApplePay'}">
+        <div class="col-md-12">
+            Pay with <img style="height: 50px;" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/applePayPaymentMark.png')}" id="appleLogoReview" alt="Apple Pay Logo">
+        </div>
+    </isif>
+</isloop>
+

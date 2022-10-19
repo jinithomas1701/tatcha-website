@@ -1,0 +1,69 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+
+<isscript>
+	var discountRate = dw.system.Site.getCurrent().getCustomPreferenceValue("OsfSorDiscountPercent");
+	var defaultShipping : dw.order.ShippingMethod = dw.order.ShippingMgr.getDefaultShippingMethod();
+	var osfShippingID = pdict.ShippingMethodName;
+	if(osfShippingID) {
+		var allMethods = dw.order.ShippingMgr.getAllShippingMethods();
+		for (var i = 0; i < allMethods.length; i++) {
+			var method = allMethods[i];
+			if(osfShippingID == method.ID) {
+				defaultShipping = method;
+			}
+		}
+	}
+	
+	var shippingCost : dw.value.Money = new dw.value.Money(pdict.ShippingCost, currencyCode);
+    discountRate = discountRate ? discountRate : 0;
+    var discount : dw.util.Decimal = total * (discountRate/100);
+    var orderTotal : dw.util.Decimal = (total - discount) + shippingCost;
+</isscript>
+
+<table class="table table-borderless">
+	<tbody>
+		<tr>
+		    <th class="data-label">
+		    	${dw.web.Resource.msg('smartorderrefill.totalsview.subtotal','smartorderrefill',null)}
+		    </th>
+		    <td class="order-subtotal-value">
+		        <isprint value="${new dw.value.Money(total, currencyCode)}" />
+		    </td>
+		</tr>
+		
+		<tr>
+		    <th class="data-label">
+		        ${dw.web.Resource.msg('smartorderrefill.totalsview.shipping','smartorderrefill',null)} (${defaultShipping.displayName})
+		    </th>
+		
+		    <td>
+		        <isprint value="${(shippingCost == 0) ? 'Free' : new dw.value.Money(shippingCost, currencyCode)}">
+		    </td>
+		</tr>
+		<isif condition="${discount > 0}">
+ 			<tr>
+ 				<th class="data-label">${dw.web.Resource.msg('smartorderrefill.vieworder.discount','account',null)}</th>
+ 				<td class="order-discount-value"><isprint value="${new dw.value.Money(discount, currencyCode).toFormattedString()}"></td>
+ 			</tr>
+ 		</isif>
+		<tr>
+		    <th class="data-label">
+		        ${dw.web.Resource.msg('smartorderrefill.totalsview.taxtext','smartorderrefill',null)}
+		    </th>
+		    <td></td>
+		</tr>
+		
+		<tr class="checkout-summary-total">
+		    <th class="data-label">
+		        ${dw.web.Resource.msg('smartorderrefill.totalsview.ordertotal','smartorderrefill',null)}
+		    </th>
+		    <td class="order-total-value">
+		        <isprint value="${new dw.value.Money(orderTotal, currencyCode)}" />
+		    </td>
+		</tr>
+	</tbody>
+</table>

@@ -1,0 +1,64 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+</isscript>
+
+<isif condition="${!request.custom.braintreeClientToken}">
+    <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+</isif>
+
+<isscript>
+    // INPUT VARS: isEnable3dSecure, ownerName, amount
+
+    var cardForm = pdict.CurrentForms.creditcard;
+
+    var hostedFieldsStyling = null;
+    var hostedFieldsAdvancedOptions = null;
+
+    try {
+        hostedFieldsStyling = JSON.parse(prefs.BRAINTREE_Hosted_Fields_Styling)
+    } catch(e){}
+    
+    try {
+        hostedFieldsAdvancedOptions = JSON.parse(prefs.BRAINTREE_Hosted_Fields_Advanced_Options)
+    } catch(e){}
+
+    var braintreeCreditCardConfig = {
+        paymentMethodName: prefs.creditCardMethodName,
+        is3dSecureEnabled: isEnable3dSecure,
+        isFraudToolsEnabled: prefs.BRAINTREE_Fraud_Tools_Enabled,
+        isSkip3dSecureLiabilityResult: prefs.BRAINTREE_3DSecure_Skip_Client_Validation_Result,
+        clientToken: request.custom.braintreeClientToken,
+        hostedFieldsStyles: hostedFieldsStyling,
+        hostedFieldsAdvancedOptions: hostedFieldsAdvancedOptions,
+        messages: {
+            validation: Resource.msg('braintree.creditcard.error.validation', 'locale', null),
+            secure3DFailed: Resource.msg('braintree.creditcard.error.secure3DFailed', 'locale', null),
+            HOSTED_FIELDS_FIELDS_EMPTY: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_FIELDS_EMPTY', 'locale', null),
+            HOSTED_FIELDS_FIELDS_INVALID: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_FIELDS_INVALID', 'locale', null),
+            HOSTED_FIELDS_FAILED_TOKENIZATION: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_FAILED_TOKENIZATION', 'locale', null),
+            HOSTED_FIELDS_TOKENIZATION_NETWORK_ERROR: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_TOKENIZATION_NETWORK_ERROR', 'locale', null),
+            CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+            CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+            CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+            CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null)
+        },
+        amount: amount ? amount : 0,
+        urls: {
+            getPaymentMethodNonceByUUID : URLUtils.url('Braintree-GetPaymentMethodNonceByUUID').toString()
+        },
+        
+        fieldsConfig: {
+            initOwnerValue: ownerName,
+            ownerHtmlName: cardForm.owner.htmlName,
+            typeHtmlName: cardForm.type.htmlName,
+            numberHtmlName: cardForm.number.htmlName
+        }
+    }
+</isscript>
+
+<div class="js_braintree_creditCardFields" data-braintree-config="${JSON.stringify(braintreeCreditCardConfig)}">
+	<div id="braintreeCreditCardErrorContainer" class="alert alert-danger"></div>
+	<input id="braintreeDeviceData" type="hidden" name="braintreeDeviceData" value="" />
+    <i id="braintreeCreditCardLoader" class="braintree-loader"></i>
+</div>

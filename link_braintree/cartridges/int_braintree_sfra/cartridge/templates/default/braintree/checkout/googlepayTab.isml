@@ -1,0 +1,10 @@
+<li class="nav-item" data-method-id="${paymentOption.ID}">
+    <a class="nav-link googlepay-tab" data-toggle="tab" href="#googlepay-content" role="tab">
+        <img class="credit-card-option"
+                src="${URLUtils.staticURL('/images/google-pay-logo.svg')}"
+                height="32"
+                alt="${paymentOption.name}"
+                title="${paymentOption.name}"
+        >
+    </a>
+</li>

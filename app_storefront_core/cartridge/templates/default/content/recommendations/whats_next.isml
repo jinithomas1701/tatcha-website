@@ -1,0 +1,453 @@
+<iscache type="relative" hour="24" />
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/recommendations/pt_whatsnext">
+	<isinclude template="util/modules"/>
+	
+	<isif condition="${!empty(pdict.Content)}">
+		<link rel="canonical" href="${URLUtils.https('Page-Show', 'cid', pdict.Content.ID)}"/>
+	</isif>
+	<isscript>
+		importScript("int_tatcha_dis:common/GetImageUrl.ds");
+		var recommendationUtil = require('app_storefront_core/cartridge/scripts/util/RecommendationUtil');
+		var recommendations = recommendationUtil.getPrdRecommendations();
+		var skinData= recommendationUtil.getRecommendationSkinTypes();
+	</isscript>
+	<div class="container-fluid breadcrumb-container">
+	</div>
+	<div class="whats-next-main">
+		
+		<div class="background"></div>
+		<div class="container foreground">
+			<div class="wn-state-1">
+				<div class="row">
+					<div class="col-sm-12 text-center splash-header">	
+						<h1>
+							The Ritual Finder
+							<span>For Your Skincare Wishes</span>
+						</h1>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+						<div class="splash-body">
+							<isprint value="${pdict.Content.description}" encoding="off" />
+							<div class="splash-cta">
+								<div class="row">
+									<div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
+										<button class="show-state-2 btn btn-round btn-lg btn-block btn-primary focus-outline-purple">Let’s Get Started</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="wn-state-2" style="display:none;">
+				<div class="row">
+					<div class="col-sm-12 text-center question-header">	
+						<h1>The Ritual Finder</h1>
+						<div class="dotnav dotnav-fillup">
+							<ul>
+								<li class="filled show-state-2"><a class=" focus-outline-purple">Persona</a></li>
+								<li><a class="empty-dot focus-outline-purple">Skin Type</a></li>
+								<li><a class="empty-dot focus-outline-purple">Concerns</a></li>
+								<li><a class="empty-dot focus-outline-purple">Eyes</a></li>
+								<li><a class="empty-dot focus-outline-purple">Products</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+						<div class="question-body clearfix">
+							<h2 class="question focus-outline-purple" style="position: relative;" tabindex="0">
+								What’s your beauty philosophy?
+							</h2>
+							<ul class="radio-options btn-style dot-style icon-style no-radio-dot" role="radiogroup">
+								<li tabindex="0" role="radio" aria-checked="false" class="focus-outline-purple" aria-label="Minimalist-I keep my skincare simple, with a few products that address my skin wishes.">
+									<input type="radio" class="rec-routine" name="optionPersona" id="Minimalist" value="minimalist">
+									<label class="enable-cta-2" for="Minimalist">
+										<div class="radio-label">
+											<div class="radio-icon">
+												<img src="${URLUtils.staticURL('/images/icon-rf-minimalist.png')}" alt="Minimalist Icon">
+											</div>
+											<div class="radio-text">
+												Minimalist
+												<span>I keep my skincare simple, with a few products that address my skin wishes.</span>
+											</div>
+										</div>
+									</label>
+								</li>
+								<li tabindex="0" role="radio" aria-checked="false" class="focus-outline-purple" aria-label="Ritualist-I have a daily ritual that covers the fundamentals.">
+									<input type="radio" class="rec-routine" name="optionPersona" id="Ritualist" value="ritualist">
+									<label class="enable-cta-2" for="Ritualist">
+										<div class="radio-label">
+											<div class="radio-icon">
+												<img src="${URLUtils.staticURL('/images/icon-rf-ritualist.png')}" alt="Ritualist Icon">
+											</div>
+											<div class="radio-text">
+												Ritualist
+												<span>I have a daily ritual that covers the fundamentals.</span>
+											</div>
+										</div>
+									</label>
+								</li>
+								<li tabindex="0" role="radio" aria-checked="false" class="focus-outline-purple" aria-label="Enthusiast-I am a skincare fanatic and I want to try it all">
+									<input type="radio" class="rec-routine" name="optionPersona" id="Enthusiast" value="enthusiast">
+									<label class="enable-cta-2" for="Enthusiast">
+										<div class="radio-label">
+											<div class="radio-icon">
+												<img src="${URLUtils.staticURL('/images/icon-rf-enthusiast.png')}" alt="Enthusiast Icon">
+											</div>
+											<div class="radio-text">
+												Enthusiast
+												<span>I’m a skincare fanatic and I want to try it <em>all</em>!</span>
+											</div>
+										</div>
+									</label>
+								</li>
+							</ul>
+							<div class="question-cta d-none d-md-block">
+								<div class="row">
+									<div class="col-sm-10 offset-sm-1 col-md-10 offset-md-1">
+										<button class="disabled disabled-cta-2 btn btn-round btn-lg btn-block btn-primary focus-outline-purple" aria-disabled="true">Please Make a Selection</button>
+										<button class="show-state-3 enabled-cta-2 btn btn-round btn-lg btn-block btn-primary focus-outline-purple" style="display:none;">Continue</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+				
+			<div class="wn-state-3" style="display:none;">
+				<div class="row">
+					<div class="col-sm-12 text-center question-header">	
+						<h1>The Ritual Finder</h1>
+						<div class="dotnav dotnav-fillup">
+							<ul>
+								<li class="filled show-state-2"><a href="" class="focus-outline-purple">Persona</a></li>
+								<li class="filled show-state-3"><a href="" class="focus-outline-purple">Skin Type</a></li>
+								<li><a class="empty-dot focus-outline-purple" href="">Concerns</a></li>
+								<li><a class="empty-dot focus-outline-purple" href="">Eyes</a></li>
+								<li><a class="empty-dot focus-outline-purple" href="">Products</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+						<div class="question-body clearfix">
+							<div class="skin-type-title">
+								<h2 class="question focus-outline-purple" style="position: relative;" tabindex="0">
+									<span style="display: block; padding-right: 32px;">How would you describe your skin today?</span>
+								</h2>
+								<button class="btn pull-right icon-click skin-type-info-icon focus-outline-purple" aria-label="skin type details" data-toggle="modal" data-target="#skinTypeInfo">
+									<i class="fa fa-info-circle fa-lg"></i>
+								</button>
+							</div>
+							<ul class="radio-options btn-style dot-style" role="radiogroup">
+								<isloop items="${skinData.skinType}" var="type">
+									<isif condition="${type.key !== 'sensitive'}">
+										<li tabindex="0" role="radio" aria-checked="false" class="focus-outline-purple">
+											<input type="radio" class="skinTypeList" name="optionSkinType" id="${type.key}" value="${type.key}">
+											<label class="enable-cta-3" for="${type.key}">
+												<div class="radio-label"><isprint value="${type.label}" /></div>
+												<div class="radio-dot"></div>
+											</label>
+											<div class="radio-dot"></div>
+										</li>
+									</isif>
+								</isloop>
+							</ul>
+							<h2 class="question focus-outline-purple" style="margin-top: 32px;margin-bottom: 0;font-size: 20px" tabindex="0">
+								<span>Do you have sensitive skin?</span>
+							</h2>
+							<ul class="checkbox-options btn-style dot-style dot-style-reset dot-style-sm" style="margin-bottom: 40px;">
+								<li tabindex="0" role="checkbox" aria-checked="false" class="focus-outline-purple">
+									<input type="checkbox" id="sensitivity">
+    								<label for="sensitivity">
+    									<div class="check-label" style="font-size: 16px">Yes, I am prone to reaction, irritation, redness, inflammation, rosacea, psoriasis, or eczema.</div>
+    									<div class="check-dot"></div>
+    								</label>
+								</li>
+							</ul>							
+							
+							<div class="question-cta d-none d-md-block">
+								<div class="row">
+									<div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
+										<button class="disabled disabled-cta-3 btn btn-round btn-lg btn-block btn-primary focus-outline-purple" aria-disabled="true">Select a Skin Type</button>
+										<button class="show-state-4 enabled-cta-3 btn btn-round btn-lg btn-block btn-primary focus-outline-purple" style="display:none;">Continue</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<div class="wn-state-4" style="display:none;">
+				<div class="row">
+					<div class="col-sm-12 text-center question-header">	
+						<h1>The Ritual Finder</h1>
+						<div class="dotnav dotnav-fillup">
+							<ul>
+								<li class="filled show-state-2"><a href="" class="focus-outline-purple">Persona</a></li>
+								<li class="filled show-state-3"><a href="" class="focus-outline-purple">Skin Type</a></li>
+								<li class="filled show-state-4"><a href="" class="focus-outline-purple">Concerns</a></li>
+								<li><a class="empty-dot focus-outline-purple" href="">Eyes</a></li>
+								<li><a class="empty-dot focus-outline-purple" href="">Products</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+						<div class="question-body">
+							<h2 class="question focus-outline-purple" style="position: relative;" tabindex="0">
+								What skin wishes are you hoping to address?<br /><span style="font-weight: normal; font-size: 18px;">Optional - Please select your top three.</span>
+								<div class="sr-only sr-only-focusable">Please use space button to select the skin wishes</div>
+							</h2>
+							<ul class="checkbox-options btn-style dot-style" id="skinConcern">
+								<isloop items="${skinData.skinConcerns}" var="concern">
+									<li tabindex="0" role="checkbox" aria-checked="false" class="focus-outline-purple">
+										<input type="checkbox" class="skinConcern" id="${concern.key}" value="${concern.key}"/>
+	    								<label for="${concern.key}">
+	    									<div class="check-label"><isprint value="${concern.label}" /> </div>
+	    									<div class="check-dot"></div>
+	    								</label>
+									</li>
+								</isloop>
+							</ul>
+							<div class="question-cta d-none d-md-block">
+								<div class="row">
+									<div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
+										<button class="show-state-5 btn btn-round btn-lg btn-block btn-primary focus-outline-purple">Continue</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<div class="wn-state-5" style="display:none;">
+				<div class="row">
+					<div class="col-sm-12 text-center question-header">	
+						<h1>The Ritual Finder</h1>
+						<div class="dotnav dotnav-fillup">
+							<ul>
+								<li class="filled show-state-2"><a href="" class="focus-outline-purple">Persona</a></li>
+								<li class="filled show-state-3"><a href="" class="focus-outline-purple">Skin Type</a></li>
+								<li class="filled show-state-4"><a href="" class="focus-outline-purple">Concerns</a></li>
+								<li class="filled show-state-5"><a href="" class="focus-outline-purple">Eyes</a></li>
+								<li><a class="empty-dot focus-outline-purple" href="">Products</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+						<div class="question-body">
+							<h2 class="question focus-outline-purple" style="position: relative;" tabindex="0">
+								Would you like to address anything around your eyes?<br /><span style="font-weight: normal; font-size: 18px;">Optional</span>
+								<div class="sr-only sr-only-focusable">Please use space button to select your eye concern</div>
+							</h2>							
+							<ul class="checkbox-options btn-style dot-style" id="eyeConcern">
+								<isloop items="${skinData.eyeConcerns}" var="eyeCrn">
+									<li tabindex="0" role="checkbox" aria-checked="false" class="focus-outline-purple">
+										<input type="checkbox" class="eyeConcern" id="${eyeCrn.key}" value="${eyeCrn.key}"/>
+	    								<label for="${eyeCrn.key}">	    								
+	    									<div class="check-label">
+	    										<isif condition="${eyeCrn.label == 'Dryness Eyes'}"> 
+	    											Dryness
+	    											<iselse>
+	    											<isprint value="${eyeCrn.label}" /> 
+	    										</isif>
+	    									    
+	    									</div>
+	    									<div class="check-dot"></div>
+	    								</label>
+									</li>
+								</isloop>
+							</ul>
+							<div class="question-cta d-none d-md-block">
+								<div class="row">
+									<div class="col-sm-10 offset-sm-1 col-md-8 offset-md-2">
+										<button class="show-state-6 btn btn-round btn-lg btn-block btn-primary focus-outline-purple">Continue</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		
+			<div class="wn-state-6" style="display:none;">
+				<div class="row">
+					<div class="col-sm-12 text-center question-header">	
+						<h1>The Ritual Finder</h1>
+						<div class="dotnav dotnav-fillup">
+							<ul>
+								<li class="filled show-state-2"><a href="" class="focus-outline-purple">Persona</a></li>
+								<li class="filled show-state-3"><a href="" class="focus-outline-purple">Skin Type</a></li>
+								<li class="filled show-state-4"><a href="" class="focus-outline-purple">Concerns</a></li>
+								<li class="filled show-state-5"><a href="" class="focus-outline-purple">Eyes</a></li>
+								<li class="filled show-state-6"><a href="" class="focus-outline-purple">Products</a></li>
+							</ul>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2">
+						<div class="question-body">
+							<h2 class="question focus-outline-purple" style="position: relative;" tabindex="0">
+								Which Tatcha treasures are in your current routine?<br /><span style="font-weight: normal; font-size: 18px;">We'll tailor a ritual that includes what you already use.</span>
+								<div class="sr-only sr-only-focusable">Please use space button to select the products under each category</div>
+							</h2>
+							<div style="margin-bottom: 32px;">
+								<div class="row">
+									<div class="col-8 offset-2 col-lg-6 offset-lg-3">
+										<a class="btn btn-round btn-block btn-default btn-sm show-recomnd-results gtm-ritual-builder-question-skip-btn focus-outline-purple" href="">Skip to Results</a>
+									</div>
+								</div>
+							</div>
+							<div class="select-product-list">
+								<isloop items="${skinData.prd}" var="cat" status="catStatus">
+									<div class="collapsible-section">
+										<isscript>
+											var catHref = '#list_' + catStatus.index;
+										</isscript>
+										<button class="collapsed category-header clearfix focus-outline-purple" type="button" data-toggle="collapse" data-target="${catHref} " aria-expanded="false" aria-controls="collapseCleanser">
+											<isscript>
+												var catName = cat.category ? cat.category.toLowerCase() : '';
+											</isscript>
+											<h3 class="float-left product-selector-name"> <isprint value="${catName}" /> </h3>
+											<div class="float-right icon"><i class="fal fa-lg fa-chevron-circle-down caret-rotator"></i></div>
+										</button>
+										<div class="collapse" id="list_${catStatus.index}">
+											<ul class="checkbox-options btn-style dot-style product-style">
+												<isloop items="${cat.products}" var="prd">
+													<isscript>
+														var productData = dw.catalog.ProductMgr.getProduct(prd);
+													</isscript>
+													<isif condition="${!empty(productData)}">
+														<li tabindex="0" role="checkbox" aria-checked="false" class="focus-outline-purple">
+															<input type="checkbox" class="prdItem" id="${cat.category+'_'+productData.ID}" value="${productData.ID}"/>
+						    								<label for="${cat.category+'_'+productData.ID}">
+						    									<div class="check-label product-name">
+											     					<isprint value="${productData.name.substring(0,48)}"/>
+											     					<isif condition="${!empty(productData.custom.secondaryName)}"> 
+																		<span class="product-subtitle">
+											              					<isprint value="${productData.custom.secondaryName.substring(0,44)}" encoding="on"/>
+											              				</span>
+																	</isif>
+						    									</div>
+						    									<div class="product-img-block">
+						    										<isif condition="${productData != null && productData.getImage('large',0) != null}">
+																		<isset name="imageUrl" value="${getImageUrl(productData,'medium')}" scope="page"/>
+																		<isset name="imageAlt" value="${getImageAlt(productData)}" scope="page"/>
+																		<isset name="imageTitle" value="${getImageTitle(productData)}" scope="page"/>
+																		<img class="img-fluid product-img lazyImage" data-src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}"/>
+																	<iselse/>
+																		<img class="img-fluid product-img" src="${URLUtils.staticURL('/images/noimagemedium.png')}" alt="${(!empty(productData.name) && productData.name != null) ? productData.name : ""}" title="${(!empty(productData.name) && productData.name != null) ? productData.name : ""}" />
+																	</isif>
+													        	</div>
+						    									<div class="check-dot"></div>
+						    								</label>
+														</li>
+													</isif>
+												</isloop>
+											</ul>
+										</div>
+									</div>
+								</isloop>
+							</div>
+							<div class="question-cta d-none d-md-block">
+								<div class="row">
+									<div class="col-sm-10 offset-sm-1 col-lg-8 offset-lg-2">
+										<a class="btn btn-round btn-lg btn-block btn-primary show-recomnd-results focus-outline-purple" id="show-recomnd-results-btn" href="#">Show My Results</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+	<div class="wn-state-2 fixed-cta" style="display:none;">
+		<button class="disabled disabled-cta-2 btn btn-primary btn-lg btn-block" aria-disabled="true" style="height: 72px;padding-top: 20px;">Please Make a Selection</button>
+		<button class="show-state-3 enabled-cta-2 btn btn-primary btn-lg btn-block" style="height: 72px;padding-top: 20px;display:none;">Continue</button>
+	</div>
+
+	<div class="wn-state-3 fixed-cta" style="display:none;">
+		<button class="disabled disabled-cta-3 btn btn-primary btn-lg btn-block" aria-disabled="true" style="height: 72px;padding-top: 20px;">Select A Skin Type</button>
+		<button class="show-state-4 enabled-cta-3 btn btn-primary btn-lg btn-block" style="height: 72px;padding-top: 20px;display:none;">Continue</button>
+	</div>
+
+	<div class="wn-state-4 fixed-cta" style="display:none;">
+		<button class="show-state-5 btn btn-primary btn-lg btn-block" style="height: 72px;padding-top: 20px;">Continue</button>
+	</div>
+
+	<div class="wn-state-5 fixed-cta" style="display:none;">
+		<button class="show-state-6 btn btn-primary btn-lg btn-block" style="height: 72px;padding-top: 20px;">Continue</button>
+	</div>
+
+	<div class="wn-state-6 fixed-cta" style="display:none;">
+		<a class="btn btn-primary btn-lg btn-block show-recomnd-results" style="height: 72px;padding-top: 20px;">Show My Results</a>
+	</div>
+	<div style="display:none;">
+		<form method="get" action="${URLUtils.url('ProductRecommendation-ShowRecommendations')}" id="recommendation-form">
+			<fieldset>
+				<input type="hidden" id="skinType" name="skinType" value="" />
+				<input type="hidden" id="skinSensitivity" name="skinSensitivity" value="">
+				<input type="hidden" id="skinConcerns" name="skinConcerns" value="" />
+				<input type="hidden" id="prds" name="prds" value="" />
+				<input type="hidden" id="persona" name="persona" value="" />
+				<button type="submit" id="recommendation-form-submit">
+			</fieldset>
+		</form>
+	</div>
+	<iscomment>Model </iscomment>
+
+	<div class="modal fade modal-primary" id="skinTypeInfo" tabindex="-1" role="dialog" aria-labelledby="skintTypeInfo">
+		<div class="modal-dialog modal-md" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h4 class="modal-title skinTypeInfo-title mx-auto" tabindex="0">Skin Type Guide</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close" tabindex="0"><i class="fa fa-times"></i></button>
+				</div>
+				<form>
+					<div class="modal-body" style="padding-top: 0;font-size: 14px;" tabindex="0">
+						<isprint value="${pdict.Content.custom.body}" encoding="off" />
+					</div>
+					<div class="modal-footer" style="margin-top: 0;padding-top: 0;">
+						<div class="row">
+							<div class="col-lg-8 offset-lg-2">
+								<button type="button" class="btn btn-default btn-round" data-dismiss="modal" tabindex="0">Close</button>
+							</div>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+	<input type="hidden" id="getProductRecommendationUrl" value="${URLUtils.url('ProductRecommendation-ShowRecommendations')}"/>
+	<style>
+		.search-icon-bs3{
+			display: inline-block;
+			}
+		@media only screen and (max-width: 767px) {
+			.hide-mobile-search {
+	  			display: none;
+			}
+			.search-icon-bs3{
+			display: none;
+			}
+		}
+	</style>
+</isdecorate>

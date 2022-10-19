@@ -1,0 +1,125 @@
+.breadcrumb-container {
+  background-color: #F7F9FA; }
+
+.breadcrumb {
+  margin-bottom: 0; }
+ .breadcrumb a {
+    color: #495257;
+    text-transform: uppercase;
+    font-size: 12px;
+    text-decoration: none; }
+
+.container-fluid > .breadcrumb.container {
+  padding: 8px 0px; }
+  @media (min-width: 992px) {
+    .container-fluid > .breadcrumb.container {
+      padding: 8px 15px; } }
+
+
+.account-payment-container{
+	
+	.default-card {
+	    margin-bottom: 22px;
+	    background-color: #fff;
+	    border-radius: 0;
+	    box-shadow: 0 1px 1px rgba(0,0,0,.05);
+		border-width: 3px 1px 1px 1px;
+		border-style: solid;
+		border-color: #4d186e;
+	}
+	
+	.card-header{
+		margin: 0 8px;
+		padding: 16px 8px;
+    	border-bottom: 1px solid #4d186e;
+	}
+	
+	.card-header-inner {
+	    margin-top: 0;
+	    margin-bottom: 0;
+	    color: inherit;
+	}
+	
+	.card > .card-header {
+	    color: #4d186e;
+	    background-color: #fff;
+	    border-color: #4d186e;
+	}
+	
+	.panel-body {
+	    padding: 16px;
+	}
+	
+	.panel-icon {
+	    color: #aeb8bd;
+	    margin-right: 16px;
+	}
+	
+	.card-body-main {
+	    line-height: 1.4;
+		font-size: 12px;
+	    text-transform: uppercase;
+		dt{
+			color:#495257;
+			font-weight: $font-weight-normal;
+		}
+		dd{
+			font-size: 16px;
+			line-height: 1.1;
+			padding-bottom: 16px;
+			margin-bottom: 4px;
+		}
+	}
+	
+	.icon-default {
+	    color: #ccd4d9;
+	}
+	
+	.add-card-panel{
+		border-style: dashed;
+		margin-bottom: 22px;
+		text-align:center;
+		border-width:thin;
+		color: #495257;
+		a:hover, a:focus {
+		    color: #262b2d;
+		}
+		p{
+			margin: 16px 0 11px 0;
+		}
+		p:hover{
+			text-decoration: none;
+		}
+	}
+	
+	.creditcard-delete-modal{
+		.modal-dialog{
+			max-width:600px;
+		}
+	}
+	
+	.creditcard-delete-modal-card{
+			border-color: #CCD4D9;
+			border-style: solid;
+			border-width: 3px 1px 1px 1px;
+		}
+		
+	.add-credit-card-footer{
+		padding: 0 16px 16px 16px;
+		text-align: right;
+	}
+	
+	/*.add-credit-card-footer-button{
+	    padding: 2px 6px;
+	    font-size: 12px;
+	    line-height: 1.5;
+	    border-radius: 0;
+		border: 1px solid #AEB8BD;
+		text-transform: uppercase;
+		text-decoration: none;
+		display: inline-block;
+		font-weight:300;
+	}*/
+}
+
+

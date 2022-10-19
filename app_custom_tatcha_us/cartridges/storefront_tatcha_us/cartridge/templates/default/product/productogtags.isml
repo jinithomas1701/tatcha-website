@@ -1,0 +1,24 @@
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var ogImageUrl = pdict.Product.custom.ogImage;
+	if (empty(ogImageUrl)) {
+		ogImageUrl = getImageUrl(pdict.Product,'medium');
+	} else {
+		ogImageUrl = ogImageUrl.url;
+	}
+	
+	var ogTitle = pdict.Product.custom.ogTitle;
+	if (empty(ogTitle)) {
+		ogTitle = !empty(pdict.CurrentPageMetaData.title)?pdict.CurrentPageMetaData.title:pdict.Product.name;
+	}
+	var ogDescription = pdict.Product.custom.ogDescription;
+	if (empty(ogDescription)) {
+		ogDescription = !empty(pdict.CurrentPageMetaData.description)?pdict.CurrentPageMetaData.description:pdict.Product.custom.benefitsSection1;
+	}
+</isscript>
+<meta property="og:title" content="${ogTitle}" />
+<meta property="og:description" content="${ogDescription}" />
+<meta property="og:type" content="product" />
+<meta property="og:url" content="${URLUtils.abs('Product-Show','pid', pdict.Product.ID)}" />
+<meta property="og:image" content="${ogImageUrl}" />
+<meta property="og:site_name" content="${Resource.msg('global.site.name', 'locale', null)}" />

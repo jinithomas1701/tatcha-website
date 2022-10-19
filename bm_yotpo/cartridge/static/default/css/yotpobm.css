@@ -1,0 +1,12 @@
+
+select {
+	width:100%;
+}
+
+.error-text {
+	color:red;
+}
+
+.hidden {
+    display: none;
+}

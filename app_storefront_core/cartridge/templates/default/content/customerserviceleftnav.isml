@@ -1,0 +1,34 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<isscript>
+var  geoLocation = require('app_storefront_core/cartridge/scripts/cart/GetCustomerIp');
+var countryCode = geoLocation.getCountryCode();
+</isscript>
+<isif condition="${!empty(pdict.CustomerServiceLinks)}">
+	
+	<h5 class="sidenav-nav-header">
+		<a class="collapsed" data-toggle="collapse" href="#sidenavLinks" aria-expanded="false" aria-controls="sidenavLinks">
+			${Resource.msg('global.servicecenter','locale',null)}
+			<div class="pull-right"><i class="fal fa-lg fa-angle-down caret-rotator"></i></div>
+		</a>
+	</h5>
+	
+	<ul class="nav nav-pills nav-stacked sidenav-links collapse" id="sidenavLinks">
+		<iscomment> Loop Through Customer Service Libraries </iscomment>
+		<isloop items="${pdict.CustomerServiceLinks.keySet()}" var="links">
+			<isloop items="${pdict.CustomerServiceLinks.get(links)}" var="ContentAsset" status="loopcounter">
+				<iscomment> Skip Auto delivery for NON US </iscomment>	
+				<isif condition="${(countryCode!='US') && (ContentAsset.ID =='auto-delivery')}"> 
+					<isnext/>
+				</isif>
+				<li <isif condition="${ContentAsset.ID == pdict.CurrentHttpParameterMap.pageId}"> class="active"</isif>>
+					<a href="${URLUtils.url('Page-Show','cid', ContentAsset.ID)}" title="${ContentAsset.name}">
+						<isprint value="${ContentAsset.name}"/>
+					</a>
+				</li>
+			</isloop>
+		</isloop>
+	</ul>
+	
+</isif>

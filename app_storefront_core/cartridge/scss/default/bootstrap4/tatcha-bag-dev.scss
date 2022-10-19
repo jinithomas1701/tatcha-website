@@ -1,0 +1,223 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "tatcha-custom";
+@import "node_modules/bootstrap/scss/mixins";
+@import "tatcha-variables-utils";
+/**
+* Cart page payment button
+*/
+@supports (-webkit-appearance: -apple-pay-button) {
+  .apple-pay-button {
+    display: inline-block;
+    -webkit-appearance: -apple-pay-button;
+    border-radius: 5px;
+  }
+  .apple-pay-button-black {
+    -apple-pay-button-style: black;
+  }
+  .apple-pay-button-white {
+    -apple-pay-button-style: white;
+  }
+
+  .apple-pay-button-white-with-line {
+    -apple-pay-button-style: white-outline;
+  }
+}
+@supports not (-webkit-appearance: -apple-pay-button) {
+  .apple-pay-button {
+    display: inline-block;
+    background-size: 100% 60%;
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    border-radius: 5px;
+    padding: 0px;
+    box-sizing: border-box;
+    min-width: 200px;
+    min-height: 32px;
+    max-height: 44px;
+  }
+  .apple-pay-button-black {
+    background-image: -webkit-named-image(apple-pay-logo-white);
+    background-color: black;
+  }
+  .apple-pay-button-white {
+    background-image: -webkit-named-image(apple-pay-logo-black);
+    background-color: white;
+  }
+  .apple-pay-button-white-with-line {
+    background-image: -webkit-named-image(apple-pay-logo-black);
+    background-color: white;
+    border: 1px solid black;
+  }
+}
+
+.braintree-cart-apple-button-wrap {
+  width: 100%;
+}
+
+
+.cart-payment-paypal-wrap {
+  .btn-paypal {
+    .braintree-cart-paypal-buttons-wrap {
+      padding-bottom: 0 !important;
+    }
+  }
+}
+
+.cart-payment-applepay-wrap {
+  padding-left: 1rem;
+  padding-right: 0;
+  padding-top: 1rem;
+}
+
+.cart-checkout-btn {
+  height: 39px;
+}
+
+.cart-payment-gpay-wrap {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  padding-top: 1rem;
+
+  div {
+    #googlepaybtn {
+      min-height: 45px;
+      @media (min-width: 768px) and (max-width: 1023.98px){
+        min-height: 45px;
+      }
+    }
+  }
+}
+
+.bag-item-name-variant{
+  @media (max-width: 767.98px){
+    width: 71%;
+    float: left;
+  }
+}
+.bag-item-qty{
+  @media (max-width: 767.98px){
+    width: 25%;
+  }
+}
+
+.gift-message {
+  a {
+    color: #AEB8BD;
+  }
+}
+.stike.price-unadjusted {
+  text-decoration: line-through;
+  color: $gray-600;
+}
+
+.bag-page {
+  .bag-item-promo{
+    .line-item-link {
+      font-size: 14px;
+      font-weight:bold;
+      text-decoration:underline;
+    }
+  }
+  .modal-header {
+    .close {
+      right: 10px;
+      top: 7px;
+    }
+  }
+  .bag-promo-container {
+    .form-group {
+      margin-bottom: unset;
+    }
+  }
+  .tatcha-samples,tatcha-gwp-gift-modal {
+    .modal-header {
+      height: 40px !important;
+    }
+  }
+  .payment-options {
+    .promo-button {
+      border: 2px solid $gray-700;
+    }
+    .promo-remove {
+      display: unset !important;
+      background-color: #E9EDF0;
+      opacity: 1 !important;
+      padding-right: .4rem;
+    }
+    a#express-checkout-button{
+      padding-top:12px;
+    }
+  }
+  .summary-cta-link {
+    font-size: round(0.875 * $font-size-base);
+    text-decoration:underline;
+    font-weight:bold;
+  }
+  .summary-heading-container {
+    .count-text {
+      text-transform: uppercase;
+    }
+  }
+  .solid-hr{
+    border-top: 2px solid black;
+  }
+  .gift-message-add-block-bs {
+    padding-right:15px;
+    .giftwrap-price-bs {
+      font-weight:600;
+    }
+  }
+  .giftbox-eligibility {
+    color: #DC3545;
+    padding: 1rem 0;
+    font-size: 14px;
+  }
+
+  .cart-coupon-code {
+    padding: 3px 0 8px;
+    font-size: 14px;
+  }
+  .btn-danger {
+    letter-spacing: 0px;
+    text-transform: none;
+  }
+
+  .modal-out-of-stock {
+    .modal-content {
+      padding: 1rem;
+      border: 0;
+    }
+  }
+  .giftbox-circle {
+    display: inline-block;
+    vertical-align: top;
+    margin-right: 5px;
+  }
+  .giftbox-msg {
+    display: inline-block;
+    width: 90%;
+  }
+  .not-available {
+    font-weight: $font-weight-normal;
+  }
+
+  .popup-unit {
+    @media (max-width: 767.98px){
+      padding-left: 0.5rem;
+    }
+    .product-image{
+      img {
+        border-radius: 4px;
+      }
+    }
+  }
+
+  .shop-bag-shadow {
+    @media (min-width: 1024px) {
+      padding-bottom: 6rem;
+    }
+  }
+  .pairs-with-btn {
+    font-weight: 600;
+  }
+}

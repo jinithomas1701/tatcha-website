@@ -1,0 +1,96 @@
+<isinclude template="util/modules"/>
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/producttile.css');
+    assets.addCss('/css/component.css');
+
+    importScript("int_tatcha_dis:common/GetImageUrl.ds");
+    var Site = require('dw/system/Site');
+    var giftBuilderSku = Site.getCurrent().getCustomPreferenceValue('giftBuilderSKU');
+    var EgiftProduct = Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID');
+
+</isscript>
+<isif condition="${!empty(pdict.Product) && (typeof(pdict.Product) === 'object')}">
+<isobject object="${pdict.Product}" view="recommendation">
+    <div class="product-list-slider__cell" data-slider-detail="carousel">
+            <iscomment>Check for a product in the dictionary, if no product found. This section is skipped.</iscomment>
+            <isif condition="${!empty(pdict.Product) && (typeof(pdict.Product.ID) === 'string')}">
+                <a class="product-list-slider__link" href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" title="${pdict.Product.name + ' link'}">
+                    <div class="product-list-slider__image">
+                        <iscomment>Render the thumbnail</iscomment>
+                        <iscomment>If image couldn't be determined, display a "no image" medium.</iscomment>
+                        <isif condition="${getImageUrl(pdict.Product, 'medium')}">
+                            <isset name="thumbnailUrl" value="${getImageUrl(pdict.Product, 'medium')}" scope="page"/>
+                            <iselse/>
+                            <isset name="thumbnailUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+                        </isif>
+                        <img alt="<isprint value="${product.name}"/>" class="img-fluid" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" height="1200" width="1200" data-flickity-lazyload="${thumbnailUrl}" />
+                    </div>
+                    <h3 class="product-list-slider__header">
+                        <span class="product-list-slider__title">
+                            <isprint value="${pdict.Product.name}"/>
+                        </span>
+                        <isif condition="${!empty(pdict.Product) && !empty(pdict.Product.custom.secondaryName)}">
+                            <span class="product-list-slider__subtitle"><isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/></span>
+                        </isif>
+                    </h3>
+                </a>
+            </isif>
+            <iscomment> Product Rating </iscomment>
+            <isinclude template="product/components/carousel_rating" />
+
+            <isset name="showSpecialPrice" value="false" scope="page" />
+            <div class="product-list-slider__cta" data-slider-detail="recommendation-btn">
+                <isscript>
+                    let avm = pdict.Product.availabilityModel;
+                    let available = avm.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK
+                            && avm.inventoryRecord != null
+                            && avm.inventoryRecord.stockLevel.available;
+                    var productPrice = 0;
+                    var PriceModel = pdict.Product.getPriceModel();
+                    if(PriceModel) {
+                        productPrice = PriceModel.getPrice().value;
+                    }
+                </isscript>
+                <isscript>
+                    var Tatcha = require('app_storefront_core/cartridge/scripts/util/Tatcha');
+                    var disableBtn = false;
+                    if(typeof pdict.Product != 'undefined'){
+                        if(!Tatcha.hasCartCategory(pdict.Product) && (pdict.Product.priceModel.getPrice().valueOrNull === null || pdict.Product.priceModel.getPrice().value == 0)) {
+                            disableBtn = true;
+                        }
+                    }
+                    var comingSoonMsg = (pdict.Product.custom.oosProductStatus.value)?pdict.Product.custom.oosProductStatus.value:"";
+
+                    // Added for mParticle and other analytics
+                    var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+                    var productInfo = {};
+                    if(!disableBtn) {
+                        productInfo = mParticleUtil.getProductInfo(pdict.Product);
+                    }
+
+                </isscript>
+                <isif condition="${(comingSoonMsg == 'comingsoon')}">
+                    <a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" title="${pdict.Product.name + ' coming soon link'}" class="btn btn-outline-dark btn-block">${Resource.msg('global.comingsoon', 'locale', null)}</a>
+                <iselse/>
+                <isif condition = "${pdict.Product.ID == giftBuilderSku}">
+                    <a class="btn-block" href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" tile="${pdict.Product.name + ' bift builder link'}">
+                        <button class="btn btn-outline-dark btn-block" tabindex="0"  data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">${Resource.msg('global.addtocart', 'locale', null)}</button>
+                    </a>
+                <iselseif condition="${pdict.Product.ID == 'EGIFTCARD'}">
+                    <a href="/giftcertpurchase" title="giftcard purchase link">
+                        <button class="btn btn-outline-dark btn-block" tabindex="0"  data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">${Resource.msg('global.addtocart', 'locale', null)}</button>
+                    </a>
+                <iselseif condition="${available == true}">
+                    <button aria-label="${pdict.Product.name + ' add to bag'}"  <isif condition="${(disableBtn == true)}">disabled</isif> class="btn btn-outline-dark carousel-add-to-cart home-carousel-add-to-cart btn-block" data-product-info="${JSON.stringify(productInfo)}" tabindex="0" data-price="<isprint value="${productPrice}"/>" data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">${Resource.msg('global.addtocart', 'locale', null)} - <isprint value="${dw.util.StringUtils.formatMoney(dw.value.Money(productPrice, session.getCurrency().getCurrencyCode()))}" /></button>
+                <iselse>
+                    <a class="btn-block" href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" tabindex="-1">
+                        <button class="btn btn-outline-dark btn-block disabled" aria-label="${pdict.Product.name + ' out of stock'}" tabindex="0"  data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">${Resource.msg('global.outofstock', 'locale', null)}</button>
+                    </a>
+                </isif>
+            </isif>
+        </div>
+    </div>
+</isobject>
+</isif>
+

@@ -1,0 +1,6 @@
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableYotta')}">
+    <script src="https://cdn.yottaa.com/rapid.min.6.1.6.js?key=${dw.system.Site.getCurrent().getCustomPreferenceValue('yottaaKey')}"></script>
+    <script>
+        Yo.configure("https://qoe-1.yottaa.net/api/v1/configure.rapid.js?key=${dw.system.Site.getCurrent().getCustomPreferenceValue('yottaaKey')}");
+    </script>
+</isif>

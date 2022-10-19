@@ -1,0 +1,277 @@
+
+.product-list-unit {
+    text-align: center;
+    width: 192px;
+    @include media-breakpoint-up(xl) {
+        width: 232px;
+    }
+    h6 {
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        color: #4d186e;
+        text-decoration: none;
+        line-height: 1.25rem;
+        @include media-breakpoint-down(md) {
+            font-size: 0.75rem;
+            line-height: 0.908rem;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+    }
+    .product-subtitle {
+        font-size: 1rem;
+        margin-top: 0;
+        font-weight: 300;
+        display: block;
+    }
+    a {
+        color: #000;
+        display: block;
+    }
+}
+.flickity-page-dots {
+    position: absolute;
+    bottom: -20px;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-align: center;
+    line-height: 1;
+    vertical-align: middle;
+    .dot {
+        margin: 0 4px;
+        vertical-align: middle;
+        &.is-selected {
+            background: $black;
+        }
+    }
+    @include media-breakpoint-up(lg) {
+        display: none;
+    }
+}
+.flickity-prev-next-button {
+    height: 30px;
+    width: 30px;
+    background: rgba(255, 255, 255, 0.8) !important;
+    @include media-breakpoint-down(sm) {
+        top: 107%;
+    }
+    @include media-breakpoint-up(xl) {
+        top: 50%;
+    }
+}
+.flickity-product-carousel {
+    max-width: 890px;
+    margin: 0 auto;
+    @include media-breakpoint-up(xl) {
+        max-width: 1067px;
+    }
+    @include media-breakpoint-up(xxl) {
+        max-width: 1332px;
+    }
+    @include media-breakpoint-down(lg) {
+        padding-bottom: 30px !important;
+        .flickity-page-dots {
+            bottom: 10px;
+        }
+    }
+    .flickity-prev-next-button {
+        width: 34px;
+        height: 34px;
+        @include media-breakpoint-down(md) {
+            display: none;
+        }
+        @include media-breakpoint-up(md) {
+            &.previous {
+                left: -50px;
+            }
+            &.next {
+                right: -50px;
+            }
+        }
+    }
+    .flickity-viewport {
+        margin: 0 auto;
+        max-width: 890px;
+        @include media-breakpoint-down(md) {
+            margin-left: 1rem;
+        }
+        @include media-breakpoint-up(xl) {
+            max-width: 1040px;
+        }
+        @include media-breakpoint-up(xxl) {
+            max-width: 1300px;
+        }
+    }
+    &__title {
+      font-family: "Minion Pro";
+      margin: 1rem 22px;
+      font-style: normal;
+      font-weight: 400;
+      font-size: 1.25rem;
+      line-height: 1.5rem;
+      text-transform: capitalize;
+      @include media-breakpoint-up(md) {
+        margin: 2rem 0 2rem;
+        font-size: 1.375rem;
+        line-height: 1.5rem;
+        text-align: center;
+      }
+      &--mx-0 {
+          margin-left: 0;
+          margin-right: 0;
+      }
+    }
+    .carousel-cell {
+        @include drop-shadow;
+        margin-bottom: .7rem;
+        padding-bottom: .7rem;
+        margin-right: 1.5rem;
+        overflow: hidden;
+        @include media-breakpoint-up(md) {
+            margin-right: 2rem;
+        }
+    }
+    .product-img-block {
+        position: relative;
+        aspect-ratio: 1/1;
+    }
+    .product-name {
+        text-transform: none;
+        font-weight: 600;
+        font-size: 1rem;
+        line-height: 1.25rem;
+        height: 3.5rem;
+        text-align: center;
+        padding: 0 10px;
+        @include media-breakpoint-down(sm) {
+            height: 5 * $g-unit;
+        }
+        @include media-breakpoint-down(lg) {
+            font-size: 0.875rem;
+            line-height: 1.059rem;
+        }
+    }
+    .product-subtitle {
+        margin-top: 5px;
+        font-size: 0.875rem;
+        font-weight: 300;
+        line-height: 1.125rem;
+        text-align: center;
+        color: $text-black;
+        display: block;
+        @include media-breakpoint-down(lg) {
+            font-size: 0.813rem;
+            line-height: 0.983rem;
+        }
+    }
+    .price-block {
+        margin: 10px 0;
+        font-weight: 600;
+        @include media-breakpoint-down(lg) {
+            margin: 8px 0;
+        }
+    }
+    .product-cta {
+        margin-top: 0;
+    }
+    .stars-container {
+        text-align: center;
+        margin-top: 8px;
+        @include media-breakpoint-up(xl) {
+            margin-top: 25px;
+        }
+        .review {
+            font-size: 0.875rem;
+            font-weight: 300;
+            line-height: 1.125rem;
+            color: #4d186e;
+        }
+    }
+    .product-view-link {
+        display: block;
+        color: #000;
+        text-decoration: none;
+    }
+    .product-cta {
+        @include media-breakpoint-down(md) {
+            margin-top: 10px;
+        }
+    }
+    .product-marketing-flag,
+    .product-inventory-flag {
+        font-size: round(0.75 * $font-size-base);
+    }
+    .btn-outline-dark {
+        font-weight: 300;
+        line-height: 1.5rem;
+        font-size: 0.875rem;
+        letter-spacing: 1px;
+        @include media-breakpoint-down(md) {
+            font-size: 0.75rem;
+            line-height: 0.908rem;
+        }
+    }
+    &.m-top{
+        &.t-small{
+            @include media-breakpoint-up(xs) {
+                margin-top:0.5 * $g-unit;
+            }
+            @include media-breakpoint-up(lg) {
+                margin-top:1 * $g-unit;
+            }
+
+        }
+        &.t-medium{
+            @include media-breakpoint-up(xs) {
+                margin-top:1.5 * $g-unit;
+            }
+            @include media-breakpoint-up(lg) {
+                margin-top:2 * $g-unit;
+            }
+
+        }
+        &.t-large{
+            @include media-breakpoint-up(xs) {
+                margin-top:2.5 * $g-unit;
+            }
+            @include media-breakpoint-up(lg) {
+                margin-top:3 * $g-unit;
+            }
+        }
+    }
+    &.m-bottom{
+        &.b-small{
+            @include media-breakpoint-up(xs) {
+                margin-bottom:0.5 * $g-unit;
+            }
+            @include media-breakpoint-up(lg) {
+                margin-bottom:1 * $g-unit;
+            }
+
+        }
+        &.b-medium{
+            @include media-breakpoint-up(xs) {
+                margin-bottom:1.5 * $g-unit;
+            }
+            @include media-breakpoint-up(lg) {
+                margin-bottom:2 * $g-unit;
+            }
+
+        }
+        &.b-large{
+            @include media-breakpoint-up(xs) {
+                margin-bottom:2.5 * $g-unit;
+            }
+            @include media-breakpoint-up(lg) {
+                margin-bottom:3 * $g-unit;
+            }
+        }
+    }
+}
+
+.experience-component .einstein-realtime-recommendations{
+    margin-top: 2rem;
+}

@@ -1,0 +1,30 @@
+// EXTENDED STYLES FOR TATCHA
+
+@import "tatcha-baseline";
+@import "tatcha-margin";
+@import "tatcha-hero-heading";
+@import "tatcha-footer";
+@import "tatcha-loader";
+@import "tatcha-navbar";
+@import "tatcha_home_hero";
+@import "tatcha-product-carousel";
+@import "tatcha-category-page-v1";
+@import "tatcha-compare-panel";
+@import "tatcha_category_filter_product-v1";
+@import "tatcha-minbag.scss";
+@import "tatcha-browser-detection";
+@import "_tatcha-search-page";
+@import "_footer-seo";
+
+
+
+// @import "tatcha-gift-finder-page";
+.grecaptcha-badge { visibility: hidden; }
+.anchor-style-reset{
+  color:$black;
+  text-decoration: none;
+  &:hover{
+    color:$black;
+    text-decoration: none;
+  }
+}

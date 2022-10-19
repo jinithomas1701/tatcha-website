@@ -1,0 +1,226 @@
+<!--- TEMPLATENAME: profile-edit.isml --->
+<isscript>
+	var Site = require('dw/system/Site');
+	var StringHelper = require('~/cartridge/scripts/util/StringHelpers');
+	var days = StringHelper.GetArray(1,31,1);
+	var years = StringHelper.GetYearsList();
+	var skinTypes = JSON.parse(Site.getCurrent().getCustomPreferenceValue('skinTypeOption'));
+</isscript>
+<div class="card account-step edit-state account-step-profile" 
+	<isif condition="${('profile' != session.custom.errorForm)}"> style="display: none"</isif>>
+	<div class="card-header panel-split d-flex justify-content-between">
+	    <h4 class="card-header-inner"><isprint value="${Resource.msg('account.edit.profile.title','account',null)}" /></h4>
+	    <a href="javascript:void(0);" class="panel-action edit-cancel icon-default account-switch-section" data-section="summary" role="button" aria-label="close">
+	    	<i class="fal fa-lg fa-times"></i>
+	    </a>
+	</div>
+	<div class="card-body">
+		<isif condition="${('profile' == session.custom.errorForm)}">
+			<div class="alert alert-danger"><isprint value="${Resource.msg('resource.profile.error.title','forms',null)}" /></div>
+		</isif>
+		<form action="${URLUtils.httpsContinue()}" method="post" id="ProfileForm">	
+			<isinputfield placeholder=" " formfield="${pdict.CurrentForms.profile.customer.firstname}" type="input" bsversion="true"/>
+			<isinputfield placeholder=" " formfield="${pdict.CurrentForms.profile.customer.lastname}" type="input" bsversion="true"/>
+			<div class="form-group">
+				<label class="control-label"><span><isprint value="${Resource.msg('resource.profile.skintype','forms',null)}" /></span></label>
+				<div class="field-wrapper">
+					<isloop items="${skinTypes}" alias="skinType">
+						<div class="radio">
+							<label><input class="input-radio " type="radio" id="dwfrm_profile_customer_skintype" name="dwfrm_profile_customer_skintype" value="${skinType.value}" <isif condition="${(customer.profile.custom.skinType.value == skinType.value)}">checked</isif>  maxlength="2147483647">
+							<isprint value="${skinType.label}"></label>
+						</div>
+					</isloop>
+				</div>
+			</div>
+			
+			<isscript>
+				var bday = customer.profile.birthday;
+				var bdayDate = !empty(bday) ? bday.getDate() : '';
+				var bdayMonth = !empty(bday) ? bday.getMonth() : '';
+				var bdayYear = !empty(bday) ? bday.getFullYear() : '';
+			</isscript>
+			<div class="form-group bdaySave <isif condition="${!pdict.CurrentForms.profile.customer.birthday.valid}"> has-error </isif>">
+				<label for="birthday" class="control-label"><isprint value="${Resource.msg('account.user.profile.birthday','account',null)}" /></label>
+				<div class="bdaySave-select">
+					<div style="display: none" id="bday-field">
+						<isscript>
+							var bdayattributes = {
+								"data-rule-pastdate": "true"
+							};
+						</isscript>
+						<isinputfield formfield="${pdict.CurrentForms.profile.customer.birthday}" type="input" attributes="${bdayattributes}" bsversion="true"/>
+					</div>
+					<select class="form-control dobselect dob-month ignore" <isif condition="${!empty(bdayMonth)}">disabled</isif>>
+						<option value="">${Resource.msg('resource.month','forms',null)}</option>
+						<option value="01" <isif condition="${(bdayMonth == '00')}">selected</isif>>${Resource.msg('month.january','forms',null)}</option>
+						<option value="02" <isif condition="${(bdayMonth == '01')}">selected</isif>>${Resource.msg('month.february','forms',null)}</option>
+						<option value="03" <isif condition="${(bdayMonth == '02')}">selected</isif>>${Resource.msg('month.march','forms',null)}</option>
+						<option value="04" <isif condition="${(bdayMonth == '03')}">selected</isif>>${Resource.msg('month.april','forms',null)}</option>
+						<option value="05" <isif condition="${(bdayMonth == '04')}">selected</isif>>${Resource.msg('month.may','forms',null)}</option>
+						<option value="06" <isif condition="${(bdayMonth == '05')}">selected</isif>>${Resource.msg('month.june','forms',null)}</option>
+						<option value="07" <isif condition="${(bdayMonth == '06')}">selected</isif>>${Resource.msg('month.july','forms',null)}</option>
+						<option value="08" <isif condition="${(bdayMonth == '07')}">selected</isif>>${Resource.msg('month.august','forms',null)}</option>
+						<option value="09" <isif condition="${(bdayMonth == '08')}">selected</isif>>${Resource.msg('month.september','forms',null)}</option>
+						<option value="10" <isif condition="${(bdayMonth == '09')}">selected</isif>>${Resource.msg('month.october','forms',null)}</option>
+						<option value="11" <isif condition="${(bdayMonth == '10')}">selected</isif>>${Resource.msg('month.november','forms',null)}</option>
+						<option value="12" <isif condition="${(bdayMonth == '11')}">selected</isif>>${Resource.msg('month.december','forms',null)}</option>
+					</select>
+					<select class="form-control dobselect dob-day ignore" <isif condition="${!empty(bdayDate)}">disabled</isif>>
+						<option value="">${Resource.msg('resource.day','forms',null)}</option>
+						<isloop items="${days}" alias="day">
+							<option <isif condition="${(bdayDate == day)}">selected</isif>><isprint value="${day}" style="INTEGER"/></option>
+						</isloop>
+					</select>
+					<select class="form-control dobselect dob-year ignore" <isif condition="${!empty(bdayYear) && (bdayYear != '1900')}">disabled</isif>>
+						<option value="">${Resource.msg('resource.year.optional','forms',null)}</option>
+						<isloop iterator="${years}" alias="year">
+							<option <isif condition="${(bdayYear == year)}">selected</isif>><isprint value="${year}" formatter="0"/></option>
+						</isloop>
+					</select>
+				</div>
+				<span id="bday-error" class="">
+					<isif condition="${!pdict.CurrentForms.profile.customer.birthday.valid}">
+						<span class="help-block">${Resource.msg('validate.date','forms',null)}</span>
+					</isif>
+				</span>
+				<isif condition="${!empty(bday)}">
+					<div class="help-block">${Resource.msg('account.birthday.disablemessage','account',null)}</div>
+				</isif>
+			</div>
+
+			<div class="text-right">
+				<button type="button" class="btn btn-outline-dark btn-lg edit-cancel account-switch-section" data-section="summary">${Resource.msg('global.cancel','locale',null)}</button>
+				<button type="button" id="save-profile" class="btn btn-primary btn-lg" value="${Resource.msg('global.apply','locale',null)}">
+					${Resource.msg('global.save','locale',null)}
+				</button>
+				<button type="submit" style="display: none" class="btn btn-primary btn-lg" value="${Resource.msg('global.apply','locale',null)}" id="${pdict.CurrentForms.profile.confirm.htmlName}" name="${pdict.CurrentForms.profile.confirm.htmlName}">
+					${Resource.msg('global.save','locale',null)}
+				</button>
+			</div>
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		</form>
+	</div>
+</div>
+
+<isscript>
+var currpassword = {
+	autocomplete: "off",
+	'data-msg-minlength': Resource.msgf('validate.wrongpassword', 'forms', null, pdict.CurrentForms.profile.login.password.minLength),
+	'data-msg-required': Resource.msg('validate.currentPassword', 'forms', null)
+};
+var password = {
+	autocomplete: "off",
+	'data-msg-required': Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength)
+};
+var passconfirm = {
+	autocomplete: "off",
+	'data-msg-required': Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength),
+	'data-rule-equalTo': '#'+pdict.CurrentForms.profile.login.newpassword.htmlName,	
+	'data-msg-equalTo': Resource.msg('validate.passwordconfirm', 'forms', null)
+};
+
+var invalidPwd = false;
+</isscript>
+<div class="card edit-state account-step account-step-password"
+	<isif condition="${('password' != session.custom.errorForm)}"> style="display: none"</isif>>
+	<div class="card-header panel-split d-flex justify-content-between">
+	    <h4 class="card-header-inner">${Resource.msg('account.edit.password.title','account',null)}</h4>
+	    <a href="javascript:void(0);" class="panel-action edit-cancel icon-default account-switch-section" data-section="summary" role="button" aria-label="close">
+	    	<i class="fal fa-lg fa-times"></i>
+	    </a>
+	</div>
+	<div class="card-body">
+		<isif condition="${session.custom.isAcceptablePassword === false}" >
+			<div class="alert alert-danger">${Resource.msg('validate.password.minlength','forms',null)}</div>
+			<isscript>
+				invalidPwd = true;
+			</isscript>
+		</isif>
+		<isif condition="${('password' == session.custom.errorForm) && !!session.custom.isAcceptablePassword}">
+			<div class="alert alert-danger">${Resource.msg('resource.form.error.title','forms',null)}</div>
+		</isif>
+		<form action="${URLUtils.httpsContinue()}" method="post" id="ChangePassowrdForm">
+			<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+				<isinputfield placeholder=" " formfield="${pdict.CurrentForms.profile.login.currentpassword}" type="password" attributes="${currpassword}" bsversion="true"/>
+				<isinputfield placeholder=" " formfield="${pdict.CurrentForms.profile.login.newpassword}" rowclass="updated-validation-msg" type="password" attributes="${password}" bsversion="true"/>
+				<isinputfield formfield="${pdict.CurrentForms.profile.login.newpasswordconfirm}" rowclass="updated-validation-msg" type="password" attributes="${passconfirm}" bsversion="true" placeholder="${Resource.msg('placeholder.newpasswordconfirm','forms',null)}"/>
+			<iselse/>
+				<isinputfield formfield="${pdict.CurrentForms.profile.customer.email}" type="input" attributes="${attributes}" bsversion="true"/>
+			</isif>
+			<div class="text-right">
+				<button type="button" class="btn btn-outline-dark btn-lg edit-cancel account-switch-section" data-section="summary">${Resource.msg('global.cancel','locale',null)}</button>
+				<button type="submit" class="btn btn-primary btn-lg" value="${Resource.msg('global.apply','locale',null)}" name="${pdict.CurrentForms.profile.changepassword.htmlName}">
+					${Resource.msg('global.save','locale',null)}
+				</button>
+			</div>
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		</form>
+	</div>
+</div>
+
+<div class="card edit-state account-step account-step-email"
+	<isif condition="${('email' != session.custom.errorForm)}"> style="display: none"</isif>>
+	<div class="card-header panel-split d-flex justify-content-between">
+	    <h4 class="card-header-inner">${Resource.msg('account.edit.email.title','account',null)}</h4>
+	    <a href="javascript:void(0);" class="panel-action edit-cancel icon-default account-switch-section" data-section="summary" role="button" aria-label="close">
+	    	<i class="fal fa-lg fa-times"></i>
+	    </a>
+	</div>
+	<div class="card-body">
+		<isif condition="${('email' == session.custom.errorForm)}">
+			<div class="alert alert-danger">${Resource.msg('resource.email.error.title','forms',null)}</div>
+		</isif>
+		<isscript>
+			var emailconfirm = {
+				autocomplete: "off",
+				'data-msg-required': Resource.msg('validate.email', 'forms', null),
+				'data-rule-equalTo': '#'+pdict.CurrentForms.profile.customer.email.htmlName,	
+				'data-msg-equalTo': Resource.msg('validate.emailconfirm', 'forms', null)
+			};
+			var emailAttrs = {
+				'data-msg-required': Resource.msg('validate.email', 'forms', null),
+				'data-default-value': customer.profile.email
+			};
+		</isscript>	
+		<form action="${URLUtils.httpsContinue()}" method="post" id="EmailForm" autocomplete="off">
+			<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">			
+				<isinputfield formfield="${pdict.CurrentForms.profile.customer.email}" type="email" attributes="${emailAttrs}" bsversion="true"/>
+				<isinputfield formfield="${pdict.CurrentForms.profile.customer.emailconfirm}" type="email" attributes="${emailconfirm}" bsversion="true" placeholder="${Resource.msg('placeholder.emailconfirm','forms',null)}"/>
+			<iselse/>
+				<isinputfield formfield="${pdict.CurrentForms.profile.customer.email}" type="email" attributes="${attributes}" bsversion="true"/>
+			</isif>
+			<div class="text-right">
+				<button type="button" class="btn btn-outline-dark btn-lg edit-cancel account-switch-section" data-section="summary">${Resource.msg('global.cancel','locale',null)}</button>
+				<button type="submit" class="btn btn-primary btn-lg" value="${Resource.msg('global.apply','locale',null)}" name="${pdict.CurrentForms.profile.changeemail.htmlName}">
+					${Resource.msg('global.save','locale',null)}
+				</button>
+			</div>
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		</form>
+	</div>
+</div>
+
+<div class="modal fade modal-primary" id="modal-birthday">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<i class="fal fa-times"></i>
+				</button>
+				<h4 class="modal-title" id="myModalLabel">
+					<strong>Are you sure?</strong>
+				</h4>
+			</div>
+			<div class="modal-body">
+				<p>You cannot change your Birthday from My Account once you select Save. Do you want to save this birthdate: <srong id="selectedDOBvalue"></srong></p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				<button id="confirmDOBsave" title="${Resource.msg('global.save','locale',null)}" class="btn btn-primary">
+					<isprint value="${Resource.msg('global.save','locale',null)}" />
+				</button>
+			</div>
+		</div>
+	</div>
+</div>

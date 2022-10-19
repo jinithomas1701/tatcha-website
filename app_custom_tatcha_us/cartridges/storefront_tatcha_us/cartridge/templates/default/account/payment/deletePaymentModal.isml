@@ -1,0 +1,42 @@
+
+<div class="modal fade modal-primary"
+     id="${'myModal-' + customerSavedCreditCard.UUID}"
+     tabindex="-1"
+     role="dialog" aria-labelledby="deletePaymentModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"
+                        aria-label="Close">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h4 class="modal-title" id="myModalLabel">
+                    <strong><isprint value="${Resource.msg('account.paymentinstrumentlist.areyousure','account',null)}" /></strong>
+                </h4>
+            </div>
+            <div class="modal-body">
+                <p>
+                    <em><isprint value="${Resource.msg('account.paymentinstrumentlist.confirmdelete','account',null)}" /></em>
+                </p>
+                <isif condition="${customerSavedCreditCard.braintreePaymentMethodToken == autoRefillToken}">
+                    <p><isprint value="${Resource.msg('account.autodelivery.confirmdelete','account',null)}" /></p>
+                </isif>
+                <div class="card data-group">
+                    <div class="card-body panel-split d-flex justify-content-start">
+                        <isminicreditcard card="${customerSavedCreditCard}"
+                                          show_expiration="${true}" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary rounded"
+                            data-dismiss="modal"><isprint value="${Resource.msg('global.cancel','locale',null)}" /></button>
+                    <button type="button" class="btn btn-primary  delete-confirmation-btn rounded delete-${customerSavedCreditCard.UUID}"
+                            value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}"
+                            data-dismiss="modal">
+                        <isprint value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}" />
+                    </button>
+            </div>
+        </div>
+    </div>
+</div>

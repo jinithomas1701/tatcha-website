@@ -1,0 +1,116 @@
+/**
+* Export AbandonedBaskets
+*/
+importPackage( dw.system );
+importPackage( dw.io );
+importPackage( dw.object );
+importScript("Selligent/selligentExportBase.ds");
+importScript("Selligent/selligentJsonSerializer.ds");
+
+/**
+* Export abandoned baskets from the Selligent Custom Object (SAB)
+*
+* @param {String} Export file name
+* @param {Date} Last export date
+* @returns a boolean if the file has been created 
+*/
+function exportAbandonedBaskets(exportFileName : String, lastExportDate : Date) :Boolean
+{
+	var sabIterator : SeekableIterator;
+	var writer : FileWriter;
+	
+	try
+	{
+		var fielsToExport : Array = getFieldsToExport("abandonedbasket");
+		var range : Number = getRange("abandonedbasket");
+		var countRange : Number = 0;
+		var currentFileName : String = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+		var exportFile = new File(currentFileName); 
+		var fileCreated : Boolean = false;
+		var counter : Number = 0;
+		var currentDate : Date = new Date();
+		var queryAtt : String = "";
+		var currentDateMiliseconds : Number = currentDate.valueOf();
+		var json : String  = "";
+		var endOfExportFile : File;
+		
+		currentDateMiliseconds = currentDateMiliseconds - 2400000; // 40 min in miliseconds
+		currentDate.setTime(currentDateMiliseconds);
+
+		queryAtt = "lastModified >= {0}";
+		sabIterator = CustomObjectMgr.queryCustomObjects("SAB", queryAtt, "custom.ID asc", currentDate); 
+
+		while (sabIterator.hasNext()) 
+		{		
+			var sab : CustomObject = sabIterator.next();
+			if(sab.creationDate >= lastExportDate || sab.lastModified >= lastExportDate)
+			{ 			
+				counter++;
+				if(!fileCreated)
+				{
+					writer = new FileWriter(exportFile, false);
+					fileCreated = true;
+				}
+				json = exportAbandonedBasket(sab.custom, fielsToExport);
+				writer.writeLine(json);
+				if(counter >= range)
+				{
+					writer.close();
+					currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+					exportFile.renameTo(new File(currentFileName));
+					countRange++;
+					currentFileName = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+					exportFile = new File(currentFileName); 
+					fileCreated = false;
+					counter = 0;
+				}
+			}						
+		}
+		if(counter > 0)
+		{
+			writer.close();
+			currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+			exportFile.renameTo(new File(currentFileName));
+		}
+		endOfExportFile = new File(File.IMPEX + "/Selligent/abandonedbasketEndOfExport.txt");
+		writer = new FileWriter(endOfExportFile, false);
+		return fileCreated;
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to export abandonedBaskets: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/abandonedbasket_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+	finally 
+	{
+		if (writer) writer.close();
+		if (sabIterator) sabIterator.close();
+	}
+}
+
+/**
+* Create an abandonned basket object based on the export fields definition
+*
+* @param {CustomAttributes} Custom Attributes of the abandoned basket object
+* @param {Array} Array of the fields to export
+* @returns a json string with the object description
+*/
+function exportAbandonedBasket(customs : CustomAttributes, fieldsToExport : Array) : String
+{
+	try
+	{
+		var abandonedBasketData = exportObject(customs, fieldsToExport);
+		return serialize(abandonedBasketData);
+	}
+	catch(e) 
+	{
+		Logger.error("Unable to export abandonedBasket: "+e.message);
+		throw e;
+	}
+}

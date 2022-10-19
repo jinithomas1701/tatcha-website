@@ -1,0 +1,30 @@
+<div id="braintree_void_form" class="js_braintree_hide">
+    <form class="braintree_action_form braintree_content" action="${URLUtils.url('BraintreeAdmin-Action')}">
+
+        <input type="hidden" name="method" class="js_braintree_void_action" />
+        <input type="hidden" name="transactionId" class="js_braintree_void_id" />
+        <input type="hidden" name="orderNo" value="${order.orderNo}" />
+        <input type="hidden" name="orderToken" value="${order.orderToken}" />
+
+        <h2 class="js_braintree_void_title"></h2>
+
+        <table class="braintree_table">
+            <isif condition="${transaction.customer && (!empty(transaction.customer.firstName || transaction.customer.lastName))}">
+                <tr class="braintree_table_row_even">
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customername', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.customerformat', 'braintreebm', null, transaction.customer.firstName, transaction.customer.lastName)}</td>
+                </tr>
+            </isif>
+            <isif condition="${transaction.customer && (!empty(transaction.customer.email))}">
+                <tr>
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customeremail', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">${transaction.customer.email}</td>
+                </tr>
+            </isif>
+            <tr class="braintree_table_row_even">
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.void.amount', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value js_braintree_void_amount"></td>
+            </tr>
+        </table>
+    </form>
+</div>

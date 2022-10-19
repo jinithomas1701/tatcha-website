@@ -1,0 +1,176 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isinclude template="util/modulesafterpay.isml"/>
+<isset name="gwpDiscount" value="false" scope="page"/>
+<div class="panel panel-primary checkout-summary ">
+    <div class="panel-heading panel-split summary-heading-container d-none d-lg-flex justify-content-between">
+        <div class="summary-heading" tabindex="0">${Resource.msg('cart.summary','cart',null)} (<isprint value="${pdict.numItems}" formatter="##"/><isif condition="${pdict.numItems == 1}"> item<iselse>  items</isif>)</div>
+    </div>
+    <hr class="seperator">
+    <isset name="couponApplied" value="${false}" scope="page"/>
+    <isset name="appliedPromoCode" value="" scope="page" />
+    <isloop items="${pdict.totals.discounts}" var="discount">
+        <isif condition="${discount.type === 'coupon' && discount.applied == true}">
+            <isif condition="${discount.gwpCoupon}">
+                <isset name="gwpDiscount" value="true" scope="page"/>
+            </isif>
+            <isset name="appliedPromoCode" value="${discount.couponCode}" scope="page" />
+            <isset name="couponApplied" value="${true}" scope="page"/>
+            <isset name="discountUUID" value="${discount.UUID}" scope="page"/>
+            <isbreak/>
+        </isif>
+    </isloop>
+    <input type="hidden" value="${URLUtils.url('CartSFRA-RemoveCouponLineItem').toString()}" id="promo-remove"/>
+    <div class="panel-body">
+        <div class="split-up">
+            <isinclude template="cart/cartTotals" />
+        </div>
+        <!-- Afterpay Changes start -->
+        <isscript>
+            var sitePreferences =require("int_afterpay_core/cartridge/scripts/util/afterpayUtilities.js").getSitePreferencesUtilities();
+            var Site = require('dw/system/Site');
+            var afterpayEnable = sitePreferences.isAfterpayEnabled();
+            var smartOrderRefill =null,HasRefillProducts = null;
+            if(Site.getCurrent().getCustomPreferenceValue('SorEnabled')){
+                smartOrderRefill = require('int_smartorderrefill/cartridge/scripts/smartOrderRefill/refillHelper.js');
+                HasRefillProducts = smartOrderRefill.checkForRefillProducts();
+            }
+            var hasOnlyGiftCertificate = false;
+            var productLineItems = pdict.Basket ? pdict.Basket.productLineItems : [];
+            if(productLineItems.length === 0 && pdict.Basket && pdict.Basket.giftCertificateLineItems && pdict.Basket.giftCertificateLineItems.length > 0) {
+                hasOnlyGiftCertificate = true;
+            }
+        </isscript>
+        <isif condition="${afterpayEnable == true && !HasRefillProducts && !hasOnlyGiftCertificate}">
+            <div class="learn-more">
+                <isset name="orderTotalValue" value="${ pdict.Basket ? pdict.Basket.getAdjustedMerchandizeTotalPrice(true).add(pdict.Basket.giftCertificateTotalPrice) : ''}" scope="page"/>
+                <iscomment>Afterpay message</iscomment>
+                <isafterpaythreshold totalprice="${orderTotalValue}" classname="cart-afterpay-message" />
+            </div>
+        </isif>
+        <!-- Afterpay Changes end -->
+        <div class="checkout-promo-code">
+            <div class="payment-options row no-gutters">
+                <div class='form-group mb-0 col-md-6 col-lg-12 <isprint value="${typeof promoCodeError !== 'undefined' ? promoCodeError : ''}"/>'>
+                        <div class="input-group input-group-readonly ${couponApplied != true ? 'hide-applied-coupon-container' : ''}">
+                            <input type="text" class="form-control promoapply form-control-lg" name="${pdict.CurrentForms.cart.couponCode.htmlName}" id="${pdict.CurrentForms.cart.couponCode.htmlName}"  value="${appliedPromoCode}" readonly ="readonly"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-link promo-remove promocode-remove" aria-label="Remove promocode" type="submit" value="${Resource.msg('global.remove','locale',null)}" data-code="${appliedPromoCode}" data-uuid="${typeof discountUUID !== 'undefined'  ? discountUUID : '' }" data-action="${URLUtils.url('CartSFRA-RemoveCouponLineItem').toString()}" name="${typeof FormCoupon !== 'undefined' ? FormCoupon.deleteCoupon.htmlName : ''}" id= "remove-coupon">
+                                    <i class="fal fa-times-circle"></i>
+                                </button>
+                            </span>
+                        </div>
+                        <div class="text-success bag-alert cart-coupon-code ${couponApplied != true ? 'hide-applied-coupon-container' : ''}" role="alert" aria-live="assertive">
+                            <i class="fal fa-check-circle"></i> ${Resource.msgf("cart.APPLIED",'checkout', "", appliedPromoCode)}
+                        </div>
+
+                    <isif condition="${!empty(pdict.CurrentSession.custom.Coupon)}">
+                        <isset name="sessionCouponData" value="${JSON.parse(pdict.CurrentSession.custom.Coupon)}" scope="page" />
+                        <iselse>
+                            <isset name="sessionCouponData" value="" scope="page" />
+                    </isif>
+                    <isif condition="${pdict.PromoTrigger && ((!empty(sessionCouponData) && sessionCouponData.deleteStatus==true) || (pdict.CouponStatus != null && pdict.CouponStatus.error) || (pdict.CouponError && pdict.CouponError=='NO_ACTIVE_PROMOTION'))}">
+                        <input type="hidden" id="promoTried" name="promoTried" value="true"/>
+                    </isif>
+
+                    <isinclude template="cart/cartPromoCode"/>
+
+                    <div class="alert alert-danger bag-alert" id="checkout-promo-error" style="display: none;"></div>
+                    <div class="cart-coupon-code-error outline-global">
+                        <isif condition="${!empty(pdict.CurrentSession.custom.Coupon)}">
+                            <isset name="sessionCouponData" value="${JSON.parse(pdict.CurrentSession.custom.Coupon)}" scope="page" />
+                            <iselse>
+                                <isset name="sessionCouponData" value="" scope="page" />
+                        </isif>
+                        <isif condition="${!empty(sessionCouponData) && sessionCouponData.status=='COUPON_CODE_MISSING'}">
+                            <div class="text-danger bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+                                <i class="fal fa-exclamation-circle"></i> ${Resource.msg('cart.COUPON_CODE_MISSING','checkout', null)}
+                            </div>
+                            <isset name = "Coupon" value = "null" scope = "session">
+                                <iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status=='NO_ACTIVE_PROMOTION'}">
+                                    <div class="text-danger bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+                                        <i class="fal fa-exclamation-circle"></i> ${Resource.msgf("cart.NO_ACTIVE_PROMOTION", "checkout", "", sessionCouponData.code)}
+                                    </div>
+                                    <isset name = "Coupon" value = "null" scope = "session">
+                                        <iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status != 'APPLIED' && sessionCouponData.deleteStatus != true}">
+                                            <div class="text-danger bag-alert cart-coupon-code" id="cart-coupon-unknown" role="alert" aria-live="assertive">
+                                                <i class="fal fa-exclamation-circle"></i> ${Resource.msgf('cart.' + sessionCouponData.status,'checkout', null, sessionCouponData.code)}
+                                            </div>
+                                            <isset name = "Coupon" value = "null" scope = "session">
+                                                <iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status =='AUTODELIVERY_ENABLED'}">
+                                                    <div class="text-danger bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+                                                        <i class="fal fa-exclamation-circle"></i> ${Resource.msgf('cart.AUTODELIVERY_ENABLED','checkout', null)}
+                                                    </div>
+                                                    <iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status=='APPLIED'}">
+                                                        <div class="text-success bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+                                                            <i class="fal fa-check-circle"></i> ${Resource.msgf("cart.APPLIED",'checkout', "", sessionCouponData.code)}
+                                                        </div>
+                                                        <isset name = "Coupon" value = "null" scope = "session">
+                        </isif>
+                        <isif condition="${!empty(sessionCouponData) && sessionCouponData.deleteStatus==true}">
+                            <div class="text-warning bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+                                <i class="fal fa-exclamation-circle"></i> ${Resource.msgf("cart.DELETE_COUPON",'checkout', "", sessionCouponData.code)}
+                            </div>
+                            <isset name = "Coupon" value = "null" scope = "session">
+                        </isif>
+                    </div>
+                </div>
+                <isif condition="${gwpDiscount == 'true'}">
+                    <div class="promo-gift-checkout mt-1 mb-3">
+                        <a href="#" class="edit-gwp" data-uuid="${pdict.editGwpProducts ? pdict.editGwpProducts.uuid : ''}" data-actionurl="${pdict.editGwpProducts ? pdict.editGwpProducts.editGwpProductsUrl : ''}">Edit your promo gift</a>
+                    </div>
+                </isif>
+                <isinclude template="cart/checkoutButtons" />
+
+            </div>
+
+            <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled') && dw.system.Site.getCurrent().getCustomPreferenceValue('enableAfterpay')}">
+                <iscomment>Afterpay message</iscomment>
+                <isafterpaythreshold totalprice="${pdict.totals.subTotalIncludingOrderDiscount.replace(/\$|,/g, '').trim()}" classname="cart-afterpay-error-message text-center" />
+            </isif>
+        </div>
+
+
+        <iscomment> Mobile payment options were here </iscomment>
+
+        <div class="mobile-payment-options">
+            <div class="container-fluid">
+
+                <div class="text-center p-4"><isprint value="${pdict.numItems}" formatter="##"/><isif condition="${pdict.numItems == 1}"> ITEM<iselse>  ITEMS </isif> | <strong><isprint value="${pdict.totals.grandTotal}"/></strong>
+                </div>
+                <isif condition="${enableCheckout}">
+                    <div class="row">
+                        <div class="col-12">
+                            <isif condition="${pdict.isExpressCheckout == true}">
+                                <a href="${URLUtils.url('ExpressCheckout-Start','checkouttype','expresscheckout')}" id="express-checkout-button" class= "checkout-btn btn btn-primary express-checkout-bag w-100">
+                                    <i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+                                </a>
+                                <iselse>
+                                    <button class="checkout-btn btn btn-primary w-100 cart-checkout-btn" type="submit" value="${Resource.msg('global.checkout','locale',null)}" id=""  name="${pdict.CurrentForms.cart.checkoutCart.htmlName}"
+                                            data-sorproducts="${HasRefillProducts}"
+                                            data-action="${URLUtils.url('Checkout-Begin','cartRequest','true')}"
+                                            data-userexists="${pdict.CurrentCustomer.authenticated}">
+                                        <i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+                                    </button>
+                            </isif>
+
+                        </div>
+                    </div>
+                    <div class="other-pay-options">other payment options </div>
+                    <iselse>
+                        <div class="row">
+                            <div class="col-12">
+
+                                <button class="checkout-btn btn btn-primary w-100" type="submit" value="${Resource.msg('global.checkout','locale',null)}" data-action="${URLUtils.url('Checkout-Begin','cartRequest','true')}" type="submit" name="${pdict.CurrentForms.cart.checkoutCart.htmlName}" <isif condition="${!enableCheckout}"> disabled </isif> >
+                                    <i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+                                </button>
+
+                            </div>
+                        </div>
+                        <div class="other-pay-options"></div>
+                </isif>
+            </div>
+        </div>
+
+    </div>
+</div>

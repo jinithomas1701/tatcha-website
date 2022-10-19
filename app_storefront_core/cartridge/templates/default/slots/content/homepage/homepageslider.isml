@@ -1,0 +1,41 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<iscomment>
+	This template renders the slot content of the bottom category landing slot
+	in case the slot content is of type Content Asset.
+	Note, only one content asset is rendered.
+</iscomment>
+
+<iscomment>make sure we have content at all</iscomment>
+
+<isif condition="${slotcontent != null}">
+	<h1 class="visually-hidden">Promotions</h1>
+	<isloop items="${slotcontent.content}" var="contentAsset">
+		<div class="hero-standard">
+			<div class="container-fluid hero-desktop">
+			<div class="row hidden-xs and hidden-sm">
+				<div class="col-md-12">
+					<img alt="image - ${contentAsset.custom.title}" class="hero-desktop-img" src="${contentAsset.custom.homeHeroImage.url}">
+				</div>
+			</div>
+			<div class="row vertical-align-center hero-mobile">
+			<div class="col-md-6 hero-mobile-col">
+					<img alt="image - ${contentAsset.custom.title}" class="hero-mobile-img" src="${contentAsset.custom.homeHeroImageMobile.url}">
+			</div>
+			<div class="col-md-6 hero-mobile-col">
+				<div class="hero-text hero-text-desktop" style="color:${contentAsset.custom.homeHeroTextColor};">
+					<h1><isprint value="${contentAsset.custom.homeHeroTitle}" encoding="off"/></h1>
+					<p><isprint value="${contentAsset.custom.homeHeroDescription}" encoding="off"/></p>
+				    <a class="btn btn-lg btn-outline-black" style="color:${contentAsset.custom.homeHeroTextColor};border-color:${contentAsset.custom.homeHeroTextColor};" href="${contentAsset.custom.homeHeroButtonUrl}">${contentAsset.custom.homeHeroButtonText}</a>
+				</div>
+				<div class="hero-text hero-text-mobile">
+					<h1><isprint value="${contentAsset.custom.homeHeroTitle}" encoding="off"/></h1>
+					<p><isprint value="${contentAsset.custom.homeHeroDescription}" encoding="off"/></p>
+				    <a href="${contentAsset.custom.homeHeroButtonUrl}" class="btn btn-lg btn-outline-black">${contentAsset.custom.homeHeroButtonText}</a>
+				</div>
+			</div>
+		</div>
+		</div>
+	</div>
+	</isloop>
+</isif>

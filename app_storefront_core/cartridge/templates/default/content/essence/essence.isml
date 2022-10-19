@@ -1,0 +1,110 @@
+<iscache type="relative" hour="24" />
+<isset name="DecoratorTemplate" value="content/content/pt_content_essence" scope="page"/>
+<isinclude template="util/modules"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/essence.css')}">
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/jquery.fancybox.css')}">
+	
+<isscript>
+importScript("int_tatcha_dis:common/GetImageUrl.ds");
+var productId = pdict.Content.custom.body; //Product Id fetching from body attribute in content asset 
+var product = dw.catalog.ProductMgr.getProduct(productId);
+var PriceModel = product.getPriceModel();
+var productPrice = null;
+	if(PriceModel) {
+		productPrice = PriceModel.getPrice().value;
+	}
+</isscript>
+<isdecorate template="${DecoratorTemplate}">
+<div class="essence-header container-fluid sticky-top">
+
+	<div class="img-container">
+		<a href="${URLUtils.http('Product-Show', 'pid', product.ID)}"" class="d-flex"> <isset name="imageUrl"
+				value="${getImageUrl(product,'large')}" scope="page" /> <img
+			src="${imageUrl}" class="img-fluid header-image d-none d-lg-block" alt="Tatcha The Essence" />
+			<h1 class="product-title">
+				<isprint value="${product.name}"></isprint>
+			</h1>
+		</a>
+	</div>
+	<form
+		action="/on/demandware.store/Sites-tatcha-Site/default/Cart-AddProduct"
+		method="post" id="dwfrm_product_addtocart_d0pcxunkbkdx"
+		class="pdpForm" style="margin-bottom: 0em;" novalidate="novalidate">
+		<input type="hidden" class="input-text" name="Quantity"
+			id="Quantity-${productId}" size="2" maxlength="3" value="1"> <input
+			type="hidden" name="cartAction" id="cartAction-${productId}" value="add">
+		<input type="hidden" name="pid" id="pid" value="${productId}"> <input
+			type="hidden" name="productname" id="pid" value="The Essence">
+		<input type="hidden" name="page" id="page-${productId}" value="bag">
+		<input type="hidden" name="pageInfo" id="pageInfo-${productId}"
+			value="addToBag">
+		<div class="product-cta-block mt-2">
+			<div class="product-cta demo-normal">
+				<button role="button" title="Add Product to Cart"
+					class="btn btn-primary ymliAddToBag essence-promo-addtobag"
+					aria-label="Add product to bag The Essence-Skincare Boosting Treatment"
+					data-matchbox-addtocart="${productId}"
+					data-product-info="{&quot;sku&quot;:&quot;${productId}&quot;,&quot;productname&quot;:&quot;The Essence&quot;,&quot;price&quot;:105,&quot;masterSku&quot;:&quot;MASTER-ESSENCE-NEW-2021&quot;,&quot;variant&quot;:&quot;Full Size&quot;,&quot;category&quot;:&quot;Face Mists + Essence&quot;}"
+					data-url="/s/tatcha/product/${productId}.html?lang=default&amp;cgid=new">Add
+					to Bag - <isprint value="${dw.value.Money(productPrice, session.getCurrency().getCurrencyCode())}" formatter="*#0" /></button>
+			</div>
+		</div>
+	</form>
+</div>
+<div id="animation_holder">
+		<div id="BG">
+			<div id="BGleaf"></div>
+			<div id="BGcoral"></div>
+			<div id="BGsprig"></div>
+		</div>
+		<div id="BGstart"></div>
+		<div id="animation"><img id="sprite" src="${URLUtils.staticURL('/images/essence/sprite_tatcha_shadow.png')}" alt="Tatcha The Essence"></div>
+		<div id="callout1" class="callout">Resurfaces<br>and softens</div>
+		<div id="callout2" class="callout"><i>Boosts the effects<br>of skincare</i></div>
+		<div id="callout3" class="callout"><i>Plumps and<br>hydrates</i></div>
+		<div id="headline1" class="headline1">A 7-second journey to<BR>PRIMED, PLUMP, PETAL-SOFT SKIN</div>
+		<div id="headline2"><span class="headline2sm">NEWLY ADVANCED</span><BR><span class="headline2">THE ESSENCE</span></div>
+		<div id="prompt" class="scroll-down">Scroll down<div class="arrow"></div>
+		</div>
+  	</div>
+  	  	
+
+  	<div id="autoplay_holder">
+		<video id="videodesk" class="vidbig" src="https://tatchaassets.com/tatcha/video/TAT21_ESSENCE_desktop.mp4" playsinline autoplay="true" loop="true" muted="true" width="100%"></video>
+        <video id="videomob" class="vid-mobi" src="https://tatchaassets.com/tatcha/video/TAT21_ESSENCE_mobile.mp4" playsinline autoplay="true" loop="true" muted="true" width="100%" ></video>
+        <div id="video-controls">
+			<button type="button" class="button-essence" id="play-pause" class="play"><img class="pause" src="${URLUtils.staticURL('/images/essence/v_pause.svg')}" alt="Pause"><img class="d-none play" src="${URLUtils.staticURL('/images/essence/v_play.svg')}" alt="Play"></button>
+		</div>
+  	</div>
+  	
+
+  	<div id="carousel_holder">
+		<div class="carousel carousel-essence" data-flickity='{ "wrapAround": true }'>
+	  		<div class="carousel-cell" id=cImage1>
+	  			<div class="overlay-carousel"></div>
+	  			<div class="inner">
+	      		<h2 class="title"><span class="subtitle">Inside the Formula</span><br>PART 1</sup></h2>
+				<a data-fancybox="gallery" href="https://tatchaassets.com/tatcha/video/TAT21_Ingredients_1.mp4" class="btn">WATCH NOW</a></div>
+			</div>
+	  		<div class="carousel-cell" id=cImage2>
+	  			<div class="overlay-carousel"></div>
+	  			<div class="inner">
+	      		<h2 class="title"><span class="subtitle">Inside the Formula</span><br>PART 2</h2>
+				<a data-fancybox="gallery" href="https://tatchaassets.com/tatcha/video/TAT21_Ingredients_2.mp4" class="btn">WATCH NOW</a></div>
+			</div>
+			<div class="carousel-cell" id=cImage3>
+	  			<div class="overlay-carousel"></div>
+	  			<div class="inner">
+	      		<h2 class="title"><span class="subtitle">Sustainability at Tatcha</span><br>HOW TO RECYCLE</h2>
+				<a data-fancybox="gallery" href="https://tatchaassets.com/tatcha/video/TAT21_Sustainability.mp4" class="btn">WATCH NOW</a></div>
+			</div>
+		</div>
+	</div>
+</isdecorate>
+<input type="hidden" id="shadowImage" value="${URLUtils.staticURL('/images/essence/sprite_tatcha_shadow.png')}"/>
+<script src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/16327/gsap-latest-beta.min.js?r=5426'></script>
+<script src="${URLUtils.staticURL('/lib/jquery/jquery.fancybox.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/lib/essence/actions.js')}" type="text/javascript"></script>
+
+
+

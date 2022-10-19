@@ -1,0 +1,25 @@
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/layout.css');
+    assets.addCss('/css/gridcomponentlayout.css');
+    assets.addCss('/css/pagedesigner-bootstrap.min.css');
+    assets.addCss('/css/producttile.css');
+    assets.addCss('/css/component.css');
+    assets.addJs('/js/einstein-recommendations.js');
+</isscript>
+
+<isif condition="${pdict.text_headline}">
+    <div class="gridcomponentlayout-text_container gridcomponentlayout-text_heading">
+        <span class="gridcomponentlayout-text"><isprint value="${pdict.text_headline}"/></span>
+    </div>
+</isif>
+
+<div class="region gridcomponentlayout-container col-12 col-md-12 px-2">
+    <div class="gridcomponentlayout-region row mx-0 einstein-noanchor-recommendations"
+        data-recommender="${pdict.recommender}" 
+        data-template="assets/productgridtile"
+        data-product-load-url="${pdict.productLoadUrl}"
+        data-limit="${pdict.limit}">
+    </div>
+</div>

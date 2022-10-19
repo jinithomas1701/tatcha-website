@@ -1,0 +1,218 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>
+	This template renders the summary of the current basket at the right hand side
+	of all checkout pages. It includes an order summary including order totals,
+	a list of all included shipments as well as the payment methods used to pay
+	the basket.
+</iscomment>
+
+<isscript>
+var Site = require('dw/system/Site');
+importScript("cart/CartUtils.ds");
+var hasOnlyGiftCertificate = CartUtils.checkCarthasOnlyGiftCertificate(pdict.Basket);
+var promoId = Site.getCurrent().getCustomPreferenceValue('samplePromotionID');
+var hasAutoDeliveryProduct = CartUtils.hasAutoDeliveryProductInBag(pdict.Basket);
+var paymentInstruments = pdict.Basket.paymentInstruments;
+</isscript>
+
+<isif condition="${!empty(pdict.checkoutstep)}">
+	<isset name="checkoutstep" value="${pdict.checkoutstep}" scope="page"/>
+</isif>
+
+<isif condition="${!empty(pdict.CurrentSession.custom.Coupon)}">
+	<isset name="sessionCouponData" value="${JSON.parse(pdict.CurrentSession.custom.Coupon)}" scope="page" />
+<iselse>
+	<isset name="sessionCouponData" value="" scope="page" />
+</isif>
+
+<div <isif condition="${!empty(session.custom.activeStep) && session.custom.activeStep==3}">class="panel panel-primary panel-checkout checkout-summary"<iselse/>class="panel panel-primary panel-checkout checkout-summary hidden-xs hidden-sm"</isif>>
+	<isif condition="${typeof checkoutstep !== 'undefined' && !empty(checkoutstep) && (checkoutstep >= 2)}">
+		
+		<isif condition="${checkoutstep <= 5}">
+		<div class="panel-heading">
+		        <h2 class="panel-title">${Resource.msg('summary.title','checkout',null)}</h2>
+		    </div>
+			
+		    
+		    <div class="panel-body">
+		    <div class = "update-summary">
+		   		<isinclude template="checkout/ordersummary"/>
+				</div>
+				
+
+		   				
+				<isscript>
+					var promoCodeError = '';
+					if(!empty(sessionCouponData) && (sessionCouponData.status=='COUPON_CODE_MISSING' || sessionCouponData.status=='NO_ACTIVE_PROMOTION' )){
+   						promoCodeError = 'has-error';
+					}	
+				 </isscript>
+				<div class="checkout-promo-code" <isif condition="${!empty(paymentInstruments) && (paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI') && checkoutstep==5 }">style=display:none;</isif>>
+                	<div class='form-group <isprint value="${promoCodeError}"/>'>
+                  		<label for="promoCode" class="control-label" data-toggle="tooltip" data-placement="right" title="" data-original-title="Only one code per order. Some products may be excluded.">Promo Code <button class="shippingPage-tooltip-button"><i class="fal fa-question-circle label-icon"></i></button> </label>
+	                  	<div class="promo-state">
+	                    	<isscript>
+				 				var coupons = pdict.Basket.couponLineItems;
+				 				var scope = 'cart';
+				 				if(session.clickStream) {
+				 					var pipeline = session.clickStream.last.pipelineName;
+				 					if(pipeline == 'COShipping-Start' || pipeline == 'COBilling-UpdateSummary') {
+				 						scope = 'shipping';
+				 					} else if(pipeline == 'COBilling-Start' || pipeline == 'COShipping-SingleShipping') {
+				 						scope = 'billing';
+				 					} else if(pipeline == 'COSummary-Start' || pipeline == 'COBilling-Billing' || pipeline == 'ExpressCheckout-Start' || pipeline == 'Braintree-CheckoutFromCart') {
+				 						scope = 'summary';
+				 					} else {
+				 						scope = 'cart';
+				 					}
+				 				}				 				
+		 					</isscript>
+		 					
+		 					<isset name="couponApplied" value="${false}" scope="page"/>
+							<isif condition="${!empty(coupons)}">
+								<isloop items="${coupons}" var="CouponLineItem" status="loopstateCoupons">
+										<form action="${URLUtils.url('Cart-RemoveCoupon', 'scope', scope)}" method="get" id="cart-coupon-form">
+											<input type="hidden" name="scope" value="${scope}"/>
+											<div class="input-group input-group-readonly">
+												<input type="text" class="form-control promoapply" value="${CouponLineItem.couponCode}" name="couponCode" readonly ="readonly"/>
+												<span class="input-group-btn">
+													<button class="btn btn-link promo-remove" aria-label="Remove promocode" type="submit" value="${Resource.msg('global.remove','locale',null)}" id= "remove-coupon">
+														<i class="fal fa-times-circle"></i>
+													</button>
+												</span>
+											</div>
+											<input type="hidden" name="lineItem" value="${CouponLineItem.UUID}">
+										</form>
+										<isset name="couponApplied" value="${true}" scope="page"/>
+						    	</isloop>
+							</isif>
+							<isif condition="${couponApplied != true}">
+		                    	<form action="${URLUtils.url('Cart-AddCouponJson', 'scope', scope)}" method="get" id="cart-coupon-form">
+			                    	<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+			                    	<input type="hidden" name="scope" value="${scope}"/>
+			                    	<div class="input-group">
+			                      		<input class="form-control" id="promoCode" name="couponCode">
+			                      		<span class="input-group-btn">
+			                        		<button class="btn btn-default promo-apply" type="submit" name="${pdict.CurrentForms.cart.addCoupon.htmlName}" value="${Resource.msg('global.apply','locale',null)}"><span>${Resource.msg('global.apply','locale',null)}</span></button>
+			                      		</span>
+			                    	</div>
+			                    </form>
+			                </isif>
+	                    	<span class="help-block">${Resource.msg('checkout.coupon.limit','checkout',null)}</span>
+	                    	<div class="alert alert-danger bag-alert" id="checkout-promo-error" style="display: none;"></div>
+			               <div class="cart-coupon-code-error">
+        					<isif condition="${!empty(sessionCouponData) && sessionCouponData.status=='COUPON_CODE_MISSING'}">
+        					 <div class="alert alert-danger bag-alert">
+         						 ${Resource.msg('cart.COUPON_CODE_MISSING','checkout', null)}
+        					 </div>
+        					 <isset name = "Coupon" value = "null" scope = "session">
+        					<iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status=='NO_ACTIVE_PROMOTION'}">
+        					<div class="alert alert-danger bag-alert">
+         						 ${Resource.msgf("cart.NO_ACTIVE_PROMOTION", "checkout", "", sessionCouponData.code)}
+         					</div>
+        				   <isset name = "Coupon" value = "null" scope = "session">
+       					   <iselseif condition="${pdict.CouponStatus != null && pdict.CouponStatus.error}">
+        				   <div class="alert alert-danger bag-alert">
+         						 ${Resource.msgf('cart.' + pdict.CouponStatus.code,'checkout', null, sessionCouponData.code)}
+         				   </div>
+        				  <isset name = "Coupon" value = "null" scope = "session">
+        				  <iselseif condition="${sessionCouponData != null && sessionCouponData.error}">
+        				   <div class="alert alert-danger bag-alert">
+         						 ${Resource.msgf('cart.' + sessionCouponData.status,'checkout', null, sessionCouponData.code)}
+         				   </div>
+        				  <isset name = "Coupon" value = "null" scope = "session">
+       					  <iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status=='APPLIED'}">
+        				  <div class="alert alert-success bag-alert">
+        					  ${Resource.msgf("cart.APPLIED",'checkout', "", sessionCouponData.code)}
+         				 </div>
+        				 <isset name = "Coupon" value = "null" scope = "session">
+      				     </isif>
+        			    <isif condition="${!empty(sessionCouponData) && sessionCouponData.deleteStatus==true}">
+        			    <div class="alert alert-warning bag-alert">
+          					${Resource.msgf("cart.DELETE_COUPON",'checkout', "", sessionCouponData.code)}
+       				   </div>
+        			   <isset name = "Coupon" value = "null" scope = "session">
+      			     </isif>
+      		    </div>
+				 </div>
+                  	</div>
+              	</div>
+				<isloop items="${pdict.Basket.bonusDiscountLineItems}" var="bonusDiscountLineItem" status="loopstate">
+					<isif condition="${bonusDiscountLineItem.getPromotion().ID == promoId}"><iscontinue/></isif>
+					<isif condition="${!empty(bonusDiscountLineItem.getPromotion().ID)}">
+						<isif condition="${bonusDiscountLineItem.getBonusProductLineItems().size() > 0}">
+							<isset name="displayModalOnLoad" value="editBonusModalLink" scope="page" />
+						<iselse/>
+							<isset name="displayModalOnLoad" value="addBonusModalLink" scope="page" />
+						</isif>
+						<input id="bonusproducturl" type="hidden" value="${URLUtils.url('Product-GetBonusProducts','successUrl', session.clickStream.last.pipelineName,'bonusDiscountLineItemUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false, 'pageSize',10, 'pageStart', 0, 'bpTotal', -1, 'format', 'ajax', 'usetatchamodal', true)}">
+						<div id="gwpbonusModal" class="modal fade modal-primary modal-promotion modal-fullscreen tatcha-gwp-choice ${displayModalOnLoad}">
+						    <div class="modal-dialog modal-lg">
+						        <div class="modal-content">
+						            <!-- Content will be loaded here from "remote.php" file -->
+						        </div>
+						    </div>
+						</div>
+					</isif>
+				</isloop>
+	
+		    </div>
+		    <script>
+
+		    </script>
+		    <isscript>
+				// calculate the total number of items in the cart by adding quantities together
+				// do not count bonus line items
+				var cartQty : Number = 0;
+				var pliIt : dw.util.Iterator = pdict.Basket.productLineItems.iterator();
+		
+				while (pliIt.hasNext()) {
+					var pli : dw.order.ProductLineItem = pliIt.next();
+					cartQty += pli.quantity;
+				}
+		
+				// add the gift certificates to cart quantity
+				cartQty += pdict.Basket.giftCertificateLineItems.size();
+			</isscript>
+		    <div class="panel-heading panel-split summary-cartqty"<isif condition="${!empty(paymentInstruments) && (paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI') && checkoutstep==5 }">style=border-top-width:1px;border-top-style:solid;border-top-color:#CCD4D9;</isif>>
+		    	<h2 class="panel-title" id="summary-cartqty"><isprint value="${cartQty}" formatter="##" /><isif condition="${cartQty == 1}"> item<iselse>  items </isif></h2>
+		    	<isset name="editUrl" value="${URLUtils.url('Cart-Show')}" scope="page"/>
+				<isif condition="${pdict.Basket.productLineItems.size() == 0 && pdict.Basket.giftCertificateLineItems.size() == 1}">
+					<isset name="editUrl" value="${URLUtils.url('GiftCert-Edit','GiftCertificateLineItemID', pdict.Basket.giftCertificateLineItems[0].UUID)}" scope="page"/>
+				</isif>
+		    </div>
+		    
+		    <div class="panel-body">
+		    	<div class="summary-bag-list">			
+		      		<isminilineitems p_lineitemctnr="${pdict.Basket}"/>
+				</div>
+		    </div>
+			<isscript>var shippingAddress = pdict.Basket.defaultShipment.shippingAddress;</isscript>
+			<div class="panel-footer chckeout-mobile-cta panel-cta hidden-md hidden-lg hidden-xl">
+				  <isscript>
+					var legalCopyContent = dw.content.ContentMgr.getContent('legal-copy');
+				  </isscript>
+				  <p class="text-left" style="margin-bottom: 12px;line-height: 1.2; font-size: 14px;">
+				  	<isprint value="${legalCopyContent.custom.body}" encoding="off" />
+				  </p>
+				  <isif condition="${hasAutoDeliveryProduct}" > 
+				  		<isscript>
+							var adTermsContent = dw.content.ContentMgr.getContent('auto-delivery-terms');
+						</isscript>
+				  		<div class="auto-delivery-terms">
+							<h5 class="text-left" style="margin-bottom: 0;"><isprint value="${adTermsContent.custom.title}" encoding="off" /></h5>
+							<p class="text-left" style="line-height: 1.2; font-size: 14px;"><isprint value="${adTermsContent.custom.body}" encoding="off" /></p>
+						</div>
+				  </isif>
+            	<isif condition="${!empty(shippingAddress) && !empty(shippingAddress.countryCode.value) && shippingAddress.countryCode.value.toUpperCase() !== 'US' && !hasOnlyGiftCertificate}">
+            		<button disabled="true" class="btn-checkout-continue trigger-placeorder btn btn-primary btn-lg btn-block">${Resource.msg('checkout.placeorder','checkout',null)}</button>
+            	<iselse>
+				  	<button class="btn-checkout-continue trigger-placeorder btn btn-primary btn-lg btn-block">${Resource.msg('checkout.placeorder','checkout',null)}</button>
+			  </isif>
+            </div>
+			
+		</isif>
+	</isif>
+</div>
+

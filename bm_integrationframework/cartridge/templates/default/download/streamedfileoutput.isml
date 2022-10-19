@@ -1,0 +1,23 @@
+<iscontent type="application/text" charset="UTF-8"><isscript>
+	importPackage(dw.io);
+	importPackage(dw.system);
+	if ( !empty(pdict.File) ) 
+	{
+		var file = pdict.File;
+		var readBufferSize : Number = 1024;
+		var remainingFileLength : Number = file.length() - 1;
+		var fileReader : FileReader = new FileReader(file);
+		try {
+			while ( remainingFileLength > 0 ) {
+				var readLength = Math.min( remainingFileLength , readBufferSize );
+				var line : String = fileReader.read( readLength );
+				out.print(line);		
+				remainingFileLength = remainingFileLength - readLength;
+			}
+		} catch( e ) {
+			Logger.error( e );
+		} finally {
+			fileReader.close();
+		}
+	}
+</isscript>

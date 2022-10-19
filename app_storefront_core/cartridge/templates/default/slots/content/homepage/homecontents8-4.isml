@@ -1,0 +1,68 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<iscomment>
+	This template renders the slot content of a content asset
+	using only the body of the content.
+	Note, only one content asset body is rendered.
+</iscomment>
+
+<iscomment>make sure we have content at all</iscomment>
+<section class="content-row content-row-2up-8-4">
+		<div class="container">
+<isif condition="${slotcontent != null}">
+<isloop items="${slotcontent.content}" var="contentAsset">
+<div class="col-md-8">
+	<div class="content-unit content-unit-text-overlay ${contentAsset.custom.homeContentUnitShift} content-unit-8">
+		<div class="content-img-container">
+			<img class="content-img img-responsive" src="${contentAsset.custom.homeContentBgImage.url}">
+		</div>
+		<div class="content-description content-desktop">
+			<div class="content-text">
+				<h2><isprint value="${contentAsset.custom.homeContentHeading}" encoding="off"/></h2>
+				<p><isprint value="${contentAsset.custom.homeContentBody}" encoding="off"/></p>
+			</div>
+			<div class="content-cta">
+				<a href="${contentAsset.custom.homeContentUrl}" class="btn btn-link"><isprint value="${contentAsset.custom.homeContentLink}" /></a>
+			</div>
+		</div>
+		<div class="content-description content-mobile">
+			<div class="content-text">
+				<h2><isprint value="${contentAsset.custom.homeContentHeading}" encoding="off"/></h2>
+				<p><isprint value="${contentAsset.custom.homeContentBody}" encoding="off"/></p>
+			</div>
+			<div class="content-cta">
+				<a href="${contentAsset.custom.homeContentUrl}" class="btn btn-link"><isprint value="${contentAsset.custom.homeContentLink}" /></a>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="col-md-4">
+	<div class="content-unit content-unit-text-overlay ${contentAsset.custom.homeContentUnitShift1} content-unit-4">
+		<div class="content-img-container">
+			<img class="content-img img-responsive" src="${contentAsset.custom.homeContentBgImage1.url}">
+		</div>
+		<div class="content-description content-desktop">
+			<div class="content-text">
+				<h2><isprint value="${contentAsset.custom.homeContentHeading1}" encoding="off"/></h2>
+				<p><isprint value="${contentAsset.custom.homeContentBody1}" encoding="off"/></p>
+			</div>
+			<div class="content-cta">
+				<a href="${contentAsset.custom.homeContentUrl1}" class="btn btn-link"><isprint value="${contentAsset.custom.homeContentLink1}" /></a>
+			</div>
+		</div>
+		<div class="content-description content-mobile">
+			<div class="content-text">
+				<h2><isprint value="${contentAsset.custom.homeContentHeading1}" encoding="off"/></h2>
+				<p><isprint value="${contentAsset.custom.homeContentBody1}" encoding="off"/></p>
+			</div>
+			<div class="content-cta">
+				<a href="${contentAsset.custom.homeContentUrl1}" class="btn btn-link"><isprint value="${contentAsset.custom.homeContentLink1}" /></a>
+			</div>
+		</div>
+	</div>
+</div>
+</isloop>
+</isif>
+</div>
+	</section>

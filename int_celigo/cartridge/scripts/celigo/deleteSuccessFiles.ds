@@ -1,0 +1,20 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+* 
+* Purpose: 	This script file removes/deletes a file, configured as as input parameter. The input file
+*			is being processed by a pipelet/script file placed before in the pipeline. When the file
+*			is successfully processed it is deleted from the directory.
+*
+*@input filePath : String
+*/
+importPackage( dw.system );
+importPackage( dw.io );
+
+function execute( args : PipelineDictionary ) : Number
+{
+    var filePath : String = args.filePath;
+	var sourceFile : File = new File(File.IMPEX + File.SEPARATOR  + "src" + filePath);
+	sourceFile.remove();
+
+   return PIPELET_NEXT;
+}

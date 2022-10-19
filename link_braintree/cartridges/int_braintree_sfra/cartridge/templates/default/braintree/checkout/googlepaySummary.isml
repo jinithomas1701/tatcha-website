@@ -1,0 +1,18 @@
+<div>
+    <div class="googlepay-method-name" data-braintree-payment-method="${payment.paymentMethod}" >
+        ${dw.order.PaymentMgr.getPaymentMethod(payment.paymentMethod).getName()}
+    </div>
+    <isif condition="${payment.maskedCreditCardNumber}">
+        <div class="googlepay-card-number">
+            ${payment.maskedCreditCardNumber}
+        </div>
+    </isif>
+    <isif condition="${payment.type}">
+        <div class="googlepay-card-type">
+            ${payment.type}
+        </div>
+    </isif>
+    <div class="googlepay-amount">
+       ${pdict.order.priceTotal}
+    </div>
+</div>

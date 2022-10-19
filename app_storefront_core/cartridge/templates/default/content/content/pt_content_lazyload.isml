@@ -1,0 +1,114 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Storefront',
+			type: 'storefront',
+			ns: 'storefront'
+		};
+		pdict.showCountrySelector = true;
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<iscomment>This page must be cachable. It inherits the caching attributes by the decorated template.</iscomment>
+
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableCSSLazyload')}">
+			<isinclude template="components/header/htmlhead_home_bs"/>
+		<iselse>
+			<isinclude template="components/header/htmlhead_bs"/>
+	</isif>
+	<iscontentasset aid="homepagemeta"/>
+	<isinclude template="content/home/pt_storefront_UI"/>
+	
+	<link rel="canonical" href="${URLUtils.https('Page-Show', 'cid', pdict.page.ID)}"/>
+
+
+	<iscomment>Add page specific header information here.</iscomment>
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/bootstrap4/tatcha-home-dev.css')}"/>
+	<style type="text/css">
+	
+	@media(min-width: 360px) and (max-width: 767px){
+		.heroV2-section .hero-image img{
+			min-height:650px;
+		}
+	}
+	@media(min-width: 320px) and (max-width: 359px){
+		.heroV2-section .hero-image img{
+			min-height:550px;
+		}
+	}
+	.hero-image img{
+					min-height:370px;
+				}
+	@media(min-width: 768px) and (max-width: 1023px){
+		.hero-image img{
+			min-height:275px;
+		}
+	}
+				.image-link img{
+					min-height: 200px;
+				}
+				.text-image-sidebyside .panel-image img{
+					min-height:230px;
+				}
+				.panel-fullwidth-feature .panel-image img{
+					min-height: 240px;
+				}
+				.vsa-hero-image img{
+					min-height:370px;
+				}
+	@media (min-width:1024px){
+				.hero-image img{
+					min-height:370px;
+				}
+				.image-link picture{
+					min-height: 200px;
+				}
+				.image-link img{
+					min-height: 200px;
+				}
+				.text-image-sidebyside .panel-image img{
+					min-height:320px;
+				}
+				.panel-fullwidth-feature .panel-image img{
+					min-height: 380px;
+				}
+				.vsa-hero-image img{
+					min-height:370px;
+				}
+			}
+		
+	</style>
+</head>
+<body>
+
+<isinclude template="components/header/header_bs"/>
+	<iscomment> New exposed mobile nav </iscomment>
+	<iscontentasset aid="mobile-exposed-nav"/>
+	<main tabindex="-1">
+		<div style="min-height: 800px">
+			<isreplace/>
+		</div>
+		<isinclude template="components/browsertoolscheck" />
+	</main>
+	<isset name="pageName" value="homepage" scope="page" />
+<isinclude template="product/components/modals"/>
+<isinclude template="components/footer/footer_bs"/>
+
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+	<script src="${URLUtils.staticURL('/js/page_designer/app-page-designer.js')}"></script>
+</isif>
+<isinclude template="content/home/pt_storefront_VARS"/>
+
+<isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="scriptFile">
+	<script defer type="text/javascript" src="${scriptFile}"></script>
+</isloop>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<div class="modal gift-modal modal-tatcha-gift-message" id="giftMessageModal" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="GiftModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content gift-content">
+            <div class="modal-header">
+                <h5 class="modal-title gift-title">Tatcha Gift Wrapping</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><svg class="svg-inline--fa fa-times fa-w-12 close-spec" aria-hidden="true" data-fa-replacement="true" data-prefix="fal" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"></svg><i class="fal fa-times close-spec"></i></span>
+                </button>
+            </div>
+            <form action="${URLUtils.url('CheckoutShippingServices-SaveGiftWrapAndMessage')}" method="post" id="giftmsg-form">
+                <div class="modal-body">
+                    <div class="add-gift-container">
+                        <img class="img-fluid d-inline-block" src="${pdict.giftWrapDetails.giftWrapImageUrl ? pdict.giftWrapDetails.giftWrapImageUrl : URLUtils.staticURL('/images/noimagemedium.png')}" title="gift wrap product">
+                        <p><isprint value="${pdict.giftWrapDetails.giftWrapProduct.shortDescription}"/></p>
+                    </div>
+                    <div class="mt-2 mb-4">
+                        <input type="hidden" id="gift-modal-hasGiftWrap" value="${pdict.giftWrapExistsInCart}">
+                        <input class="gift-toggle giftwrap-toggle"  id="addGift" type="checkbox" name="addGift" data-eligibility="${pdict.giftwrapEligibility}" aria-label="Add a gift box for this order" <isif condition="${pdict.giftWrapExistsInCart}">checked</isif>>
+                        <span class="gift-wrap-check-message"> Add gift wrap for this order. ($5.00)</span>
+                    </div>
+                    <div id="giftbox-ineligibile-validation" class="giftbox-eligibility" style="display: none;">
+                        <span class="giftbox-circle">
+                            <i class="fal fa-exclamation-circle"></i>
+                        </span>
+                        <span class="giftbox-msg">The items in your bag are already exquisitely packaged, so they are not eligible for a gift wrapping. The gift wrap will not be added to your order.</span>
+                    </div>
+                    <div id="giftbox-part-eligible-validation" class="giftbox-eligibility" style="display: none;">
+                        <span class="giftbox-circle">
+                            <i class="fal fa-exclamation-circle"></i>
+                        </span>
+                        <span class="giftbox-msg">Some items in your bag are already exquisitely packaged, so they are not eligible for a gift wrapping. The items that are eligible will be placed in a gift wrap if you choose this option.</span>
+                    </div>
+                    <div>
+                        <div class="form-top-label">Enter your Message</div>
+                        <div class="form-group" style="margin-bottom: 0">
+                            <label class="sr-only" for="textAreaPost">Add gift message, up to 210 characters</label>
+                            <isif condition="${empty(pdict.giftMessage)}">
+                                <textarea data-character-limit="210" id="textAreaPost" class="form-control giftmessage border rounded" placeholder="Your Message (optional)" value="null" rows="2" maxlength="210" id="giftMessage" name="giftMessage" pattern="(?!.*(?:[-]|?[?-?]|?[?-?])).*"></textarea>
+                            <iselse>
+                                <textarea data-character-limit="210" id="textAreaPost" class="form-control giftmessage border rounded" placeholder="Your Message (optional)" value="${!empty(pdict.giftMessage) ? dw.util.StringUtils.trim(pdict.giftMessage):''}" rows="2" maxlength="210" id="giftMessage" name="giftMessage" pattern="(?!.*(?:[-]|?[?-?]|?[?-?])).*"><isprint value="${!empty(pdict.giftMessage)? dw.util.StringUtils.trim(pdict.giftMessage):''}" /></textarea>
+                            </isif>
+                            <div class="char-count form-sub-label">You have <span class="char-remain-count">210</span> characters left out of <span class="char-allowed-count">210</span></div>
+                            <div class="sr-only sr-only-focusable ea-char-remain-count" aria-live="polite"></div>
+                            <div class="special-character-validation" style="color: #b82e67;display: none;"> Please enter a valid message.</div>
+                        </div>
+                    </div>
+                    <input type="hidden" name="giftWrapSku" id="giftWrapSku" value="${pdict.giftWrapDetails.giftWrapProduct.ID}" />
+                    <input type="hidden" name="scope" id="scope" value="shipping" />
+                    <button type="button" class="btn btn-primary btn-block modal-tatcha-gift-message-save" aria-label="save">Save</button>
+                    <button type="button" class="btn btn-link btn-block cancel-modal-sample close-giftmsg text-primary" data-dismiss="modal" aria-label="Cancel">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    </div>

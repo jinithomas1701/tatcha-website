@@ -1,0 +1,122 @@
+fragment transactionFields on Transaction {
+    id
+    legacyId
+    createdAt
+    paymentMethodSnapshot {
+         __typename
+        ... on CreditCardDetails {
+            brandCode
+            expirationMonth
+            expirationYear
+            last4
+            cardholderName
+            bin
+            threeDSecure {
+                authentication {
+                    authenticationStatus
+                }
+            }
+        }
+        ... on PayPalTransactionDetails {
+            payer {
+                email
+            }
+        }
+        ... on VenmoAccountDetails {
+                venmoUserId
+            }
+        }
+    paymentMethod {
+        id
+        legacyId
+        customer {
+            legacyId
+            firstName
+            lastName
+        }
+    }
+    amount {
+        value
+        currencyCode
+    }
+    customFields {
+        name
+        value
+    }
+    merchantAccountId
+    orderId
+    purchaseOrderNumber
+    status
+    descriptor {
+        name
+        phone
+        url
+    }
+    statusHistory {
+        status
+        timestamp
+        source
+        amount {
+            value
+            currencyCode
+        }
+        ... on AuthorizedEvent{
+            processorResponse{
+                cvvResponse
+                avsPostalCodeResponse
+                avsStreetAddressResponse
+            }
+        }
+    }
+    channel
+    customer {
+        id
+        legacyId
+        company
+        createdAt
+        defaultPaymentMethod {
+            id
+            legacyId
+        }
+        email
+        firstName
+        lastName
+        phoneNumber
+        paymentMethods {
+            edges {
+                node {
+                    id
+                    legacyId
+                }
+            }
+        }
+    }
+    shipping {
+        shippingAddress {
+              fullName
+              addressLine1
+              addressLine2
+              adminArea1
+              adminArea2
+              postalCode
+              countryCode
+              phoneNumber
+        }   
+    }
+    tax {
+        taxAmount 
+        taxExempt
+    }
+    discountAmount
+    billingAddress {
+        fullName
+        addressLine1
+        addressLine2
+        adminArea1
+        adminArea2
+        postalCode
+        countryCode
+        phoneNumber
+    }
+    source
+}

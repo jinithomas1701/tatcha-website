@@ -1,0 +1,138 @@
+<isif condition="${pdict.CurrentCustomer.authenticated}">
+	<isscript>
+	var Site = require('dw/system/Site');
+	var countriesList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('CountriesList'));
+	var currentCountry = require('app_storefront_core/cartridge/scripts/util/Countries').getCurrent(pdict);
+	var provinceList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('provinceList'));
+	var date = new Date();
+	var addressID = date.getTime();
+	</isscript>
+
+
+	<div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-labelledby="addressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content address-content">
+            <div class="modal-body">
+           		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        <svg class="svg-inline--fa fa-times fa-w-12 close-spec ml-3" aria-hidden="true" data-fa-replacement="true" data-prefix="fal" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"></svg><i class="fal fa-times close-spec ml-3"></i>
+                    </span>
+               </button>
+               <div class="text-center m-3 modal-title address-title">Add address </div>
+               <div class="contact-info-container">
+               		<form method="post" action="${URLUtils.url('Address-Form')}"  id="${pdict.CurrentForms.profile.address.htmlName}" name="${pdict.CurrentForms.profile.address.htmlName}" class="addressformfields">               		
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                             	  <input type="text" required="" autocorrect="off" class="form-control form-control-lg validateName validateForNonEnglishChars floating__input" name="${pdict.CurrentForms.profile.address.firstname.htmlName}" id="${pdict.CurrentForms.profile.address.firstname.htmlName}" placeholder="First Name">
+                             	 <label class="float-label" data-content="First Name*" for="${pdict.CurrentForms.profile.address.firstname.htmlName}"></label>
+                              
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <input type="text" required="" autocorrect="off" name="${pdict.CurrentForms.profile.address.lastname.htmlName}" class="form-control  form-control-lg validateName validateForNonEnglishChars floating__input" id="${pdict.CurrentForms.profile.address.lastname.htmlName}" placeholder="Last Name">
+                                <label class="float-label"  for="${pdict.CurrentForms.profile.address.lastname.htmlName}" data-content="Last Name*"></label>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                            <select style="padding-top: 18px;" required="" id="addressmodal-country" name="${pdict.CurrentForms.profile.address.country.htmlName}" class="floating__input form-control  form-control-lg pl-3 country">
+						    		<option value="" disabled="" selected="">Country</option>
+					                 <isloop items="${countriesList}" alias="country">
+					                 <isset name="selectedCountry" value="US" scope="page" />
+					                 	<isif condition="${selectedCountry == country.value }">
+					                 		<option value="${country.value}" selected><isprint value="${country.label}" /></option>					                 		
+					                 	<iselse>
+					                 		<option value="${country.value}"><isprint value="${country.label}" /></option>
+					                 	</isif>
+					                 </isloop>
+				                 </select>   
+                                <label class="float-label" for="${pdict.CurrentForms.profile.address.country.htmlName}" data-content="Country*"></label>
+					    		                             
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                            <input required="" type="text" autocorrect="off" class="form-control floating__input form-control-lg validateForNonEnglishChars" name="${pdict.CurrentForms.profile.address.address1.htmlName}" id="${pdict.CurrentForms.profile.address.address1.htmlName}" placeholder="Street Address">
+                                <label class="float-label" for="${pdict.CurrentForms.profile.address.address1.htmlName}" data-content="Street Address*"></label>
+                                
+                            </div>
+                        </div>
+                        <a href="#addaddressModalCollapse" class="mb-0"  id="addaddressModalCollapseLink" data-toggle="collapse" aria-expanded="false" aria-controls="addAddressModalCollapse">
+                            <span class="enter-addaddress-link">Enter address manually</span>
+                        </a>
+                        <div class="collapse" aria-label="Add Address Modal Collapse" id="addaddressModalCollapse">
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <input type="text" autocorrect="off" class="form-control floating__input form-control-lg validateForNonEnglishChars" name="${pdict.CurrentForms.profile.address.address2.htmlName}" id="${pdict.CurrentForms.profile.address.address2.htmlName}" placeholder="Street Address 2">
+                                    <label class="float-label" for="${pdict.CurrentForms.profile.address.address2.htmlName}" data-content="Street Address 2 (Optional)"></label>
+                              
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                 <input type="text" data-msg-required="${Resource.msg('singleshipping.zipcode.required', 'checkout', null)}" required=""  class="form-control floating__input form-control-lg  validatepostal validateForNonEnglishChars" name="${pdict.CurrentForms.profile.address.postal.htmlName}" id="${pdict.CurrentForms.profile.address.postal.htmlName}" placeholder="Zipcode">
+                                <label class="float-label" for="${pdict.CurrentForms.profile.address.postal.htmlName}" data-content="Zipcode*"></label>
+                               
+                                </div>
+                                <div class="form-group col-md-6">
+                                	<select style="padding-top: 18px;" data-msg-required="${Resource.msg('singleshipping.state.required', 'checkout', null)}" id="addressmodal-state" autocorrect="off" name="${pdict.CurrentForms.profile.address.states.state.htmlName}" required class="form-control floating__input form-control-lg pl-3">
+										<isloop items="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.options}" var="states" status="status">
+											<option class="select-option" label="${Resource.msg(states.label,'forms',null)}" value="${states.optionId}">${Resource.msg(states.label,'forms',null)}</option>			
+										</isloop>
+									</select>
+									<select style="padding-top: 18px;" data-msg-required="${Resource.msg('singleshipping.state.required', 'checkout', null)}" id="addressmodal-stateNonUS" autocorrect="off" name="${pdict.CurrentForms.profile.address.states.state.htmlName}" required class="form-control floating__input form-control-lg pl-3">
+										<isloop items="${provinceList}" alias="province">
+											<isif condition="${province.country == 'CA'}"> 
+												<isloop items="${province.states}" alias="pstate">
+													<option class="select-option" label="${pstate.label}" value="${pstate.value}">${pstate.label}</option>
+												</isloop>
+											</isif>
+										</isloop>
+									</select>
+									<input type="text" data-msg-required="${Resource.msg('singleshipping.province.required', 'checkout', null)}" autocorrect="off" style="display:none;" name="${pdict.CurrentForms.profile.address.states.state.htmlName}" class="form-control floating__input form-control-lg validateForNonEnglishChars internationalProvincetext"  id="addressmodal-stateText" placeholder="Province*">
+									<label class="float-label" for="${pdict.CurrentForms.profile.address.states.state.htmlName}" data-content="State*"></label>                                	
+                                                                    
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                   <input type="text" data-msg-required="${Resource.msg('singleshipping.city.required', 'checkout', null)}" required="" autocorrect="off" class="form-control floating__input form-control-lg validateCity validateForNonEnglishChars" name="${pdict.CurrentForms.profile.address.city.htmlName}" id="${pdict.CurrentForms.profile.address.city.htmlName}" placeholder="City">
+                                    <label class="float-label" for="${pdict.CurrentForms.profile.address.city.htmlName}" data-content="City*"></label>
+                                 
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row"> 
+                            <div class="form-group col-12">
+								<a class="phone-tooltip" tabindex="0" title data-toggle="tooltip" data-placement="top" aria-label="A phone number is required in case our shipping carrier needs to contact you with updates." data-original-title="A phone number is required in case our shipping carrier needs to contact you with updates."> <i class="fa fa-question-circle"></i> </a>	        
+                                <input type="tel" required="" inputmode="tel" autocorrect="off" autocomplete="tel" class="form-control  form-control-lg floating__input phone" name="${pdict.CurrentForms.profile.address.phone.htmlName}" id="${pdict.CurrentForms.profile.address.phone.htmlName}" placeholder="Phone Number">
+                                <label class="float-label" for="${pdict.CurrentForms.profile.address.phone.htmlName}" data-content="Phone Number*"></label>
+                                
+                            </div>
+                        </div>
+                      
+						<div>
+                        	<div class="float-left"><input type="checkbox" name="${pdict.CurrentForms.profile.address.addressdefault.htmlName}" id="${pdict.CurrentForms.profile.address.addressdefault.htmlName}">
+                            	<span class="default-shipping-label">Set as default shipping address</span></div>
+                        	<div class="actions float-right">
+                            	<button class="btn btn-outline-dark cancel address-button" value="cancel">Cancel</button>                            	
+                            	<button class="btn btn-primary btn-checkout-continue add-shipping-address"  type="button" value="address">Save</button>
+                        	</div>
+                    	</div>
+                    	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LOQATE_verification_enabled')}">
+							<input  type="hidden"  id="loqateVerificationEnabled"  value="true">
+						</isif>
+                    	<input type="hidden" id="createAddressID" value="<isprint value="${addressID}" formatter="#"  />">
+                    	<input type="hidden" name="format" value="spcheckout">     
+                    	<input type="hidden" id="addressModal-mode" value="">                         	              	
+						<input type="hidden" id="addressmodal-action"  value="address">
+                    	<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>  
+                    	<input type="hidden" id="${pdict.CurrentForms.profile.address.addressid.htmlName}" name="${pdict.CurrentForms.profile.address.addressid.htmlName}" value="<isprint value="${addressID}" formatter="#"  />"/>                                              
+                    </form>                 
+               </div>
+            </div>
+         </div> 
+    </div>
+    </div>
+
+</isif>

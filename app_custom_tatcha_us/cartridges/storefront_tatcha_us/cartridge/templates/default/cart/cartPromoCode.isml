@@ -1,0 +1,27 @@
+
+<div class="w-100 bag-promo-container ${couponApplied == true ? 'hide-coupon-apply-container' : ''}">
+    <form action="${pdict&&pdict.actionUrls ? pdict.actionUrls.submitCouponCodeUrl : ''}" class="d-flex promo-code-form w-100 mr-1 position-relative" method="GET" name="promo-code-form">
+        <div class="form-group mr-1 mb-0 w-100 position-relative">
+            <div class="promo-label">
+                <label for="${pdict.CurrentForms.cart.couponCode.htmlName}" aria-label="Promocode field" class="control-label" data-toggle="tooltip" data-placement="left" title="" tabindex="0" data-original-title="Only one code per order. Some products may be excluded."><span style="cursor:pointer;"><i class="fas fa-question-circle label-icon"></i></span></label>
+            </div>
+            <input type="text" placeholder=" " aria-label="Add promo code" class="form-control coupon-code-field promoapply form-control-lg floating__input" id="couponCode" name="couponCode">
+            <label class="float-label" data-content="Promo Code"></label>
+
+            <div class="text-success bag-alert cart-coupon-code" role="alert" aria-live="assertive"></div>
+
+        </div>
+        <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+        <input type="hidden" name="section" value="${pdict.section}"/>
+
+        <span class="promo-code-submit input-group-btn">
+            <button type="submit" class="btn btn-primary btn-block promo-code-btn btn-input-group btn-dark promo-button bag-apply-btn btn-lg" disabled>
+                ${Resource.msg('button.submit.promo.code','cart',null)}
+            </button>
+        </span>
+    </form>
+    <div class="coupon-error cart-coupon-code-error outline-global text-danger bag-alert cart-coupon-code" id="cart-coupon-unknown" role="alert" aria-live="assertive">
+        <span class="coupon-missing-error" id="missingCouponCode" role="alert"></span>
+        <span class="coupon-error-message" id="invalidCouponCode" role="alert"></span>
+    </div>
+</div>

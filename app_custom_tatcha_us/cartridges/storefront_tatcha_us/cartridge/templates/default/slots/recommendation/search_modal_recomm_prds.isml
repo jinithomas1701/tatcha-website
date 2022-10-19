@@ -1,0 +1,35 @@
+<isif condition="${slotcontent}">
+	<isscript>
+		importScript("int_tatcha_dis:common/GetImageUrl.ds");	
+	 </isscript>
+	<h4 class="search-inner-titles"> ${slotcontent.calloutMsg} </h4>
+	<div class="recommended-tiles d-flex justify-content-between">
+		<isloop items="${slotcontent.content}" var="product" begin="0" end="3" status="status" >
+			<isif condition="${product.master}">
+				<isset name="Product" value="${product.getVariationModel().getDefaultVariant()}" scope="page"/>
+			<iselse/>
+				<isset name="Product" value="${product}" scope="page"/>
+			</isif>
+			     <a href="${URLUtils.url('Product-Show', 'pid', Product.getID())}" class="product-tile ${status.index == 3 ? 'd-md-none d-lg-block' : ''}" data-pid="${Product.ID}">
+				  	<isif condition="${Product.master && pdict.CurrentVariationModel}">
+							<isset name="imageProduct" value="${pdict.CurrentVariationModel}" scope="page"/>
+						<iselseif condition="${Product.variant && !empty(Product.getVariationModel())}">
+							<isset name="imageProduct" value="${Product.getVariationModel()}" scope="page"/>
+						<iselse/>
+							<isset name="imageProduct" value="${Product}" scope="page"/>
+						</isif>
+						<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+							<isset name="imageUrl" value="${getImageUrl(imageProduct,'medium')}" scope="page"/>
+						<iselse/>
+							<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+						</isif>										
+						<img alt="${Product.name}" class="img-responsive img-fluid product-img" src="${imageUrl}" aria-hidden="true">
+						<div class="product-content">
+				     <isif condition="${Product.name}"> <div class="product-name">${Product.name.substring(0,44)}</div> </isif>
+				     <br/>
+				     <isif condition="${Product.custom.secondaryName}"> <div class="product-sub">${Product.custom.secondaryName.substring(0,44)}</div> </isif>
+				     </div>
+			       </a>
+		</isloop>
+	</div>
+</isif>

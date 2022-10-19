@@ -1,0 +1,14 @@
+<iscomment>Note to inform the client that the order has products with refill</iscomment>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isif condition="${!empty(pdict.ORIsFutureOrder) && pdict.ORIsFutureOrder == true}">
+    <p style="font-size: 11px; font-weight: bold; margin-left: 20px;">
+        ${Resource.msg('order.smartorderrefill.futureordernotice', 'order', null)}
+    </p>
+<iselseif condition="${!empty(pdict.HasRefillProducts) && pdict.HasRefillProducts == true}">
+    <p style="font-size: 11px; font-weight: bold; margin-left: 20px;">
+        ${Resource.msg('order.smartorderrefill.hasrefilledproducts', 'order', null)}
+    </p>
+</isif>

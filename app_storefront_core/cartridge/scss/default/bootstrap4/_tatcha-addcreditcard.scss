@@ -1,0 +1,130 @@
+.add-credit-container{
+
+	.card > .card-header {
+	    background-color: #fff;
+	}
+
+	.icon-default{
+		color: #ccd4d9;
+	}
+
+	//.form-row{
+	//	display: block;
+	//    margin-bottom: 1.5rem;
+	//}
+	.js_braintree_addCreditCardForm{
+		.form-group{
+			&.has-error{
+				margin-bottom: 1.5rem;
+			}
+		}
+	}
+	.js_braintree_creditCardFields{
+		.name-field{
+			margin-bottom: 1rem;
+			.has-error{
+				.form-control{
+					border-color: #F00 !important;
+				}
+			}
+		}
+
+		.form-control{
+			&.is-invalid{
+				background: none;
+				border-color: #ff0000;
+			}
+		}
+		.invalid-feedback{
+			margin-top:0.5rem;
+		}
+	}
+
+	.add-credit-card-makethisdefault{
+		label{
+			display: inline-block;
+		    margin-bottom: 20px;
+		    margin-top: 10px;
+		    font-size: 14px;
+		}
+	}
+	.security-code-label {
+		width: 100%;
+		text-align: right;
+		margin-right: 8px;
+		color: #343C40;
+		text-decoration: underline;
+		padding-right: 0;
+	}
+
+	.security-code-link {
+		cursor: default;
+		font-size: 14px;
+	}
+	.credit-card-field {
+
+		&::placeholder {
+			color: $gray-700;
+			font-size: 16px;
+			font-style: normal;
+			font-weight: $font-weight-normal;
+		}
+	}
+
+	.add-credicard-footer-buttons{
+		margin-top:20px;
+	}
+	span.help-block {
+		line-height: 17px;
+	}
+
+	.braintree-field-wrap .invalid-feedback{
+		font-size: 14px;
+	}
+	iframe#braintree-hosted-field-cvv{
+		@include media-breakpoint-up(xl){
+			width : max-content!important;
+    	}
+	}
+
+	#braintreeCreditCardFieldsContainer {
+		.braintree-field-wrap {
+			position: relative;
+
+			#card-image {
+				position: absolute;
+			    top: 9px;
+			    right: 1em;
+			    width: 44px;
+			    height: 28px;
+			    background-image: url(../../images/payment_cards.png);
+			    background-size: 86px 458px;
+			    border-radius: 4px;
+			    background-position: -100px 0;
+			    background-repeat: no-repeat;
+			    margin-bottom: 1em;
+			    &.visa {
+					background-position: 0 -398px;
+			  	}
+			  	&.master-card {
+			    	background-position: 0 -281px;
+			  	}
+			  	&.american-express {
+			    	background-position: 0 -370px;
+			  	}
+			  	&.discover {
+			    	background-position: 0 -163px;
+			  	}
+			  	&.maestro {
+			    	background-position: 0 -251px;
+			  	}
+			  	&.jcb {
+			    	background-position: 0 -221px;
+			  	}
+			  	&.diners-club {
+			    	background-position: 0 -133px;
+			  	}
+			}
+		}
+	}
+}

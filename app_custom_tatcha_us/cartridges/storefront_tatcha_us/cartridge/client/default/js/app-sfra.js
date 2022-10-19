@@ -1,0 +1,15 @@
+require('./lib/lazyLoadImage');
+var searchSuggest = require('./searchsuggest');
+var login = require('./login');
+var commonUtil = require('./commonutil');
+var account = require('./account');
+var minicart = require('./minicart');
+var klaviyoSubscribe = require('./klaviyosubscribe');
+var validator = require("./validator");
+searchSuggest.init();
+login.init();
+commonUtil.init();
+account.init();
+minicart.init();
+klaviyoSubscribe.init();
+validator.init();

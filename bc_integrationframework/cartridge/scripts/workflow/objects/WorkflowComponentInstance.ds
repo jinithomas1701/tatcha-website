@@ -1,0 +1,303 @@
+importPackage(dw.object);
+importPackage(dw.util);
+importPackage(dw.system);
+importPackage(dw.io);
+
+importScript( 'bc_integrationframework:workflow/libWorkflowLogToFile.ds' );
+
+/**
+ * Class which provides basic workflow component infrastructure<br /><br />
+ *
+ * The workflow component instance is made available by the framework as pipeline dictionary key named 
+ * <i>CurrentWorkflowComponentInstance</i>
+ *
+ * @constructor
+ */
+function WorkflowComponentInstance() {
+	this.object = null;
+	this.messageCount = 0;
+}
+
+/**
+ * Constant defining the maximum number of component message that can be logged without impacting system performance
+ * @constant
+ */
+WorkflowComponentInstance.MAX_MESSAGES = 50;
+
+/**
+ * Marks the start of the workflow component execution<br />
+ * <b>Note that this is method is called by the framework and typically does not need to be called explicitly.</b>
+ */
+WorkflowComponentInstance.prototype.start = function(jobId : String) {
+	// To prevent concurrent exceptions, the object is reloaded.
+	this.reloadObject();
+	
+	if (empty(this.object.custom.startTime)) {
+		var calendar : Calendar = new Calendar();
+		calendar.setTimeZone(System.getInstanceTimeZone());
+		
+		this.object.custom.startTime = calendar.getTime();
+		
+		this.custom.startTime = this.object.custom.startTime;
+	}
+	
+	this.object.custom.status = 'RUNNING';
+	this.object.custom.processingJobId = jobId;
+	
+	this.custom.status = 'RUNNING';
+	this.custom.processingJobId = jobId;
+	var self = this;
+	createWorkflowInstanceFileLogger(this);
+	if ( this.custom.disabled ) {
+		this.logMessageToFile('Skipping ' + this.ID);
+	} else {
+		this.logMessageToFile('Starting ' + this.ID);
+	}
+	this.debug('Parameter Values: ' + this.custom.parameterValues);
+}
+
+/**
+ * Marks the end of the workflow component execution<br />
+ * <b>Note that this is method is called by the framework and typically does not need to be called explicitly.</b>
+ */
+WorkflowComponentInstance.prototype.finish = function(status : String, message : String) {
+	// To prevent concurrent exceptions, the object is reloaded.
+	this.reloadObject();
+	
+	var calendar : Calendar = new Calendar();
+	calendar.setTimeZone(System.getInstanceTimeZone());
+	
+	if (status != 'SUSPEND') {
+		this.object.custom.endTime = calendar.getTime();
+		this.custom.endTime = this.object.custom.endTime;
+	}
+	this.object.custom.processingJobId = null;
+	this.custom.processingJobId = null;
+	
+	if (status == 'OK') {
+		this.object.custom.status = 'FINISHED_OK';
+	} else if (status == 'SKIPPED') {
+		this.object.custom.status = 'FINISHED_SKIPPED';
+	} else if (status == 'WARN') {
+		this.object.custom.status = 'FINISHED_WARN';
+	} else if (status == 'ERROR') {
+		this.object.custom.status = 'FINISHED_ERROR';
+	} else if (status == 'SUSPEND') {
+		this.object.custom.status = 'WAITING';
+	}
+	this.custom.status = this.object.custom.status;
+	
+	if (!empty(message)) {
+		this.addMessage(message, status);
+	}
+	this.logMessageToFile('stopping ' + this.ID);
+}
+
+/**
+ * Returns the runtime of a finished component, null otherwise
+ */
+WorkflowComponentInstance.prototype.getRuntime = function() : String {
+	if (empty(this.custom.startTime) || empty(this.custom.endTime)) {
+		return null;
+	}
+	
+	var difference : Number = this.custom.endTime - this.custom.startTime;
+	var date : Date = new Date();
+	date.setTime(difference);
+	var calendar : Calendar = new Calendar(date);
+	
+	var hours : Number = calendar.get(Calendar.HOUR_OF_DAY);
+	hours += (calendar.get(Calendar.DAY_OF_YEAR) - 1) * 24;
+	// If jobs run longer than 31 days, then this implementation must be changed.
+	
+	return StringUtils.formatNumber(hours, '#00') + ':' + StringUtils.formatCalendar(calendar, 'mm:ss.SSS');
+}
+
+/**
+ * Read a configuration parameter value
+ */
+WorkflowComponentInstance.prototype.getParameterValue = function(parameter : String) {
+	// TODO @aree: Comment the returned calendar object instead of a date!!!
+	if (empty(this.custom.parameterValues) || empty(this.custom.parameterDefinitions)) {
+		return null;
+	}
+	
+	var parameterValues : Object = JSON.parse(this.custom.parameterValues);
+	var parameterDefinitions : Object = JSON.parse(this.custom.parameterDefinitions);
+	
+	var value : Object = parameterValues[parameter];
+	if (!empty(value)) {
+		for each (var parameterDefintion : Object in parameterDefinitions) {
+			if (parameterDefintion.id == parameter) {
+				if (parameterDefintion.type == 'date'
+					|| parameterDefintion.type == 'time'
+					|| parameterDefintion.type == 'datetime') {
+					var calendar : Calendar = new Calendar();
+					calendar.setTimeZone(System.getInstanceTimeZone());
+					calendar.setTime(new Date(value));
+					
+					value = calendar;
+				}
+				if (parameterDefintion.type == 'enum' && typeof parameterDefintion['enumValues'] === 'object' && parameterDefintion.enumValues.length > 0) {
+					for each (let enumValue in parameterDefintion.enumValues) {
+						if(!(typeof enumValue === 'object' && 'name' in enumValue && 'value' in  enumValue))
+							break;
+						
+						if (enumValue['name'] === value) {
+							value = new Function(" return " + enumValue['value'] + " ;")();
+							break;
+						}
+					}
+					
+				}
+				
+				break;
+			}
+		}
+	} else {
+		value = null;
+	}
+	
+	return value;
+}
+
+/**
+ * Method to log within a workflow component. This method is supposed to be used by component developers.
+ *
+ * @param {Array} message The log message
+ * @param {Array} scope The log scope (INFO (default), ERROR, WARN, FATAL)
+ * @param {Array} files An array with File or URL objects for import/export files.
+ */
+WorkflowComponentInstance.prototype.addMessage = function(message : String, scope : String, files : Array) {
+
+	var currentScope : String = scope ? scope.toUpperCase() : 'INFO';
+
+	this.logMessageToComponent(message, currentScope, files);
+	this.logMessageToFile(message, currentScope);
+}
+
+/**
+ * Method to log within a workflow component. This method is internal.
+ *
+ * @param {Array} message The log message
+ * @param {Array} scope The log scope (INFO (default), ERROR, WARN, FATAL)
+ * @param {Array} files An array with File or URL objects for import/export files.
+ */
+WorkflowComponentInstance.prototype.logMessageToComponent = function(message : String, scope : String, files : Array) {
+	var ll = this;
+	if(!isActiveLogLevel(scope,(this.object && 'componentLogLevel' in this.object.custom)?this.object.custom.componentLogLevel.value:null)) return;
+	
+	if (this.messageCount == WorkflowComponentInstance.MAX_MESSAGES - 1)
+	{
+		this.messageCount++;
+		this.addMessage('++++++++++++ Maximum number of messages reached, further messages are ignored ++++++++++++','WARN');
+	} else if (this.messageCount <= WorkflowComponentInstance.MAX_MESSAGES) {
+		// To prevent concurrent exceptions, the object is reloaded.
+		this.reloadObject();
+		
+		var statusMessages : Array = new Array();
+		if (!empty(this.object.custom.statusMessages)) {
+			// The Array object of set-of-string attributes is a Java array and CANNOT be extended via push!
+			// So a new JS array is created here and the values are copied.
+			for each (var oldMessage : String in this.object.custom.statusMessages) {
+				statusMessages.push(oldMessage);
+			}
+			this.messageCount = statusMessages.length;
+		}
+		
+		//check again if maximum messages have been reached to avoid quota exceptions in cases where this.messageCount > 200
+		if (this.messageCount > WorkflowComponentInstance.MAX_MESSAGES) {
+			this.warn('++++++++++++ Maximum number of messages reached, further messages are ignored ++++++++++++');
+			return;
+		}
+
+		if (empty(scope)) {
+			scope = 'INFO';
+		}
+		
+		if (!empty(files)) {
+			for each (var file : File in files) {
+				if(file != null){
+					if(file instanceof dw.web.URL){
+						message += '|||url:' + file.toString();
+					}else if ('exists' in file && file.exists()) {
+						message += '|||file:' + file.fullPath;
+					}
+				}
+			}
+		}
+		
+		var currentGMTTime : Calendar = new Calendar();
+		
+		statusMessages.push('[' + StringUtils.formatCalendar(currentGMTTime, 'yyyy-MM-dd HH:mm:ss.SSS z') + '] [' + scope + '] ' + message);
+		
+		this.object.custom.statusMessages = statusMessages;
+		this.custom.statusMessages = statusMessages;
+		this.messageCount++;
+	} else {
+		// skipping any other messages
+		// lets cont them anyways :) 
+		this.messageCount++;
+	}
+}
+
+/**
+ * Read the status messages of a component
+ */
+WorkflowComponentInstance.prototype.getStatusMessages = function() : ArrayList {
+	// To prevent concurrent exceptions, the object is reloaded.
+	this.reloadObject();
+	
+	var result : ArrayList = new ArrayList();
+	for each (var statusMessage : String in this.custom.statusMessages) {
+		result.add(statusMessage);
+	}
+	result.sort(function(message1 : String, message2 : String) {
+		var calendar1 : Calendar = new Calendar();
+		var calendar2 : Calendar = new Calendar();
+		
+		calendar1.parseByFormat(message1.substring(1, message1.indexOf(']')), 'yyyy-MM-dd HH:mm:ss.SSS z');
+		calendar2.parseByFormat(message2.substring(1, message1.indexOf(']')), 'yyyy-MM-dd HH:mm:ss.SSS z');
+		
+		var time1 = calendar1.getTime().getTime();
+		var time2 = calendar2.getTime().getTime();
+		
+		if (time1 < time2) {
+			return -1;
+		}
+		if (time1 > time2) {
+			return 1;
+		}
+		return 0;
+	});
+	
+	return result;
+}
+
+/**
+ * Method is called by the framework in case a server restart is detected.
+ */
+WorkflowComponentInstance.prototype.handleServerRestart = function() {
+	this.addMessage('Execution interrupted due to server restart.', 'ERROR');
+	this.object.custom.status = 'WAITING';
+	this.object.custom.processingJobId = null;
+	
+	this.custom.status = 'WAITING';
+	this.custom.processingJobId = null;
+}
+
+/**
+ * Get the formatted component timestamp as string 
+ */
+WorkflowComponentInstance.prototype.getTimestamp = function(format : String) : String {
+	if (empty(this.custom.startTime) || empty(format)) {
+		return '';
+	}
+	
+	var calendar : Calendar = new Calendar();
+	calendar.setTimeZone(System.getInstanceTimeZone());
+	
+	calendar.setTime(this.custom.startTime);
+	
+	return StringUtils.formatCalendar(calendar, format);
+}

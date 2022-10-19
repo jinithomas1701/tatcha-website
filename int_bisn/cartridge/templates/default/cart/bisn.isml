@@ -1,0 +1,20 @@
+<!--- TEMPLATENAME: bisn.isml --->
+
+<iscontent type="text/html" charset="UTF-8" compact="true">
+
+<!--- This includes global utilities into the pages --->
+<isinclude template="util/modules"> 
+	
+<isif condition="${empty(pdict.error)}">	
+	<h1>${Resource.msg('checkout.confirm.thankyou','globalProperties',null)}</h1>
+
+	<br/>
+	<isprint value="${pdict.Pid}" />
+	<p>${Resource.msg('components.addtocart.015','globalProperties',null)}</p>
+<iselse>
+	<h1>${Resource.msg('forms.global.validation.topheading','globalProperties',null)}</h1>
+	<div class="validation">
+		<p id="missingfieldsheading">${Resource.msg('forms.profile.usernamecontain','globalProperties',null)}</p>
+		<br/>
+	</div>
+</isif>

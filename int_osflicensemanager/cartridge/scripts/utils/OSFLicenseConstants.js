@@ -1,0 +1,1 @@
+"use strict";module.exports=require("~/cartridge/scripts/utils/licenseConstants");

@@ -1,0 +1,41 @@
+.sitemap-container {
+	.sitemap-title {
+		text-align: center;
+	    font-size: 36px;
+	    margin: 24px 0;
+	    font-weight: 200;
+	    text-transform: uppercase;
+	    line-height: 1.1;
+	    @include media-breakpoint-up(lg) {
+            font-size: 44px;
+            margin: 40px 0 40px;
+        }
+	}
+	
+	.sitemap-list {
+		list-style: none;
+	    -webkit-padding-start: 30px;
+	    padding-inline-start: 30px;
+	    .sitemap-h4 {
+	    	padding-top: 1rem;
+    		font-weight: 600;
+    		a {
+	    		text-decoration: none;
+				color: inherit;
+	    	}
+	    }
+	    
+	    .sitemap-list {
+			list-style: none;
+		    -webkit-padding-start: 30px;
+		    padding-inline-start: 30px;
+		    .sitemap-h5 {
+		    	font-weight: 400;
+		    	a {
+		    		text-decoration: none;
+					color: inherit;
+		    	}
+		    }
+		}
+	}
+}

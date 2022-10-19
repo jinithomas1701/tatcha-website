@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services xmlns="http://www.demandware.com/xml/impex/services/2014-09-26">
+
+    <service-credential service-credential-id="KlaviyoTrackCredentials">
+        <url>https://a.klaviyo.com/api/track</url>
+    </service-credential>
+    
+    <service-credential service-credential-id="KlaviyoSubscriptionCredentials">
+        <url>https://a.klaviyo.com/api/v2/list/MLYffP/subscribe</url>
+    </service-credential>
+    
+    <service-credential service-credential-id="KlaviyoCheckSubscriptionCredentials">
+        <url>https://a.klaviyo.com/api/v2/list/MLYffP/members</url>
+    </service-credential>
+    
+    <service-credential service-credential-id="KlaviyoProfileCredentials">
+        <url>https://a.klaviyo.com/api/v1/person</url>
+    </service-credential>
+
+    <service-profile service-profile-id="KlaviyoTrackProfile">
+        <timeout-millis>5000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>5</cb-calls>
+        <cb-millis>1000</cb-millis>
+    </service-profile>
+
+    <service-profile service-profile-id="KlaviyoSubscriptionProfile">
+        <timeout-millis>5000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>5</cb-calls>
+        <cb-millis>1000</cb-millis>
+    </service-profile>
+    
+    <service-profile service-profile-id="KlaviyoCheckSubscriptionProfile">
+        <timeout-millis>5000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>5</cb-calls>
+        <cb-millis>1000</cb-millis>
+    </service-profile>
+    
+    <service-profile service-profile-id="KlaviyoProfileProfile">
+        <timeout-millis>5000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>5</cb-calls>
+        <cb-millis>1000</cb-millis>
+    </service-profile>
+
+    <service service-id="KlaviyoTrackService">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>KlaviyoTrack</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>KlaviyoTrackProfile</profile-id>
+        <credential-id>KlaviyoTrackCredentials</credential-id>
+    </service>
+    
+    <service service-id="KlaviyoSubscriptionService">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>KlaviyoSubscription</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>KlaviyoSubscriptionProfile</profile-id>
+        <credential-id>KlaviyoSubscriptionCredentials</credential-id>
+    </service>
+    
+    <service service-id="KlaviyoCheckSubscriptionService">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>KlaviyoCheckSubscription</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>KlaviyoCheckSubscriptionProfile</profile-id>
+        <credential-id>KlaviyoCheckSubscriptionCredentials</credential-id>
+    </service>
+    
+        <service service-id="KlaviyoProfileService">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>KlaviyoProfile</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>KlaviyoProfileProfile</profile-id>
+        <credential-id>KlaviyoProfileCredentials</credential-id>
+    </service>
+
+
+</services>

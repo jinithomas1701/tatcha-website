@@ -1,0 +1,27 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+  importScript("int_talkable:talkable/libTalkable.ds");
+
+  var order : Order = pdict.Order,
+      talkable : Object = new TalkableHelper(),
+      talkableSiteId : String = talkable.getSiteId(),
+      isPostCheckoutEnabled : Boolean = talkable.isPostCheckoutEnabled();
+
+  if (!empty(order)) {
+    var talkableData : Object = talkable.getPurchaseData(order);
+  }
+</isscript>
+
+<isif condition="${isPostCheckoutEnabled}">
+  <!-- Begin Talkable integration code -->
+  <isif condition="${empty(talkableSiteId)}">
+    <!-- Talkable Site ID is blank, check your Talkable extension settings -->
+  <iselsif condition="${empty(order)}">
+    <!-- Order could not be found -->
+  <iselse>
+    <script type="text/javascript">
+      _talkableq.push(["register_purchase", <isprint value="${talkableData}" encoding="off"/>]);
+    </script>
+  </isif>
+  <!-- End Talkable integration code -->
+</isif>

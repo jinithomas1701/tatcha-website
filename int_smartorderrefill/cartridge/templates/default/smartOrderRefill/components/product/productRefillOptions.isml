@@ -1,0 +1,158 @@
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<script>
+    (function(){
+        if (typeof window.SmartOrderRefill !== 'undefined' && typeof window.SmartOrderRefill.initializePdp !== undefined) {
+            window.SmartOrderRefill.initializePdp()
+        }
+    })()
+</script>
+
+<iscache type="relative" hour="24"/>
+<isscript>
+  	var recommendedInterval = 0;
+    if(!empty(pdict.RefillOptions.product.custom.OsfRecommendedInterval) && (pdict.RefillOptions.product.custom.OsfRecommendedInterval > 0)){
+		recommendedInterval = pdict.RefillOptions.product.custom.OsfRecommendedInterval;;
+	}     
+    
+	
+</isscript>
+
+<isif condition="${pdict.RefillOptions.isSORProduct && pdict.orderable && (pdict.RefillOptions.weekIntervals.enabled || pdict.RefillOptions.monthIntervals.enabled)}" >
+     <div class="product-auto-delivery-block delivery-mode">
+      <isif condition="${pdict.RefillOptions.weekIntervals.enabled}" >
+                    <isset name="weekOption" value="${true}" scope="page"/>
+                <iselse>
+                    <isset name="weekOption" value="${false}" scope="page"/>
+                </isif>
+
+                <isif condition="${pdict.RefillOptions.monthIntervals.enabled}" >
+                    <isset name="monthOption" value="${true}" scope="page"/>
+                <iselse>
+                    <isset name="monthOption" value="${false}" scope="page"/>
+                </isif>
+        <isset name="productHasOsfRefillEnabled" value="true" scope="page" />
+        <input class="auto-delivery-toggle delivery-mode__checkbox" name="hasSmartOrderRefill" id="hasSmartOrderRefill" type="radio">		
+        <p>
+            <label class="delivery-mode__title" for="hasSmartOrderRefill">		
+                ${Resource.msg( 'refill.multiple', 'forms', null )}
+                <span>
+                <isprint value="${dw.util.StringUtils.formatMoney(dw.value.Money(pdict.AutoDeliveryPrice, session.getCurrency().getCurrencyCode()))}" />
+                </span>
+            </label>
+        </p>
+        <p>
+            <label class="delivery-mode__subtitle" for="hasSmartOrderRefill">	
+                <isif condition="${!empty(dw.system.Site.current.getCustomPreferenceValue('OsfSorPDPMsg'))}">
+                    <isprint value="${StringUtils.pad(dw.system.Site.current.getCustomPreferenceValue('OsfSorPDPMsg'),50)}">					
+                <iselse>
+                    ${Resource.msg( 'refill.multiple', 'forms', null )}
+                </isif>	
+                <button class="icon-link pdp-refill-info focus-outline-purple" href="#" data-toggle="modal" data-target="#autoDeliveryModal" aria-label="click here for autodelivery information">
+                    <i class="fal fa-info-circle"></i>&nbsp;
+                </button>			
+            </label> 
+        </p>      
+
+        <isif condition="${!empty(dw.system.Site.current.preferences.custom.SorDeliveryWeekInterval)}" >
+            <isset name="weekOption" value="${true}" scope="page"/>
+        <iselse>
+            <isset name="weekOption" value="${false}" scope="page"/>
+        </isif>
+
+        <isif condition="${!empty(dw.system.Site.current.preferences.custom.SorDeliveryMonthInterval)}" >
+            <isset name="monthOption" value="${true}" scope="page"/>
+        <iselse>
+            <isset name="monthOption" value="${false}" scope="page"/>
+        </isif>
+        <div class="delivery-mode__toggle-content">
+
+
+            <isif condition="${weekOption && monthOption}">
+                <select id="select-everydelivery" class="form-control delivery-mode__selectbox select-everydelivery" name="everyDelivery" title="Select Refill Interval">
+                    <option  value="">
+                        ${Resource.msg( 'refill.week.month', 'forms', null )}
+                    </option>
+                    <option value="week" >
+                        ${Resource.msg( 'refill.multiple.weeks', 'forms', null )}
+                    </option>
+                    <option value="month">
+                        ${Resource.msg( 'refill.multiple.months', 'forms', null )}
+                    </option>
+                </select>
+                <iselseif condition="${!weekOption && monthOption}" >
+                    <input type='hidden' name="everyDelivery" class='select-everydelivery' value='month'>
+                    <isset name="sordeliveryoption" value="month" scope="page"/>
+                </iselseif>
+                <iselseif condition="${weekOption && !monthOption}" >
+                    <input type='hidden' name="everyDelivery" class='select-everydelivery' value='week'>
+                    <isset name="sordeliveryoption" value="week" scope="page"/>
+                </iselseif>
+            </isif>
+
+            <isif condition="${!empty(sordeliveryoption)}">
+                <isif condition="${sordeliveryoption === 'week'}">
+                    <isset name="displayWeek" value="inline-block" scope="page" />
+                    <isset name="displayMonth" value="none" scope="page" />
+                <iselse>
+                    <isset name="displayWeek" value="none" scope="page" />
+                    <isset name="displayMonth" value="inline-block" scope="page" />
+                </isif>
+            <iselse>
+                <isset name="displayWeek" value="none" scope="page" />
+                <isset name="displayMonth" value="none" scope="page" />
+            </isif>
+
+            <isif condition="${weekOption}" >
+                <select class="form-control delivery-mode__selectbox week-select"
+                        id="OsfSorDeliveryWeekInterval"
+                        name="OsfSorDeliveryWeekInterval"
+                        title="Select Refill Interval">
+                    <isloop items="${dw.system.Site.current.preferences.custom.SorDeliveryWeekInterval.sort()}" var="woption">
+                        <option value="${woption}"
+                            <isif condition="${woption == weekRefillInterval}">selected</isif> >
+                                <isprint value=${woption}>  <isif condition="${!monthOption}"><isprint value="${Resource.msg('refill.multiple.weeks', 'forms', null)}"></isif>
+                        </option>
+                    </isloop>
+                </select>            
+            </isif>
+           
+           <iscomment>If product level interval is there, override</iscomment>
+           <isif condition="${pdict.RefillOptions.product.custom.OsfSmartOrderInterval.length > 0}" >
+           		<isset name="intMonths" value="${pdict.RefillOptions.product.custom.OsfSmartOrderInterval}" scope="page" />
+           <iselse>
+           		<isset name="intMonths" value="${dw.system.Site.current.preferences.custom.SorDeliveryMonthInterval}" scope="page" />
+            </isif>
+            
+            <select name="SorDeliveryMonthInterval" id="SorDeliveryMonthInterval"  class="form-control delivery-mode__selectbox"  title="Select Refill Interval">
+				<isloop items="${intMonths.sort()}" var="option">
+
+				<isif condition="${option == recommendedInterval}">
+					<isset name="selected" value="selected" scope="page" />
+					<isset name="recommended" value=" (Recommended)" scope="page" />
+				<iselse>
+					<isset name="selected" value="" scope="page" />
+					<isset name="recommended" value="" scope="page" />					
+				</isif>				
+      
+                 <option value="${option}" <isprint value=${selected}> >
+                    Every <isprint value=${option} style="INTEGER">  
+                    <isif condition="${!weekOption}">
+	                    <isif condition="${option > 1}"> 
+	                    	<isprint value="${Resource.msg('refill.multiple.months', 'forms', null)}">
+	                    <iselse>
+	                    	<isprint value="${Resource.msg('refill.multiple.month', 'forms', null)}">
+	                    </isif>
+                    </isif>
+                    <isprint value=${recommended}>
+                 </option>
+                </isloop>
+            </select>
+		   <div class="OsfSorDeliveryInterval-help delivery-mode__help autodelivery-subtitle">Auto-Delivery is only available in the USA.</div>	
+        </div>
+     </div> 
+    
+</isif>
+

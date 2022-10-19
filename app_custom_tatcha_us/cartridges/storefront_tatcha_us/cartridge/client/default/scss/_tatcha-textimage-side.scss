@@ -1,0 +1,81 @@
+.text-image-sidebyside{
+    .panel-image{
+        text-align: center;
+		@include media-breakpoint-down(md) {
+        	padding-right: 0px;
+   			padding-left: 0px;
+   		}
+		@media (min-width: 768px) and (max-width:912px) {
+            padding-left: 15px;
+        }
+
+    //     overflow: hidden;
+    //     margin: 1rem unset;
+    //     img{
+    //     object-fit: cover;
+    //     object-position: initial;
+    //     width: 100%;
+    //     // position: absolute;
+    //     // transform: translate(-50%,-50%);
+    //     // left: 50%;
+    //     // top: 50%;
+    //     @include media-breakpoint-down(md) {
+    //         position: relative;
+    //     }
+    //    }
+    }
+    .text-section{
+        margin: 1rem unset;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+		@include media-breakpoint-down(md) {
+        	padding-right: 0px;
+   			padding-left: 0px;
+   		}
+		@media (min-width: 768px) and (max-width:912px) {
+            padding-left: 15px;
+        }
+    }
+    .text-container{
+        // padding: 14%;
+        text-align: left;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        
+
+        .lead-text{
+			font-family: 'minion-pro', serif;
+            font-size: 21px;
+            line-height: 25px;
+            font-weight: $font-weight-medium;
+            @include media-breakpoint-up(lg) {
+                font-size: 28px;
+                line-height: 34px;
+                font-weight: $font-weight-medium;
+            }
+        }
+
+		strong{
+			font-weight: $font-weight-bold;
+		}
+
+        // @include media-breakpoint-down(md) {
+        //     padding: 24px 24px;
+        // }
+        // @include media-breakpoint-up(md) {
+        //     padding:10%;
+        // }
+        // @include media-breakpoint-up(lg) {
+        //     padding:14%;
+        // }
+        // @include media-breakpoint-up(xxl) {
+        //     padding:18%;
+        // }
+    }
+}
+	.container-fluid {
+    		padding-right: 0px;
+   			padding-left: 0px;
+		}

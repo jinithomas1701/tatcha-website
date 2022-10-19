@@ -1,0 +1,163 @@
+/**
+ * Creates the relationship between the WorkflowScheduleDefinition and the WorkflowComponentDefinition.
+ * 
+ * @input CurrentHttpParameterMap     : dw.web.HttpParameterMap The current HttpParameterMap.
+ * @input WorkflowScheduleDefinitionID : String                  The ID of the WorkflowScheduleDefinition object for
+ *                                                              which the related WorkflowComponentDefinitions will be
+ *                                                              set.
+ * @output InvalidWorkflowScheduleDefinitionWorkflowComponentDefinitionRelations : Array
+ */
+
+importPackage(dw.util);
+importPackage(dw.object);
+importPackage(dw.web);
+importPackage(dw.system);
+
+importScript('bc_integrationframework:workflow/libWorkflow.ds');
+
+/**
+ * The main function.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Number} PIPELET_NEXT. If the related components form is not valid, PIPELET_ERROR is returned.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+	var currentHttpParameterMap     : HttpParameterMap = pdict.CurrentHttpParameterMap;
+	var workflowScheduleDefinitionID : String           = pdict.WorkflowScheduleDefinitionID;
+	
+	var parameterMaps : Array = new Array();
+	for each (var parameterName : String in currentHttpParameterMap.parameterNames) {
+		var indexOfComponentType : Number = parameterName.indexOf('componentType');
+		// endsWith
+		if (indexOfComponentType + 'componentType'.length == parameterName.length) {
+			parameterMaps.push(currentHttpParameterMap.getParameterMap(parameterName.substring(0, indexOfComponentType)));
+		}
+	}
+	
+	// First all relations are removed. Afterwards all submitted relations will be created.
+	var workflowScheduleDefinitionWorkflowComponentDefinitionRelations : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowScheduleDefinitionWorkflowComponentDefinitionRelation', 'custom.workflowScheduleDefinitionID = {0}', null, workflowScheduleDefinitionID);
+	if (!empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelations)) {
+		for each (var workflowScheduleDefinitionWorkflowComponentDefinitionRelation : CustomObject in workflowScheduleDefinitionWorkflowComponentDefinitionRelations) {
+			CustomObjectMgr.remove(workflowScheduleDefinitionWorkflowComponentDefinitionRelation);
+		}
+		workflowScheduleDefinitionWorkflowComponentDefinitionRelations.close();
+	}
+	
+	var formInvalid : Boolean = false;
+	var fakeRelationObjects : Array = new Array();
+	for each (var parameterMap : HttpParameterMap in parameterMaps) {
+		var workflowComponentDefinition : CustomObject = CustomObjectMgr.getCustomObject('WorkflowComponentDefinition', parameterMap.componentType.stringValue);
+		if (empty(workflowComponentDefinition)) {
+			continue;
+		}
+		
+		var parameterValues = {};
+		var enteredValues = {};
+		var formErrors : HashMap = new HashMap();
+		if (!empty(workflowComponentDefinition.custom.parameters)) {
+			var parameterDefinitions : Object = JSON.parse(workflowComponentDefinition.custom.parameters);
+			for each (var parameterDefinition : Object in parameterDefinitions) {
+				enteredValues[parameterDefinition.id] = parameterMap[parameterDefinition.id].value;
+				
+				if (parameterDefinition.mandatory == true && empty(parameterMap[parameterDefinition.id].value) && parameterDefinition.type != 'boolean') {
+					formErrors.put(parameterDefinition.id, Resource.msg('form.error.component.mandatory', 'workflow', null));
+					formInvalid = true;
+				}
+				
+				var value : Object = '';
+				
+				if (parameterDefinition.type == 'boolean') {
+					value = parameterMap[parameterDefinition.id].booleanValue;
+					if (value == null) {
+						value = false;
+					}
+				} else if (parameterDefinition.type == 'date'
+					|| parameterDefinition.type == 'time'
+					|| parameterDefinition.type == 'datetime') {
+					value = parameterMap[parameterDefinition.id].stringValue;
+					if (!empty(value)) {
+						var calendar : Calendar = new Calendar();
+						calendar.setTimeZone(System.getInstanceTimeZone());
+						
+						try {
+							if (parameterDefinition.type == 'date') {
+								calendar.parseByLocale(value, request.locale, Calendar.INPUT_DATE_PATTERN);
+							} else if (parameterDefinition.type == 'time') {
+								calendar.parseByLocale(value, request.locale, Calendar.INPUT_TIME_PATTERN);
+							} else {
+								calendar.parseByLocale(value, request.locale, Calendar.INPUT_DATE_TIME_PATTERN);
+							}
+							value = calendar.getTime().getTime();
+						} catch (e) {
+							value = null;
+						}
+					}
+				} else if (parameterDefinition.type == 'double') {
+					value = parameterMap[parameterDefinition.id].doubleValue;
+				} else if (parameterDefinition.type == 'int') {
+					value = parameterMap[parameterDefinition.id].intValue;
+				} else if (parameterDefinition.type == 'string'
+					|| parameterDefinition.type == 'password'
+					|| parameterDefinition.type == 'enum') {
+					value = parameterMap[parameterDefinition.id].stringValue;
+				}
+				
+				if (!empty(parameterMap[parameterDefinition.id].value) && empty(value)) {
+					formErrors.put(parameterDefinition.id, Resource.msg('form.error.component.parse', 'workflow', null));
+					formInvalid = true;
+				}
+				
+				parameterValues[parameterDefinition.id] = value;
+			}
+		}
+		
+		var fakeRelationObject = {
+			"fakeRelation": true,
+			"formErrors": formErrors,
+			"enteredValues": enteredValues,
+			"custom": {
+				"workflowScheduleDefinitionID": workflowScheduleDefinitionID,
+				"workflowComponentDefinitionName": workflowComponentDefinition.custom.name,
+				"position": parameterMap.position.intValue,
+				"disabled": parameterMap.disabled.booleanValue == true,
+				"asynchron": parameterMap.asynchron.booleanValue == true,
+				"displayName": parameterMap.displayName.stringValue,
+				"fileLogLevel": parameterMap.fileLogLevel.stringValue || 'inherit',
+				"componentLogLevel": parameterMap.componentLogLevel.stringValue || 'inherit',
+				"parameters": JSON.stringify(parameterValues)
+			}
+		};
+		fakeRelationObjects.push(fakeRelationObject);
+	}
+	
+	// If the form is not valid, the custom object must not be saved until the errors are resolve. For this reason
+	// transient objects (with the same attributes as the custom objects) are created.
+	// So the behaviour of the form will be almost the same as with custom objects.
+	if (formInvalid) {
+		fakeRelationObjects.sort(function(object1, object2) {
+			if (object1.custom.position > object2.custom.position) {
+				return 1;
+			}
+			if (object1.custom.position < object2.custom.position) {
+				return -1;
+			}
+			return 0;
+		});
+		pdict.InvalidWorkflowScheduleDefinitionWorkflowComponentDefinitionRelations = fakeRelationObjects;
+		
+		return PIPELET_ERROR;
+	} else {
+		var libWorkflow : Object = new LibWorkflow();
+		
+		for each (var fakeRelationObject : Object in fakeRelationObjects) {
+			var id : String = libWorkflow.createWorkflowScheduleDefinitionWorkflowComponentDefinitionRelationId(fakeRelationObject.custom.workflowScheduleDefinitionID, fakeRelationObject.custom.workflowComponentDefinitionName, fakeRelationObject.custom.position);
+			var newWorkflowScheduleDefinitionWorkflowComponentDefinitionRelation : CustomObject = CustomObjectMgr.createCustomObject('WorkflowScheduleDefinitionWorkflowComponentDefinitionRelation', id);
+			for (var property : String in fakeRelationObject.custom) {
+				newWorkflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom[property] = fakeRelationObject.custom[property];
+			}
+		}
+	}
+	
+    return PIPELET_NEXT;
+}

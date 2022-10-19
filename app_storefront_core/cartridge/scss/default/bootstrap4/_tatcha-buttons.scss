@@ -1,0 +1,129 @@
+// BUTTONS
+.btn { text-transform: uppercase; }
+.btn-link {
+  color: $gray-700;
+  text-decoration: underline;
+}
+
+// circle button 
+.btn-circle {
+  width: 3 * $g-unit;
+  height: 3 * $g-unit;
+  text-align: center;
+  padding: (0.75 * $g-unit) (0.125 * $g-unit);
+  border-radius: 1.5 * $g-unit;
+  &.back-to-top.btn-primary, &.btn-float.btn-primary {
+  	background-color: rgba( $primary, .7 );
+  	border: none;
+  }
+}
+
+
+// fix button focus
+.btn-default:focus { background-color: $btn-default-bg; }
+.btn-primary:focus { background-color: theme-color("primary"); }
+.btn-success:focus { background-color: theme-color("success"); }
+.btn-info:focus { background-color: theme-color("info"); }
+.btn-warning:focus { background-color: theme-color("warning"); }
+.btn-danger:focus { background-color: theme-color("danger"); }
+
+// Additional Buttons
+.btn-white {
+  @include button-variant($black, rgba(255,255,255,.95), $white);
+  &:focus { background-color:rgba(255,255,255,.95); }
+}
+
+.btn-black {
+  @include button-variant($white, rgba(0,0,0,1), $black);
+  &:focus { background-color:rgba(0,0,0,.95); }
+  &:hover { background-color:rgba(0,0,0,.75); }
+}
+
+.btn-outline-black {
+  @include button-variant($black, transparent, $black);
+  &:hover, &:active { background-color: rgba(0,0,0,.10); }
+  &:focus { background-color:transparent; }
+}
+
+.btn-outline-white {
+  @include button-variant($white, transparent, $white);
+  &:hover, &:active { background-color: rgba(255,255,255,.10); }
+  &:focus { background-color:transparent; }
+}
+
+.btn-input-group {
+  @include button-variant($gray-700, transparent, $gray-400);
+  &:hover, &:active { background-color: rgba(255,255,255,.10); }
+  &:focus { background-color:transparent; }
+  &.btn-primary {
+    @include button-variant($white, theme-color("primary"), theme-color("primary"));
+  }
+}
+
+.btn-facebook {
+  @include button-variant(#4267b2,$white, #4267b2);
+  text-transform: uppercase;
+  font-size: 14px;
+  font-weight: $font-weight-normal;
+  svg {
+    margin-right: 8px;
+  }
+}
+
+// Override disabled buttons. Disabled comes first so active can properly restyle
+button, .btn {
+  &.disabled,
+  &:disabled {
+    opacity:.25;
+    @include box-shadow(none);
+    cursor: default;
+    outline: none;
+  }
+
+  &:active,
+  &.active {
+    background-image: none;
+    outline: none !important;
+    @include box-shadow(inset 0 3px 5px rgba(0,0,0,.125));
+  }
+
+  &:focus, .focus {
+  	outline: none;
+  }
+}
+
+// override box shadow
+.btn-link:active {
+	@include box-shadow(none);
+}
+
+// for main CTA's to go full width on mobile.
+.btn-xs-sm-block {
+  @include media-breakpoint-down(xs) {
+	// @media (max-width: $screen-xs-max) {
+     width: 100%; 
+  }
+  @include media-breakpoint-down(sm) {
+	// @media (max-width: $screen-sm-max) { 
+    display: block; width: 85%; margin-left: auto; margin-right: auto; 
+  }
+}
+
+// Button and CTA Container for spacing
+.cta-container {
+	margin: $g-unit 0;
+}
+
+// Rounded Corners
+// .btn.btn-round {
+//   border-radius: ceil(0.825 * ($padding-base-vertical + $font-size-base));
+//   &.btn-lg {
+//     border-radius: ceil(0.825 * ($padding-large-vertical + $font-size-large));
+//   }
+//   &.btn-sm {
+//     border-radius: ceil(0.825 * ($padding-small-vertical + $font-size-small));
+//   }
+//   &.btn-xs{
+//     border-radius: ceil(0.825 * ($padding-xs-vertical + $font-size-small));
+//   }
+// }

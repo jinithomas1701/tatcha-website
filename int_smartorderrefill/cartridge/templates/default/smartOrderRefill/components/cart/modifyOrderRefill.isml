@@ -1,0 +1,99 @@
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+
+<!--- TEMPLATENAME: modifyorderrefill.isml --->
+<isinclude template="util/modules">
+<isif condition="${!empty(dw.system.Site.current.preferences.custom.SorDeliveryWeekInterval)}" >
+    <isset name="weekOption" value="${true}" scope="page"/>
+<iselse>
+    <isset name="weekOption" value="${false}" scope="page"/>
+</isif>
+
+<isif condition="${!empty(dw.system.Site.current.preferences.custom.SorDeliveryMonthInterval)}" >
+    <isset name="monthOption" value="${true}" scope="page"/>
+<iselse>
+    <isset name="monthOption" value="${false}" scope="page"/>
+</isif>
+
+	<div class="bag-item-auto-delivery auto-delivery form-group">
+		<a href="${URLUtils.url('SmartOrderRefillController-UpdateCartProductRefillInformation', 'liuuid', pdict.RefillOptions.productLineItem.UUID,'action','remove')}" class="osf-remove-link" style="display: none">Remove</a>
+		<input type="hidden" name="liuuid" value="${pdict.RefillOptions.productLineItem.UUID}">
+		<div class="checkbox">
+			<label>
+				<input class="multipleRefillSor" type="checkbox" value="true" name="${pdict.CurrentForms.smartorderrefill.hasSmartOrderRefill.htmlName}" data-pid="${pdict.RefillOptions.productLineItem.product.ID}" aria-label="${pdict.RefillOptions.productLineItem.product.name + ' auto delivery'}" aria-describedby="prd-ad"
+                    <isif condition="${pdict.RefillOptions.monthIntervals.selected}">checked="checked"</isif>>
+          		${Resource.msg( 'refill.multiple', 'forms', null )}
+          		<div class="sr-only sr-only-focusable" id="prd-ad" aria-live="assertive" aria-atomic="true">${Resource.msg('global.pageupdate','locale',null)}</div>
+          		<isif condition="${!empty(dw.system.Site.current.preferences.custom.OsfSorDeliveryNote)}">
+				    <button class="sor-itool icon-link sor-icon-link p-0" type="button" data-toggle="modal" data-target="#sorModal" data-content="${dw.system.Site.current.preferences.custom.OsfSorDeliveryNote}" aria-label="click here for autodelivery information">
+						<i class="fal fa-info-circle fa-sm"></i>
+					</button>
+				</isif>
+			</label>
+		</div>
+		<span class="frequency-options" <isif condition="${!pdict.RefillOptions.monthIntervals.selected}"> style="display:none" </isif>>
+			<isif condition="${weekOption && monthOption}" >
+		        <select class="form-control input-sm select-everydelivery" name="everyDelivery">
+		            <option  value="">${Resource.msg( 'refill.frequency', 'forms', null )}</option>
+		            <option value="week" <isif condition="${pdict.RefillOptions.productLineItem.custom.sordeliveryoption === 'week'}">selected</isif>>
+		                ${Resource.msg( 'refill.multiple.weeks', 'forms', null )}
+		            </option>
+		            <option value="month" <isif condition="${pdict.RefillOptions.productLineItem.custom.sordeliveryoption === 'month'}">selected</isif>>
+		                ${Resource.msg( 'refill.multiple.months', 'forms', null )}
+		            </option>
+		        </select>
+		        <iselseif condition="${!weekOption && monthOption}" >
+		            <input type='hidden' name="everyDelivery" class='select-everydelivery' value='month'>
+		            <isset name="sordeliveryoption" value="month" scope="page"/>
+		        </iselseif>
+		        <iselseif condition="${weekOption && !monthOption}" >
+		            <input type='hidden' name="everyDelivery" class='select-everydelivery' value='week'>
+		            <isset name="sordeliveryoption" value="week" scope="page"/>
+		        </iselseif>
+		    </isif>
+		    <isif condition="${!empty(dw.system.Site.current.preferences.custom.SorDeliveryWeekInterval)}" >
+		        <select class="form-control input-sm week-select input-select inputSor-select"
+	                name="${pdict.CurrentForms.smartorderrefill.SorWeekInterval.htmlName}"
+	                style="display: none">
+		            <isloop items="${dw.system.Site.current.preferences.custom.SorDeliveryWeekInterval.sort()}" var="woption">
+		                <option value="${woption}"
+		                        <isif condition="${woption == pdict.RefillOptions.productLineItem.custom.OsfSorSmartOrderRefillWeekInterval}">selected</isif> >
+		                    	Every <isprint value=${woption*7} style="INTEGER"> <isprint value="${Resource.msg('refill.multiple.days', 'forms', null)}">
+		                </option>
+		            </isloop>
+		        </select>
+		    <iselse>
+		        <isscript> pdict.CurrentForms.smartorderrefill.SorWeekInterval.value = 0</isscript>
+		    </isif>
+		    <isif condition="${!empty(dw.system.Site.current.preferences.custom.SorDeliveryMonthInterval)}" >
+		        <isscript>
+		        var months = dw.system.Site.current.preferences.custom.SorDeliveryMonthInterval.sort();
+		        if(pdict.RefillOptions.product && !empty(pdict.RefillOptions.product.custom.OsfSmartOrderInterval)) {
+		        	var months = pdict.RefillOptions.product.custom.OsfSmartOrderInterval;
+		        }
+		        var recommended =  (pdict.RefillOptions.product && !empty(pdict.RefillOptions.product.custom.OsfRecommendedInterval)) ? pdict.RefillOptions.product.custom.OsfRecommendedInterval : '';
+		       	var selectedInterval = pdict.RefillOptions.productLineItem.custom.SorMonthInterval;
+				selectedInterval = (selectedInterval) ? selectedInterval : recommended;
+				</isscript>
+		        <select class="form-control input-sm month-select input-select inputSor-select"
+		            name="${pdict.CurrentForms.smartorderrefill.SorMonthInterval.htmlName}"
+		            style="display: none">
+		            <isloop items="${months}" var="option" status="status">
+		                <option value="${option}"
+		                    <isif condition="${option == selectedInterval}">selected</isif> >
+		                    	${Resource.msg( 'refill.every', 'forms', null )} <isprint value=${option} style="INTEGER"> 
+		                    	<isif condition="${option > 1}"> 
+			                    	<isprint value="${Resource.msg('refill.multiple.months', 'forms', null)}">
+			                    <iselse>
+			                    	<isprint value="${Resource.msg('refill.multiple.month', 'forms', null)}">
+			                    </isif>
+		                    	<isif condition="${option == recommended}">(${Resource.msg( 'refill.frequency.recommended', 'forms', null )})</isif>
+		                </option>
+		            </isloop>
+		        </select>
+		    </isif>
+		</span>
+  </div>
+	

@@ -1,0 +1,8 @@
+<iscomment>
+    This template is included using hook and the purpose is to remotely include 
+    scripts call and avoid caching
+</iscomment>
+
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('SignifydEnableCartridge')}">
+    <isinclude url="${URLUtils.url('Signifyd-IncludeFingerprint')}" />
+</isif>

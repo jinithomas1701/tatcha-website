@@ -1,0 +1,53 @@
+<div id="braintree_refund_form" class="js_braintree_hide">
+    <form class="braintree_action_form braintree_content" action="${URLUtils.url('BraintreeAdmin-Action')}">
+
+        <input type="hidden" name="transactionId" value="${transaction.legacyId}" />
+
+        <input type="hidden" name="orderNo" value="${order.orderNo}" />
+
+        <input type="hidden" name="orderToken" value="${order.orderToken}" />
+
+        <input type="hidden" name="method" value="refund" />
+
+        <input type="hidden" name="leftToRefund" value="${leftToRefund.getValue()}" />
+
+        <h2>${Resource.msgf('transaction.refund.header', 'braintreebm', null, transaction.legacyId)}</h2>
+
+        <div class="braintree_error_msg_box braintree_error_msg_box_amt_required"><p>${Resource.msg('forms.error.amt.required', 'braintreebm', null)}</p></div>
+        <div class="braintree_error_msg_box braintree_error_msg_box_amt_greaterzero"><p>${Resource.msg('forms.error.amt.greaterzero', 'braintreebm', null)}</p></div>
+        <div class="braintree_error_msg_box braintree_error_msg_box_amt_float"><p>${Resource.msg('forms.error.amt.float', 'braintreebm', null)}</p></div>
+
+        <table class="braintree_table">
+            <isif condition="${transaction.customer && !empty(transaction.customer.firstName || transaction.customer.lastName)}">
+                <tr class="braintree_table_row_even">
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customername', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.customerformat', 'braintreebm', null, transaction.customer.firstName, transaction.customer.lastName)}</td>
+                </tr>
+            </isif>
+            <isif condition="${transaction.customer && !empty(transaction.customer.email)}">
+                <tr>
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customeremail', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">${transaction.customer.email}</td>
+                </tr>
+            </isif>
+            <tr class="braintree_table_row_even">
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.refund.refundedamount', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, refundedAmount.getValue(), refundedAmount.getCurrencyCode())}</td>
+            </tr>
+            <tr class="braintree_table_row_even">
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.refund.left', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, leftToRefund.getValue(), leftToRefund.getCurrencyCode())}</td>
+            </tr>
+            <tr>
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.refund.partialamount', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value">
+                    <div><input type="text" class="braintree_input_amount" name="amount" data-validation="greaterzero" /> ${currency}</div>
+                    <div><span class="caption"></span></div>
+                </td>
+            </tr>
+            <tr class="braintree_table_row_note">
+                <td colspan="2">${Resource.msg('transaction.refund.notetomerchant', 'braintreebm', null)}</td>
+            </tr>
+        </table>
+    </form>
+</div>

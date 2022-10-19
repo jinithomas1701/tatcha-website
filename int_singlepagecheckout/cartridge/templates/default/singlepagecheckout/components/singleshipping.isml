@@ -1,0 +1,198 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+var Site = require('dw/system/Site');
+var countriesList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('CountriesList'));
+	
+var paymentInstruments =  (pdict.p_checkoutobj.paymentInfo && !empty(pdict.p_checkoutobj.paymentInfo.paymentInstruments)) ?
+		pdict.p_checkoutobj.paymentInfo.paymentInstruments: false;
+		
+var paymentTypeApplepay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'ApplePay') ? true : false;
+var paymentTypeAfterPay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI') ? true : false;
+var paymentTypePaypal = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'PayPal') ? true : false;
+var afterPayErrorStatus = !empty(request.httpParameterMap.get('afterpay')).stringValue ? request.httpParameterMap.get('afterpay').stringValue : null;
+	if(!empty(afterPayErrorStatus)){
+		session.custom.isAfterPayFailed = true;
+	} else if(!empty(request.httpParameterMap.get('status')) && request.httpParameterMap.get('status').stringValue === 'SUCCESS') {
+		session.custom.isAfterPayFailed = false;
+	}	
+</isscript>
+<isset name="checkoutObj" value="${pdict.p_checkoutobj}" scope="page" />
+<iscomment> Shipping Header </iscomment>
+<div class="mb-0 contactCollapseItem" data-toggle="collapse" data-target="#contactCollapse"  aria-controls="contactShippingCollapse">
+	<span class="outer-section" tabindex="-1">
+    	<h2 class="section-heading outer-section-inner" id="contact-section-heading" tabindex="-1">1. Contact &amp; Shipping
+    		<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true && !paymentTypeApplepay && !paymentTypePaypal)}">
+				<a href="#" class="text-primary float-right edit-contact-section" tabindex="0" aria-label="Edit Contact &amp; Shipping">Edit</a>    		
+    		<iselse>
+    			<a href="#" class="text-primary float-right edit-contact-section d-none" tabindex="0" aria-label="Edit Contact &amp; Shipping">Edit</a>    		
+    		</isif>
+    		<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true &&  (paymentTypePaypal|| paymentTypeApplepay))}">
+    				<a href="${URLUtils.https('SinglePageCheckout-RenderShippingOnlyEdit')}" class="text-primary float-right edit-delivery-section" aria-label="Update Shipping Method">Edit</a>  
+    		</isif>
+         </h2>
+	</span>
+</div>
+
+<iscomment> Shipping Form </iscomment>
+<div id="contactCollapse" class="indent-container collapse show" tabindex="-1" aria-label="Contact and shipping accordion" data-parent="#accordion" style="">
+
+<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == false)}">
+	<form action="${URLUtils.https('COShipping-SingleShipping')}" autocomplete="off" method="post" id="${pdict.CurrentForms.singleshipping.shippingAddress.htmlName}" class="addressformfields">	
+	<div class="contact-shipping">
+		<div class="contact-info-container" style="<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true)}">display:none;<iselse></isif>" >
+			<isif condition="${(pdict.p_checkoutobj.customerInfo.isAuthenticated == false)}">
+				<h2 class="section-title">Contact Information</h2>
+				<div class="form-row">
+					<div class="form-group col-12">
+						<input type="email" name="email" value="${pdict.p_checkoutobj.customerInfo.customerEmail}" class="form-control floating__input form-control-lg" id="guestEmail" aria-label="Enter email address" placeholder="Enter email" aria-required="true">
+		                
+						<label class="float-label" for="guestEmail" data-content="Email address*"> </label>
+						
+		                <div class="ml-4" id="singlepagecheckout_profile_customer_addtoemaillist_container">
+		                	<input class="form-check-input" type="checkbox" id="singlepagecheckout_profile_customer_addtoemaillist" name="${pdict.CurrentForms.profile.customer.addtoemaillist.htmlName}" aria-label="Select if you want to join our email list to receive special promotion, early access to new products" />
+		                	<input type="hidden" id="csrf_token" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		                	<input type="hidden" id="subscribe_subscribe" name="${pdict.CurrentForms.subscribe.subscribe.htmlName}" value="subscribe"/>
+		                	<input type="hidden" id="source" name="source" value="footer"/> 
+		                	<input type="hidden" name="newsLetterSignUpKlavioUrl" id="newsLetterSignUpKlavioUrl" value="${URLUtils.url('Klaviyo-SubscribeFromSPCheckout')}" />
+		                	<span>Join our email list to receive special promotion, early access to new products.</span>
+		                </div>
+		             </div>
+		        </div>
+	        </isif>
+	        
+	        <h2 class="section-title mt-3">Shipping address</h2>
+	        <div class="form-row">
+	        	<div class="form-group col-md-6">
+	        		<input type="text" required="" autocomplete="none" autocorrect="off" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.firstName}" class="form-control floating__input  validateName form-control-lg validateForNonEnglishChars" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.firstName.htmlName}" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.firstName.htmlName}" aria-label="Enter First Name" placeholder="First Name">
+		        	<label class="float-label" for="firstName" data-content="First Name*"></label>
+	        	  
+		        </div>
+		        <div class="form-group col-md-6">
+		        	<input type="text" required="" autocomplete="none" autocorrect="off" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.lastName}" class="form-control floating__input validateName  form-control-lg validateForNonEnglishChars" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.lastName.htmlName}" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.lastName.htmlName}" aria-label="Enter Last Name" placeholder="Last Name">
+		        	<label class="float-label" for="lastName" data-content="Last Name*"></label>
+		            
+		        </div>
+		    </div>
+		    <div class="form-row">
+		    	<div class="form-group col-12">
+		    		<select id="country" required="" name="country" class="form-control floating__input form-control-lg pl-3 country" aria-label="Country">
+		    		<option value="" disabled="" selected="">Country</option>
+		    		<isif condition="${!empty(pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlValue)}">
+		    			<isset name="selectedCountry" value="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlValue}" scope="page" />
+	                 <iselse>
+	                 	<isset name="selectedCountry" value="US" scope="page" />
+	                 </isif>
+	                 <isloop items="${countriesList}" alias="country">
+	                 	<isif condition="${selectedCountry == country.value }">
+	                 		<option value="${country.value}" selected><isprint value="${country.label}" /></option>
+	                 	<iselse>
+	                 		<option value="${country.value}"><isprint value="${country.label}" /></option>
+	                 	</isif>
+	                 </isloop>
+	                 </select>
+	                 <label class="float-label" for="inputCountry" data-content="Country*"></label>
+		    		
+	              </div>
+	         </div>
+	         <div class="form-row">
+	         	<div class="form-group col-12">
+	         		<input type="text" required="" autocomplete="off" autocorrect="off" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address1}" class="form-control floating__input form-control-lg validateForNonEnglishChars" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.address1.htmlName}" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.address1.htmlName}" aria-label="Enter Street Address" placeholder="Street Address">
+	         		<label class="float-label" data-content="Street Address*" for="address1"></label>
+	         		
+		       </div>
+		     </div>
+		     <a href="#addressCollapse" class="mb-0 address-collapse" data-toggle="collapse" aria-expanded="false" aria-controls="addressCollapse" aria-label="Enter address manually">
+		     	<span class="enter-address-link">Enter address manually</span>
+		     </a>
+		     <div class="collapse" aria-label="Address container" id="addressCollapse">
+			     	<div class="form-row">
+			     		<div class="form-group col-12">
+			     			<input type="text" autocomplete="none" autocorrect="off" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address2}" class="form-control floating__input form-control-lg validateForNonEnglishChars" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.address2.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.address2.htmlName}" aria-label="Enter street address" placeholder="Street Address 2">
+			     				<label class="float-label" data-content="Street Address 2 (Optional)" for="address2"></label>
+			     		
+			            </div>
+			        </div>
+			        <div class="form-row">
+			        	<div class="form-group col-md-6">
+			        		<isif condition="${(selectedCountry == 'US')}">
+			        			<input type="text" data-msg-required="${Resource.msg('singleshipping.zipcode.required', 'checkout', null)}" autocomplete="postalcode"  inputmode="decimal" pattern="[0-9]*" required="" value="${!empty(pdict.p_checkoutobj.shippingInfo.shippingAddress.address1) ? pdict.p_checkoutobj.shippingInfo.shippingAddress.postal : ''}" class="form-control floating__input form-control-lg validatepostal validateForNonEnglishChars" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.postal.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.postal.htmlName}" aria-label="Enter zipcode" placeholder="Zipcode">			        		
+			        			
+			        		<iselse>
+			        			<input type="text" data-msg-required="${Resource.msg('singleshipping.zipcode.required', 'checkout', null)}" autocomplete="postalcode"  required="" value="${!empty(pdict.p_checkoutobj.shippingInfo.shippingAddress.address1) ? pdict.p_checkoutobj.shippingInfo.shippingAddress.postal : ''}" class="form-control floating__input form-control-lg validatepostal validateForNonEnglishChars" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.postal.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.postal.htmlName}" aria-label="Enter zipcode" placeholder="Zipcode">
+			        			
+			        		</isif>
+			        		<input type ="hidden" class="postalcodeField" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.postal.htmlName}" value="" />
+			        		<label class="float-label" data-content="Zipcode*" for="postal"></label>
+			        		
+			            </div>
+			            <div class="form-group col-md-6">
+			            	<isif condition="${(selectedCountry == 'US')}">
+				            	<input type="text" data-msg-required="${Resource.msg('singleshipping.province.required', 'checkout', null)}" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.state}"  style="display:none;" class="form-control floating__input form-control-lg" id="stateText" name="stateText" aria-label="Enter province" placeholder="State*">
+				                <isinclude template="singlepagecheckout/components/states"/>
+				                <isinclude template="singlepagecheckout/components/provinceList"/>
+				             <iselse>
+				            	<input autocomplete="none" data-msg-required="${Resource.msg('singleshipping.province.required', 'checkout', null)}" autocorrect="off" type="text" required="" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.state}"  class="form-control floating__input form-control-lg" id="stateText" name="stateText" aria-label="Enter province" placeholder="State*">
+				                <isinclude template="singlepagecheckout/components/states"/>
+				                <isinclude template="singlepagecheckout/components/provinceList"/>				             			            				            	
+			            	</isif>    
+			                	<label class="float-label" data-content="State*" for="state"></label>
+			            
+			            </div>
+			       </div>
+			       <div class="form-row">
+			       	<div class="form-group col-12">
+			       		<input type="text" data-msg-required="${Resource.msg('singleshipping.city.required', 'checkout', null)}" autocomplete="off" autocorrect="off" required="" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.city}"  class="form-control floating__input form-control-lg validateCity validateForNonEnglishChars" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.city.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.city.htmlName}" aria-label="Enter city" placeholder="City">
+			       		<label class="float-label" data-content="City*" for="city"></label>
+			       		
+				    </div>
+				  </div>
+			</div>
+			<div class="form-row">
+				<div class="form-group col-12">
+					<a class="phone-tooltip" tabindex="0" title data-toggle="tooltip" data-placement="top" aria-label="A phone number is required in case our shipping carrier needs to contact you with updates." data-original-title="A phone number is required in case our shipping carrier needs to contact you with updates."> <i class="fa fa-question-circle"></i> </a>	        
+					<input type="tel" inputmode="tel" autocorrect="off" autocomplete="tel" required="" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.phone}"  class="phone form-control floating__input form-control-lg" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.phone.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.phone.htmlName}" aria-label="Enter phone number" placeholder="Phone Number">
+					<label class="float-label" data-content="Phone Number*" for="phoneNumber"></label>            
+		        </div>
+		   </div>	        
+		</div>
+	</div>
+	
+	<iscomment> Shipping Methods</iscomment>
+	<div class="delivery-container" style="<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true)}">display:none;<iselse></isif>">
+		<h2 class="section-title mt-4">Delivery and gift</h2>
+		<div id="shipping-methods">
+			<isinclude url="${URLUtils.https('COShipping-UpdateShippingMethodList','countryCode',selectedCountry)}"/>
+		</div>
+		<input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}"/>				
+		<input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlName}"/>		
+		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		<input id="customeremail" type="hidden" name="customeremail" value="">
+		<input  type="hidden" name="${pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.htmlName}" id="${pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.htmlName}" value="" />		    
+		<input type="hidden" name="${pdict.CurrentForms.singleshipping.shippingAddress.save.htmlName}" value="true"/>
+		<isif condition="${(checkoutObj.customerInfo.isAuthenticated == true)}"> 
+			<input type="hidden" id="isUserLoggedIn" name="isUserLoggedIn" value="true">
+			<isif condition="${(checkoutObj.customerInfo.addressBook.length == 0)}"> 
+				<input  type="hidden"  name="${pdict.CurrentForms.singleshipping.shippingAddress.addToAddressBook.htmlName}" checked="true" value="true">
+			</isif>			
+		</isif>
+		<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LOQATE_verification_enabled')}">
+			<input  type="hidden"  id="loqateVerificationEnabled"  value="true">
+		</isif>
+		
+		<iscomment>Gift and warnings </iscomment>
+
+        <isspgiftwrapandwarnings p_checkoutobj="${checkoutObj}" />	
+        <input type="hidden" id="paymentInfoAvailable" name="paymentInfoAvailable" value="${checkoutObj.paymentInfoAvailable}">			
+		
+		<isif condition="${!checkoutObj.paymentInfoAvailable}">
+			<button class="btn btn-primary shipping-submit" type="button" aria-label="Continue  to payment">Continue  to payment</button>
+		<iselse>
+        	<button class="btn btn-primary shipping-submit" type="button" aria-label="Save and Review">Save and Review</button>
+        </isif>
+	</div>
+	</form>
+</isif>	
+	
+	<iscomment> Shipping Summary </iscomment>
+	<isspshippingsummary p_checkoutobj="${checkoutObj}" />						
+</div>

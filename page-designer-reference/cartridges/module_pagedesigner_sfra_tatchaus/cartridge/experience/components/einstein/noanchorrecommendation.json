@@ -1,0 +1,41 @@
+
+{
+  "name": "Global defined product recommendations",
+  "description": "Shows a recommendation based on a recommender and no specific anchor either as single tile or carousel ",
+  "group": "einstein",
+  "attribute_definition_groups": [
+    {
+      "id": "data",
+      "name": "Recommendation Rules",
+      "description": "The recommender and recommendation tile work against",
+      "attribute_definitions": [
+        {
+          "id": "recommender",
+          "name": "Einstein Recommender",
+          "type": "custom",
+          "required": true,
+          "editor_definition": {
+            "type": "einstein.globalrecommenderselector"
+          }
+        },
+        {
+          "id": "count",
+          "name": "Max No of Recommendations",
+          "description": "The maximum number recommendations. If you choose more than one, they will be displayed as carousel. Please note that Einstein could return fewer recommendations to what you specify here",
+          "type": "enum",
+          "values": [
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6"
+          ],
+          "default_value": "1",
+          "required": true
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

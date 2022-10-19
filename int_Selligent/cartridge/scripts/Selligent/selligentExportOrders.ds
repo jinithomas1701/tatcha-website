@@ -1,0 +1,112 @@
+importPackage( dw.system );
+importPackage( dw.io );
+importPackage( dw.content );
+importPackage( dw.catalog );
+importPackage( dw.util );
+importPackage( dw.order );
+importScript("Selligent/selligentExportBase.ds");
+importScript("Selligent/selligentJsonSerializer.ds");
+
+/**
+* Export orders from DW
+*
+* @param {String} Export file name
+* @param {Date} Last export date
+* @returns a boolean if the file has been created 
+*/
+function exportOrders(exportFileName : String, lastExportDate : Date) :Boolean
+{
+	var orders : SeekableIterator;
+	var writer : FileWriter;
+	try
+	{
+		var fielsToExport : Array = getFieldsToExport("order");
+		var range : Number = getRange("order");
+		var countRange : Number = 0;
+		var currentFileName : String = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+		var exportFile = new File(currentFileName); 
+		var fileCreated : Boolean = false;
+		var counter : Number = 0;
+		var order : Order;
+		var json : String = "";
+		var endOfExportFile : File;
+	
+		orders = dw.order.OrderMgr.searchOrders("(creationDate >= {0} or lastModified > {0}) AND (externalOrderStatus = NULL OR externalOrderStatus != {1})","lastModified asc", lastExportDate, "SelligentTestDeleted");		
+		while (orders.hasNext()) 
+		{
+			order = orders.next();
+			counter++;
+			
+			if(!fileCreated)
+			{
+				writer = new FileWriter(exportFile, false);
+				fileCreated = true;
+			}
+			json = exportOrder(order, fielsToExport);
+			writer.writeLine(json);
+			if(counter >= range)
+			{
+				writer.close();
+				currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+				exportFile.renameTo(new File(currentFileName));
+				countRange++;
+				currentFileName = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+				exportFile = new File(currentFileName); 
+				fileCreated = false;
+				counter = 0;
+			}
+		}
+		if(counter > 0)
+		{
+			writer.close();
+			currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+			exportFile.renameTo(new File(currentFileName));
+		}
+		endOfExportFile = new File(File.IMPEX + "/Selligent/orderEndOfExport.txt");
+		writer = new FileWriter(endOfExportFile, false);
+		return fileCreated;
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to export order: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/order_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+	finally 
+	{
+		if (orders) orders.close();
+		if (writer) writer.close();
+	}
+}
+
+/**
+* Export an order 
+*
+* @param {Order} The order
+* @param {Array} The list of properties to export
+* @returns order in json.   
+*/
+function exportOrder(order : Order, fieldsToExport : Array) : String
+{
+	try
+	{
+		var orderData = exportObject(order, fieldsToExport);
+		return serialize(orderData);
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to export order: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/order_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+}

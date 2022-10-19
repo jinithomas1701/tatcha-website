@@ -1,0 +1,381 @@
+<isinclude template="util/modules"/>
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/recommendations/pt_ritualfinder_results">
+	<isinclude template="util/modules"/>
+	<isscript>
+	    
+		var hasOnlyRDK = false;
+		var persona = pdict.persona;
+		var recommendations = [];
+		var recommendationsAM = [];
+		var recommendationsPM = [];
+		var userSelectedTime = pdict.userSelectedTime;
+				
+		if(!empty(pdict.recommendations) && pdict.recommendations.length > 0) {
+			recommendations = pdict.recommendations;
+		}
+		
+		// Get the AM and PM DATA
+		for(var i =0;i< recommendations.length;i++){
+			if(recommendations[i].usageTime=='AM') {
+				recommendationsAM.push(recommendations[i]);
+			} else {
+				recommendationsPM.push(recommendations[i]);
+			}
+		}		
+		
+		var filtersAM = [];
+		var filtersPM = [];
+		if(!empty(pdict.filtersAM) && pdict.filtersAM.length > 0) {
+			filtersAM = pdict.filtersAM;
+		}
+		
+		if(!empty(pdict.filtersPM) && pdict.filtersPM.length > 0) {
+			filtersPM = pdict.filtersPM;
+		}
+		
+		//RDK is first item always. Check if the results has RDK as display
+		for(var i =0;i< recommendations.length;i++){
+			if(recommendations[i].name=='RDK' && recommendations[i].display==true){
+				hasOnlyRDK = true;
+				break;
+			}
+		}
+		
+		//Check for the default tab
+		
+		var defaultUsageTime = 'AM';
+		var selectedTimeStyle = 'A.M.';
+		
+		if(typeof(userSelectedTime) != 'undefined' && userSelectedTime =='PM'){
+			defaultUsageTime = 'PM';
+		    selectedTimeStyle = 'P.M.';
+		}
+		
+		for(var i =0;i< recommendations.length;i++){
+			if(recommendations[i].name!='RDK' && recommendations[i].display==true){
+				if(recommendations[i].usageTime=='PM') {
+					defaultUsageTime = 'PM';
+					selectedTimeStyle = 'P.M.';
+				}
+				break;
+			}
+		}
+		
+		//Grammer check for persona
+		var vowelLetter = 'a';
+		if(pdict.persona === 'enthusiast') {
+			vowelLetter = 'an';
+		}
+
+	var skinConcerns = pdict.skinConcerns ? pdict.skinConcerns.split("|").join(",") : "";
+	</isscript>
+	<input type="hidden" id="skinConcern" value="${skinConcerns}" />
+	<input type="hidden" id="selectedTime" value="${defaultUsageTime}"/>
+	<div class="container-fluid breadcrumb-container">
+			<ol class="breadcrumb container">
+			  <li><a href="${URLUtils.url('Page-Show','cid', 'ritual_finder')}" class="focus-outline-purple"><i class="fal fa-angle-double-left"></i> Start Over</a></li>
+			</ol>
+		</div>
+		<div class="whats-next-main">
+			<div class="background"></div>
+			<div class="container foreground results-gutter">
+				<div class="row">
+					<div class="col-xl-10 offset-xl-2 text-center results-header">
+						<div class="results-text-block">
+							<img src="${URLUtils.staticURL('/images/icon-rf-'+pdict.persona+'.png')}" alt="${pdict.persona}" class="persona-icon">
+							<h1>Your Ideal Ritual</h1>
+							<p id="ritual-title">As <isprint value="${vowelLetter}" /> <span class="text-capitalize persona"><isprint value="${pdict.persona}" /></span>, this is our recommended ritual for <span id="selected-skintype" class="text-lowercase"><isprint value="${pdict.skinType}" /></span> skin that addresses your wishes.</p>
+							<h2 class="ritual-banner">My <span class="ritual-selected-time"><isprint value="${selectedTimeStyle}" /></span> Ritual</h2>
+						</div>
+						<span class="sr-only" aria-live="assertive" id="notify-ritual-result"></span>
+						<div class="rf-email-add-block">
+							<button class="btn btn-md btn-round btn-primary focus-outline-purple add-all-rf" id="add-all-to-bag" aria-label="Add all ${selectedTimeStyle} products to bag" data-url="${URLUtils.url('Cart-AddWhatsnextItems')}">
+								Add <span class="ritual-selected-time"><isprint value="${selectedTimeStyle}" /></span> Ritual to Bag</i>
+							</button>
+							<button class="btn btn-md btn-round focus-outline-purple" data-toggle="modal" id="rf-email-btn" aria-label="Email My <isprint value="${selectedTimeStyle}" /> Ritual" data-target="#saveRegimen">
+								Email My <span class="ritual-selected-time"><isprint value="${selectedTimeStyle}" /></span> Ritual</i>
+							</button>
+						</div>
+									
+					</div>
+					
+					<button class="btn btn-lg btn-block btn-primary focus-outline-purple add-rf-bag add-all-rf" id="add-all-to-bag-small" aria-label="Add all ${selectedTimeStyle} products to bag" data-url="${URLUtils.url('Cart-AddWhatsnextItems')}">
+						Add <span class="ritual-selected-time"><isprint value="${selectedTimeStyle}" /></span> Ritual to Bag</i>
+					</button>
+							
+				</div>
+				<div class="row">
+					<div class="col-lg-12 col-xl-2 view-tools-block">
+						<div class="view-tools-level-1 row">
+							<div class="col-4 col-md-4 col-xl-12 float-left">
+								<div class="switch" id="time-selctor" data-time="AM">
+									<input type="radio" class="switch-input rec-usage-time" name="dayOrNight" value="AM" id="am" <isif condition="${defaultUsageTime === 'AM'}">checked </isif>>
+									<label for="am" class="switch-label switch-label-off focus-outline-purple" tabindex="0" style="padding-right: 3px;"><i class="fa fa-sun"></i>&nbsp;AM</label>
+									<input type="radio" class="switch-input rec-usage-time" name="dayOrNight" value="PM" id="pm" <isif condition="${defaultUsageTime === 'PM'}">checked </isif>>
+									<label for="pm" class="switch-label switch-label-on focus-outline-purple" tabindex="0" style="padding-left: 8px;">PM&nbsp;<i class="fa fa-moon fa-sm"></i></label>
+									<span class="switch-selection"></span>
+								</div>
+							</div>
+							<div class="col-8 col-md-8 col-xl-12 d-flex justify-content-end">
+								<button class="btn btn-sm btn-round btn-primary focus-outline-purple d-none d-md-block d-lg-block d-xl-none mr-1 add-all-rf" id="add-all-to-bag-medium" aria-label="Add all ${selectedTimeStyle} products to bag" data-url="${URLUtils.url('Cart-AddWhatsnextItems')}">
+									Add <span class="ritual-selected-time"><isprint value="${selectedTimeStyle}" /></span> Ritual to Bag</i>
+								</button>
+								<button class="btn btn-sm btn-round focus-outline-purple rf-email-block" data-toggle="modal" aria-label="Email My <isprint value="${selectedTimeStyle}" />Ritual" data-target="#saveRegimen">
+									Email My <span class="ritual-selected-time"><isprint value="${selectedTimeStyle}" /></span> Ritual</i>
+								</button>
+							</div>
+						</div>
+						<div class="view-tools-level-2 slide-window">
+							<div class="tool-label">Tailor Your Ritual:</div>
+							<div class="slide-frame-wrapper">
+								<ul class="checkbox-options toggle-style btn-style slide-frame rec-filter-options">
+									<iscomment>AM filters </iscomment>
+									<isloop items="${filtersAM}" var="filter">
+										<isif condition="${!empty(filter.name)}">
+											<isscript>
+												var filterID = filter.name.replace(/\s/g, "") + 'AM';
+												if(filterID.indexOf('+') >= 0) {
+													filterID = filterID.replace(/\+/g,"");
+												}
+											</isscript>
+											
+											<isif condition="${defaultUsageTime == 'PM'}">
+												<li style="display:none;">
+											<iselse>
+												<li>
+											</isif>
+											
+												<input type="checkbox"  id="${filterID}" tabindex="-1" class="rec-filter-item" value="${filter.name}" data-time="AM" <isif condition="${filter.selected === true}">checked</isif> />
+												<label for="${filterID}" role="checkbox" <isif condition="${filter.selected === true}">aria-checked="true"</isif> tabindex="0" class="focus-outline-purple" >
+													<div class="check-label">
+														<isprint value="${filter.name}" />
+														<span class="turn-off"><i class="fa fa-times-circle"></i></span>
+													</div>
+												</label>
+											</li>
+										</isif>
+									</isloop>
+									
+									<iscomment>PM filters </iscomment>
+									<isloop items="${filtersPM}" var="filter">
+										<isif condition="${!empty(filter.name)}">
+											<isscript>
+												var filterID = filter.name.replace(/\s/g, "") + 'PM';
+												if(filterID.indexOf('+') >= 0) {
+													filterID = filterID.replace(/\+/g,"");
+												}
+											</isscript>
+											<li  style="<isif condition="${empty(filtersAM) || defaultUsageTime=='PM'}">display:inline-block;<iselse> display:none;</isif>">
+												<input type="checkbox"  id="${filterID}" class="rec-filter-item" value="${filter.name}" data-time="PM" <isif condition="${filter.selected === true}">checked</isif> />
+												<label for="${filterID}" tabindex="0" role="checkbox" <isif condition="${filter.selected === true}">aria-checked="true"</isif>>
+													<div class="check-label">
+														<isprint value="${filter.name}" />
+														<span class="turn-off"><i class="fa fa-times-circle"></i></span>
+													</div>
+												</label>
+											</li>
+										</isif>
+									</isloop>
+								</ul>
+							</div>
+						</div>
+						<div class="view-tools-level-3 show-default-result" style="display:none;">
+							<button class="btn btn-sm btn-round btn-default gtm-show-original-results focus-outline-purple" aria-label="Show Original Results">
+								<i class="fa fa-redo"></i> Original Results
+							</button>
+						</div>
+					</div>
+					<div class="col-md-8 offset-md-2 col-lg-12 offset-lg-0 col-xl-10">
+						<div class="wn-results-list" id="scenario1">
+						
+							<iscomment> AM Tab </iscomment>
+							<isif condition="${defaultUsageTime == 'AM'}"> 
+								<div id="resultsAM">
+							<iselse>
+								<div id="resultsAM" style="display:none;">
+							</isif>
+								<iswhatsnextproducts rec_products="${recommendationsAM}" usage_time="AM"/>
+							</div>
+						
+
+							<iscomment> PM TAB </iscomment>
+							<isif condition="${defaultUsageTime == 'PM'}"> 
+								<div id="resultsPM">
+							<iselse>
+								<div id="resultsPM" style="display:none;">
+							</isif>
+								<iswhatsnextproducts rec_products="${recommendationsPM}" usage_time="PM"/>
+							</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade modal-primary" id="saveRegimen" tabindex="-1" role="dialog" aria-labelledby="skintRegimen">
+		<div class="modal-dialog modal-sm" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="border-width: 0;">
+					<h4 class="modal-title mx-auto">
+						<i class="selected-time-am-icon fa fa-sun" style="display:inline-block;"></i>
+						<i class="selected-time-pm-icon fa fa-moon fa-sm" style="display:none;"></i>
+						Share <span class="ritual-selected-time"><isprint value="${selectedTimeStyle}" /></span> Ritual
+					</h4>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+				</div>
+			
+				<div class="modal-body">
+					<div id="saveButtons">
+						<div class="alert alert-success" style="display: none;">
+							<div class="alert-icon">
+								<span class="fa-layers fa-fw">
+									<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+									<i class="fal fa-check fa-inverse" data-fa-transform="shrink-3"></i>
+								</span>
+							</div>
+							<div class="alert-text">Your email has been sent.</div>
+						</div>
+					</div>
+					<div id="saveEmail">
+						<div class="row">
+							<div class="col-sm-10 offset-sm-1">
+								<div class="form-group">
+									<label for="emailRegimen">Email</label>
+									<input type="email" class="form-control" id="emailRegimen" placeholder="Email">
+								</div>
+								<div class="checkbox tatcha-registration-email-list">
+									<label>
+										<div class="form-row form-group ">
+											<div class="field-wrapper">
+												<input type="checkbox" id="addtoemaillist" name="addtoemaillist" value="true">
+											</div>
+											<span>Join our email list to receive early access to new treasures.</span>
+										</div>
+									</label>
+								</div>
+								<button class="btn btn-default btn-block btn-round" aria-label="Send my Regimen" data-url="${URLUtils.url('Klaviyo-WhatsnextMail')}" id="emailSend">Send</button>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	<div class="modal modal-primary modal-quickview" id="addAllPearlSelect">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content product-detail-container">
+				<div class="modal-body">
+					<button type="button" class="close outline-global focus-outline-purple" data-dismiss="modal" aria-label="Close Button" tabindex="0">
+						<i class="fal fa-times"></i>
+					</button>
+					<div class="row d-block d-lg-none d-xl-none d-xxl-none">
+						<h1 class="h3 text-center" style="margin-top: 0;">
+							Please select a color to continue
+						</h1>
+					</div>
+					<div class="row">
+						<div class="col-lg-4">
+							<div class="product-img-main">
+								<img class="img-fluid" alt="product image" src="https://via.placeholder.com/250x250/F7F9FA?text=Product+Medium">
+							</div>
+						</div>
+						<div class="col-lg-8">
+							<h1 class="h3 d-none d-lg-block add-all-modal-title focus-outline-purple" style="margin-top: 0;" tabindex="0">
+								Please select a color to continue
+							</h1>
+							<div class="product-description-block focus-outline-purple" tabindex="0">
+								<p>Your regimen includes the Pearl. Select a color to continue adding to your bag.</p>
+							</div>
+							<isscript>
+								var product = dw.catalog.ProductMgr.getProduct('MED-PEARL-EYE');
+								pdict.Product = product;
+							</isscript>
+							<input type="hidden" id="selectedvariant" value=""/>
+							<isinclude template="product/components/variations"/>
+							<hr>
+							<div class="product-add-to-bag">
+								<div class="row">
+									<div class="col-md-6 btn-col">
+										<a class="btn btn-primary btn-block focus-outline-purple" id="add-selection" data-callback="addtocart" role="button" tabindex="0">Add Selection</a>
+									</div>
+									<div class="col-md-6 btn-col">
+										<a class="btn btn-default btn-block focus-outline-purple" id="skip-to-bag" data-callback="addtocart" role="button" tabindex="0">Skip</a>
+									</div>		
+								</div>
+								<div class="alert alert-danger add-to-bag-alert" role="alert" style="display: none;">Contextual Add to Bag Errors here.</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<iscomment> Quickview Modal </iscomment>
+	<div class="modal fade modal-primary modal-quickview" id="quickviewModal" tabindex="-1" role="dialog" aria-labelledby="quickviewModal">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content product-detail-container">
+				<div class="modal-body">
+					<button type="button" class="close focus-outline-purple" data-dismiss="modal" aria-label="Close">
+						<i class="fal fa-times"></i>
+					</button>
+					<div id="quickviewModal-content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<iscomment> Add to bag modal </iscomment>
+	<div class="modal fade modal-primary modal-tatcha-add-to-bag" id="addToBagModal" tabindex="-1" role="dialog" aria-labelledby="modalAddToBag">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content" id="add-to-bag-modal-body">
+
+			</div>
+		</div>
+	</div>
+	<iscomment> Add all to bag modal </iscomment>
+	<div class="modal fade modal-primary modal-tatcha-add-to-bag" id="addAllToBagModal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content add-all-rf" id="add-all-to-bag-modal-body">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+					<h4 class="modal-title"><strong>${Resource.msg('product.addtobag.addedtobag','product',null)}</strong></h4>
+				</div>
+				<div class="modal-body">
+					<div class="alert alert-success bag-alert">
+						<span id="addedproducts-count"></span> ${Resource.msg('product.addtobag.addedAlltobag','product',null)}
+					</div>
+				</div>
+				<div class="modal-footer">
+					<div class="row">
+						<div class="col-md-5 offset-md-1">
+							<button type="button" class="btn btn-default btn-block" data-dismiss="modal" id="add-to-bag-continue">${Resource.msg('product.addtobag.continueshopping','product',null)}</button>
+						</div>
+						<div class="col-md-5">
+							<a href="${URLUtils.https('Cart-Show', 'referrer', 'ritualfinder')}" class="cart-page-url btn btn-primary btn-block">${Resource.msg('product.addtobag.viewbag','product',null)}</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>	
+	<style>
+		.search-icon-bs3{
+			display: inline-block;
+			}
+		@media only screen and (max-width: 767px) {
+			.hide-mobile-search {
+	  			display: none;
+			}
+			.search-icon-bs3{
+			display: none;
+			}
+		}
+	</style>
+</isdecorate>
+<input type="hidden" id="cartPageUrl" value="${URLUtils.https('Cart-Show', 'referrer', 'ritualfinder')}">
+<input type="hidden" id="originalUrl" value="${pdict.originalUrl}">
+

@@ -1,0 +1,75 @@
+<!--- Shipping Address --->
+<isif condition="${pdict.orderType !='giftcard'}">
+	<isloop var="shippingModel" items="${pdict.order.shipping}" status="shippingLoop">
+	    <isif condition="${shippingLoop.first}">
+	        <div class="single-shipping contact-info-submitted" data-shipment-summary="${shippingModel.UUID}">
+	            <isif condition="${shippingModel.shippingAddress !== null}">
+	                <isset name="address" value="${shippingModel.shippingAddress}" scope="page"/>
+	            <iselse>
+	                <isset name="address" value="${{}}" scope="page"/>
+	            </isif>
+	
+	            <!-- Customer email -->
+	            <div class="contact-email">
+	                ${pdict.order.orderEmail}
+	            </div>
+	
+	            <div class="summary-details shipping row no-gutters my-3">
+	
+	                <!-- Address information -->
+	                <div class="col-md-6">
+	                    <div class="shipping-title">
+	                        Shipping Info
+	                    </div>
+	                    <isinclude template="checkout/addressSummary" />
+						<isif condition="${shippingModel.shippingAddress && shippingModel.shippingAddress.phone}">
+	                    	<div class="shipping-phone ${shippingModel.shippingAddress.countryCode.value.trim() == 'US' ? 'confirm-phone' : ''}">
+								${shippingModel.shippingAddress.phone}
+							</div>
+						<iselse>
+	                    	<div class="shipping-phone">
+								${''}
+	                    	</div>
+						</isif>
+	                </div>
+	
+	                <!--- Shipping information --->
+	                <div class="col-md-6 mt-3 mt-md-0">
+	                    <div class="delivery-title">
+	                        Delivery and Gift
+	                    </div>
+	                    <div class="delivery-detail-wrap">
+	                        <div class="shipping-method-selected">
+	                            <isif condition="${pdict.order.totals.getShippingPrices && pdict.order.totals.getShippingPrices.shippingTotalPrice != 0 && pdict.order.totals.getShippingPrices.adjustedShippingTotalPrice != 0}">
+	                                ${shippingModel.selectedShippingMethod.displayName} - <isprint value="${pdict.order.totals.getShippingPrices.shippingTotalPriceFormatted}"/>
+	                                <isif condition="${pdict.order.totals.getShippingPrices.shippingTotalPrice != pdict.order.totals.getShippingPrices.adjustedShippingTotalPrice}">
+	                                    (<isprint value="${pdict.order.totals.getShippingPrices.adjustedShippingTotalPriceFormatted}"/>)
+	                                </isif>
+	                            <iselse/>
+	                                ${shippingModel.selectedShippingMethod.displayName} - Free
+	                            </isif>
+	                        </div>
+	                        <isif condition="${shippingModel.selectedShippingMethod.estimatedDate && dw.system.Site.getCurrent().preferences.custom.showShippingEstimate}">
+	                            <div class="estimate-date">Estimated Arrival: <isprint value="${shippingModel.selectedShippingMethod.estimatedDate}" formatter="MM/dd" timezone="utc"/></div>
+	                        </isif>
+	                        <isif condition="${shippingModel.selectedShippingMethod.estimatedArrivalTime}">
+	                            <div>
+	                            ( ${shippingModel.selectedShippingMethod.estimatedArrivalTime} )
+	                            </div>
+	                        </isif>
+	                        <isinclude template="checkout/shipping/giftMessageSummary" />
+	                    </div>
+	                </div>
+	            </div>
+	        </div>
+	        <isset name="countryCode" value="${shippingModel.shippingAddress && shippingModel.shippingAddress.countryCode}" scope="page"/>
+	    </isif>
+	</isloop>
+<iselse/>
+	<div class="single-shipping contact-info-submitted">
+	    <!-- Customer email -->
+	    <div class="contact-email">
+	        ${pdict.order.orderEmail}
+	    </div>
+	</div>
+</isif>

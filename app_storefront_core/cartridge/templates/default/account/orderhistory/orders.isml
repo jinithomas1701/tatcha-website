@@ -1,0 +1,185 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site').getCurrent();
+	var storeKey = Site.getCustomPreferenceValue('LincStoreKey');
+	var locale = Site.getCustomPreferenceValue('LincLocale');
+	var lincEnabled = Site.getCustomPreferenceValue('LincEnabled');
+	var testMode = Site.getCustomPreferenceValue('LincTestMode');
+	var whitelistedEmails = Site.getCustomPreferenceValue('LincWhitelistedEmails');
+	if(lincEnabled && (empty(whitelistedEmails) || whitelistedEmails.indexOf(session.customer.profile.email) >= 0)) {
+		lincEnabled = true;
+	} else {
+		lincEnabled = false;
+	}
+	var lincUtils = require('int_linc/cartridge/scripts/common/Utils');
+</isscript>
+<isdecorate template="account/orderhistory/pt_orderhistory">
+	<isinclude template="util/modules"/>
+	<isinclude template="account/returntoaccounthome">
+	<div class="container">
+		<div class="compact-h1-group">
+			<h1 class="text-center">${Resource.msg('account.orders.orderhistory','account',null)}</h1>
+			<p class="text-center">View and track your orders.</p>
+		</div>
+		<div class="row">
+			<div class="col-xl-10 offset-lg-1 order-history-list">
+				<isif condition="${pdict.OrderPagingModel.empty}">
+					<div class="alert alert-default text-center empty-state" role="alert">
+						<p><isprint value="${Resource.msg('account.orders.noorders','account',null)}" /></p>
+						<div class="m-top mt-4">
+							<a href="${URLUtils.url('Search-Show','cgid', 'shop_all')}" class="btn btn-outline-secondary">Go Shopping</a>
+						</div>
+				</div>
+				<iselse/>
+
+					<form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.orders.htmlName}">
+					<isloop items="${pdict.CurrentForms.orders.orderlist}" var="order" status="orderloopstate">
+						<div class="card panel-stack-list-unit orders-stack-unit">
+							<div class="card-body">
+								<div class="row">
+									<div class="col-lg-6">
+										<div class="row">
+											<div class="col-lg-4 order-number-first-col">
+												<div class="data-label"><isprint value="${Resource.msg('account.orders.numberlabel','account',null)}" /></div>	
+												<div class="order-number"><isprint value="${order.object.orderNo}" /></div>
+											</div>
+											<div class="col-lg-4 order-number-col">
+												<div class="data-label"><isprint value="${Resource.msg('account.orders.datelabel','account',null)}" /></div>
+												<div><isprint value="${order.object.creationDate}" /></div>
+											</div>
+											<isset name="Order" value="${order.object}" scope="page"/>
+											<isif condition="${!lincEnabled || lincUtils.checkOrderDate(order.object.creationDate) < 0}">
+												<div class="col-lg-4">
+													<div class="data-label">Status</div>
+													<isif condition="${((Order.status==dw.order.Order.ORDER_STATUS_NEW || Order.status == dw.order.Order.ORDER_STATUS_OPEN) && Order.shippingStatus == dw.order.Order.SHIPPING_STATUS_SHIPPED) || Order.status==dw.order.Order.ORDER_STATUS_COMPLETED}">
+														<div class="text-success">
+															<i class="fal fa-truck fa-fw"></i>
+															<isprint value="${Resource.msg('account.orderstatusinclude.ordershipped','account',null)}" />
+														</div>
+													<iselseif condition="${(Order.status==dw.order.Order.ORDER_STATUS_NEW || Order.status==dw.order.Order.ORDER_STATUS_OPEN) && Order.shippingStatus != dw.order.Order.SHIPPING_STATUS_SHIPPED}">
+														<div><i class="fal fa-clock fa-fw"></i>
+															<isprint value="${Resource.msg('account.orderstatusinclude.orderprocessed','account',null)}" />
+														</div>
+													<iselseif condition="${Order.status==dw.order.Order.ORDER_STATUS_CANCELLED}">
+														<div class="text-danger">
+															<i class="fal fa-times-circle fa-fw"></i>
+															<isprint value="${Resource.msg('account.orderstatusinclude.ordercanceled','account',null)}" />
+														</div>
+													<iselse/>
+														<span class="value clearfix"><isprint value="${Order.status}"/></span>
+													</isif>
+												</div>
+											<iselse>
+												<div class="col-lg-4">
+												</div>
+											</isif>
+											
+										</div>
+										<isscript>
+											var lineItemsList = new dw.util.ArrayList();
+											var products = Order.getAllProductLineItems();
+											var giftCertificates = Order.getGiftCertificateLineItems();
+
+										  	if(products.size() > 0) {										  	
+										  		var productList = new dw.util.ArrayList(products);
+										  		lineItemsList = lineItemsList.concat(productList);
+										  	}
+											if(giftCertificates.size() > 0) {
+										  		var giftCertificatesList = new dw.util.ArrayList(giftCertificates);
+										  		lineItemsList = lineItemsList.concat(giftCertificatesList);
+											}										  
+										  	var giftproductId = Site.getCustomPreferenceValue('EgiftProduct-ID');
+										  	var giftproduct = dw.catalog.ProductMgr.getProduct(giftproductId);
+										</isscript>
+										<div class="row">
+											<div class="col-12">
+												<div class="product-img-row orders-product-thumbnail">
+													<isloop items="${lineItemsList}" var="product" status="productloopstate">
+														<isscript>
+															var giftImage = product.custom.hasOwnProperty('giftCertificateImage') ? product.custom.giftCertificateImage : '';
+														</isscript>
+														<isif condition="${productloopstate.count > 4}">
+															<isbreak/>
+														</isif>
+														<isif condition="${product.lineItemText === 'Gift Certificate'}">
+															
+															<isif condition="${giftImage}">
+																<isset name="imageUrl" value="${getImageUrl(giftproduct,'medium')}" scope="page"/>
+																<isset name="imageAlt" value="${getImageAlt(giftproduct)}" scope="page"/>
+																<isset name="imageTitle" value="${getImageTitle(giftproduct)}" scope="page"/>
+																<img class="product-img gift-cert-img-new" src="${giftImage}" alt="${imageAlt}" title="${imageTitle}" />
+															<iselse>
+																<isif condition="${giftproduct != null && giftproduct.getImage('large',0) != null}">
+																	<isset name="imageUrl" value="${getImageUrl(giftproduct,'large')}" scope="page"/>
+																	<isset name="imageAlt" value="${product.lineItemText}" scope="page"/>
+																	<img class="product-img gift-cert-img-new" src="${imageUrl}" alt="${imageAlt}" />
+																<iselse/>
+																	<img src="${URLUtils.staticURL('/images/gift_cert.gif')}" alt="${product.lineItemText}" />
+																</isif>
+															</isif>
+															
+														<iselse>
+															<isdisplayproductimage p_productli="${product}" p_size="small" p_isimageclickable="${true}" p_history_thumbnail="${true}"/>
+														</isif>
+													</isloop>
+													<isif condition="${productList.size() > 4}">
+														<span class="product-additional">+ <isprint value="${productList.size() - 4}" style="INTEGER" /> more...</span>
+													</isif>
+												</div>
+											</div>
+										</div>
+									</div>
+										<isif condition="${!lincEnabled || lincUtils.checkOrderDate(order.object.creationDate) < 0}">
+											<div class="col-lg-6 panel-btn-col">
+												<isif condition="${((Order.status==dw.order.Order.ORDER_STATUS_NEW || Order.status == dw.order.Order.ORDER_STATUS_OPEN) && Order.shippingStatus == dw.order.Order.SHIPPING_STATUS_SHIPPED) || Order.status==dw.order.Order.ORDER_STATUS_COMPLETED}">
+													<isloop items="${order.object.shipments}" var="shipment" status="shipmentloopstate">
+														<isif condition="${shipment.shippingStatus==dw.order.Shipment.SHIPPING_STATUS_SHIPPED}">
+															<isif condition="${shipment.shippingMethod.custom.shippingMethodCarrier=='USPS'}">
+																<a href="${Resource.msgf('tracking.USPS','order',null, shipment.trackingNumber)}" class="btn btn-default btn-xs-block" target="blank">${Resource.msg('tracking.trackingpackage','order',null)}</a>
+															<iselseif condition="${shipment.shippingMethod.custom.shippingMethodCarrier=='UPS'}">
+																<a href="${Resource.msgf('tracking.UPS','order',null, shipment.trackingNumber)}" class="btn btn-default btn-xs-block" target="blank">${Resource.msg('tracking.trackingpackage','order',null)}</a>
+															<iselseif condition="${shipment.trackingNumber}" >
+																<a href="${Resource.msgf('tracking.Fedex','order',null,'english',shipment.shippingAddress.countryCode.value, shipment.trackingNumber)}" class="btn btn-default btn-xs-block" target="blank">Track Package</a>
+															</isif>
+														</isif>
+													</isloop>
+												</isif>
+										<iselse>
+											<div class="col-lg-6 panel-btn-col">
+											<isinclude template="account/orderhistory/lincorders"/>
+										</isif>
+										<button type="submit" class="btn btn-outline-secondary btn-order-details" value="${Resource.msg('account.orders.detail','account',null)}" name="${order.show.htmlName}">
+											${Resource.msg('account.orders.detail','account',null)}
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<iscomment>if we have more than five orders, we use the paging bar</iscomment>
+						<isif condition="${orderloopstate.count >= (pdict.OrderPagingModel.pageSize + 1)}">
+							<isbreak/>
+						</isif>						
+					</isloop>
+					<isif condition="${pdict.OrderPagingModel.count > pdict.OrderPagingModel.pageSize}">
+						<div class="m-top text-center see-more">
+							<ispagingbar paginationtype="button" pagename="orders" pageurl="${URLUtils.https('Order-History')}" pagingmodel="${pdict.OrderPagingModel}"/>
+						</div>
+					 </isif>
+					</form>
+					<br>
+				</isif>
+			</div>
+		</div>
+	</div>
+	
+	<isif condition="${pdict.OrderPagingModel.empty}">
+		<div class="container">
+			<isif condition="${Site.getCustomPreferenceValue('UseEinsteinOnCartWithOutProduct')}">
+				<isslot id="einstein-cart-empty" description="Einstein Empty Cart page slot." context="global" context-object="${pdict.Basket}" />
+			<iselse>
+				<isslot id="cart-empty" description="Empty Cart page slot." context="global" />
+			</isif>
+		</div>
+	</isif>
+</isdecorate>

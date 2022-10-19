@@ -1,0 +1,13 @@
+<isif condition="${pdict.braintree.srcButtonConfig}" >
+    <div class="braintree-cart-src-buttons-wrap js_braintree_srcButtonsWrap">
+        <div class="braintree-cart-src-button js_braintree_src_button"
+            data-braintree-config="${JSON.stringify(pdict.braintree.srcButtonConfig)}">
+            <img src="${pdict.braintree.srcButtonConfig.SRCImageUrl}" alt="Visa Checkout"
+                class="v-button" role="button" />
+        </div>
+        <div class="braintreeSrcLoader braintree-loader-container">
+            <i class="braintree-loader"></i>
+        </div>
+        <input type="hidden" id="braintreeSrcDeviceData" name="braintreeSrcDeviceDataInput" value=""/>
+    </div>
+</isif>

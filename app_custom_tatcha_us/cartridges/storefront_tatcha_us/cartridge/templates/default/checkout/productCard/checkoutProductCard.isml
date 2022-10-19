@@ -1,0 +1,52 @@
+<div class="product-line-item product-item row no-gutters ${lineItem.gwpProduct ? 'gwpProductItem' : ''}" data-product-line-item="${lineItem.UUID}" <isif condition="${lineItem.gwpProduct}">data-pid=${lineItem.id}</isif> >
+
+    <div class="col-3">
+    <img class="product-img img-fluid" src="${lineItem.images.large[0].lineItemImageURL}"/>
+    </div>
+    <div class="col-7 product-content pl-lg-3">
+        <div class="product-name"> ${lineItem.productName}</div>
+        <isif condition="${lineItem.isBonusProductLineItem}">
+            <isif condition="${lineItem.gwpProduct}">
+            	<span class="product-size">${Resource.msg('cart.promotionalgift','checkout',null)}</span><span class="separator">|</span>
+            <iselse/>
+        		<span class="product-size">${Resource.msg('global.sample','locale',null)}</span><span class="separator">|</span>
+        	</isif>
+        <iselse/>
+	        <span class="product-size">
+	        	<isloop items="${lineItem.variationAttributes}" var="attribute">
+	        		${attribute.displayValue}
+	        		<span class="mx-1 product-size">|</span>
+				</isloop>
+	        </span>
+	    </isif>
+        <span class="product-size"> Qty <isprint value="${lineItem.quantity}" formatter="##" /></span>
+        <iscomment>Auto Delivery Info</iscomment>
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('SorEnabled')}" >
+            <isif condition="${pdict.currentStage === 'shipping' || pdict.currentStage === 'payment' || pdict.currentStage === 'placeOrder'}">
+                <isinclude url="${URLUtils.url('SmartOrderRefillController-RefillInfoCart', 'lineItemID', lineItem.UUID, 'showLinks', true)}"/>
+            <iselse/>
+                <isinclude template="/checkout/confirmation/confirmationRefillInfo" />
+            </isif>
+        </isif>
+    </div>
+
+   <div class="col-2 price ${lineItem.UUID}">
+       <isif condition="${!empty(lineItem.sordeliveryoption)}">
+            <span class="price-unadjusted stike">
+                <isprint value="${dw.util.StringUtils.formatMoney(dw.value.Money((lineItem.price.sales.value * lineItem.quantity), lineItem.price.sales.currency))}" />
+            </span>
+            ${lineItem.priceTotal.price}
+       <iselseif condition="${!empty(lineItem.proratedPrice) && ((lineItem.price.sales.value * lineItem.quantity) > lineItem.proratedPrice)  && !lineItem.isBonusProductLineItem} ">
+       		<span class="price-unadjusted stike">
+		          <isprint value="${lineItem.priceTotal.price}"/>
+			</span>
+			<isprint value="${dw.util.StringUtils.formatMoney(dw.value.Money(lineItem.proratedPrice, lineItem.price.sales.currency))}" />
+       <iselse/>
+       		<isif condition="${!lineItem.isBonusProductLineItem}">
+       			${lineItem.priceTotal.price}
+       		<iselse>
+       			${Resource.msg('global.freewithpurchase','locale',null)}
+       		</isif>
+       </isif>
+   </div>
+</div>

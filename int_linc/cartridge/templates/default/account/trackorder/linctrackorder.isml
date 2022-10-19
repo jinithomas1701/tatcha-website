@@ -1,0 +1,8 @@
+<isscript>
+	var Site = dw.system.Site.getCurrent();
+	var shopID = Site.getCustomPreferenceValue('LincShopID');
+	var lincUtils = require('int_linc/cartridge/scripts/common/Utils');
+</isscript>
+<isif condition="${Site.getCustomPreferenceValue('LincEnabled')}">
+        <iframe src="https://${lincUtils.getLincUrl()}/order_locator/?shop_id=${shopID}&iframe=1&instructions=1&v=default" width="100%" height="550px" frameBorder="0"></iframe>
+</isif>

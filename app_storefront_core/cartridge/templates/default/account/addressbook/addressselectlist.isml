@@ -1,0 +1,72 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isscript>
+previous_addresses = [];
+var addressList : dw.util.ArrayList = new dw.util.ArrayList(pdict.p_listaddresses);
+var propertyComparator : dw.util.PropertyComparator = new dw.util.PropertyComparator('ID', false);
+addressList.sort(propertyComparator);
+
+var defaultAddressID = !empty(pdict.CurrentCustomer.profile.addressBook.preferredAddress) ? pdict.CurrentCustomer.profile.addressBook.preferredAddress.ID : '';
+var SelectedAddressID = session.custom.selectedShippingAddress;
+if(pdict.p_listid == 'dwfrm_billing_addressList') {
+	var SelectedAddressID = session.custom.selectedBillingAddress;	
+}
+if(!SelectedAddressID){
+	SelectedAddressID = defaultAddressID;
+}
+if(!SelectedAddressID) {
+	SelectedAddressID = 'first';
+}
+</isscript>
+
+<isloop items="${addressList}" var="address" status="status">
+	<isset name="aid" value="${empty(address.key) ? address.ID : address.key}" scope="page"/>
+	<isif condition = "${aid == defaultAddressID}">
+		<isif condition="${previous_addresses.indexOf(aid) < 0}">
+			<isscript>
+			var selected = '';
+			if(aid == SelectedAddressID || (status.first == true && SelectedAddressID == 'first')) {
+				selected = 'selected';
+			}
+			</isscript>
+			<div class="radio checkout-radio-block radio-billing-address ${selected}">
+				<label class="checkout-radio">
+					<input type="radio" name="${pdict.p_listid}" class="address-radio" value="${aid}" id="${aid}" ${selected ? "checked='checked'" : ""} data-address='<isprint value="${JSON.stringify(address).replace("'","^")}" encoding="on"/>'>
+					<div class="radio-text-block">
+						<isprint value="${Resource.msgf('address.saved.dropdown.format.name', 'forms', null, address.firstName, address.lastName)}" /><br>
+						<isprint value="${Resource.msgf('address.saved.dropdown.format', 'forms', null, address.address1, address.city, address.stateCode, address.postalCode, address.countryCode)}" /></br>
+						<isprint value="${Resource.msgf('address.saved.dropdown.format.phone', 'forms', null, address.phone)}" />
+					</div>
+				</label>
+				<span class="selected-icon"><i class="fal fa-check-circle"></i></span>
+			</div>
+		</isif>
+		<isscript>previous_addresses.push(aid)</isscript>
+	</isif>	
+</isloop>
+
+<isloop items="${addressList}" var="address" status="status">
+	<isset name="aid" value="${empty(address.key) ? address.ID : address.key}" scope="page"/>
+	<isif condition = "${aid != defaultAddressID}">
+		<isif condition="${previous_addresses.indexOf(aid) < 0}">
+			<isscript>
+			var selected = '';
+			if(aid == SelectedAddressID || (status.first == true && SelectedAddressID == 'first')) {
+				selected = 'selected';
+			}
+			</isscript>
+			<div class="radio checkout-radio-block radio-billing-address ${selected}">
+				<label class="checkout-radio">
+					<input type="radio" name="${pdict.p_listid}" class="address-radio" value="${aid}" id="${aid}" ${selected ? "checked='checked'" : ""} data-address='<isprint value="${JSON.stringify(address)}" encoding="on"/>'>
+					<div class="radio-text-block">
+						<isprint value="${Resource.msgf('address.saved.dropdown.format.name', 'forms', null, address.firstName, address.lastName)}" /><br>
+						<isprint value="${Resource.msgf('address.saved.dropdown.format', 'forms', null, address.address1, address.city, address.stateCode, address.postalCode, address.countryCode)}" /></br>
+						<isprint value="${Resource.msgf('address.saved.dropdown.format.phone', 'forms', null, address.phone)}" />
+					</div>
+				</label>
+				<span class="selected-icon"><i class="fal fa-check-circle"></i></span>
+			</div>
+		</isif>
+		<isscript>previous_addresses.push(aid)</isscript>
+	</isif>	
+</isloop>

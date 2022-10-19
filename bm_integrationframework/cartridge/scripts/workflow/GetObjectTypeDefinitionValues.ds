@@ -1,0 +1,51 @@
+/**
+* Gets the enum values for the given Custom Object Type
+*
+* @input CustomObjectType : String The Custom Object Type
+* @input Attribute : String This attribute ID
+* 
+* @output EnumValues : dw.util.ArrayList The values
+*/
+importPackage( dw.object );
+importPackage( dw.system );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number {
+
+	var customObjectType : String = args.CustomObjectType;
+	var attribute : String = args.Attribute;
+
+	if ( !customObjectType || !attribute ) {
+		Logger.error( "customObjectType or attribute undefined" );
+		return PIPELET_ERROR;
+	}
+	
+	var objectTypeDefinition : ObjectTypeDefinition = CustomObjectMgr.describe(customObjectType);
+	if ( !objectTypeDefinition ) {
+		Logger.error( "objectTypeDefinition not available" );
+		return PIPELET_ERROR;
+	}
+	
+	var customAttributeDefinition : ObjectAttributeDefinition = objectTypeDefinition.getCustomAttributeDefinition( attribute );
+	
+	if ( !customAttributeDefinition ) {
+		Logger.error( "customAttributeDefinition for " + attribute +  " not available" );
+		return PIPELET_ERROR;
+	}
+	
+	if ( customAttributeDefinition.valueTypeCode != ObjectAttributeDefinition.VALUE_TYPE_ENUM_OF_INT && customAttributeDefinition.valueTypeCode != ObjectAttributeDefinition.VALUE_TYPE_ENUM_OF_STRING ) {
+		Logger.error( "Attribute " + attribute +  " is not an enumeration" );
+		return PIPELET_ERROR;
+	}
+	
+    let result : ArrayList = new ArrayList();
+    for each(let value in customAttributeDefinition.getValues() ) {
+        result.add(
+        	{	displayValue 	: value.displayValue,
+        		value			: value.value
+        	});
+    }
+    args.EnumValues = result;
+
+    return PIPELET_NEXT;
+}

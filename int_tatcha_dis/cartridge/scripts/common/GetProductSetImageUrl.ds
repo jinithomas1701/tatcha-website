@@ -1,0 +1,86 @@
+/**
+*
+*  	@input imageUrl : String
+*	@input Product : Object
+*   @output ImageListUrl : dw.util.ArrayList
+*
+*/
+importPackage( dw.system );
+importPackage( dw.web );
+importPackage( dw.content );
+importPackage( dw.io );
+importPackage( dw.util );
+
+importScript("common/GetImageUrl.ds");
+
+// UPDATE THIS REFERENCE WITH THE NAME OF THE MASTER CATALOG
+var CATALOG_MASTER : String = "client_master";
+
+function execute( args : PipelineDictionary ) : Number
+{
+	//bild image names
+	var ImageName : String =  args.imageUrl+"-0.jpg";
+	var file : File = new File(File.CATALOGS + File.SEPARATOR + CATALOG_MASTER + File.SEPARATOR + "default"  + File.SEPARATOR + "images" + File.SEPARATOR + "large" +  File.SEPARATOR + ImageName);
+	var ImageList : ArrayList = new ArrayList();
+  	if( file.exists() )
+  	{
+
+  		var imageURL : String = "/images/large/" + file.name;
+		ImageList.add(imageURL);
+		
+  		for (var i=1; i<20; i++ )
+  		{
+			var ImageNames : String =  args.imageUrl+"-"+i+".jpg";
+			var files : File = new File(File.CATALOGS + File.SEPARATOR + CATALOG_MASTER + File.SEPARATOR + "default"  + File.SEPARATOR + "images" + File.SEPARATOR + "large" +  File.SEPARATOR + ImageNames);
+		  	if( files.exists() )
+		  	{
+  				var imageURL : String = "/images/large/" + files.name;
+				ImageList.add(imageURL);
+		  	} 		
+  		}
+  		
+  	} else {
+  	
+  		var image : MediaFile = args.Product.getImage('large',0);  		
+  		ImageList.add('/images' + image.URL.toString().split('/images')[1]);
+  	
+  	}
+	
+	args.ImageListUrl = ImageList;
+    return PIPELET_NEXT;
+
+}
+
+function getImageSPS( product:Product, imageUrl : String) : ArrayList
+{
+	//bild image names
+	var ImageName : String =  imageUrl+"-0.jpg";
+	var file : File = new File(File.CATALOGS + File.SEPARATOR + CATALOG_MASTER + File.SEPARATOR + "default"  + File.SEPARATOR + "images" + File.SEPARATOR + "large" +  File.SEPARATOR + ImageName);
+	var ImageList : ArrayList = new ArrayList();
+  	
+  	if( file.exists() )
+  	{
+
+  		var imageURL : String = "/images/large/" + file.name;
+		ImageList.add(imageURL);
+		
+  		for (var i=1; i<20; i++ )
+  		{
+			var ImageNames : String =  imageUrl+"-"+i+".jpg";
+			var files : File = new File(File.CATALOGS + File.SEPARATOR + CATALOG_MASTER + File.SEPARATOR + "default"  + File.SEPARATOR + "images" + File.SEPARATOR + "large" +  File.SEPARATOR + ImageNames);
+		  	if( files.exists() )
+		  	{
+  				var imageURL : String = "/images/large/" + files.name;
+				ImageList.add(imageURL);
+		  	} 		
+  		}
+
+  	} else {
+  		
+  		var image : MediaFile = product.getImage('large',0);
+  		ImageList.add('/images' + image.URL.toString().split('/images')[1]);
+  	}
+	
+	return ImageList;
+
+}

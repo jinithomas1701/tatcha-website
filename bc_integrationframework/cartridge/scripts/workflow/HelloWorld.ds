@@ -1,0 +1,33 @@
+/**
+* Hello World sample script
+*
+*	 @input CurrentWorkflowComponentInstance : Object The current workflow component instance.
+*	 @input Shoutout : String Say it to the world.
+*
+*/
+importPackage( dw.system );
+
+/**
+ * The main function.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Number} PIPELET_NEXT or in case of an exception PIPELINE_ERROR.
+ */
+function execute( args : PipelineDictionary ) : Number
+{
+
+	var componentInstance : Object = args.CurrentWorkflowComponentInstance;
+	if(empty(componentInstance)){
+		//error handling
+	}
+	
+	var shoutout = args.Shoutout;
+	if(empty(shoutout)){
+		//error handling
+	}
+		
+  	componentInstance.addMessage(shoutout);
+
+	return PIPELET_NEXT;
+}

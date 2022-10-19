@@ -1,0 +1,15 @@
+<iscomment>
+     This template is rendered in BM: Merchant Tools >  Ordering >  Orders > Order: 00018003(MobileFirst) > Payment tab
+</iscomment>
+
+<isscript>
+    var paymentInstrument = require('~/cartridge/scripts/braintree/bmBraintreeHelper').getBraintreePaymentInstrument(pdict.Order);
+</isscript>
+
+<br />
+${paymentInstrument.creditCardType}<br />
+**************${paymentInstrument.creditCardNumber.substr(-4)}<br />
+
+<isif condition="${paymentInstrument.creditCardExpirationYear && paymentInstrument.creditCardExpirationMonth}">
+    ${Resource.msgf('orderdetail.expirationdate', 'braintreebm', null, StringUtils.formatNumber(paymentInstrument.creditCardExpirationMonth, '00'), StringUtils.formatNumber(paymentInstrument.creditCardExpirationYear, '0000'))}<br />
+</isif>

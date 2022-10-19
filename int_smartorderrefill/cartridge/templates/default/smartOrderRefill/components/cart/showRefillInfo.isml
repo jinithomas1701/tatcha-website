@@ -1,0 +1,22 @@
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isif condition="${pdict.RefillOptions.isSORProduct && pdict.RefillOptions.isSorChecked}">
+	<div class="bag-item-auto-delivery row" id="refill" style="margin-top: .5rem;margin-bottom: .8rem;">
+		<isif condition="${pdict.RefillOptions.productLineItem.custom.SorMonthInterval != null && pdict.RefillOptions.productLineItem.custom.SorMonthInterval >0 }">
+				<iscomment> <span class="fa-layers fa-fw">
+					<i class="fal fa-truck fa-lg" data-fa-transform="right-10 shrink-3"></i>
+					<i class="fal fa-clock" data-fa-transform="right-34 up-4 shrink-6"></i>
+				</span> </iscomment>
+				<div class="autodelivery-confirm-msg" >
+					${Resource.msg( 'refill.multiple', 'forms', null )} (<isprint value="${pdict.RefillOptions.productLineItem.custom.SorMonthInterval}"/>
+					<isif condition="${pdict.RefillOptions.productLineItem.custom.SorMonthInterval > 1}">
+							<isprint value="${Resource.msg('refill.multiple.months', 'forms', null)}"/>)
+						<iselse>
+							<isprint value="${Resource.msg('refill.multiple.month', 'forms', null)}"/>)
+						</isif>
+				</div>
+		</isif>
+	</div>
+</isif>

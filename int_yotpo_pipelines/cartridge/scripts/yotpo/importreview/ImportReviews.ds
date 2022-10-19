@@ -1,0 +1,32 @@
+/**
+* This script is called by the Yotpo pipeline to load reviews from Yotpo in real time.
+*
+* @output YotpoReviewsHTML : String The imported reviews in html format from Yotpo.
+*/
+function execute( args : PipelineDictionary ) : Number {
+
+	let YotpoUtils = require('/int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+
+	if(!YotpoUtils.isCartridgeEnabled()){
+		args.YotpoReviewsHTML = "";
+		return PIPELET_ERROR;
+	}
+	
+	let YotpoLogger = require('/int_yotpo/cartridge/scripts/yotpo/utils/YotpoLogger');
+	var logLocation =  "Yotpo~ImportReviews";
+	
+	var yotpoReviewsHTML = "";
+	var map = request.httpParameterMap;
+	
+	try{
+		let ImportReviewModel = require('/int_yotpo/cartridge/scripts/yotpo/model/reviewspayload/ImportReviewModel');
+		yotpoReviewsHTML = ImportReviewModel.importReviewsAndRatings( map.productid.getStringValue(), map.yotporeviewspage.getStringValue(), map.isreview.getStringValue(), request.getHttpLocale() );
+	}
+	catch(ex) {
+		YotpoLogger.logMessage("Something went wrong while executing ImportReviewModel through pipeline, Exception is: "+ex, "error", logLocation);
+	}
+	
+	args.YotpoReviewsHTML = yotpoReviewsHTML;
+	
+	return PIPELET_NEXT;
+}

@@ -1,0 +1,39 @@
+<iscontent type="text/html " charset="UTF-8"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isif condition="${!empty(pdict.products)}" >  
+    <isloop items="${pdict.products}" var="refillProduct">
+    <isset name="Product" value="${dw.catalog.ProductMgr.getProduct(refillProduct.ID)}" scope="page"/>
+    <tr>
+        <td>
+            <div style="width: 400px; margin: 10px auto; display:flex;">
+                <img style="margin: 0 20px;" src="${Product.getImage('small').httpsURL.toString()}" alt="">
+                <div style="display: flex; justify-content: center; flex-direction: column;">
+                    <a href="${URLUtils.http('Product-Show','pid', Product.ID)}" style="font-family: 'Open Sans', sans-serif; font-size: 21px; color: #109bcc; text-decoration: none; cursor: pointer;">${Product.name}</a>
+                    <span style="font-family: 'Open Sans', sans-serif; font-size: 21px;"><isprint value="${new dw.value.Money(refillProduct.price, refillProduct.currencyCode)}" /></span>
+                    <isif condition="${!empty(pdict.priceChanges)}" >
+                    <isloop items="${pdict.priceChanges}" var="productPrice">
+                        <isif condition="${productPrice.ID == Product.ID}" >
+                            <span style="font-family: 'Open Sans', sans-serif; font-size: 21px; color:#ef0d0d; text-decoration:line-through;"><isprint value="${new dw.value.Money(productPrice.oldPrice, refillProduct.currencyCode)}" /></span>
+                            <isbreak>
+                        </isif>
+                    </isloop>
+                    </isif>
+                    <isif condition="${!empty(pdict.isSubscription) && pdict.isSubscription}" >
+                        <span style="font-family: 'Open Sans', sans-serif; font-size: 21px;">
+                            <isif condition="${refillProduct.interval == 1}">
+                                ${Resource.msg('smartorderrefill.interval.' + refillProduct.periodicity + '.singular', 'smartorderrefill', null)}
+                            <iselse>
+                                ${Resource.msgf('smartorderrefill.interval.' + refillProduct.periodicity + '.plural', 'smartorderrefill', null, refillProduct.interval)}
+                            </isif>
+                        </span>
+                    </isif>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </isloop>
+</isif>
+

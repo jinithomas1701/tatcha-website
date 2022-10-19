@@ -1,0 +1,83 @@
+/**
+* Demandware Script File
+* This script cleanup abandonned basket custom object and call Selligent push webservice to remove the abandoned basket info
+*   @input currentCustomer : dw.customer.Customer
+*
+*/
+importPackage( dw.system );
+importPackage( dw.object );
+importPackage( dw.customer);
+importPackage( dw.util);
+importPackage( dw.svc);
+importPackage( dw.order);
+importScript("Selligent/selligentExportAbandonedBasket.ds");
+importScript("Selligent/selligentExportBase.ds");
+/**
+* Main function of the script.
+*
+* @param {PipelineDictionary} pdict contains the current customer
+*/
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var allSAB : SeekableIterator;	
+	try
+	{
+        var customer : Customer = pdict.currentCustomer;
+  	    var custUUID : String = "";
+	    var custNo : String = "";	
+  	    if (customer != null && customer.profile != null)
+  	    {
+  	   		custUUID = customer.profile.UUID;
+			custNo = customer.profile.customerNo;
+  	    }
+  	    // build json string		
+		// Call the removeAbandonedBasket WS 	
+		var jsonToSend : String = StringUtils.format("'{'\"custNo\":\"{0}\",\"custUUID\":\"{1}\",\"basketUUID\":\"\",\"content\":\"\",\"deleted\":\"1\"'}'", custNo,custUUID ); 	   
+
+		var result : Result = ServiceRegistry.get("SelligentRemoveAbandonedBasket").call(jsonToSend);
+		if(result.status == "ERROR") {
+			// remove the products from Selligent abandoned baskets list if exists
+			if (customer != null && customer.profile != null) {				
+	 	   	    allSAB = CustomObjectMgr.queryCustomObjects("SAB","custom.custNo = {0}", "custom.custNo asc", customer.profile.customerNo);		
+				while (allSAB.hasNext()) 
+				{	
+					var currentSAB : CustomObject = allSAB.next();							
+					//Flag the custom object as deleted after check out
+					currentSAB.custom.deleted = 1;					
+				}							
+			};
+		    throw result.errorMessage;
+		}						 					
+  	    
+	}
+	catch(e) 
+	{
+		Logger.error("Selligent Error: Unable to push abandoned basket: "+e.message);
+		return PIPELET_ERROR;
+	}
+   	finally 
+	{
+		if (allSAB) allSAB.close();
+	} 
+   	return PIPELET_NEXT;
+}
+
+/**
+* Get the properties list to export from the config file 
+*
+* @returns an array of properties to export 
+*/
+function getAbandonedBasketFieldsToExport() : Array
+{
+	var fielsToExport : Array;
+	if (configFileExist("abandonedbasket") === false)
+	{
+		var result : Result = ServiceRegistry.get("SelligentGetSettings").call();
+		if(result.status == "ERROR") {
+		   throw result.errorMessage;
+		}	
+	}
+	fielsToExport = getFieldsToExport("abandonedbasket");
+	return fielsToExport;
+}

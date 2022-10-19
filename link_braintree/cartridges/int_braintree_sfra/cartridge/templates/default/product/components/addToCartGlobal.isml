@@ -1,0 +1,32 @@
+<div class="row cart-and-ipay">
+    <div class="col-sm-12">
+        <input type="hidden" class="add-to-cart-url" value="${pdict.addToCartUrl}">
+       <button class="add-to-cart-global btn btn-primary"
+                data-pid="${product.id}"
+                ${!product.readyToOrder || !product.available ? "disabled" : ""}>
+            <i class="fa fa-shopping-bag"></i>
+            <isif condition="${product.productType === 'set' || product.productType === 'bundle'}">
+                ${Resource.msg('button.addalltocart', 'common', null)}
+            <iselse>
+                ${Resource.msg('button.addtocart', 'common', null)}
+            </isif>
+        </button>
+    </div>
+</div>
+<isif condition="${pdict.braintree}">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+
+        assets.addJs(pdict.braintree.prefs.clientSdk3PayPalUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3PayPalCheckoutUrl);
+
+        assets.addCss('/css/braintree.css');
+    </isscript>
+    <div class="row braintree_pdp_button" data-braintree-cart-quantity="${pdict.braintree.cartQuantity}">
+        <div class="col-sm-12">
+            <isinclude template="braintree/cart/paypalButton"/>
+        </div>
+    </div>
+</isif>

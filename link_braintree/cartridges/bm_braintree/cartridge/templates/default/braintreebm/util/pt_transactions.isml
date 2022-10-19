@@ -1,0 +1,41 @@
+<isdecorate template="braintreebm/util/pt_braintree">
+    <isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax'}">
+
+        <isreplace/>
+
+    <iselse>
+
+        <isreplace/>
+
+        <isscript>
+            var prefs = require('~/cartridge/config/bmBraintreePreferences');
+        </isscript>
+
+        <script type="text/javascript" src="${prefs.clientSdk3ClientUrl}"></script>
+        <script type="text/javascript" src="${prefs.clientSdk3HostedFieldsUrl}"></script>
+        <script type="text/javascript" src="${URLUtils.staticURL('/braintreebm/js/braintreeUtils.js')}"></script>
+        <script type="text/javascript" src="${URLUtils.staticURL('/braintreebm/js/braintreeHelper.js')}"></script>
+        <script type="text/javascript" src="${URLUtils.staticURL('/braintreebm/js/braintreeTransaction.js')}"></script>
+
+        <script type="text/javascript">
+            braintreeAdmin.init({
+                urls: {
+                    reloadTransactionInfo : "${URLUtils.url('BraintreeAdmin-ReloadTransactionInfo')}",
+                    orderTransaction: "${URLUtils.url('BraintreeAdmin-OrderTransaction')}",
+                    merchantView : "${URLUtils.url('BraintreeAdmin-MerchantView')}"
+                },
+                resources: {
+                    success :"${Resource.msg('server.success', 'braintreebm', null)}",
+                    successMsgTitle :"${Resource.msg('msg.success.title', 'braintreebm', null)}",
+                    submit: "${Resource.msg('forms.submit', 'braintreebm', null)}",
+                    cancel: "${Resource.msg('forms.cancel', 'braintreebm', null)}",
+                    errorMsgTitle: "${Resource.msg('msg.error.title', 'braintreebm', null)}",
+                    serverError: "${Resource.msg('braintree.server.error', 'braintreebm', null)}",
+                    pleaseWait: "${Resource.msg('msg.pleasewait', 'braintreebm', null)}",
+                    newTransactionTitle: "${Resource.msg('transaction.newtransaction', 'braintreebm', null)}"
+                }
+            });
+        </script>
+
+    </isif>
+</isdecorate>

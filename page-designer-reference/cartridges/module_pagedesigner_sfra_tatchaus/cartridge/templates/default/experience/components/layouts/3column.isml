@@ -1,0 +1,10 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+	assets.addCss('/css/layout.css');
+    assets.addCss('/css/pagedesigner-bootstrap.min.css');
+</isscript>
+<div class="row mx-n2">
+	<isprint value="${pdict.regions.column1.setClassName("region region_square col-12 col-md-4 px-2").render()}" encoding="off"/>
+	<isprint value="${pdict.regions.column2.setClassName("region region_square col-12 col-md-4 px-2").render()}" encoding="off"/>
+	<isprint value="${pdict.regions.column3.setClassName("region region_square col-12 col-md-4 px-2").render()}" encoding="off"/>
+</div>

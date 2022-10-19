@@ -1,0 +1,28 @@
+.account-step-summary{
+	
+	.card-header{
+		.edit-profile{
+			font-size:14px;
+			color:#495257;
+			text-decoration: underline;
+		}
+	}
+	
+	.card-text {
+		.edit-email,.edit-password{
+			font-size:14px;
+			color:#495257;
+			text-decoration: underline;
+		}
+		.account-switch-spec{
+			font-size:12px;
+			font-style: italic;
+			color:#495257;
+			text-decoration: underline;
+		}
+	}
+	
+	.panel-body {
+	    padding: 16px;
+	}
+}

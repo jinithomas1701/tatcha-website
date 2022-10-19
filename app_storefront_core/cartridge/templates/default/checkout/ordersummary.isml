@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>
+	This template renders the summary of the current basket at the right hand side
+	of all checkout pages. It includes an order summary including order totals,
+	a list of all included shipments as well as the payment methods used to pay
+	the basket.
+</iscomment>
+
+<isif condition="${!empty(pdict.checkoutstep)}">
+	<isset name="checkoutstep" value="${pdict.checkoutstep}" scope="page"/>
+	<isset name="checkoutStep" value="${pdict.step}" scope="page"/>
+</isif>
+
+<iscomment>render the order totals</iscomment>
+		   		<isscript>
+		   			var shippingText = '';
+		   			var taxText = '';
+		   			if(session.custom.activeStep > 1) {
+		   				shippingText = Resource.msg('order.ordersummary.ordershipping','order',null);
+		   				taxText = Resource.msg('order.ordersummary.ordertax','order',null);
+		   			} else {
+		   				shippingText = Resource.msg('order.ordersummary.orderestimatedshipping','order',null);
+		   				taxText = Resource.msg('order.ordersummary.orderestimatedtax','order',null);
+		   			}
+		   		</isscript>
+				<isif condition="${checkoutstep > 3}">
+					<isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${true}" p_shipmenteditable="${true}" p_totallabel="${Resource.msg('global.ordertotal','locale',null)}" p_shippinglabel="${shippingText}" p_taxlabel="${taxText}"/>
+				<iselse/>
+					<isordertotals p_lineitemctnr="${pdict.Basket}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('global.estimatedtotal','locale',null)}" p_shippinglabel="${Resource.msg('order.ordersummary.orderestimatedshipping','order',null)}" p_taxlabel="${Resource.msg('order.ordersummary.orderestimatedtax','order',null)}"/>
+				</isif>

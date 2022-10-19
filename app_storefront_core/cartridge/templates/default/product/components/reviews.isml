@@ -1,0 +1,32 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<iscomment>
+	product reviews
+	=============================================================
+</iscomment>
+
+<div class="product-review" data-pid="${pdict.Product.ID}" style="display:none">
+	<div class="rating"></div>
+</div>
+
+<isif condition="${'enableReviewsRatings' in pdict.Product.custom}">
+	<isif condition="${pdict.Product.custom.enableReviewsRatings}">
+		<div class="product-review container product-reviews-qa" data-pid="${pdict.Product.ID}">
+			<ul class="nav nav-tabs nav-tabs-anchored" role="tablist">
+				<li role="presentation" class="tab-section-anchor active">
+					<a href="#tatchareviews" aria-controls="reviews" role="tab" data-toggle="tab" class="tab reviews">Reviews</a>	
+				</li>
+				<li role="presentation" class="tab-section-anchor">
+					<a href="#questions" aria-controls="questions" role="tab" data-toggle="tab" class="tab questions">Q&amp;A</a>
+				</li>
+			</ul>
+			<!-- Tab panes -->
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="tatchareviews">
+				</div>
+				<div role="tabpanel" class="tab-pane" id="questions">
+				</div>
+			</div>
+		</div>
+	</isif>	
+</isif>

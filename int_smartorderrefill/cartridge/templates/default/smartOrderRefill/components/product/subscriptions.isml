@@ -1,0 +1,31 @@
+<form id="addProductPDPForm" action="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'action','addProductSave')}" method="post">
+<isloop items="${pdict.subscriptionsList}" var="subscription">
+    <div class="sor-table__subscriptions">
+    <input name="sor-subs" value="${subscription.ID}" type="radio">
+        <isloop items="${subscription.products}" var="prod">
+            <div class="subscriptionSection-img subSection">
+                <isset name="product" value="${dw.catalog.ProductMgr.getProduct(prod.ID)}" scope="page" />
+                <div class="img-info">
+                    <div class="product-name">
+                        x${prod.quantity} &nbsp; <strong>
+                            ${product.name}</strong>
+                    </div>
+                    <div class="refill-interval">${Resource.msg('smartorderrefill.addproduct.refillinterval',
+                        'smartorderrefill', null)}:&nbsp;
+                        <strong>${prod.interval} ${Resource.msg('smartorderrefill.periodicity.' + prod.periodicity,
+                            'smartorderrefill', null)}<br /></strong>
+                    </div>
+                    <div class="refill-interval">
+                        <isif condition="${!empty(prod.commitmentDone) && !empty(prod.commitment)}">
+                            ${Resource.msg('smartorderrefill.addproduct.commitment', 'smartorderrefill', null)}&nbsp;
+                            <strong>${prod.commitmentDone}/${prod.commitment}</strong>
+                        </isif>
+                    </div>
+                </div>
+            </div>
+        </isloop>
+        <hr>
+    </div>    
+</isloop>
+
+</form>

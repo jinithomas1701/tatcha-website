@@ -1,0 +1,27 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+* Purpose: This script generates the file name for the exported orders. 
+			The file name has naming conventin as "CeligoOrderExport_" + time stamp.
+			File resides inside "impex/src/celigo/order/" directory.
+* @input baseFileName : String base file name
+* @output exportFileName : String exported file name
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{
+
+    var baseFileName : String = "celigo/order/CeligoOrderExport_" ;
+    
+    if(!empty(args.baseFileName)) {
+    	baseFileName = args.baseFileName;
+    }
+    
+    var timeStamp : Number = Date.now();
+    var fileName : String = baseFileName + timeStamp + ".xml";
+    
+    args.exportFileName = fileName;
+
+   return PIPELET_NEXT;
+}

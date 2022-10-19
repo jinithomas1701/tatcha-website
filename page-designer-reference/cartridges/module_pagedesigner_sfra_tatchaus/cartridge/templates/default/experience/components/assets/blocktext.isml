@@ -1,0 +1,20 @@
+<iscache type="relative" hour="24"/>
+<div class="container-fluid container-fluid-max container-flush">
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> class="block-text-container col-12 ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}" style="background-image:url(${pdict.desktopImage.src.desktop});background-position: center;">
+  <div class="text-container col-md-10 col-xl-8 mr-auto ml-auto">
+    <isif condition="${!empty(pdict.contentbody)}">
+      <div class="block-text">
+        <isprint value="${pdict.contentbody}" /> 
+      </div>
+    </isif>
+    
+    <isif condition="${!empty(pdict.linkurl)}">
+      <div class="block-link">
+        <a href="${pdict.linkurl}" class="btn btn-link">
+          <isprint value="${pdict.linktext}" />
+        </a>
+      </div>
+    </isif>
+  </div>
+</div>
+</div>

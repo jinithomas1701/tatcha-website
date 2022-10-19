@@ -1,0 +1,32 @@
+<isscript>
+	  importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<isif condition="${pdict.Content && pdict.Content.custom.catPromoType && pdict.Content.custom.catPromoType.toString() == 'Message + CTA'}"> 
+<isset name="catPromoImageDesktopUrl" value="${getBlogMediaUrl(pdict.Content.custom.catPromoImageDesktop,'category')}" scope="page"/>
+<isset name="catPromoImageMobileUrl" value="${getBlogMediaUrl(pdict.Content.custom.catPromoImageMobile,'category')}" scope="page"/>
+	<div class="product-list-unit-v2 product-list-unit-promo vsa-block-content col-md-6">
+		<div class="promo-container">
+			<picture>
+				<source media="(min-width:768px)" srcset="${catPromoImageDesktopUrl}">
+				<source media="(max-width:767px)" srcset="${catPromoImageMobileUrl}">
+				<img src="${catPromoImageDesktopUrl}" class="img-fluid" alt="${pdict.Content.custom.catPromotitle}"/>
+			</picture>
+			<div class="vsa-main-block">
+				<div class="vsa-heading" style="color:${(pdict.Content && !empty(pdict.Content.custom.catPromoTextColor)) ? pdict.Content.custom.catPromoTextColor : '#000'}">
+					<isif condition="${pdict.Content.custom.catPromotitle}"> <h2>${pdict.Content.custom.catPromotitle}</h2> </isif> 
+					<isif condition="${pdict.Content.custom.catPromoBody}"> <span class="vsa-subtitle" style="color:${(pdict.Content && !empty(pdict.Content.custom.catPromoTextColor)) ? pdict.Content.custom.catPromoTextColor : '#000'}">${pdict.Content.custom.catPromoBody}</span> </isif>
+				</div>
+				<div class="vsa-cta-block">
+					<div class="vsa-cta" data-cta-listener="true">
+						<isif condition="${pdict.Content.custom.catPromoCtaLink && pdict.Content.custom.catPromoCtaText}">
+							<a href="${pdict.Content.custom.catPromoCtaLink}" aria-labelledby="cta-button">	
+								<button class="btn btn-lg ${(pdict.Content && pdict.Content.custom.catPromoTextColor == '#fff') ? 'btn-outline-light' : 'btn-outline-dark'}" id="cta-button" aria-label="${pdict.Content.custom.catPromoCtaText}" tabindex="-1">${pdict.Content.custom.catPromoCtaText}</button>			
+							</a>
+						 </isif>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</isif>

@@ -1,0 +1,239 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isinclude template="util/modulesafterpay.isml"/>
+<div class="panel panel-primary checkout-summary ">
+	<isscript>
+		var Site = require('dw/system/Site');
+		// calculate the total number of items in the cart by adding quantities together
+		// do not count bonus line items
+		var cartQty : Number = 0;
+		var pliIt : dw.util.Iterator = pdict.Basket.productLineItems.iterator();
+
+		while (pliIt.hasNext()) {
+			var pli : dw.order.ProductLineItem = pliIt.next();
+			cartQty += pli.quantity;
+		}
+
+		// add the gift certificates to cart quantity
+		cartQty += pdict.Basket.giftCertificateLineItems.size();
+	</isscript>
+	
+	<div class="panel-heading panel-split summary-heading-container d-none d-lg-flex justify-content-between">
+	    <h2 class="summary-heading" tabindex="0">${Resource.msg('cart.summary','checkout',null)}</h2>
+	    <div class="count-text"><isprint value="${cartQty}" formatter="##"/><isif condition="${cartQty == 1}"> item<iselse>  items </isif></div>
+	</div>
+	<hr class="d-none d-lg-block">
+	<div class="panel-body">
+		<isordertotalsbs p_lineitemctnr="${pdict.Basket}" p_totallabel="${Resource.msg('global.estimatedtotal','locale',null)}" p_shippinglabel="${Resource.msg('order.ordersummary.orderestimatedshipping','order',null)}" p_taxlabel="${Resource.msg('order.ordersummary.orderestimatedtax','order',null)}"/>
+		<isscript>
+			var defaultshippment = pdict.Basket.getDefaultShipment().getShippingAddress();
+			var postalCode = (defaultshippment && defaultshippment.getPostalCode()!= null) ? defaultshippment.getPostalCode() : '';
+			var countryCode = defaultshippment.getCountryCode();
+			</isscript>
+			<!-- Afterpay Changes start -->
+			<isscript>
+				var sitePreferences =require("int_afterpay_core/cartridge/scripts/util/afterpayUtilities.js").getSitePreferencesUtilities();
+				var afterpayEnable = sitePreferences.isAfterpayEnabled();
+				var smartOrderRefill =null,HasRefillProducts = null; 
+				if(Site.getCurrent().getCustomPreferenceValue('SorEnabled')){
+				smartOrderRefill = require('int_smartorderrefill/cartridge/scripts/smartOrderRefill/refillHelper.js'); 
+				HasRefillProducts = smartOrderRefill.checkForRefillProducts();
+				}
+				var hasOnlyGiftCertificate = false;
+				var productLineItems = pdict.Basket.productLineItems;
+				if(productLineItems.length === 0 && pdict.Basket.giftCertificateLineItems && pdict.Basket.giftCertificateLineItems.length > 0) {
+					hasOnlyGiftCertificate = true;
+				} 
+			</isscript>
+			<isif condition="${afterpayEnable == true && !HasRefillProducts && !hasOnlyGiftCertificate}">
+			<div class="learn-more">	
+				<isset name="orderTotalValue" value="${pdict.Basket.getAdjustedMerchandizeTotalPrice(true).add(pdict.Basket.giftCertificateTotalPrice)}" scope="page"/>
+				<iscomment>Afterpay message</iscomment>
+					<isafterpaythreshold totalprice="${orderTotalValue}" classname="cart-afterpay-message" />
+					</div>
+			</isif>
+			<!-- Afterpay Changes end -->
+		<div class="checkout-promo-code">
+		<div class="payment-options row no-gutters">
+			<isscript>
+				var coupons = pdict.Basket.couponLineItems;
+				var scope = 'cart';
+				var promoId = Site.getCurrent().getCustomPreferenceValue('samplePromotionID');
+			</isscript>
+			<div class='form-group mb-0 col-md-6 col-lg-12 <isprint value="${promoCodeError}"/>'>
+					
+					<isset name="couponApplied" value="${false}" scope="page"/>
+					<isif condition="${!empty(coupons)}">
+						<isloop items="${pdict.CurrentForms.cart.coupons}" var="FormCoupon" status="loopstateCoupons">
+							<div class="input-group input-group-readonly">
+								<input type="text" class="form-control promoapply form-control-lg" name="${pdict.CurrentForms.cart.couponCode.htmlName}" id="${pdict.CurrentForms.cart.couponCode.htmlName}"  value="${FormCoupon.object.couponCode}" readonly ="readonly"/>
+								<span class="input-group-btn">
+									<button class="btn btn-link promo-remove" aria-label="Remove promocode" type="submit" value="${Resource.msg('global.remove','locale',null)}" name="${FormCoupon.deleteCoupon.htmlName}" id= "remove-coupon">
+										<i class="fal fa-times-circle"></i>
+									</button>
+								</span>
+							</div>
+							<isset name="couponApplied" value="${true}" scope="page"/>
+				    	</isloop>
+					</isif>
+					
+					<isif condition="${!empty(pdict.CurrentSession.custom.Coupon)}">
+		            	<isset name="sessionCouponData" value="${JSON.parse(pdict.CurrentSession.custom.Coupon)}" scope="page" />
+		            <iselse>
+		            	<isset name="sessionCouponData" value="" scope="page" />
+		            </isif>
+					<isif condition="${pdict.PromoTrigger && ((!empty(sessionCouponData) && sessionCouponData.deleteStatus==true) || (pdict.CouponStatus != null && pdict.CouponStatus.error) || (pdict.CouponError && pdict.CouponError=='NO_ACTIVE_PROMOTION') || !empty(coupons))}">
+						<input type="hidden" id="promoTried" name="promoTried" value="true"/>
+					</isif>
+			  <isif condition="${couponApplied != true}">
+				<div class="d-flex w-100 bag-promo-container">
+				  <div class="form-group mr-1 w-100 position-relative">		
+				  <div class="promo-label">
+						<label for="${pdict.CurrentForms.cart.couponCode.htmlName}" aria-label="Promocode field" class="control-label" data-toggle="tooltip" data-placement="right" title="" tabindex="0" data-original-title="Only one code per order. Some products may be excluded."><span style="cursor:pointer;"><i class="fas fa-question-circle label-icon"></i></span></label>
+				  </div>
+							<input placeholder=" " type="text" class="form-control promoapply form-control-lg floating__input" name="${pdict.CurrentForms.cart.couponCode.htmlName}" id="${pdict.CurrentForms.cart.couponCode.htmlName}" aria-describedby="checkout-promo-error" aria-label="Add promo code"/>
+							<label class="float-label" data-content="Promo Code"></label>
+					</div>
+								<span class="input-group-btn">
+								<button type="submit" class="btn btn-input-group btn-dark promo-button btn-lg" disabled  value="${pdict.CurrentForms.cart.addCoupon.htmlName}" name="${pdict.CurrentForms.cart.addCoupon.htmlName}" id="add-coupon" aria-label="Apply promo code">
+								${Resource.msg('global.apply','locale',null)}
+								</button>
+						   	</span>
+				
+					</div>
+				</isif>
+			
+			<div class="alert alert-danger bag-alert" id="checkout-promo-error" style="display: none;"></div>
+				<div class="cart-coupon-code-error outline-global">
+					<isif condition="${!empty(pdict.CurrentSession.custom.Coupon)}">
+		            	<isset name="sessionCouponData" value="${JSON.parse(pdict.CurrentSession.custom.Coupon)}" scope="page" />
+		            <iselse>
+		            	<isset name="sessionCouponData" value="" scope="page" />
+		            </isif>
+					<isif condition="${!empty(sessionCouponData) && sessionCouponData.status=='COUPON_CODE_MISSING'}">
+						<div class="text-danger bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+						 <i class="fal fa-exclamation-circle"></i> ${Resource.msg('cart.COUPON_CODE_MISSING','checkout', null)}
+						</div>
+						<isset name = "Coupon" value = "null" scope = "session">
+					<iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status=='NO_ACTIVE_PROMOTION'}">
+						<div class="text-danger bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+							<i class="fal fa-exclamation-circle"></i> ${Resource.msgf("cart.NO_ACTIVE_PROMOTION", "checkout", "", sessionCouponData.code)}
+						</div>
+						<isset name = "Coupon" value = "null" scope = "session">
+					<iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status != 'APPLIED' && sessionCouponData.deleteStatus != true}">
+						<div class="text-danger bag-alert cart-coupon-code" id="cart-coupon-unknown" role="alert" aria-live="assertive">
+							<i class="fal fa-exclamation-circle"></i> ${Resource.msgf('cart.' + sessionCouponData.status,'checkout', null, sessionCouponData.code)}
+						</div>
+						<isset name = "Coupon" value = "null" scope = "session">
+					<iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status =='AUTODELIVERY_ENABLED'}">
+						<div class="text-danger bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+							<i class="fal fa-exclamation-circle"></i> ${Resource.msgf('cart.AUTODELIVERY_ENABLED','checkout', null)}
+						</div>
+					<iselseif condition="${!empty(sessionCouponData) && sessionCouponData.status=='APPLIED'}">
+						<div class="text-success bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+							<i class="fal fa-check-circle"></i> ${Resource.msgf("cart.APPLIED",'checkout', "", sessionCouponData.code)}
+						</div>
+						<isset name = "Coupon" value = "null" scope = "session">
+					</isif>
+					<isif condition="${!empty(sessionCouponData) && sessionCouponData.deleteStatus==true}">
+						<div class="text-warning bag-alert cart-coupon-code" role="alert" aria-live="assertive">
+							<i class="fal fa-exclamation-circle"></i> ${Resource.msgf("cart.DELETE_COUPON",'checkout', "", sessionCouponData.code)}
+						</div>
+						<isset name = "Coupon" value = "null" scope = "session">
+					</isif>
+				</div>
+				<div class="summary-cta-link mt-1">
+				<isloop items="${pdict.Basket.bonusDiscountLineItems}" var="bonusDiscountLineItem" status="loopstate">
+					<isif condition="${bonusDiscountLineItem.getPromotion().ID == promoId}"><iscontinue/></isif>
+					<isif condition="${!empty(bonusDiscountLineItem.getPromotion().ID)}">
+						<isif condition="${bonusDiscountLineItem.getBonusProductLineItems().size() > 0}">
+							<isset name="bonusButtonText" value="${Resource.msg('cart.editpromogift','checkout',null)}" scope="page" />
+							<isset name="displayModalOnLoad" value="editBonusModalLink" scope="page" />
+						<iselse/>
+							<isset name="bonusButtonText" value="${Resource.msg('cart.addpromogift','checkout',null)}" scope="page" />
+							<isset name="displayModalOnLoad" value="addBonusModalLink" scope="page" />
+						</isif>
+						<a class="${displayModalOnLoad} gwpModalLink" href="${URLUtils.url('Product-GetBonusProducts','bonusDiscountLineItemUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false, 'pageSize',10, 'pageStart', 0, 'bpTotal', -1, 'format', 'ajax', 'usetatchamodal', true)}">
+							<isprint value="${bonusButtonText}" />
+						</a>
+					</isif>
+				</isloop>
+			</div>
+			</div>
+			
+			
+				<isif condition="${pdict.EnableCheckout}"> 
+					<div class="col-md-6 mt-lg-0 col-lg-12">
+					    <a href="${URLUtils.url('Checkout-Begin')}" class="checkout-btn ml-md-2 ml-lg-0  btn btn-primary btn-block mb-3 cart-checkout-btn" type="button" value="${Resource.msg('global.checkout','locale',null)}" id=""  name="${pdict.CurrentForms.cart.checkoutCart.htmlName}" 
+					    data-sorproducts="${HasRefillProducts}"
+					     data-userexists="${pdict.CurrentCustomer.authenticated}">
+							<i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+					    </a>
+					    <iscomment>RDMP-2364 - GTM change </iscomment>
+					    <button type="submit" value="${Resource.msg('global.checkout','locale',null)}" id="cart-checkout-button" style="display:none;" name="${pdict.CurrentForms.cart.checkoutCart.htmlName}" data-sorproducts="${session.custom.HasSORProducts}" data-userexists="${pdict.CurrentCustomer.authenticated}"></button>
+					</div>
+				<iselse/>
+
+					<div class="col-md-6 mt-lg-0 col-lg-12">
+					<button class="checkout-btn ml-md-2 ml-lg-0 btn btn-primary btn-block mb-3 cart-checkout-btn" disabled="disabled" type="submit" value="${Resource.msg('global.checkout','locale',null)}" id="" name="${pdict.CurrentForms.cart.checkoutCart.htmlName}">
+						<i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+					</button>
+					</div>
+				</isif>
+			</div>
+			</div>
+			
+			<isif condition="${pdict.EnableCheckout}"> 
+			
+				<isif condition="${!(session.custom.HasSORProducts === true || session.custom.hasSORProducts === true)}"> 
+					<div class="d-flex flex-row justify-content-between ">
+					    <div class="w-75"><hr/></div>
+					    <div class="w-100 text-center checkout-with">Or checkout with</div>
+					    <div class="w-75"><hr/></div>
+					</div>
+				</isif>
+				
+			</isif>
+
+		<iscomment> Mobile payment options were here </iscomment>
+		
+		<div class="mobile-payment-options">
+          <div class="container-fluid">
+              
+              <div class="text-center p-4"><isprint value="${cartQty}" formatter="##"/><isif condition="${cartQty == 1}"> ITEM<iselse>  ITEMS </isif> | <strong><isprint value="${orderTotalValue}"/></strong>
+              </div>
+              <isif condition="${pdict.EnableCheckout}"> 
+	              <div class="row">
+	                  <div class="col-12">
+                      		<isif condition="${pdict.isExpressCheckout == true}">			    
+								<a href="${URLUtils.url('ExpressCheckout-Start','checkouttype','expresscheckout')}" id="express-checkout-button" class= "checkout-btn btn btn-primary express-checkout-bag w-100">
+									<i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+								</a>
+							<iselse>
+							    <button class="checkout-btn btn btn-primary w-100 cart-checkout-btn" type="submit" value="${Resource.msg('global.checkout','locale',null)}" id=""  name="${pdict.CurrentForms.cart.checkoutCart.htmlName}" 
+							    data-sorproducts="${HasRefillProducts}" 
+							    data-userexists="${pdict.CurrentCustomer.authenticated}">
+									<i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+							    </button>
+							</isif>
+	                      
+	                  </div>
+	              </div>
+	              <div class="other-pay-options">other payment options </div>
+              <iselse>
+              	<div class="row">
+	                  <div class="col-12">
+	                      
+              			  	<button class="checkout-btn btn btn-primary w-100" disabled="disabled" type="submit" value="${Resource.msg('global.checkout','locale',null)}"	name="${pdict.CurrentForms.cart.checkoutCart.htmlName}">
+								<i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+							</button>
+              			  
+	                  </div>
+	              </div>
+	              <div class="other-pay-options"></div>
+			  </isif>
+          </div>
+         </div>
+		
+	</div>
+</div>

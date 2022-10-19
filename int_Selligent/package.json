@@ -1,0 +1,7 @@
+{
+    "init": ["./cartridge/scripts/Selligent/services/selligentWSAddAbandonedBasket.ds",
+    		 "./cartridge/scripts/Selligent/services/selligentWSAddCustomer.ds",
+    		 "./cartridge/scripts/Selligent/services/selligentWSAddOrder.ds",
+    		 "./cartridge/scripts/Selligent/services/selligentWSGetSettings.ds",
+    		 "./cartridge/scripts/Selligent/services/selligentWSRemoveAbandonedBasket.ds"]
+}

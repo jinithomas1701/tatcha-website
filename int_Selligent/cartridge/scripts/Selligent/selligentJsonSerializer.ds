@@ -1,0 +1,132 @@
+/**
+* Json Serializer
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+
+/**
+* Serialize an object in the json format
+*
+* @param {Object} The object to serialize
+* @returns the serialized object
+*/
+function serialize(item : Object) : String
+{	
+	return subSerialize(item , "");
+}
+
+function subSerialize(item : Object, parentPropertyName : String) : String
+{
+	var result : String = "";
+	var namePrefix : String = parentPropertyName;
+	var indexPos : Number = 0;
+	var isArray : Boolean = false;
+	if(item.constructor === Array || item.constructor === List)
+	{
+		isArray = true;
+		result = result + "[";
+		for each (var val in item)
+			result = result + serialize(val) + ",";
+		indexPos = result.lastIndexOf(",");
+		if (indexPos > 0)
+			result = result.substr(0, indexPos);
+		result = result + "]";
+	}
+	else
+	{
+		switch(typeof item)
+		{ 
+			case "object":
+				for(var property in item)
+				{
+					var isObject : Boolean = false;
+					var value = item[property];
+					var stringValue : String = null;
+					switch(typeof value)
+					{ 
+						case "object":
+							if(value != null)
+							{
+								if(value.constructor === Decimal)
+								{
+									stringValue = value.toString();
+								}		
+								else
+								{
+									stringValue = subSerialize(value, property);
+									isObject = true;
+								}
+							}
+							break;
+						case "number":						
+							var numValue : Number =  value;
+						 	stringValue = numValue.toFixed();
+						 	break;
+						case "string":
+							stringValue = value;
+						 	stringValue = stringValue.replace("\"", "\\\"");
+						 	break;
+						case "boolean":
+							var boolValue : Boolean =  value;
+						 	stringValue = boolValue.toString();
+						 	break;
+						case "undefined":
+							break;
+					}
+					if(stringValue == null)
+						stringValue = "";
+					
+					if ((namePrefix != null) && (namePrefix != "") && (namePrefix.lastIndexOf(".") == -1 ))
+						namePrefix = namePrefix + ".";
+				    
+					if (property != null)
+					{
+						if(isObject)
+							result = result + "\"" + namePrefix + property + "\":" + stringValue + ",";
+						else
+							result = result + "\"" + property + "\":\"" + stringValue + "\",";
+					}
+					else
+							result = result + "\"" + stringValue + "\",";
+				}
+				if(!isArray)
+				{
+					indexPos = result.lastIndexOf(",");
+					if (indexPos > 0)
+						result  = result.substr(0, indexPos);
+					result = "{" + result + "}";
+				}
+				break;
+			case "number":
+				var numValue : Number =  item;
+			 	var sValue : String = numValue.toFixed();
+			 	if(sValue == null)
+					sValue = "";
+				result = result + "\"" + sValue + "\"";
+			 	break;
+			case "string":
+				var sValue : String = item;
+			 	if(sValue == null)
+					sValue = "";
+			 	sValue = sValue.replace("\"", "\\\"");
+				result = result + "\"" + sValue + "\"";
+			 	break;
+			case "boolean":
+				var boolValue : Boolean =  item;
+			 	var sValue : String = boolValue.toString();
+			 	if(sValue == null)
+					sValue = "";
+				result = result + "\"" + sValue + "\"";
+			 	break;
+			case "undefined":
+				break;
+		}
+			
+	}
+
+	result = result.replace(/(\r\n|\n|\r)/gm," ");
+
+	return result;	
+}
+
+

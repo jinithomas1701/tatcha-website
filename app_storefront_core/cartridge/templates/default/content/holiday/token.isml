@@ -1,0 +1,2 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>

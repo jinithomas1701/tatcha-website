@@ -1,0 +1,41 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account_popup"/>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+	<h4 class="modal-title"><strong>Add a Credit Card</strong></h4>
+</div>
+    	
+<div id="braintreeFormErrorContainer" class="alert alert-danger">${empty(pdict.BraintreeError) ? '' : pdict.BraintreeError}</div>
+		
+<div class="braintree-account-add-credit-card-content">
+	<form id="addCreditCardForm" action="${URLUtils.url('Braintree-AccountAddCreditCardHandle')}" class="account-add-credit-card js_braintree_addCreditCardForm" method="post">
+		<div class="modal-body">
+			<isscript>
+                var isEnable3dSecure = false;
+                var ownerName = !empty(pdict.CardFields) && !empty(pdict.CardFields.owner) ? pdict.CardFields.owner : '';
+                var amount = 0;
+            </isscript>
+            
+			<isinclude template="braintree/util/creditCardFields"/>
+			
+			<div class="form-row label-inline form-indent">
+				<div class="field-wrapper checkbox">
+					<label for="braintreeCreditCardMakeDefault">
+						<input name="braintreeCreditCardMakeDefault" id="braintreeCreditCardMakeDefault" type="checkbox" checked="checked" value="true" />
+						<span>${Resource.msg('braintree.creditcard.makedefault', 'locale', null)}</span>
+					</label>
+				</div>
+			</div>
+
+            <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="true" />
+            <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}" value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}" />
+		</div>
+		
+		<div class="modal-footer">
+			<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+			<button type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="true" class="btn btn-primary edit-save">${Resource.msg('braintree.addcreditcard.button.apply', 'locale', null)}</button>
+		</div>
+		<input type="hidden" name="scope" value="billing">
+	</form>
+</div>
+</isdecorate>

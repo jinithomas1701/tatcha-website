@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+
+<isscript>
+	// Get context variables to insert into template placeholders
+    var VariationUtils = require('~/cartridge/scripts/product/VariationUtils.js');
+    var context = VariationUtils.getContext(pdict);
+</isscript>
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+<isif condition="${context.isValidProductType}">
+	<isloop items="${context.attrs}" var="attr">	
+		<isif condition="${attr.hasSwatch && attr.attributeId == 'color'}">
+			<div class="product-variants-block variants-color text-left" >
+				<div class="form-label">Color</div>
+				<isif condition="${attr.selectedValue}">					
+					<div class="form-label-inner my-2"><span class="form-label-inner"><isprint value="${attr.selectedValue}" /></span></div>				
+				</isif>	
+				<isif condition="${attr.values.length > 1}">
+					<div class="variant-list text-left">
+					<isloop items="${attr.values}" var="attrValue" status="attrStatus">
+						<isset name="variantSelected" value="${attrValue.swatchClass == 'selectable selected' ? 'active' : ''}" scope="page"/>
+								<a class="variant-option ${variantSelected} ${isQuickView ? 'swatchanchor':''} focus-outline-purple"
+								href="${attrValue.linkUrl}"
+								title="${attrValue.resourceVariationsLabel}"
+								data-vtype="${attr.attributeId}"
+								data-productid="${attrValue.productID}"
+								data-lgimg='<isif condition="${attrValue.largeImage}">${attrValue.largeImage}</isif>'>
+								<isif condition="${attrValue.isColorSwatch}">
+									<img class="rounded-circle" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, attrValue.swatchImageUrl)}" alt="color - ${attrValue.displayValue}">
+								</isif>
+								</a>
+					</isloop>
+					</div>
+				</isif>				
+			</div>					
+		</isif>
+	</isloop>				
+</isif>

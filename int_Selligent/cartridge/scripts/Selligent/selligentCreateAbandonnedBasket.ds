@@ -1,0 +1,128 @@
+/**
+* Demandware Script File
+* This script create an new abandoned basket custom object and call Selligent push webservice to add the abandoned basket info
+*   @input currentBasket : dw.order.Basket 
+*   @input currentCustomer : dw.customer.Customer
+*
+*/
+importPackage( dw.system );
+importPackage( dw.object );
+importPackage( dw.order );
+importPackage( dw.customer);
+importPackage( dw.catalog );
+importPackage( dw.rpc);
+importPackage( dw.io);
+importPackage( dw.ws);
+importPackage( dw.svc);
+importPackage( dw.util);
+importScript("Selligent/selligentExportAbandonedBasket.ds");
+importScript("Selligent/selligentExportBase.ds");
+
+/**
+* Main function of the script.
+*
+* @param {PipelineDictionary} pdict contains the current basket and the current customer
+*/
+function execute( pdict : PipelineDictionary ) : Number
+{
+ 
+	try
+	{
+
+		var basket : Basket = pdict.currentBasket;	
+		var customer : Customer = pdict.currentCustomer;
+	    var content : String = "";
+	    var i : Number = 0;
+	    var custUUID : String = "";
+	    var custNo : String = "";	
+	    var registered = false;
+	    
+	    if (customer != null) 
+	    {
+	    	registered  = customer.registered;
+	    }
+	     
+	    if(registered == true)
+		{
+			custUUID = customer.profile.UUID;
+			custNo =  customer.profile.customerNo;
+		}
+		
+		if (basket != null && basket.productLineItems.length > 0)
+		{
+			for(i=0; i < basket.productLineItems.length; i++)
+			{			
+				content +=  basket.productLineItems[i].productID + "|";				
+			}
+			if(content.length > 1)
+				content = content.substring(0,content.length - 1);
+			 
+		}			
+		var deleted = 0;
+		if (content.length == 0) 
+		{
+			deleted = 1;		
+		}
+				
+		// build json string		
+		var jsonToSend : String = StringUtils.format("'{'\"custNo\":\"{0}\",\"custUUID\":\"{1}\",\"basketUUID\":\"{2}\",\"content\":\"{3}\",\"deleted\":\"{4}\"'}'", custNo,custUUID, basket.UUID, content, deleted ); 	   
+
+		// push the abandoned basket			
+		var result : Result = ServiceRegistry.get("SelligentAddAbandonedBasket").call(jsonToSend);
+		
+		// if the web service returns an error save the informations.
+		if(result.status == "ERROR") {
+			var fielsToExport : Array = null;
+			var json : String  = "";
+			var sab : CustomObject= CustomObjectMgr.getCustomObject("SAB", basket.UUID);
+			if( sab == null)				
+			{
+				sab = CustomObjectMgr.createCustomObject("SAB",basket.UUID);
+			}
+	
+			sab.custom.content = content;
+			sab.custom.basketUUID = basket.UUID;
+			sab.custom.custUUID = custUUID;	
+			sab.custom.custNo = custNo;
+			
+			if (content.length > 1) 
+			{
+				sab.custom.deleted = 0;
+			}
+			else
+			{
+				sab.custom.deleted = 1;
+			}
+		    
+		    throw result.errorMessage;			
+		}											
+	}
+	catch(e) 
+	{
+		Logger.error("Selligent Error: Unable to push abandoned basket: "+e.message );						
+		return PIPELET_ERROR;
+	}
+
+
+   return PIPELET_NEXT;
+}
+
+
+/**
+* Get the properties list to export from the config file 
+*
+* @returns an array of properties to export 
+*/
+function getAbandonedBasketFieldsToExport() : Array
+{
+	var fielsToExport : Array;
+	if (configFileExist("abandonedbasket") === false)
+	{	
+		var result : Result = ServiceRegistry.get("SelligentGetSettings").call();
+		if(result.status == "ERROR") {
+		   throw result.errorMessage;
+		}	
+	}
+	fielsToExport = getFieldsToExport("abandonedbasket");
+	return fielsToExport;
+}

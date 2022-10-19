@@ -1,0 +1,21 @@
+module.exports.getMappingObj = function(catalogImportConfig) {
+	var mapping = {};
+	// set the default value
+	mapping.keyCount = 1;
+	mapping.mappingName = catalogImportConfig;
+	
+	if(!empty(catalogImportConfig)) {
+		var mappingName = catalogImportConfig.split('|');
+		if(mappingName.length > 1) {
+			var keyCount = mappingName[1];
+			// make sure the keyCount is a number
+			// if not, assume the entire catalogImportConfig is the mapping name (no compound key)
+			if(/^[0-9]*$/.test(keyCount)) {
+				mapping.keyCount = parseInt(keyCount);
+				mapping.mappingName = mappingName[0];
+			}
+		}
+		
+	}
+	return mapping;
+};

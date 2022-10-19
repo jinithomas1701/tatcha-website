@@ -1,0 +1,131 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+    This is the footer for all pages. Be careful caching it if it contains
+    user dependent information. Cache its elements instead if necessary (do not forget
+    to change the isinclude into a pipeline include for that).
+</iscomment>
+<isinclude template="util/modules"/>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('enableGTM')}">
+    <isinclude template="googletagmanager/googletagmanager"/>
+</isif>
+
+<isscript>
+	var automatExcludeNSList = ['cms', 'blog', 'orderconfirmation', 'recommendation', 'cart', 'account', 'wishlist'];
+	var currentNS = (pageContext && pageContext.ns) ? pageContext.ns: '';
+	var loadAutomatSnippet = automatExcludeNSList.indexOf(currentNS) > -1 ? true: false;
+</isscript>
+<iscomment> Automat Includes </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('AUTOMAT_IsEnabled') && !loadAutomatSnippet}">
+	<script src="${dw.system.Site.getCurrent().getCustomPreferenceValue('automatConductorURL')}" async></script>
+</isif>
+
+<iscomment>added params from Klaviyo Render tags</iscomment>
+
+<iscomponent pipeline ="DisplayFooterComp-Show" extole_zone_name="${request.httpParameterMap.extole_zone_name.stringValue}"
+             title = "${request.pageMetaData.title}"
+             pagecontexttype = "${('pageContext' in this && !empty(pageContext)) ? ''+pageContext.type : null}"
+             pagecontexttitle = "${('pageContext' in this && !empty(pageContext)) ? ''+pageContext.title : null}"
+             searchterm = "${dw.util.SecureEncoder.forJavaScriptInBlock(request.httpParameterMap.q.stringValue)}"
+             searchresultscount = "${(!empty(pdict.ProductSearchResult) ? ''+pdict.ProductSearchResult.count : null)}"
+             productid = "${(!empty(pdict.Product) ? pdict.Product.ID : null)}"
+             pagecgid =  "${request.httpParameterMap.cgid.stringValue}"
+             orderno = "${(!empty(pdict.Order) ? pdict.Order.orderNo : null)}"/>
+
+<footer class="tatcha-footer-new">
+    <iscontentasset aid="tatcha-footer-education-support-banner"/>
+    <div class="main-footer-wrap">
+        <div class="container footer-wrap">
+            <div class="row">
+                <div class="footer-list col-md-5 col-lg-6">
+                    <div class="">
+                        <iscomponent pipeline ="DisplayFooterComp-FooterSubscribe" updateddesign="true"/>
+
+                        <div class="footer-socialmedia-icons">
+                            <iscontentasset aid="tatcha-footer-social-v1"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-list col-md-2 col-lg-2">
+                    <iscontentasset aid="tatcha-footer-company-v1"/>
+                </div>
+                <div class="footer-list col-md-3 col-lg-2">
+                    <iscontentasset aid="tatcha-footer-help-v1"/>
+                </div>
+                <div class="footer-list col-md-2 col-lg-2">
+                    <iscontentasset aid="tatcha-footer-account-v1"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="lower-footer-wrap">
+        <div class="container copyright">
+            <iscontentasset aid="footer-region-selector-v1"/>
+            <iscontentasset aid="tatcha-footer-copyright-v1"/>
+        </div>
+    </div>
+</footer>
+<div class="cookie-warning-container" style="display: none;">
+    <input class="cookie-warning-checkbox" id="cookie-warning-checkbox" type="checkbox"/>
+    <div class="cookie-warning-bar">
+        <div class="container">
+            <p class="cookie-warning-message">This website uses cookies and other technologies to understand your use of our website and to give you a better experience. By continuing to use the site or closing this banner, you agree to our use of cookies and other technologies. To find out more about cookies and how to change your choices, please go to our <a href="https://www.tatcha.com/privacy-policy.html">Privacy Policy</a>.</p>
+        </div>
+        <label for="cookie-warning-checkbox" class="cookie-warning-close">
+            <i class="fal fa-times fa-lg"></i>
+        </label>
+    </div>
+</div>
+
+<iscomment>
+    Customer registration can happen everywhere in the page flow. As special tag in the pdict
+    is indicating it. So we have to check on every page, if we have to report this event for
+    the reporting engine.
+</iscomment>
+
+<isscript>
+    if(!empty(pdict.CurrentHttpParameterMap.original.value)) {
+        var originalUrl = pdict.CurrentHttpParameterMap.original.value;
+        originalUrl = originalUrl.replace('!$', '?');
+        originalUrl = originalUrl.split('^^').join('&');
+        session.custom.TargetLocation = originalUrl;
+    }
+    session.custom.showCreateAccountSuccess = false;
+</isscript>
+<isinclude template="util/reporting/ReportUserRegistration.isml"/>
+<isinclude template="components/footer/footer_bs_UI"/>
+
+<iscomment> mParticle JS includes </iscomment>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('mParticleEnabled')}">
+    <isinclude template="mParticle/mParticle_footer"/>
+</isif>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_footer"/>
+</isif>
+
+<iscomment>RDMP-3452: adding attributes for MParticle-RenderMParticleTags call</iscomment>
+<isinclude url="${URLUtils.url('Login-LoginModal',
+		'isProfileUpdated', pdict.isProfileUpdated,
+		'pagecontexttype', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.type : null,
+  		'pagecontexttitle', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.title : null,
+  		'checkoutState', ('checkoutObj' in this && !empty(checkoutObj)) ? checkoutObj.checkoutState : '',
+  		'checkoutMode', ('checkoutObj' in this && !empty(checkoutObj)) ? checkoutObj.checkoutMode : '',
+  		'paymentMethod', ('checkoutObj' in this && !empty(checkoutObj) && !empty(checkoutObj.paymentInfo.paymentInstruments)) ? checkoutObj.paymentInfo.paymentInstruments[0].paymentMethod : '')}"/>
+
+<iscomment> facebook pixel includes </iscomment>
+<isinclude template="common/pixel_footer"/>
+
+<iscomment> Yotpo Includes </iscomment>
+<iscomment>RDMP-3458 change </iscomment>
+<iscomment> Afterpay Express Includes </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled')}">
+    <isinclude template="afterpay/afterpayExpressIncludes" />
+</isif>
+
+<iscomment>Linc Web chat</iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LincWebchatEnable') && pageContext.ns != 'checkout' && pageContext.ns != 'cart'}">
+	<isinclude template="components/lincwebchatwidget"/>
+</isif>
+
+<isif condition="${(dw.system.Site.current.getCustomPreferenceValue('UseGladlyChat') == true)}">
+    <iscontentasset aid="gladly-widget"/>
+</isif>

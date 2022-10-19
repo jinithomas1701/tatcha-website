@@ -1,0 +1,158 @@
+<isset name="billingFields" value="${pdict.forms.billingForm.addressFields}" scope="page"/>
+<fieldset class="billing-address-block ${pdict.order.totals.nonGcAmount == 0.0? 'd-none': ''}">
+    <div class="billing-address-container">
+    	<isset name="stateSelected" value="${pdict.order.billing.billingAddress.address ? pdict.order.billing.billingAddress.address.stateCode : ''}" scope="page"/>
+		<input type="hidden" value="${stateSelected || ''}" id="billingStatedefault" <isprint value=${billingFields.states.stateCode.attributes} encoding="off"/> />
+        <h5 class="section-title">Billing Address</h5>
+        <isif condition="${pdict.orderType !='giftcard'}">
+            <div class="billing-address-flag mb-3"><input id="sameasshippingselector" type="checkbox" data-address="${JSON.stringify(pdict.order.billing.billingAddress.address)}" aria-label="Select if billing address is same as shipping address" class="mr-2 addressSelector" <isprint value=${pdict.forms.billingForm.shippingAddressUseAsBillingAddress.attributes} encoding="off"/> />
+                <span>Same as shipping</span></div>
+        </isif>
+        
+        <div class="billing-address">
+            <div class="d-none">
+                <div class="form-group
+                            ${billingFields.firstName.mandatory === true ? 'required' : ''}
+                            ${billingFields.firstName.htmlName}">
+                    <input  type="hidden" class="form-control billingFirstName floating__input" id="billingFirstName"
+                            value="${pdict.order.billing.billingAddress.address
+                                        && pdict.order.billing.billingAddress.address.firstName
+                                        ? pdict.order.billing.billingAddress.address.firstName
+                                        : ''}"
+                    <isprint value=${billingFields.firstName.attributes} encoding="off"/>
+                    autocomplete="given-name" >
+                    <label class="form-control-label float-label" for="billingFirstName" data-content="First Name"></label>
+                    <div class="invalid-feedback"></div>
+                </div>
+                <div class="form-group
+                            ${billingFields.lastName.mandatory === true ? 'required' : ''}
+                            ${billingFields.lastName.htmlName}">
+                    <label class="form-control-label" for="billingLastName"></label>
+                    <input type="hidden" class="form-control billingLastName" id="billingLastName"
+                           value="${pdict.order.billing.billingAddress.address
+                                    && pdict.order.billing.billingAddress.address.lastName
+                                    ? pdict.order.billing.billingAddress.address.lastName
+                                    : ''}"
+                    <isprint value=${billingFields.lastName.attributes} encoding="off"/>
+                    autocomplete="family-name">
+                    <div class="invalid-feedback"></div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-12 ${billingFields.address1.htmlName}">
+                    <input type="text" class="form-control form-control-lg billingAddressOne floating__input" id="billingAddressOne" pattern="^[\x20-\x7E]*$"   data-pattern-mismatch="Please enter a valid address" data-missing-error="This field is required"
+                           aria-label="Enter street address" placeholder="Street Address"
+                           value="${pdict.order.billing.billingAddress.address
+                            && pdict.order.billing.billingAddress.address.address1
+                            ? pdict.order.billing.billingAddress.address.address1
+                            : ''}"
+                    <isprint value=${billingFields.address1.attributes} encoding="off"/>
+                    autocomplete="billing address-line1">
+                    <label class="form-control-label float-label" for="billingAddressOne" data-content="Address 1"></label>
+                    <div class="invalid-feedback"><isprint value="${billingFields.address1.error}" /></div>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group col-12 ${billingFields.address2.htmlName}">
+
+                    <input type="text" class="form-control form-control-lg billingAddressTwo floating__input" id="billingAddressTwo" pattern="^[\x20-\x7E]*$"   data-pattern-mismatch="Please enter a valid address"
+                           aria-labelledby="Enter street address 2 manually" placeholder="Street Address 2"
+                           value="${pdict.order.billing.billingAddress.address
+                                        && pdict.order.billing.billingAddress.address.address2
+                                        ? pdict.order.billing.billingAddress.address.address2
+                                        : ''}"
+                    <isprint value=${billingFields.address2.attributes} encoding="off"/>
+                    autocomplete="billing address-line2">
+                    <label class="form-control-label float-label" for="billingAddressTwo" data-content="Address 2"></label>
+                    <div class="invalid-feedback"><isprint value="${billingFields.address2.error}" /></div>
+                </div>
+            </div>
+            <a href="#billingaddressCollapse" class="mb-0" data-toggle="collapse" aria-expanded="true" aria-label="Enter address manually" aria-controls="collapseOne">
+                <span class="enter-billing-address-link">Enter address manually</span>
+            </a>
+            <div class="collapse" aria-labelledby="headingOne"  id="billingaddressCollapse">
+
+                <div class="form-row">
+                    <div class="form-group col-12 ${billingFields.city.htmlName}">
+                        <input type="text" minlength="3" class="form-control form-control-lg billingAddressCity floating__input" id="billingAddressCity"  pattern="^[\x20-\x7E]*$" data-pattern-mismatch="Please enter a valid city"   data-missing-error="${Resource.msg('error.message.parse.city','forms',null)}" data-range-error="${Resource.msg('error.message.parse.city','forms',null)}"
+                               aria-labelledby="Enter City manually" placeholder="City"
+                               value="${pdict.order.billing.billingAddress.address
+                                        && pdict.order.billing.billingAddress.address.city
+                                        ? pdict.order.billing.billingAddress.address.city
+                                        : ''}"
+                        <isprint value=${billingFields.city.attributes} encoding="off"/>
+                        autocomplete="billing address-level2">
+                        <label class="form-control-label float-label" for="billingAddressCity" data-content="City"></label>
+                        <div class="invalid-feedback city-error"></div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6 stateFieldWrapper">
+                        <select ${stateUsStyle} data-missing-error="${Resource.msg('error.message.parse.Prefecture','forms',null)}"  id="billingStateUS" autocorrect="off"  ${(selectedCountry.value === 'US')? 'required': ''} class="form-control floating__input form-control-lg pl-3">
+                            <isloop items="${addressFields.states.stateCode.options}" var="states" status="status">
+                                <isif condition="${stateSelected === states.id}">
+                                    <option class="select-option"  id="${states.id}" selected label="${Resource.msg(states.label,'forms',null)}" value="${states.htmlValue}">${Resource.msg(states.label,'forms',null)}</option>
+                                    <iselse>
+                                        <option class="select-option"  id="${states.id}" label="${Resource.msg(states.label,'forms',null)}" value="${states.htmlValue}">${Resource.msg(states.label,'forms',null)}</option>
+                                </isif>
+                            </isloop>
+                        </select>
+                        <select ${stateCaStyle} data-missing-error="${Resource.msg('error.message.parse.Prefecture','forms',null)}"  id="billingStateNonUS" autocorrect="off"  ${(selectedCountry.value === 'CA')? 'required': ''} class="form-control floating__input form-control-lg pl-3">
+                            <isloop items="${provinceList}" alias="province">
+                                <isif condition="${province.country == 'CA'}">
+                                    <isloop items="${province.states}" alias="pstate">
+                                        <isif condition="${stateSelected === pstate.value}">
+                                            <option class="select-option" label="${pstate.label}" selected id="${pstate.value}" value="${pstate.value}">${pstate.label}</option>
+                                            <iselse>
+                                                <option class="select-option" label="${pstate.label}" id="${pstate.value}" value="${pstate.value}">${pstate.label}</option>
+                                        </isif>
+                                    </isloop>
+                                </isif>
+                            </isloop>
+                        </select>
+                        <input type="text" ${stateTextStyle} data-missing-error="Please enter a valid state."   autocorrect="off"  value="${stateSelected || ''}" class="form-control floating__input form-control-lg"  id="billingStateText" placeholder="Province*">
+                        <label class="float-label billing-state-label ${labelHide}" data-content="State*"></label>
+                        <div class="invalid-feedback billing-state"></div>
+                    </div>
+                    <div class="form-group ${typeof postalWidthClass !== "undefined" ? postalWidthClass : ''} ${billingFields.postalCode.htmlName}">
+                        <input type="text" class="form-control form-control-lg billingZipCode floating__input" id="billingZipCode"
+                        		<isif condition="${selectedCountry === 'CA'}">pattern="^[ABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Z]{1} *(?:\d{1}[A-Z]{1}\d{1})?$"<iselseif condition="${selectedCountry === 'US'}">pattern="^\d{5}(?:[-\s]\d{4})?$"</isif> data-missing-error="Please enter a valid zip code" data-pattern-mismatch="Please enter a valid zip code"
+                               aria-labelledby="Enter Zipcode manually" placeholder="Zipcode"
+                               value="${pdict.order.billing.billingAddress.address
+                                        && pdict.order.billing.billingAddress.address.postalCode
+                                        ? pdict.order.billing.billingAddress.address.postalCode
+                                        : ''}"
+                        <isprint value=${billingFields.postalCode.attributes} encoding="off"/>
+                        autocomplete="billing postal-code">
+                        <label class="form-control-label float-label" for="billingZipCode" data-content="Zipcode"></label>
+                        <div class="invalid-feedback postal-code"></div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-12 ${billingFields.country.htmlName}">
+                        <select id="billingCountry" class="form-control form-control-lg pl-3 floating__input"
+                        <isprint value=${billingFields.country.attributes} encoding="off"/>
+                        autocomplete="billing country">
+                        <option label=""></option>
+                        <isloop items="${countriesList}" alias="country">
+                            <isif condition="${selectedCountry && selectedCountry.value == country.value}">
+                                <option id="${country.value}" value="${country.value}" selected><isprint value="${country.label}" /></option>
+                                <iselse>
+                                    <option id="${country.value}" value="${country.value}"><isprint value="${country.label}" /></option>
+                            </isif>
+                        </isloop>
+                        </select>
+                        <label class="float-label" for="billingCountry" data-content="Country"></label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <isif condition="${pdict.order.totals.nonGcAmount == 0.0}">
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="${pdict.order.totals.gcPaymentMethodId}" >
+    </isif>
+    <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+    <input type="hidden" name="localizedNewAddressTitle" value="${Resource.msg('msg.new.address', 'checkout', null)}"/>
+</fieldset>

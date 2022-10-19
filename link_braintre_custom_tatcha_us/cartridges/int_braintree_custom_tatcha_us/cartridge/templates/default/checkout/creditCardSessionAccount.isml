@@ -1,0 +1,30 @@
+<isset name="isSessionAccountExist" value="${!empty(sessionAccount)}" scope="page" />
+
+<isif condition="${isSessionAccountExist}">
+    <isset name="expirationMonth" value="${StringUtils.formatNumber(sessionAccount.creditCardExpirationMonth, '00')}" scope="page" />
+    <isset name="expirationYear" value="${sessionAccount.creditCardExpirationYear ? StringUtils.formatNumber(sessionAccount.creditCardExpirationYear.toString().substr(2), '00') : null}" scope="page" />
+    <option id="braintreeSessionCreditAccount" value="sessioncard"
+        data-save-card="${sessionAccount.custom.braintreeSaveCreditCard || false}"
+        data-session-account="${!!sessionAccount}" ${!is3dSecureNonce ? 'selected="selected"' : ''}
+        class="form-account ${!is3dSecureNonce ? '' : 'used-creditcard-account-hide'}"
+        data-type="${sessionAccount.creditCardType}"
+        data-number="${sessionAccount.maskedCreditCardNumber}"
+        data-owner="${sessionAccount.creditCardHolder}" 
+        data-expiration="${Resource.msgf('braintree.cardlist.expirationdate', 'locale', null, expirationMonth, expirationYear)}"
+        data-nonce="${pdict.braintree.creditCardConfig.braintreePaymentMethodNonce}" 
+        data-payment-method="CREDIT">
+        ${Resource.msgf('braintree.cardlist.option', 'locale', null, sessionAccount.maskedCreditCardNumber, sessionAccount.creditCardType, expirationMonth, expirationYear, sessionAccount.creditCardHolder)}
+    </option>
+<iselse/>
+    <option id="braintreeSessionCreditAccount" value="sessioncard"
+        data-save-card="false"
+        data-session-account="false"
+        class="form-account used-creditcard-account-hide"
+        data-type="false"
+        data-number="false"
+        data-expiration="false"
+        data-owner="false"
+        data-nonce="false" 
+        data-payment-method="CREDIT">
+    </option>
+</isif>

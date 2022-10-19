@@ -1,0 +1,50 @@
+<iscache type="relative" hour="24" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="content/content/pt_content" scope="page"/>
+<isinclude template="util/modules"/>
+<isdecorate template="${DecoratorTemplate}">
+	<div class="container">
+		<div class="content-header">
+			<h2 class="section-anchor">Gift Finder Engine</h2>
+		</div>
+		<div class="product-list-view-options">
+			<div class="view-option-group-row">
+				<div class="view-option-group view-filters">
+					<form action="${URLUtils.url('GiftFinder-RetriveProducts')}" method="post" name="giftfinderform" id="giftfinderform">
+						<div class="dropdown">
+							<input type="text" class="gf-name-insert" name="userName" placeholder="Enter User Name">
+						</div>
+						<div class="dropdown">
+							<select style="width:170px;margin-left: 30px;padding-left:10px;" id="rpskinType" name="category">
+								<option selected value="">Category Type</option>
+								<isloop items="${pdict.CategoryDisplayName}" status="catLoop" var="subCategory" >
+									<option value="${pdict.CategoryDisplayID[catLoop.index]}" <isif condition="${pdict.category === pdict.CategoryDisplayID[catLoop.index]}">selected</isif> >${subCategory}</option>
+								</isloop>
+							</select>
+						</div>				
+						<div class="dropdown">
+							<select style="width:170px;margin-left: 30px;padding-left:10px;" id="rpskinType" name="priceRange">
+								<option selected value="">Price Type</option>
+								<option value="0-50" <isif condition="${pdict.priceRange === '0-50'}">selected</isif>>Below $50</option>
+								<option value="50-100" <isif condition="${pdict.priceRange === '50-100'}">selected</isif>>$50-$100</option>
+								<option value="100-200" <isif condition="${pdict.priceRange === '100-200'}">selected</isif>>$100-$200</option>
+								<option value="noBudget" <isif condition="${pdict.priceRange === 'noBudget'}">selected</isif>>No budget</option>
+							</select>
+						</div>
+						<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+						<button type="submit"> Search</button>	
+					</form>
+				</div>			
+			</div>
+		</div>
+		
+		<isif condition="${!empty(pdict.ProductPagingModel)}">
+			<div class="results-filter sort-by view-option-group view-sort">					
+				<isgiftfinderproductgrid pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}"/>				
+			</div>
+		</isif>
+		
+	</div>
+</isdecorate>
+

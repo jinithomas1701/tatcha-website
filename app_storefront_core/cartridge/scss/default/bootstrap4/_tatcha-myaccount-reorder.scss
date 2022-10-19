@@ -1,0 +1,105 @@
+.my-account-order-lookup {
+	.order-group-date-header {
+			border-top: 1px solid #E9EDF0;
+    		margin-top: 0px;
+		p {
+			padding: 6px 0px;
+		    color: #869196;
+		    text-transform: uppercase;
+		    margin-bottom: 0;
+		}
+	}
+	
+	.reorder-container{
+		margin-bottom: 24px;
+	}
+	
+	.m-top{
+		margin-top:32px;
+	}
+	
+	.order-group-date-header ~ .order-group-date-header {
+		margin-top: 48px;
+	}
+	
+	.product-stack-list-unit {
+		 margin-bottom: 22px;
+		.product-text-col {
+			padding: 1rem;
+		}
+		.product-img {
+			display: block;
+		}
+		
+		.product-subtitle {
+      		display: block;
+			font-size: 14px;
+			padding-top: 8px;
+  		}
+	}
+	
+	.refill-flag {
+		margin-bottom: 16px;
+		.btn{
+			text-transform: none;
+		}
+		/*.label {
+			font-size: 14px;
+		    letter-spacing: 1px;
+			background-color: #869196;
+			font-weight: 100;
+		    display: inline;
+		    padding: .2em .6em .3em;
+			line-height: 1;
+		    color: #fff;
+		    text-align: center;
+		    white-space: nowrap;
+		    vertical-align: baseline;
+		    border-radius: .25em;
+		}*/
+	}
+		
+	/*.reorder-prd-add-qv {
+		&:hover {
+			background-color: #e6e6e6!important;
+	    	border-color: #8c9aa2!important;
+		}
+		
+		border-color: #aeb8bd !important;
+	    padding: 9px !important;
+	    text-transform: uppercase;
+	    color: #343c40 !important;
+	    font-weight: $font-weight-light;
+	    background-color: #fff !important;
+	    text-decoration: none;
+		border-radius: 0;
+	}*/
+	
+		.btn-review {
+		    font-size: 12px;
+		    width: 100%;
+		    color: #495257;
+		    margin-top: 5px;
+		    line-height: 1.5;
+		    font-weight: $font-weight-normal;
+		    letter-spacing: 0;
+		}
+}
+.my-account-reorder{
+	.form-group{
+		margin-bottom:1.5rem;
+	.form-control {
+	    display: block;
+	    width: 100%;
+	    height: 46px !important;
+	    font-size: 16px;
+	    line-height: 1.42857;
+	    color: #495257;
+	    background-color: #fff;
+	    background-image: none;
+	    border: 1px solid #CCD4D9;
+	    border-radius: 0;
+		}	
+	}
+}
+	

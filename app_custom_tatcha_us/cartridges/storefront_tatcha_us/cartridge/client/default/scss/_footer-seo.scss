@@ -1,0 +1,52 @@
+.category-seo-container{
+	max-width: 600px;
+	.footer-seo {
+		color: $black;
+		@include media-breakpoint-down(md) {
+			font-size: 14px;
+		}
+		&__title {
+			font-size: 16px;
+			line-height: 18px;
+			margin-bottom: 18px;
+			font-family: 'Minion Pro';
+			font-weight: 400;
+			@include media-breakpoint-up(md) {
+				font-size: 22px;
+				line-height: 26px;
+			}
+		}
+		&__toggle-link.btn {
+			color: $tatcha-luminous;
+			letter-spacing: 0px;
+			text-underline-offset: 1px;
+			font-size: rem-calc(14);
+			@include media-breakpoint-up(md) {
+				font-size: rem-calc(16);
+			}
+		}
+		&__more, &__toggle-link, &__toggle-less {
+			display: none;
+		}
+		&__toggle-more {
+			display: block;
+		}
+		&--show-all {
+			.footer-seo {
+				&__less, &__toggle-more {
+					display: none;
+				}
+				&__more, &__toggle-less {
+					display: block;
+				}
+			}
+		}
+		&--toggle-active {
+			.footer-seo {
+				&__toggle-link {
+					display: block;
+				}
+			}
+		}
+	}
+}

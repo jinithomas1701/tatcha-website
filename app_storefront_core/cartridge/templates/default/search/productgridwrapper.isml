@@ -1,0 +1,12 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" minute="90" varyby="price_promotion"/>
+<isinclude template="util/modules"/>
+<isslot id="catPromoBanner" context="category" context-object="${pdict.ProductSearchResult.category}" description="Category Promo Banner"/>
+<isscript>
+	var isGiftLandingPage = pdict.isGiftLanding ? pdict.isGiftLanding : null;
+</isscript>
+<isif condition="${!empty(pdict.ScrollType) && pdict.ScrollType === 'top'}">
+	<isproductgridscrolltopv1 pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}" page="${pdict.pageInfo}" noOfPromoUnits="${pdict.NoOfPromoUnits}" isgiftlandingpage="${isGiftLandingPage}" initialPromoOnLazyLoad="${pdict.initialPromoOnLazyLoad}" currentPromoPos="${pdict.currentPromoPos}"/>
+<iselse>
+	<isproductgridv1 pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}" page="${pdict.pageInfo}" noOfPromoUnits="${pdict.NoOfPromoUnits}" isgiftlandingpage="${isGiftLandingPage}" initialPromoOnLazyLoad="${pdict.initialPromoOnLazyLoad}" currentPromoPos="${pdict.currentPromoPos}"/>
+</isif>

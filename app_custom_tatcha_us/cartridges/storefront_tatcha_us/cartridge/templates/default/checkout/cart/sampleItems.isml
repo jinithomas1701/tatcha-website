@@ -1,0 +1,37 @@
+<!--- TEMPLATENAME: sampleitems.isml --->
+<isset name="samplePromoID" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('samplePromotionID')}" scope="page"/>
+
+<isloop items="${pdict.bonusDiscountLineItems}" var="bonusDiscountLineItem" status="loopstatus">
+    <isif condition="${bonusDiscountLineItem.getPromotion().ID != samplePromoID}"><iscontinue/></isif>
+    <isif condition="${bonusDiscountLineItem.getBonusProductLineItems().size() > 0}">
+        <isif condition="${bonusDiscountLineItem.getMaxBonusItems() > 1}">
+            <isset name="bonusButtonText" value="${Resource.msg('cart.editsamples','cart',null)}" scope="page" />
+            <iselse/>
+            <isset name="bonusButtonText" value="${Resource.msg('cart.editsamples','cart',null)}" scope="page" />
+        </isif>
+        <iselse/>
+        <isif condition="${bonusDiscountLineItem.getMaxBonusItems() > 1}">
+            <isset name="bonusButtonText" value="${Resource.msg('cart.addsamples','cart',null)}" scope="page" />
+            <iselse/>
+            <isset name="bonusButtonText" value="${Resource.msg('cart.addsamples','cart',null)}" scope="page" />
+        </isif>
+    </isif>
+
+    <div class="add-coupon py-1 pl-0">
+        <a role="button" tabindex="0" class="add-sample-btn mx-auto bonusModalLink samples-banner-show pr-3" aria-label="${bonusButtonText}" id="bonusModalLink" href="${URLUtils.url('CartSFRA-ShowBonusProducts','DUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false, 'pagesize',10, 'pagestart', 0, 'bpTotal', -1, 'format', 'ajax', 'usetatchamodal', true)}">
+            <isprint value="${bonusButtonText}" />
+        </a>
+    </div>
+
+</isloop>
+
+<div class="modal fade sample-product-list tatcha-samples modal-promotion modal-fullscreen" id="bonusModal" tabindex="-1" role="dialog" aria-labelledby="bagSampleLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<!-- GWP Modal HTML -->
+<isinclude template="cart/gwpModal/gwpProductModal"/>
+

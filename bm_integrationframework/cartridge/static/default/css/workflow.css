@@ -1,0 +1,40 @@
+.x-grid3-row .x-btn-left,
+.x-grid3-row .x-btn-right 	{padding-left: 0px; padding-right: 0px;}
+/*.x-table-layout				{width: 100%;}*/
+.x-table-layout-cell		{padding-top: 5px;}
+.extraRightMargin 	{margin-right: 8px;}
+.subOptionsLabelCorrection	{margin-left: 17px;}
+* + html .subOptionsLabelCorrection	{width: 235px;}
+.formButtonAlignCorrection	{margin-left: 155px;}
+.formButtonAlignCorrection2	{margin-left: 138px;}
+.componentsFieldset         {margin-top: 10px;}
+.staticFieldText			{padding-top: 3px; text-align: justify; padding-right: 8px;}
+.componentWr				{margin: 2px;}
+.dd-proxy					{opacity: 0.4;-moz-opacity: 0.4;filter: alpha(opacity=40);}
+
+/* Hack for date picker in google chrome */
+body:nth-of-type(1) .x-date-picker	{width: 185px;}
+
+/* Fix for error in distances between cells of nested tables in plan view */
+.x-grid3-row td, .x-grid3-summary-row td	{padding-left: 0px; padding-right: 0px;}
+
+/* Fix width problem in workflow plan tab panel */ 
+ul.x-tab-strip {width: auto;}
+
+/* Fix for scroll on opened nested grids in plan view for google chrome */
+body:nth-of-type(1) .x-grid3-scroller {position: static;}
+
+.FINISHED_OK {background-color: #CCF4CC;}
+.FINISHED_WARN {background-color: #FFFFC3;}
+.FINISHED_ERROR {background-color: #FDAFAF;}
+.FINISHED_SKIPPED {background-color: #FFFFC3;}
+.RUNNING {background-color: #AFD6FD;}
+.SKIPPED td {color: #888888;}
+
+/* Extend the text,password input fields width - make them readable*/
+.componentObject input[type="text"].x-form-text, .componentObject input[type="password"].x-form-text{width:400px;} 
+
+.x-form-check-wrap-inner, .x-form-radio-wrap-inner{
+	display: -moz-box;
+	white-space: pre;
+}

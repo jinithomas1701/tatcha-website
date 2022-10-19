@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<isif condition="${slotcontent != null}">
+<style>
+	.product-list-v2 .product-list-promo-banner .promo-img img{
+		min-height:200px;
+		}
+</style>
+<div class="container product-list-promo-banner demo-normal content-slot slot-grid-header pt-4" >
+	<isloop items="${slotcontent.content}" var="category" status="loopstate">
+		<a class="promo-img center-block" href="${URLUtils.http('Search-Show', 'cgid', category.ID)}" title="${Resource.msgf('global.categoryrefinement.label', 'locale', null, category.displayName)}">
+		<isif condition="${category.custom.imageMobile != null}">
+			<img class="img-fluid d-md-none category-header-promo-banner" src="${category.custom.imageMobile.httpURL}" alt="${category.displayName}">		
+		</isif>
+		<isif condition="${category.image != null}">
+			<img class="img-fluid d-none d-md-block category-header-promo-banner" src="${category.image.httpURL}" alt="${category.displayName}">		
+		</isif>
+		</a>
+	</isloop>    
+</div>
+</isif>    	

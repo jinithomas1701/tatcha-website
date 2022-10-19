@@ -1,0 +1,19 @@
+<script>
+	try {
+		if (!window.dataLayer) {
+			window.dataLayer = [];
+		}
+
+		dataLayer
+				.push({
+					'userType' : '<isprint value="${pdict.CurrentSession.custom.userType}" encoding="off"/>'
+				});
+
+        dataLayer.push({'event': 'optimize.userTypeAssigned'});
+        
+	} catch (e) {
+
+	}
+</script> 
+
+<input type="hidden" id="userType" value='<isprint value="${pdict.CurrentSession.custom.userType}" encoding="off"/>'/>

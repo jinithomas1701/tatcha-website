@@ -1,0 +1,21 @@
+<iscomment>
+AD info in confirmation page
+</iscomment>
+<isif condition="${!empty(lineItem.sordeliveryoption)}">
+    <div class="bag-item-auto-delivery" id="refill">
+        <isif condition="${lineItem.sorMonthInterval != null && lineItem.sorMonthInterval >0 }">
+            <iscomment> <span class="fa-layers fa-fw">
+					<i class="fal fa-truck fa-lg" data-fa-transform="right-10 shrink-3"></i>
+					<i class="fal fa-clock" data-fa-transform="right-34 up-4 shrink-6"></i>
+				</span> </iscomment>
+            <div class="autodelivery-confirm-msg" >
+                ${Resource.msg( 'refill.multiple', 'forms', null )} (<isprint value="${lineItem.sorMonthInterval}"/>
+                <isif condition="${lineItem.sorMonthInterval > 1}">
+                    <isprint value="${Resource.msg('refill.multiple.months', 'forms', null)}"/>)
+                    <iselse/>
+                        <isprint value="${Resource.msg('refill.multiple.month', 'forms', null)}"/>)
+                </isif>
+            </div>
+        </isif>
+    </div>
+</isif>

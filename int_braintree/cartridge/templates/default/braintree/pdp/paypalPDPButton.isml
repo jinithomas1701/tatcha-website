@@ -1,0 +1,96 @@
+<div class="braintree-paypal-buttons-wrap">
+
+<isscript>
+    var customerPaypalInstruments = BraintreeHelper.getCustomerPaypalPaymentInstruments();
+    var basket = BasketMgr.getCurrentOrNewBasket();
+</isscript>
+<isif condition="${customerPaypalInstruments && customerPaypalInstruments.length > 0}">
+
+    <isscript>
+        var buttonConfig = {
+            clientToken: request.custom.braintreeClientToken,
+            billingAgreementFlow: {
+                startBillingAgreementCheckoutUrl: URLUtils.https('Braintree-CheckoutFromCart').toString(),
+                isShippingAddressExist: false,
+                editShppingAddressUrl: request.isHttpSecure() ? URLUtils.https('Braintree-EditDefaultShippinAddress').toString() : URLUtils.http('Braintree-EditDefaultShippinAddress').toString(),
+                editShppingAddressPopupTitle: Resource.msg('braintree.paypal.editdefaultshippingaddress.title', 'locale', null)
+            },
+            paypalConfig: prefs.BRAINTREE_PAYPAL_PDP_Button_Config,
+            removeLineItem:   URLUtils.url('Braintree-RemoveLineItem').toString(),
+            addProductToCart: URLUtils.url('Braintree-AddProduct').toString()
+        };
+    </isscript>
+    <div class="braitnree-pdp-paypal-button-wrap" data-braintree-pdp-quantity="${basket.productQuantityTotal}">
+        <div class="js_braintree_paypal_cart_button braitnree-cart-paypal-button braitnree-cart-paypal-ba-button" data-braintree-config="${JSON.stringify(buttonConfig)}"></div>
+    </div>
+<iselse>
+
+    <isscript>
+        var flow = 'checkout';
+        var intent = prefs.BRAINTREE_PAYPAL_Payment_Model;
+    
+        if (prefs.BRAINTREE_PAYPAL_Vault_Mode !== 'not' && pdict.CurrentCustomer.authenticated) {
+            flow = 'vault';
+        }
+
+        if (intent === 'order') {
+            flow = 'checkout';
+        }
+
+        if (intent === 'authorization') {
+            intent = 'authorize';
+        }
+
+        var locale = empty(prefs.BRAINTREE_PAYPAL_Locale) || prefs.BRAINTREE_PAYPAL_Locale === 'ShopLocale' ? dw.system.Site.getCurrent().getDefaultLocale() : prefs.BRAINTREE_PAYPAL_Locale;
+        var displayName = empty(prefs.BRAINTREE_PAYPAL_Display_Name) ? '' : prefs.BRAINTREE_PAYPAL_Display_Name;
+        var billingAgreementDescription = empty(prefs.BRAINTREE_PAYPAL_Billing_Agreement_Description) ? '' : prefs.BRAINTREE_PAYPAL_Billing_Agreement_Description;
+
+        var paypalButtonConfig = {
+            paymentMethodName: prefs.paypalMethodName,
+            clientToken: request.custom.braintreeClientToken,
+            isFraudToolsEnabled: prefs.BRAINTREE_PAYPAL_Fraud_Tools_Enabled,
+            messages: {
+                CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+                CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+                CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+                CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null),
+                PAYPAL_ACCOUNT_TOKENIZATION_FAILED: Resource.msg('braintree.error.PAYPAL_ACCOUNT_TOKENIZATION_FAILED', 'locale', null),
+                PAYPAL_INVALID_PAYMENT_OPTION: Resource.msg('braintree.error.PAYPAL_INVALID_PAYMENT_OPTION', 'locale', null),
+                PAYPAL_FLOW_FAILED: Resource.msg('braintree.error.PAYPAL_FLOW_FAILED', 'locale', null),
+                PAYPAL_BROWSER_NOT_SUPPORTED: Resource.msg('braintree.error.PAYPAL_BROWSER_NOT_SUPPORTED', 'locale', null)
+            },
+            paypalHandle: URLUtils.https('Braintree-CheckoutFromCart', 'fromCart', 'true').toString(),
+            removeLineItem:   URLUtils.url('Braintree-RemoveLineItem').toString(),
+            addProductToCart: URLUtils.url('Braintree-AddProduct').toString(),
+            options: {
+                flow: flow,
+                currency: basket.getCurrencyCode(),
+                locale: locale,
+                enableShippingAddress: true,
+                displayName: displayName,
+                billingAgreementDescription: billingAgreementDescription,
+                offerCredit: false,
+                style: {
+                    layout: 'horizontal',
+                    label: 'paypal',
+                    maxbuttons: 1,
+                    fundingicons: false,
+                    shape: 'rect',
+                    size: 'medium',
+                    tagline: false
+                }
+            },
+            paypalConfig: prefs.BRAINTREE_PAYPAL_PDP_Button_Config
+        };
+
+        if (flow === 'checkout' || intent === 'order') {
+            paypalButtonConfig.options.intent = intent;
+        }
+    </isscript>
+
+    <div class="braitnree-pdp-paypal-button-wrap">
+        <div class="js_braintree_paypal_cart_button braitnree-cart-paypal-button" data-braintree-config="${JSON.stringify(paypalButtonConfig)}"></div>
+    </div>
+
+</isif>
+</div>

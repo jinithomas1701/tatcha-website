@@ -1,0 +1,4 @@
+<!--- TEMPLATENAME: addressy.isml --->
+<isscript> importScript("int_addressy:libAddressy.ds"); </isscript>
+<isprint value="${(new Addressy()).getTag()}" encoding="off" />
+<isprint value="${(new Addressy()).getCustomCode()}" encoding="off" />

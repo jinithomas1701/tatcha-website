@@ -1,0 +1,27 @@
+<isif condition="${!empty(pdict.p_selectedstate)}">
+	<isset name="selectedState" value="${pdict.p_selectedstate}" scope="page" />
+<iselse>
+	<isset name="selectedState" value="" scope="page" />
+</isif>
+
+<isif condition="${!empty(pdict.p_selectedcountry)}">
+	<isset name="selectedCountry" value="${pdict.p_selectedcountry}" scope="page" />
+<iselse>
+	<isset name="selectedCountry" value="" scope="page" />
+</isif>
+
+<isif condition="${(selectedCountry == 'US')}">
+	<isset name="style" value="" scope="page" />
+<iselse>
+	<isset name="style" value="style='display:none'" scope="page" />
+</isif>
+
+<select id="state" class="form-control  form-control-lg pl-3" ${style}>
+	<isloop items="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.options}" var="states" status="status">
+		<isif condition="${selectedState == states.optionId}"> 
+				<option class="select-option" label="${Resource.msg(states.label,'forms',null)}" selected value="${states.optionId}">${Resource.msg(states.label,'forms',null)}</option>		
+			<iselse>			
+				<option class="select-option" label="${Resource.msg(states.label,'forms',null)}" value="${states.optionId}">${Resource.msg(states.label,'forms',null)}</option>			
+		</isif>
+	</isloop>
+</select>

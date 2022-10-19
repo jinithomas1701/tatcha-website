@@ -1,0 +1,37 @@
+<iscache type="relative" hour="24"/>
+<div class="inpage-navigation-container ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}"> 
+	<div class="inpage-nav">
+		<isif condition="${!empty(pdict.linkurl1)}">
+			<div class="inpage-nav-item">
+				<a href="${pdict.linkurl1}">
+					<isprint value="${pdict.linktext1}" />
+				</a>
+			</div>
+		</isif>
+		
+		<isif condition="${!empty(pdict.linkurl2)}">
+			<div class="inpage-nav-item">
+				<a href="${pdict.linkurl2}">
+					<isprint value="${pdict.linktext2}" />
+				</a>
+			</div>
+		</isif>
+		
+		<isif condition="${!empty(pdict.linkurl3)}">
+			<div class="inpage-nav-item">
+				<a href="${pdict.linkurl3}">
+					<isprint value="${pdict.linktext3}" />
+				</a>
+			</div>
+		</isif>
+		
+		<isif condition="${!empty(pdict.linkurl4)}">
+			<div class="inpage-nav-item">
+				<a href="${pdict.linkurl4}">
+					<isprint value="${pdict.linktext4}" />
+				</a>
+			</div>
+		</isif>
+		  
+	</div>
+</div>

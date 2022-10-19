@@ -1,0 +1,73 @@
+/**
+* Demandware Script File
+* This script cleanup all abandonned basket custom object 
+*
+*/
+
+importPackage( dw.system );
+importPackage( dw.object );
+importPackage( dw.util);
+importPackage( dw.io );
+
+function execute( args : PipelineDictionary ) : Number
+{
+   var allSAB : SeekableIterator;
+  
+   try
+	{
+		var gap : Number = getCustomGAPAttribute();
+
+		allSAB = CustomObjectMgr.getAllCustomObjects("SAB");
+
+		var currentCalendar : Calendar = new Calendar();
+		currentCalendar.add(Calendar.MINUTE, -gap);
+		
+		while (allSAB.hasNext()) 
+		{	
+			var currentSAB : CustomObject = allSAB.next();	
+				
+			if (currentSAB.lastModified <  currentCalendar.time){
+				CustomObjectMgr.remove(currentSAB);				
+			}
+		}
+	}
+	catch(e) 
+	{		
+		return PIPELET_ERROR;
+	}
+	finally 
+	{
+		if (allSAB) allSAB.close();
+	} 
+   	
+   	return PIPELET_NEXT;
+}
+
+/**
+* Returns the custom attribues list for a product to export from the config file
+*
+* @returns an array with custom attribues
+*/
+function getCustomGAPAttribute() : Number
+{
+	var configFile : File = new File(File.IMPEX + "/Selligent/abandonedbasket_config.txt");
+	var readGap : String = "";
+	var returnGap  : Number = 2;
+	if (configFile.exists())
+	{
+		var reader : FileReader = new FileReader(configFile);
+		var lines : Array = reader.readLines();
+		var line: String = null;
+		
+		reader.close();		
+		for each(line in lines)
+		{
+			if(line.indexOf("CleanUpInterval=") == 0){
+				readGap = line.replace("CleanUpInterval=","");
+				returnGap = new Number(readGap);
+			}
+		} 
+		
+	}
+	return returnGap;
+}

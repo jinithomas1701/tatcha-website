@@ -1,0 +1,61 @@
+/**
+* Runs a job flow step. 
+*
+* @input Action 					: String Defines the script and the function that is to be called. Both are separated by hash sign
+* @input WorkflowComponentInstance 	: Object The WorkflowComponentInstance that is being executed  
+*
+* @output ExecutionStatus : Object
+*/
+
+//example action: int_oc/cartridge/scripts/ordercenter/jobsteps/ApproveOrders.js#execute
+var ACTION_SPLITTER_REG_EXP = /^([^#]+)#([^#]+)$/;
+var HashMap = require('dw/util/HashMap');
+
+var cvLogger  = require("./libWorkflowLogToFile").getCurrentWorkflowInstanceFileLogger("JobStepRunner") || Logger.getLogger("JobStepRunner");
+
+function execute( args ) 
+{
+	
+	if ( empty(args.Action) )
+	{
+		cvLogger.error('Action not provided.');
+    	return PIPELET_ERROR;
+	}
+	/** @type {Array} */
+	var actionArray = args.Action.match(ACTION_SPLITTER_REG_EXP); 
+	if ( empty(actionArray) )
+	{
+		cvLogger.error('No proper action not provided. Should be {cartridge}/{path_to_script.extension}#{action} but is: ' + args.Action );
+    	return PIPELET_ERROR;
+	}
+	cvLogger.debug('Running Job Step: ' + args.Action);
+	
+	var scriptID = actionArray[1];
+	var functionID = actionArray[2];
+
+	var scriptModule = require(scriptID);
+	if (scriptModule)
+	{
+		var parameterMap = getParameterMap(args.WorkflowComponentInstance);
+		args.ExecutionStatus = scriptModule[functionID]( parameterMap );
+	}
+	
+    return PIPELET_NEXT;
+}
+
+/**
+* Extracts regular parameter map from workflowComponentInstance.
+* 
+* @param {String} workflowComponentInstance
+*/
+function getParameterMap( workflowComponentInstance ) {
+	var parameterMap = new HashMap();
+	if ( workflowComponentInstance )
+	{
+		var parameterValues = JSON.parse(workflowComponentInstance.custom.parameterValues);
+		for ( var attributeID in parameterValues ) {
+			parameterMap.put( attributeID, workflowComponentInstance.getParameterValue(attributeID) );
+		}
+	}
+	return parameterMap;
+}

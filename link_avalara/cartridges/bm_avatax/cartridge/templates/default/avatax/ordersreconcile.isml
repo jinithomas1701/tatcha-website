@@ -1,0 +1,423 @@
+<!--- TEMPLATENAME: test.isml --->
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Avalara | AvaTax Reconcile Orders</title>
+
+
+	<!--   <link rel="stylesheet" href="${URLUtils.staticURL('/css/jquery-ui.min.css')}">
+  <link rel="stylesheet" href="${URLUtils.staticURL('/css/jquery-ui.theme.min.css')}"> -->
+	<link rel="stylesheet" href="${URLUtils.staticURL('/DataTables/datatables.min.css')}">
+	<link rel="stylesheet" href="${URLUtils.staticURL('/DataTables/buttons.datatables.min.css')}">
+
+	<script src="${URLUtils.staticURL('/js/jquery-3.3.1.min.js')}"></script>
+
+	<link rel="stylesheet"
+		href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" />
+
+
+
+	<isset name="loaderimgurl" value="${URLUtils.staticURL('/images/loader.gif')}" scope="page" />
+	<isset name="closeimgurl" value="${URLUtils.staticURL('/images/close-icon.png')}" scope="page" />
+
+	<style>
+		.order-check-header {
+			cursor: pointer;
+		}
+
+
+		td.td-order-number {
+			font-weight: bold;
+		}
+
+		.button {
+			font-weight: bold;
+		}
+
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+			background: rgba(255, 255, 255, .8) url(${loaderimgurl}) 50% 50% no-repeat;
+		}
+
+		/* When the body has the loading class, we turn
+		   the scrollbar off with overflow:hidden */
+		body.loading .modal {
+			overflow: hidden;
+		}
+
+		/* Anytime the body has the loading class, our
+		   modal element will be visible */
+		body.loading .modal {
+			display: block;
+		}
+	</style>
+</head>
+
+<isdecorate template="application/MenuFrame">
+
+	<isscript>
+     var settingsObject = JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('ATSettings'));
+ </isscript>
+
+	<iscontent type="text/html" charset="UTF-8">
+		<isinclude template="inc/Modules">
+
+			<isset name="TOP_URL"
+				value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', pdict.CurrentMenuItemId)}"
+				scope="PAGE" />
+
+			<isbreadcrumb name1="${pdict.mainmenuname}" url1="${TOP_URL}" name2="${pdict.menuname}" />
+
+			<div id="main-pane" data-ajax="false">
+
+				<!-- errors -->
+				<isif condition="${pdict.errormsg}">
+					<!-- or any other useful error condition -->
+					<table border="0" cellspacing="0" cellpadding="4" width="100%" class="error_box n s e w">
+						<tr valign="top">
+							<td class="error_icon top e">
+								<img src="${URLUtils.webRoot()}/images/error.gif" width="16" height="15" alt=""
+									border="0" />
+							</td>
+							<td class="error top" width="100%">
+								<p>Error: <isprint value="${pdict.errormsg}">
+										<br />
+							</td>
+						</tr>
+					</table>
+				</isif>
+
+
+				<table border="0" cellpadding="0" cellspacing="0" width="100%">
+					<tr>
+						<td width="100%" class="w e s table_title">
+							Reconcile Orders
+						</td>
+					</tr>
+
+					<tr>
+						<td class="w e s">
+							<img src="/on/demandware.static/Sites-Site/-/default/vbb6ced9dcf76be8340a5f0be590d1bfce47e377f/images/space.gif"
+								width="1" height="2" alt="" border="0" />
+						</td>
+					</tr>
+
+					<tr>
+						<td valign="top" class="table_title_description w e s">
+
+							<p>If the totals in your accounting software and AvaTax don't match, run
+								reconciliation report for a specified date range and </p>
+							<p>use this report to compare AvaTax Update invoices with the invoices in your
+								accounting software.</p>
+							<p>
+								<b>Note:</b> Only, documents missing in AvaTax and documents with
+								Amount/Tax/Date
+								mismatch will be updated in AvaTax.
+							</p>
+							<p>To reconcile the selected orders, click <b>Reconcile</b>.</p>
+						</td>
+					</tr>
+				</table>
+
+				<!-- main content starts here -->
+
+				<div id="grey-area" style="background-color: grey; margin: 4px;">
+
+					<div id="site-info" class="infobox" style="padding: 8px;">
+						<table class="infobox" cellpadding="4" style>
+							<tbody>
+								<tr>
+									<td class="infobox_title top">Site name:</td>
+									<td>${pdict.siteInfo != null ? pdict.siteInfo.siteName :
+         	dw.system.Site.current.name}
+										(${pdict.siteInfo != null ? pdict.siteInfo.siteId : dw.system.Site.current.ID})
+									</td>
+								</tr>
+								<tr>
+									<td class="infobox_title top">AvaTax tax calculation:</td>
+									<td>${settingsObject.taxCalculation ? 'Enabled' : 'Disabled'}</td>
+								</tr>
+								<tr>
+									<td class="infobox_title top">AvaTax company code:</td>
+									<td>${settingsObject.companyCode ? settingsObject.companyCode : 'default'}</td>
+								</tr>
+								<tr>
+									<td class="infobox_title top">Save Order documents (SalesInvoice) to AvaTax:</td>
+									<td>${settingsObject.saveTransactions ? 'Enabled' : 'Disabled'}</td>
+								</tr>
+								<tr>
+									<td class="infobox_title top">Save transactions as Committed to AvaTax:</td>
+									<td>${settingsObject.commitTransactions ? 'Enabled' :
+         	'Disabled'}</td>
+								</tr>
+
+							</tbody>
+						</table>
+					</div>
+
+
+
+
+					<div id="selection-criteria" class="selection-criteria infobox" style="padding-left: 15px;"
+						data-submit-method="${URLUtils.https('AvataxBM-GetOrders').toString()}">
+
+						<table id="selection-criteria-table" cellpadding="5">
+
+							<isscript>
+           let fdAvailable = !empty(session.privacy.fromdate) ? (' value = "' +
+           	session.privacy.fromdate + '"') : '';
+           let tdAvailable = !empty(session.privacy.todate) ? (' value = "' +
+           	session.privacy.fromdate + '"') : '';
+       </isscript>
+
+
+							<tr>
+								<td colspan="2" class="infobox_title top">
+									<u>
+										</>Select dates:</u>
+								</td>
+							</tr>
+							<tr>
+								<td class="infobox_title top">From:</td>
+								<td>
+									<input type="text" name="fromdate" id="fromdate" placeholder="mm/dd/yyyy"
+										value="${!empty(session.privacy.fromdate) ? session.privacy.fromdate : ''}">
+								</td>
+							</tr>
+							<tr>
+								<td class="infobox_title top">To:</td>
+								<td>
+									<input type="text" name="todate" id="todate" placeholder="mm/dd/yyyy"
+										value="${!empty(session.privacy.todate) ? session.privacy.todate : ''}">
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td>
+									<input type="button" id="search-orders" class="button search-orders"
+										value="Fetch Orders">
+								</td>
+							</tr>
+							<tr>
+								<td class="infobox_title top">No. of orders:</td>
+								<td>
+									<span id="orders-total">${pdict.orders != null ? pdict.orders.length :
+                             	'None'}</span>
+								</td>
+							</tr>
+						</table>
+
+
+
+					</div>
+
+
+					<div id="count-report" style="float: right; margin-right: 43px; margin-top: -128px;">
+						<isif condition="${pdict.countReport != null}">
+							<table id="count-report-table" cellpadding="2">
+								<tr>
+									<td class="table_header w e s" colspan="2">Result count</td>
+								</tr>
+								<tr>
+									<td>Amount or Tax mismatch:</td>
+									<td id="amtortax-mismatch">${new
+                                dw.util.BigInteger(pdict.countReport.amountOrTaxMisMatchCount).get()}
+									</td>
+								</tr>
+								<tr>
+									<td>Missing in AvaTax:</td>
+									<td id="av-mis">${new
+                     dw.util.BigInteger(pdict.countReport.missingInAvaTaxCount).get()}</td>
+								</tr>
+								<tr>
+									<td>Missing in B2C:</td>
+									<td id="sfcc-mis">${new
+                       dw.util.BigInteger(pdict.countReport.missingInSFCCCount).get()}</td>
+								</tr>
+								<tr>
+									<td>Reconciled:</td>
+									<td id="reconciled">NA (Only available after reconciliation)</td>
+								</tr>
+							</table>
+						</isif>
+					</div>
+
+
+				</div>
+
+
+
+				<div id="data-table">
+					<!-- table list view -->
+
+
+
+					<isif condition="${pdict.orders != null}">
+						<table id="av-data-table" border="0" width="100%" style="border-color: black;"
+							class="orders-table">
+							<isset name="orders" value="${pdict.orders}" scope="page" />
+							<thead>
+								<tr>
+									<th class="table_header order-check-header">
+										<!-- <a href='#' class="order-check-all">Select All</a> -->
+										<input name="select_all" value="1" type="checkbox">
+									</th>
+									<th class="table_header">Order No.</th>
+									<th class="table_header e s">Order Date</th>
+									<th class="table_header e s">B2C Total Amount</th>
+									<th class="table_header e s">B2C Total Tax</th>
+									<th class="table_header e s">Order Status</th>
+									<th class="table_header e s">AvaTax Total Amount</th>
+									<th class="table_header e s">AvaTax Total Tax</th>
+									<th class="table_header e s" style="color: #ec890e;">Reconciliation Status
+									</th>
+								</tr>
+							</thead>
+
+							<tbody>
+								<!-- data content -->
+								<isloop items="${orders}" var="order">
+									<tr class="order-data-row" data-orderno="${order.orderNo}"
+										data-reconstatus="${order.reconciliationStatus}">
+										<isscript>
+              let disabledAttr = (order.reconciliationStatus == 'Missing In B2C') ?
+              	' disabled="disabled"' : '';
+          </isscript>
+										<td class="w e s td-order-check">
+
+										</td>
+										<td class="w e s td-order-number">${order.orderNo}</td>
+										<td class="e s td-order-date">
+
+											<isscript>
+               var odt = null;
+               var oDate = order.orderDate;
+               if (!(order.reconciliationStatus == 'Missing In B2C')) {
+               	odt = (new dw.util.BigInteger(oDate.getFullYear())).toString() +
+               		'-' + (new dw.util.BigInteger(oDate.getMonth() + 1)) + '-' +
+               		(new dw.util.BigInteger(oDate.getDate())).toString();
+               } else {
+               
+               	odt = order.orderDate;
+               }
+           </isscript>
+											${(odt)}
+
+										</td>
+										<td class="e s td-order-amount">
+											<isprint value="${order.orderTotalAmt}" />
+										</td>
+										<td class="e s td-order-tax">
+											<isprint value="${order.orderTax}" />
+										</td>
+										<td class="e s td-order-status">${order.orderStatus}</td>
+
+										<td class="e s td-av-order-amount">
+											${dw.util.StringUtils.formatMoney(dw.value.Money(order.avTotalAmt,
+       	order.avCurrencyCode))}</td>
+										<td class="e s td-av-order-tax">
+											${dw.util.StringUtils.formatMoney(dw.value.Money(order.avTotalTax,
+       	order.avCurrencyCode))}</td>
+
+										<td class="e s td-reconcile-status" data-status="${order.reconciliationStatus}">
+											<span id="status-text">${order.reconciliationStatus}</span>
+											<span id="ok-img" style="display: none; margin-left: 5px;">
+												<img style="width: 15px;" src="${URLUtils.staticURL('/images/ok.png')}"
+													alt="Success">
+											</span>
+											<span id="err-img" style="display: none; margin-left: 5px; ">
+												<img style="width: 15px;"
+													src="${URLUtils.staticURL('/images/alert.png')}" alt="Error">
+											</span>
+										</td>
+									</tr>
+								</isloop>
+							</tbody>
+						</table>
+						<iselse>
+
+
+							<isscript>
+           let msg = '';
+           if (empty(session.privacy.fromdate) || empty(session.privacy.fromdate)) {
+           	msg = '';
+           } else {
+           	msg = 'There are no orders for selected date range for this site.';
+           }
+       </isscript>
+							<p style="margin: 15px;">${msg}</p>
+
+
+					</isif>
+
+
+
+					<input id='submit-btn' class="button" type="submit" name="Reconcile" value="Reconcile"
+						data-method="${URLUtils.https('AvataxBM-Reconcile').toString()}"
+						style="float: right; margin: 10; width: 110px;"
+						data-savetoav=${pdict.siteInfo.saveTransactionsToAvatax}
+						data-committoav=${pdict.siteInfo.commitTransactionsToAvatax}
+						data-siteinfo="${URLUtils.https('AvataxBM-GetSiteInfoAJAX').toString()}" />
+
+
+
+					</table>
+
+
+
+				</div>
+
+
+			</div>
+
+
+
+
+			<div id="no-save-selected-dialog" title="Save transactions to AvaTax disabled"
+				style="display: none; height: 70px;">
+				<p>Custom preference 'Save transactions to AvaTax' is disabled. Please enable it to save the
+					changes to AvaTax admin console.</p>
+			</div>
+
+			<div id="no-orders-selected-dialog" title="No orders selected" style="display: none; height: 70px;">
+				<p>One or more orders selected has records which are missing in B2C. Please select at least one
+					order whose Reconciliation Status is other than 'Missing in B2C'.</p>
+			</div>
+
+
+			<div id="reconcile-dialog-confirm" title="AvaTax confirmation" style="display: none;">
+				<p>
+					<span></span>
+					Upon reconciliation, any additional tax liability shall be owned by the Seller.
+					<isif condition="${pdict.siteInfo.commitTransactionsToAvatax == 'Yes'}">
+						All transactions will be marked <i>Committed</i>
+					</isif>
+					Do you want to proceed?
+				</p>
+			</div>
+
+			<div id="display-all-orders-dialog" title="Fetch orders" style="display: none;">
+				<p>
+					<span></span>
+					No dates selected. Orders for last 30 days will be fetched. Continue?
+				</p>
+			</div>
+
+			<div class="modal">
+				<!-- Place at bottom of page -->
+			</div>
+
+
+</isdecorate>
+
+<!-- <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script> -->
+<script type="text/javascript" src="${URLUtils.staticURL('/js/jquery-ui.min.js')}"></script>
+<script type="text/javascript" src="${URLUtils.staticURL('/DataTables/datatables.min.js')}"></script>
+<script type="text/javascript" src="${URLUtils.staticURL('/DataTables/datatables.buttons.min.js')}"></script>
+<script type="text/javascript" src="${URLUtils.staticURL('/js/avataxui.js')}"></script>

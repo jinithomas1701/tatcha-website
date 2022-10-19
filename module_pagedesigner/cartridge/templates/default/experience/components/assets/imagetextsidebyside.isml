@@ -1,0 +1,26 @@
+<iscache type="relative" hour="24"/>
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> class="text-image-sidebyside container-fluid container-fluid-max ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+	<div class="row <isif condition="${pdict.desktoplayout === 'Text Left - Image Right'}">flex-row-reverse</isif> col-xl-10 col-xxl-8 mx-auto">
+		<isif condition="${!empty(pdict.desktopImage)}">
+			<div class="col-12 col-md-6 panel-image">
+				<img data-src="${pdict.desktopImage.src.desktop}" class="img-fluid lazyImage" alt="" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}"/>
+			</div>
+		</isif>
+		
+		<div class="col-12 col-md-6 text-section">
+			<div class="text-container">
+				<isif condition="${!empty(pdict.mainheading)}">
+					<div class="lead-text">
+						<isprint value="${pdict.mainheading}" />
+					</div>
+				</isif>
+				
+				<isif condition="${!empty(pdict.body)}">
+					<span>
+						<isprint value="${pdict.body}" encoding="off"/>
+					</span>
+				</isif>
+			</div>
+		</div>
+	</div>
+</div>

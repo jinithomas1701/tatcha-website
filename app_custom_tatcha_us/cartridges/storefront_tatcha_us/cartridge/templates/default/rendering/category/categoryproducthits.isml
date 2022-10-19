@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isdecorate template="common/layout/page">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addCss('/css/tatcha-category-page.css');
+        assets.addJs('/js/search.js');
+
+        var pageContext = {
+            title: 'Product Search Results',
+            type: 'search',
+            ns: 'search'
+        };
+    </isscript>
+    <div class="category-page product product-list-v2 clearfix">
+	    <isinclude template="rendering/category/categoryproducthits_v1">
+    </div>
+	<isif condition=${false}>
+		<isslot id="catPromoBanner" context="category" context-object="${pdict.category}" description="Category Promo Banner"/>
+	</isif>
+</isdecorate>

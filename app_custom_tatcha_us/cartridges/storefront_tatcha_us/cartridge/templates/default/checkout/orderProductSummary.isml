@@ -1,0 +1,30 @@
+<isset name="miniCart" value="${false}" scope="page" />
+<div class="product-summary-block product-list-items">
+    <isloop items="${pdict.order.shipping}" var="shippingModel">
+        <isif condition="${pdict.order.shipping.length > 1}">
+            <div class="shipment-block">
+        </isif>
+        
+        <isloop items="${shippingModel.productLineItems.items}" var="lineItem">
+            <isinclude template="checkout/productCard/checkoutProductCard" />
+        </isloop>
+        <isif condition="${pdict.order.shipping.length > 1}">
+            <isinclude template="checkout/shipping/shippingCard" />
+            </div>
+        </isif>
+    </isloop>
+    <isloop items="${pdict.order.giftCertificateItems}" var="giftCertificateItem">
+    	<isset name="lineItem" value="${giftCertificateItem.lineItem}" scope="page" />
+    	<isinclude template="checkout/productCard/giftCertProductCard" />
+    </isloop>
+</div>
+<div id="duplicate-product-sec" class="d-none">
+    <div class="product-line-item product-item" data-product-line-item="">
+        <img class="product-img img-fluid" src="">
+        <div class="product-content">
+            <div class="product-name"> </div>
+            <span class="product-size"> Qty 1</span>
+        </div>
+        <div class="price"></div>
+    </div>
+</div>

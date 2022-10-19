@@ -1,0 +1,11 @@
+The initial set of provided step types has been migrated automatically, but some step types are obsolete and have been removed as there are better options available to archive the same.
+
+- Workflow-CleanUp: It's no longer necessary to cleanup as that's something the Job Framework provides out-of-the-box
+
+
+
+--> check on:
+	- DateTimeCondition
+	- DateCondition
+	- TimeCondition
+	

@@ -1,0 +1,234 @@
+<isdecorate template="common/layout/checkout">
+	<isinclude template="util/modules"/>
+    <isinclude template="/components/modules" sf-toolkit="off" />
+    <!----------------------------------------------------------------------------------->
+    <!-- Load Static Assets -->
+    <!----------------------------------------------------------------------------------->
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('/js/checkout.js');
+        assets.addJs('/js/afterpayCheckout.js');
+    </isscript>
+    <isset name="isloqateAccountEnabled" value="${dw.system.Site.getCurrent().preferences.custom.loqateAccountEnabled}" scope="page" />
+    <isset name="loqateAccountCode" value="${dw.system.Site.getCurrent().preferences.custom.loqateAccountCode}" scope="page" />
+    <input type="hidden" name="loqateAccountCode" id="loqateAccountCode" value="${loqateAccountCode}"/>
+    <isif condition="${isloqateAccountEnabled === true}">
+        <isscript>
+            assets.addJs('/js/loqatehelper.js');
+            assets.addJs('/js/loqatecustom_us.js');
+        </isscript>
+    </isif>
+    <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
+        <isinclude template="reporting/reportingUrls" />
+    </isif>
+    <input type="hidden" name="loqateAddressVerifyUrl" id="loqateAddressVerifyUrl" value="${URLUtils.url('Loqate-VerifyAddress')}"/>
+    <input type="hidden" name="mParticleDataUrl" id="mParticleDataUrl" value="${URLUtils.url('MParticleSFRA-BuildMParticleData').toString()}"/>
+    <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LOQATE_verification_enabled')}">
+        <input  type="hidden"  id="loqateVerificationEnabled"  value="true">
+    </isif>
+
+     <input type="hidden" name="current-stage" id="current-stage" value="${pdict.currentStage}">
+    <input type="hidden" name="hasAfterpayPI" id="hasAfterpayPI" value="${pdict.hasAfterpayPI}">
+
+    <div id="checkout-main" class="container data-checkout-stage <isif condition="${pdict.order.usingMultiShipping && pdict.order.shipping.length > 1}">multi-ship</isif>" data-customer-type="${pdict.customer.registeredUser ? 'registered' : 'guest'}" data-checkout-stage="${pdict.currentStage}" data-checkout-get-url="${URLUtils.https('CheckoutServices-Get')}">
+        <h1 class="checkout-heading d-lg-none text-center">
+            Secure Checkout
+        </h1>
+
+        <div class="row">
+            <div class="col-lg-6 order-12 order-lg-1">
+
+                <div class="checkout-section">
+                    <h1 class="checkout-heading d-none d-lg-block">
+                        Secure Checkout
+                    </h1>
+                    <isif condition="${!pdict.customer.registeredUser}">
+                        <div class="my-3 login-text text-primary ${pdict.currentStage == 'placeOrder' || pdict.currentStage == 'payment'?'d-none':''}"> Have an account? <a href="#" data-toggle="modal" data-target="#loginModal" class="js-login-customer" aria-label="Already have an account?Login to checkout faster">Login to checkout faster</a>
+                        </div>
+                    </isif>
+                    <!----------------------------------------------------------------------------------->
+                    <!-- Express Payment options (Afterpay, Paypal and Applepay) -->
+                    <!----------------------------------------------------------------------------------->
+                    <isif condition="${!pdict.hasAutoDeliveryProduct && !pdict.hasOnlyGiftCertificate}">
+                        <div class="payment-buttons my-3 ${pdict.currentStage == 'placeOrder' || pdict.currentStage == 'payment'?'d-none':''}">
+                            <isinclude template="checkout/checkoutPaymentButtons" />
+                        </div>
+                    </isif>
+
+                    <!----------------------------------------------------------------------------------->
+                    <!-- Checkout Forms: Shipping, Payment, Coupons, Billing, etc -->
+                    <!----------------------------------------------------------------------------------->
+
+                    <div class="alert alert-danger error-message" role="alert">
+                        <p class="error-message-text"></p>
+                    </div>
+
+                    <!-- Step 1: Customer -->
+                    <iscomment>We only allow edits for non-registered customers</iscomment>
+                    <div class="card customer-summary d-none">
+                        <div class="card-header clearfix">
+                            <h2 class="pull-left card-header-custom">${Resource.msg('heading.checkout.customer', 'checkout', null)}</h2>
+                            <isif condition="${!pdict.customer.registeredUser}">
+                                <button class="edit-button pull-right" aria-label="${Resource.msg('action.edit.step.msg.customer', 'checkout', null)}">${Resource.msg('action.edit.step', 'checkout', null)}</button>
+                            </isif>
+                        </div>
+                        <div class="customer-sec">
+                            <isinclude template="checkout/customer/customerSummary" />
+                        </div>
+                    </div>
+                    <isset name="countryCode" value="null" scope="page"/>
+
+                    <!-- Step 2: Shipping -->
+                    <iscomment>Afterpay error message</iscomment>
+                    <isset name="afterpayError" value="${pdict.afterpayApiError}" scope="page"/>
+                    <isif condition="${!empty(afterpayError)}">
+                        <div class="alert alert-danger afterpay-error" role="alert">
+                            <isprint value="${afterpayError}" encoding="on" />
+                        </div>
+                    </isif>
+
+                    <isinclude template="checkout/shipping/shipping" />
+                    <div class="contact-info-submitted shipping-summary">
+                         <span class="outer-section">
+                            <div class="section-heading outer-section-inner" tabindex="-1">
+                            <span id="contact-section-heading" tabindex="0">1. Contact <isif condition="${pdict.orderType !== 'giftcard'}">& Shipping</isif></span>
+                            <a class="edit-button text-primary float-right edit-contact-section ${(pdict.orderType === 'giftcard')?'otgiftcard':''}" data-type="${pdict.orderType}" data-action-url="${URLUtils.url('CheckoutShippingServices-UpdateTotalsOnEdit')}" aria-label="${Resource.msg('action.edit.step.msg.shipping', 'checkout', null)}" href="#">${Resource.msg('action.edit.step', 'checkout', null)}</a>
+                            </div>
+                        </span>
+                        <isinclude template="checkout/shipping/shippingSummary" />
+
+                    </div>
+
+                    <!-- Step 3: Payment and Billing-->
+
+                    <isinclude template="checkout/billing/billing" />
+                    <div class="payment-summary">
+                        <span class="outer-section">
+                            <div class="section-heading outer-section-inner" tabindex="-1">
+                                <span id="payment-section-heading" tabindex="0">2. Payment</span>
+                                <isif condition="${pdict.showEditPaymentLink}">
+                                    <a class="edit-button text-primary float-right edit-payment-section" aria-label="${Resource.msg('action.edit.step.msg.payment', 'checkout', null)}" tabindex="0">${Resource.msg('action.edit.step', 'checkout', null)}</a>
+                                </isif>
+                            </div>
+                        </span>
+                        <div class="card-sec">
+                            <isinclude template="checkout/billing/billingSummary" />
+                        </div>
+                    </div>
+
+
+                    <!----------------------------------------------------------------------------------->
+                    <!-- Checkout Workflow Buttons -->
+                    <!----------------------------------------------------------------------------------->
+                    <div class="row no-gutters">
+                        <div class="payment-button col-12">
+                            <div class="next-step-cta">
+                                <div class="mb-sm-3">
+                                    <button class="btn btn-primary submit-payment" type="submit" name="submit" value="submit-payment">
+                                        Review Order
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <span class="outer-section disabled-po col-12">
+                                    <div class="section-heading outer-section-inner" tabindex="-1">3. Place Order
+                                    </div>
+                                </span>
+                    </div>
+                    <div class="review-summary ${pdict.currentStage == 'placeOrder'?'':'d-none'}">
+                        <span class="outer-section" tabindex="0">
+                            <div class="section-heading outer-section-inner" tabindex="-1">3. Place Order</div>
+                        </span>
+                        <div class="row">
+
+                            <div class="col-12 inter-shipping-msg customs-warning mb-3 ${(pdict.showInternationShipmentMsg === true) ? '' : 'd-none'}">
+                                <div class="rounded warning-spec">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" aria-label="I acknowledge that shipping charges do not include international customs or duties" value="" id="internationalDutiesNotification">
+                                        <label class="form-check-label pt-1" for="defaultCheck1">
+                                            <b>I acknowledge that shipping charges do not include international customs or duties</b>
+                                            <p class="pt-2 mr-5">Please contact you local customs office for country specific information, as carriers may charge additional fees upon arrival.</p>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="ad-warning-msg rounded danger-spec ${(pdict.showAdWarning === true) ? '' : 'd-none'}">
+                                <p class="subhead">Auto-Delivery is only available in the United States</p>
+                                <p class="mr-4 pr-3 mb-0">If you are shipping outside of the US, remove those Auto-Delivery items from your bag. <a class="ad-bag-link" href="${URLUtils.url('CartSFRA-Show')}"><u>Go to bag</u></a></p>
+                            </div>
+
+
+                            <div class="col-12">
+                                <div class="order-terms">
+                                    <iscontentasset aid="order-terms"/>
+                                </div>
+                            </div>
+                            <div class="col-12 next-step-cta" >
+                                <div class="mb-sm-3">
+                                    <button class="btn btn-primary place-order" ${(pdict.showInternationShipmentMsg == true)?'disabled':''} data-action="${URLUtils.url('CheckoutServices-PlaceOrder')}"
+                                            type="submit" name="submit" value="place-order"><i class="fa fa-lock"></i> ${Resource.msg('button.place.order', 'checkout', null)}
+                                    </button>
+                                </div>
+                                <div class="sticky-place-order-btn">
+                                    <div class="container-fluid">
+                                        <button class="btn btn-primary place-order" aria-label="Place my order" ${(pdict.showInternationShipmentMsg == true)?'disabled':''} data-action="${URLUtils.url('CheckoutServices-PlaceOrder')}" type="submit" name="submit" value="place-order">
+                                            <i class="fas fa-lock mr-2 "></i>
+                                            ${Resource.msg('button.place.order', 'checkout', null)}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+
+            <!----------------------------------------------------------------------------------->
+            <!-- Order Totals, Details and Summary -->
+            <!----------------------------------------------------------------------------------->
+            <div class="col-lg-6 order-1 order-lg-12">
+                <div class="order-summary">
+                    <div class="d-flex justify-content-between order-summary-heading icon-switch" aria-label="expanded" data-toggle="expanded" data-target="#orderCollapse" aria-expanded="true" aria-controls="orderCollapse" tabindex="0">
+                        <h4 class="checkout-summary-heading d-none d-lg-block" id="order">
+                            <isif condition="${pdict.order.items.totalQuantity > 1}">
+                                View Order Summary (<isprint value="${pdict.order.items.totalQuantity}" formatter="##" /> items)
+                            <iselse/>
+                                View Order Summary (<isprint value="${pdict.order.items.totalQuantity}" formatter="##" /> item)
+                            </isif>
+                        </h4>
+                        <h4 class="checkout-summary-heading  m-0 d-lg-none">
+                        <span class="mobile-order-summary-head" id="ordersummary">
+                            <i class="fas fa-lg fa-angle-down mr-2 summary-expand-icon"></i>
+                            <i class="fas fa-lg fa-angle-up mr-2 summary-collapse-icon"></i>
+                            	<div class="mobile-order-total-qty">
+	                                <isif condition="${pdict.order.items.totalQuantity > 1}">
+	                                    View Order Summary (<isprint value="${pdict.order.items.totalQuantity}" formatter="##" /> items)
+	                                <iselse/>
+	                                    View Order Summary (<isprint value="${pdict.order.items.totalQuantity}" formatter="##" /> item)
+	                                </isif>
+                                </div>
+                        </span>
+                        </h4>
+                        <div class="order-count d-none d-lg-block">${pdict.order.totals.grandTotal}</div>
+                        <div class=" order-count d-lg-none">${pdict.order.totals.grandTotal}</div>
+                    </div>
+                    <div id="orderCollapse" class=" order-summary-content"  aria-labelledby="headingOne" data-parent="#accordion">
+                            <isinclude template="checkout/orderProductSummary" />
+
+                            <isinclude template="checkout/checkoutPromoCode" />
+
+                            <!-- Order Summary -->
+                            <isinclude template="checkout/orderTotalSummary" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <isinclude template="checkout/shipping/shippingAddressTemplate" />
+    <isinclude template="checkout/shipping/loqateaddress"/>
+</isdecorate>

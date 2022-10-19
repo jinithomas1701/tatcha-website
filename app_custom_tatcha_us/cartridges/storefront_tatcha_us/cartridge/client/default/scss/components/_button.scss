@@ -1,0 +1,30 @@
+.btn-44 {
+    height: 44px;
+}
+
+.btn-loading {
+    color: transparent !important;
+    position: relative;
+    &::after {
+        content: '';
+        display: block;
+        width: 1.5em;
+        height: 1.5em;
+        position: absolute;
+        left: calc(50% - 0.75em);
+        top: calc(50% - 0.75em);
+        border: 0.15em solid transparent;
+        border-right-color: white;
+        border-radius: 50%;
+        animation: button-anim 0.7s linear infinite;
+    }
+}
+
+@keyframes button-anim {
+    from {
+      transform: rotate(0);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }

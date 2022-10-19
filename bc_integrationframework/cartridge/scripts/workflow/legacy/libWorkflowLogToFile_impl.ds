@@ -1,0 +1,294 @@
+var File 		= require('dw/io/File');
+var FileWriter 	= require('dw/io/FileWriter');
+var StringUtils	= require('dw/util/StringUtils');
+var LogNDC		= require('dw/system/LogNDC');
+var Logger		= require('dw/system/Logger');
+var Log			= require('dw/system/Log');
+var System		= require('dw/system/System'); 
+
+/**
+ * Created the library with the given log file.
+ * 
+ * @param {dw.io.File} logFile File The log file.
+ */
+function LogToFileLib( logFile ) {
+	this.logFile = logFile;
+	if (!empty(this.logFile)) {
+		var fullPath = this.logFile.getFullPath();
+		var parentDir = new File(fullPath.substring(0, fullPath.lastIndexOf(File.SEPARATOR)));
+		if (!parentDir.exists()) {
+			parentDir.mkdirs();
+		}
+		if (!this.logFile.exists()) {
+			this.logFile.createNewFile();
+		}
+	}
+}
+
+/**
+ * Logs the given message to the log file.
+ * 
+ * @param {String} logMessage The log message.
+ * @param {String} scope The scope of the log message.
+ */
+LogToFileLib.prototype.log = function(logMessage , scope) {
+	if (empty(this.logFile) || empty(logMessage)) {
+		return;
+	}
+	
+	var timestamp = StringUtils.formatCalendar(System.getCalendar(), "yyyy-MM-dd HH:mm:ss.SSS z");
+	
+	var writer = new FileWriter(this.logFile, true);
+	
+	var logNDC = Log.getNDC();
+	var logNDCArray = [];
+	let currentMessage = logNDC.pop(); 
+	if ( currentMessage !== '' ) {
+		while ( currentMessage !== '' ) {
+			logNDCArray.push( currentMessage );
+			currentMessage = logNDC.pop();
+		}
+		for ( let i = logNDCArray.length-1; i>=0; i-- ) {
+			logNDC.push( logNDCArray[i] );
+		}		
+	}
+	if ( logNDCArray.length > 0 ) {
+		logNDCArray.reverse();
+		writer.writeLine( [timestamp, ,'[', logNDCArray.join(', '), ']', " - ",scope, " - ", logMessage].join('') );
+	} else {
+		writer.writeLine( [timestamp, " - ",scope, " - ", logMessage].join('') );
+	}
+	writer.close();
+};
+
+
+//#############################################################################
+//############### File Logging Capabilities ###################################
+//#############################################################################
+
+//File logging only on WorkflowScheduleInstance level for now
+var cvLogger = Logger.getLogger( 'WorkflowLog' );
+
+/** Log Levels */
+var LogLevel_NONE 	= -1;
+var LogLevel_FATAL 	= 0;
+var LogLevel_ERROR 	= 1;
+var LogLevel_WARN 	= 2;
+var LogLevel_INFO 	= 3;
+var LogLevel_DEBUG 	= 4;
+var LogLevel_TRACE 	= 5;
+
+/** Loglevel Mapping Object */
+var LogLevel_MO = {"fatal":LogLevel_FATAL, "error":LogLevel_ERROR, "warn":LogLevel_WARN, "info":LogLevel_INFO, "debug":LogLevel_DEBUG, "trace":LogLevel_TRACE, "none": LogLevel_NONE };		
+
+//File logging will always happen in context of WorkflowComponentExcecution.
+var currentWorkflowInstanceFileLogger = null;
+
+//Global Log Level
+var LOG_LEVEL = 1;
+
+//gets the current legacy file logger, in case old components are using it directly
+function getLegacyComponentFileLogger() {
+	return currentWorkflowInstanceFileLogger;
+}
+/**
+* If there currently is a job monitor initialized and has a current task, this one will be returned. 
+* Otherwise the DW system Logger will be returned.
+*
+* @param {String} prefix the prefix for the logger
+* @param {String} category the category to get the logger for
+* @return Logger
+*/
+function getCurrentWorkflowInstanceFileLogger( fileNamePrefix , category ) {
+	if ( currentWorkflowInstanceFileLogger !== null ) {
+		return currentWorkflowInstanceFileLogger;
+	} else  if ( fileNamePrefix && category ) {
+		return Logger.getLogger( fileNamePrefix, category );
+	} else  if ( fileNamePrefix ) {
+		return Logger.getLogger( fileNamePrefix );
+	}  	
+	return Logger; 
+}
+
+/**
+* Destroys the current file logger.
+* 
+* @param currentWorkflowComponentInstance WorkflowComponentInstance that provides the context for file logging.
+* 
+* return WorkflowInstanceFileLogger
+*/
+function distroyWorkflowInstanceFileLogger( currentWorkflowComponentInstance) {
+	if ( currentWorkflowInstanceFileLogger !== null && currentWorkflowComponentInstance !== null && currentWorkflowInstanceFileLogger.ID === currentWorkflowComponentInstance.ID ) {
+		currentWorkflowInstanceFileLogger = null;
+	}
+	return;
+}
+
+/**
+* Gets the request based WorkflowInstanceFileLogger singleton.
+* 
+* @param currentWorkflowComponentInstance WorkflowComponentInstance that provides the context for file logging.
+* 
+* return WorkflowInstanceFileLogger
+*/
+function createWorkflowInstanceFileLogger( currentWorkflowComponentInstance ) 
+{
+	
+	//create new instance if instance doesn't exist or the ID of the instance differs from the currentWorkflowComponentInstance one
+
+	if ( currentWorkflowInstanceFileLogger === null && currentWorkflowComponentInstance !== null || currentWorkflowInstanceFileLogger !== currentWorkflowComponentInstance ) {
+		
+		LOG_LEVEL = LogLevel_ERROR;
+		//Enable verbose mode if required
+		if ( currentWorkflowComponentInstance.getParameterValue('Verbose') ) {
+			LOG_LEVEL = LogLevel_TRACE;
+		}
+		
+		//extending the current object		
+		currentWorkflowInstanceFileLogger 				= currentWorkflowComponentInstance;
+		
+		/**
+		* Logs a message to the log file.
+		* 
+		* @param message string that should be logged.
+		*/
+		currentWorkflowInstanceFileLogger.logMessageToFile = function( message, scope ) {
+			if( !empty(message) && LOG_LEVEL >= LogLevel_MO[(scope || 'info').toLowerCase()] ) {
+				switch( (scope || 'info').toLowerCase() )
+				{
+					case 'fatal' : 
+						cvLogger.fatal(message);
+						break;
+					case 'error' :
+						cvLogger.error(message);
+						break;
+					case 'warn' :
+						cvLogger.info('[warn] ' + message);
+						break;
+					case 'info' :
+						cvLogger.info(message);
+						break;
+					case 'debug' :
+						cvLogger.info('[debug] ' + message);
+						break;
+					case 'trace' :
+						cvLogger.info('[trace] ' + message);
+						break;
+					default:
+						cvLogger.error(message);
+				}
+			}
+		};
+
+		currentWorkflowInstanceFileLogger.isActiveLogLevel = function(requestedLogLevel, configuration){
+			if(configuration === null) {
+				return false;
+			}
+			return LogLevel_MO[configuration.toLowerCase()] >= LogLevel_MO[(requestedLogLevel || 'info').toLowerCase()];
+		};
+		
+		/**
+		* Gets the current log level number:
+		*
+		* fatal - 0
+		* error - 1
+		* warn	- 2
+		* info 	- 3
+		* debug - 4
+		* trace - 5
+		* 
+		* @return 
+		*/
+		currentWorkflowInstanceFileLogger.getFileLogLevel = function( ) 
+		{
+			return this.fileLogLevel;
+		};
+				
+		/**
+		* Returns the log file instance for further action. Only use for read access 
+		*/
+		currentWorkflowInstanceFileLogger.getLogFile = function( )
+		{
+			return this.logFile;
+		};
+				
+		/**
+		* This method returns true if error logging is enabled
+		*/
+		currentWorkflowInstanceFileLogger.isErrorEnabled = function() 
+		{
+			return this.fileLogLevel >= LogLevel_ERROR;
+		};
+			
+		/**
+		* Logs an error message to the log file.
+		* 
+		* @param message string that should be logged.
+		*/
+		currentWorkflowInstanceFileLogger.error = function( message ) 
+		{
+			this.addMessage(message, 'ERROR' );
+		};
+		
+		/**
+		* This method returns true if warn logging is enabled
+		*/
+		currentWorkflowInstanceFileLogger.isWarnEnabled = function() 
+		{
+			return this.fileLogLevel >= LogLevel_WARN;
+		};
+		
+		/**
+		* Logs an warn message to the log file.
+		* 
+		* @param message string that should be logged.
+		*/
+		currentWorkflowInstanceFileLogger.warn = function( message )
+		{
+			this.addMessage(message, 'WARN' );
+		};
+		
+		/**
+		* This method returns true if info logging is enabled
+		*/
+		currentWorkflowInstanceFileLogger.isInfoEnabled = function()
+		{
+			return this.fileLogLevel >= LogLevel_INFO;
+		};
+		
+		/**
+		* Logs an warn message to the log file.
+		* 
+		* @param message string that should be logged.
+		*/
+		currentWorkflowInstanceFileLogger.info = function( message )
+		{
+			this.addMessage(message, 'INFO' );
+		};
+		
+		/**
+		* This method returns true if debug logging is enabled
+		*/
+		currentWorkflowInstanceFileLogger.isDebugEnabled = function() 
+		{
+			return this.fileLogLevel >= LogLevel_DEBUG;
+		};
+		
+		/**
+		* Logs an debug message to the log file.
+		* 
+		* @param message string that should be logged.
+		*/
+		currentWorkflowInstanceFileLogger.debug = function( message ) {
+			this.addMessage(message, 'DEBUG' );
+		};
+	}
+	return currentWorkflowInstanceFileLogger;
+}
+
+if(typeof(exports) !== 'undefined')
+{
+	exports.getCurrentWorkflowInstanceFileLogger = getCurrentWorkflowInstanceFileLogger;
+	exports.createWorkflowInstanceFileLogger = createWorkflowInstanceFileLogger;
+	exports.getLegacyComponentFileLogger = getLegacyComponentFileLogger;
+}

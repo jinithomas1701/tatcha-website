@@ -1,0 +1,20 @@
+function StandardFolders () {}
+
+StandardFolders["abtest"] = "src/marketing/";
+StandardFolders["catalog"] = "src/catalog/";
+StandardFolders["coupon"] = "src/marketing/";
+StandardFolders["customer"] = "src/customer/";
+StandardFolders["customergroup"] = "src/customer/";
+StandardFolders["customobject"] = "src/customobject/";
+StandardFolders["giftcertificate"] = "src/marketing/";
+StandardFolders["inventory"] = "src/catalog/";
+StandardFolders["library"] = "src/library/";
+StandardFolders["order"] = "src/order/";
+StandardFolders["pricebook"] = "src/catalog/";
+StandardFolders["productlist"] = "src/productlist/";
+StandardFolders["promotion"] = "src/marketing/";
+StandardFolders["shipping"] = "src/order/";
+StandardFolders["slot"] = "src/marketing/";
+StandardFolders["sourcecode"] = "src/marketing/";
+StandardFolders["store"] = "src/marketing/";
+StandardFolders["tax"] = "src/order/";

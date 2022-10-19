@@ -1,0 +1,34 @@
+<isdecorate template="application/ExtJSMenuFrame">
+	<!-- TEMPLATENAME: workflow/workflowplan.isml (Start) -->
+	<iscontent type="text/html" charset="UTF-8" compact="true">
+
+	<isscript>
+		importScript('workflow/libWorkflowUI.ds');
+
+		var libWorkflowUI = new LibWorkflowUI();
+		var configs = libWorkflowUI.createWorkflowPlanObject(pdict);
+	</isscript>
+
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/grid/GridFilters.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/grid/filter/Filter.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/grid/filter/StringFilter.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/grid/filter/DateFilter.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/grid/filter/ListFilter.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/grid/filter/NumericFilter.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/grid/filter/BooleanFilter.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/menu/EditableItem.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/menu/RangeMenu.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/Workflow.js')}" type="text/javascript"></script>
+	<script src="${URLUtils.absStatic('/jscript/ext/ux/RowExpanderModified.js')}" type="text/javascript"></script>
+	<link rel="stylesheet" type="text/css" href="${URLUtils.absStatic('/css/workflow.css')}" />
+
+	<script type="text/javascript">
+		Ext.onReady(function() {
+			initWorkflowPlanForm(<isprint value="${JSON.stringify(configs)}" encoding="off" />);
+		});
+	</script>
+
+	<div id="integrationframework-workflowPlan"></div>
+
+	<!-- TEMPLATENAME: workflow/workflowplan.isml (End) -->
+</isdecorate>

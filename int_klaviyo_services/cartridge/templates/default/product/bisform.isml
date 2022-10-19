@@ -1,0 +1,55 @@
+<!--- TEMPLATENAME: bisform.isml --->
+<isscript>
+var product = pdict.Product.object;
+</isscript>
+<iscomment>Notify me</iscomment>
+<div class="modal fade modal-primary modal-tatcha-auto-delivery" id="notify-me-modal" tabindex="-1" role="dialog" aria-labelledby="modalEstimate" style="display: none;">
+	<div class="modal-dialog modal-sm notify-me-modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+				<h4 class="modal-title"><strong>${Resource.msg('global.notifyMe', 'locale', null)}</strong></h4>
+			</div>
+			<isscript>
+				var backinStockKlaviyo = dw.system.Site.current.getCustomPreferenceValue('klaviyo_back_in_stock_enabled');
+				var comingSoonURL = 'comingSoon-save';
+				var backInStockURL = 'BISNSave-Bisn';
+				if(backinStockKlaviyo) {
+					comingSoonURL = 'Klaviyo-ComingSoonSubscribe';
+					backInStockURL = 'Klaviyo-BISSubscribe';
+				}
+			</isscript>
+			<isif condition = "${product.custom.oosProductStatus.value == 'comingsoon'}">
+				<form action="${URLUtils.url(comingSoonURL)}" method="post" id="comingsoon-form" name="comingSoon">
+					<div class="modal-body">
+						<div class="form-group">
+							<label class="control-label" for="email" style="font-size: 12px;">${Resource.msg('global.notifyMeEmail', 'locale', null)}</label>
+							<input type="hidden" name="comingsoonpid" value="${product.ID}">
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+							<input class="input-text form-control required" type="email" id="comingsoon-email" name="comingsoonemail" data-msg-required="Please enter a valid email." data-rule-maxlength="50" maxlength="50" aria-required="true" aria-invalid="true">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default notify-me-cancel" data-dismiss="modal">${Resource.msg('global.cancel', 'locale', null)}</button>
+						<button type="submit" class= "btn btn-primary" id="dialogApplyBtn" name=""  value="${Resource.msg('global.apply', 'locale', null)}">${Resource.msg('global.notifyMe', 'locale', null)}</button>
+					</div>
+				</form>
+			<iselse/>
+				<form action="${URLUtils.url(backInStockURL)}" method="post" id="notify-me-form" name="notifyMe">
+					<div class="modal-body">
+						<div class="form-group">
+							<label class="control-label" for="email" style="font-size: 12px;">${Resource.msg('global.notifyMeEmail', 'locale', null)}</label>
+							<input type="hidden" name="bisnpid" value="${product.ID}">
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+							<input class="input-text form-control required" type="email" id="notify-me-email" name="bisnemail" data-msg-required="Please enter a valid email." data-rule-maxlength="50" maxlength="50" aria-required="true" aria-invalid="true">
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default notify-me-cancel" data-dismiss="modal">${Resource.msg('global.cancel', 'locale', null)}</button>
+						<button type="submit" class= "btn btn-primary" id="dialogApplyBtn" name=""  value="${Resource.msg('global.apply', 'locale', null)}">${Resource.msg('global.notifyMe', 'locale', null)}</button>
+					</div>
+				</form>
+			</isif>
+		</div>
+	</div>
+</div>

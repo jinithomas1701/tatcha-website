@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" minute="30" varyby="price_promotion"/>
+   
+<div class="product-merchandise-cross-sell ">
+	<h2 class="bag-has-contents">${Resource.msg('global.youmayalsolike', 'locale', null)}</h2>
+	<div class="carousel product-merchandise-carousel">
+	    <isloop items="${slotcontent.content}" var="product" begin="0" end="8" status="productCounter">
+		<div class="carousel-cell">
+			<div class="product-list-unit">
+				<isset name="Product" value="${product}" scope="pdict" />
+				<iscomment>Check for a product in the dictionary, if no product found. This section is skipped.</iscomment>
+		    		<div class="product-img-block">
+		    		    <iscomment>Render the thumbnail</iscomment>
+					<iscomment>If image couldn't be determined, display a "no image" medium.</iscomment>
+					<isif condition="${product.getImage('large',0).getURL()}">
+						<isset name="thumbnailUrl" value="${product.getImage('large',0).getURL()}" scope="page"/>
+						<isset name="thumbnailAlt" value="${image.alt}" scope="page"/>
+						<isset name="thumbnailTitle" value="${image.title}" scope="page"/>
+					<iselse/>
+						<isset name="thumbnailUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+						<isset name="thumbnailAlt" value="${Product.name}" scope="page"/>
+						<isset name="thumbnailTitle" value="${Product.name}" scope="page"/>
+					</isif>
+					<img class="img-responsive product-img" src="${thumbnailUrl}" alt="${thumbnailAlt}"/>
+		    		</div>
+				<h5 class="product-name"><isprint value="${product.name}"/></h5>
+				<div class="product-price"><isinclude template="product/components/pricing"/></div>
+				<isscript>
+					var Tatcha = require('~/cartridge/scripts/util/Tatcha');
+					var disableBtn = false;
+					if(!Tatcha.hasCartCategory(Product) && (Product.priceModel.getPrice().valueOrNull === null || Product.priceModel.getPrice().value == 0)) {
+						disableBtn = true;
+					}
+					var comingSoonMsg = (product.custom.oosProductStatus.value)?product.custom.oosProductStatus.value:"";
+			  	</isscript>
+				<div class="product-cta">
+					<isif condition="${(comingSoonMsg == 'comingsoon')}">
+						<a href="${URLUtils.http('Product-Show', 'pid', product.ID)}"><button class="btn btn-default btn-sm">${Resource.msg('global.comingsoon', 'locale', null)}</button></a>
+				 	<iselse/>
+						<button <isif condition="${(disableBtn == true)}">disabled</isif> class="btn btn-default btn-sm carousel-add-to-cart" tabindex="0" data-pid="<isprint value="${product.ID}" data-productname="<isprint value="${product.name}"/>">${Resource.msg('global.addtocart', 'locale', null)}</button>
+					</isif>
+				</div>
+		    </div>
+		</div>
+		</isloop>
+	</div>
+</div>
+	

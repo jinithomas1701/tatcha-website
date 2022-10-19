@@ -1,0 +1,10 @@
+<iscontent type="application/json" charset="UTF-8">
+
+<isscript>
+	importScript('workflow/libWorkflowUI.ds');
+	
+	var libWorkflowUI = new LibWorkflowUI();
+	var configs = libWorkflowUI.createWorkflowComponentDefintionObject(pdict.WorkflowComponentDefinition, null, pdict.Index, pdict.WorkflowComponentDefinitions);
+</isscript>
+
+<isprint value="${JSON.stringify(configs)}" encoding="off" />

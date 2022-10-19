@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> should not be cached, the tiles are cached individually.</iscomment>
+
+<isif condition="${slotcontent}">
+<h3 class="text-md-center text-capitalize you-may-like">${Resource.msg('global.youmayalsolike', 'locale', null)}</h3>
+<div class="container product-merchandise-cross-sell">
+		<div class="col-lg-12 col-xxl-10 mr-auto ml-auto carousel product-merchandise-carousel p-0 you-may-like-carousel">
+                <isloop items="${slotcontent.content}" var="product" begin="0" end="9">
+              			<isif condition="${product.master}">
+							<isset name="Product" value="${product.getVariationModel().getDefaultVariant()}" scope="pdict"/>
+						<iselse/>
+							<isset name="Product" value="${product}" scope="pdict"/>
+						</isif>
+                        <isobject object="${product}" view="recommendation">
+                          <isinclude url="${URLUtils.url('Product-HitPPageCarousel',
+                                                'pid', pdict.Product.ID)}"/>
+                        </isobject>
+                </isloop>
+        </div>
+</div>
+</isif>
+
+<script>
+var elem = document.querySelector('.product-merchandise-carousel');
+var flkty = new Flickity( elem, {  
+	   cellAlign:"left",
+	   wrapAround:true ,
+	   contain:true,
+	   imagesLoaded:true,
+	   percentPosition:false,
+	   freeScroll:true,
+	   pageDots:false,
+	   groupCells:true
+	});
+
+$(document).ready(function() {
+	//this is a work around for loading the yotpo widget in product carousels - currently on page load it is not displaying
+	try {
+    	if (typeof Yotpo !== 'undefined') {
+        	var api = new Yotpo.API(yotpo);
+        	api.instance.widgets = [];
+        	api.refreshWidgets();
+    	}
+    } catch(err){}
+
+});
+</script>

@@ -1,0 +1,147 @@
+<isset name="countriesList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('CountriesList'))}" scope="page"/>
+<isset name="provinceList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('provinceList'))}" scope="page"/>
+<isset name="addressFields" value="${pdict.forms.addressModalForm}" scope="page"/>
+
+<input type="hidden" value="${}" id="shippingStateModal" <isprint value=${addressFields.states.stateCode.attributes} encoding="off"/> />
+<input type="hidden" value="${pdict.newaddressId}" id="newaddressId"/>
+<div class="modal fade" id="addressModal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content address-content">
+            <div class="modal-body">
+           		<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        <svg class="svg-inline--fa fa-times fa-w-12 close-spec ml-3" aria-hidden="true" data-fa-replacement="true" data-prefix="fal" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"></svg><i class="fal fa-times close-spec ml-3"></i>
+                    </span>
+               </button>
+               <div class="text-center m-3 modal-title address-title">Add address </div>
+               <div class="contact-info-container">
+               		<form method="post" action="${URLUtils.url('AddressSFRA-SaveAddressModal')}"  id="checkoutAddNew"  class="addressformfields">
+                         <input type="hidden" value="${'shipping'}" id="addAddressScope" name="addAddressScope" />
+                         <input type="hidden" value="${false}" id="validAddress"/>
+                         <input type="hidden" value="" id="addressId" <isprint value="${addressFields.addressId.attributes}" encoding="off" />>
+                         <input  value="false" id="isDefault" class="d-none" <isprint value="${addressFields.isDefault.attributes}" encoding="off"/> />
+                         <input  value="${''}" id="isEdit" class="d-none"  <isprint value="${addressFields.isEdit.attributes}" encoding="off"/> />
+                         <input type="hidden" value="${}" id="shippingStatedefault" <isprint value=${addressFields.states.stateCode.attributes} encoding="off"/> />
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                             	<input type="text" required autocorrect="off" pattern="^[a-zA-Z.\s]+$" class="form-control form-control-lg floating__input" <isprint value="${addressFields.firstName.attributes}" encoding="off"/>  id="firstname" placeholder="First Name" data-missing-error="This field is required"
+                                 data-pattern-mismatch="${Resource.msg('error.message.parse.name','forms',null)}">
+                             	<label class="float-label" data-content="First Name*" for="firstname"></label>
+                                <div class="invalid-feedback"></div>
+                            </div>
+
+                            <div class="form-group col-md-6">
+                                <input type="text" required autocorrect="off" pattern="^[a-zA-Z.\s]+$"  <isprint value="${addressFields.lastName.attributes}" encoding="off"/> class="form-control  form-control-lg floating__input" id="lastname" placeholder="Last Name" data-missing-error="This field is required"
+                                data-pattern-mismatch="${Resource.msg('error.message.parse.name','forms',null)}">
+                                <label class="float-label"  for="lastname" data-content="Last Name*"></label>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <isset name="selectedCountry" value="US" scope="page" />
+
+                        <div class="form-row">
+                            <div class="form-group col-12">
+                                <input required type="text" autocorrect="off" pattern="^[\x20-\x7E]*$" class="form-control floating__input form-control-lg" <isprint value="${addressFields.address1.attributes}" encoding="off"/>  id="address1" placeholder="Street Address" data-missing-error="This field is required"
+                                data-pattern-mismatch="Please enter a valid address">
+                                <label class="float-label" for="address1" data-content="Street Address*"></label>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        <a href="#addaddressModalCollapse" class="mb-0"  id="addaddressModalCollapseLink" data-toggle="collapse" aria-expanded="false" aria-controls="addAddressModalCollapse">
+                            <span class="enter-addaddress-link">Enter address manually</span>
+                        </a>
+                        <div class="collapse" aria-label="Add Address Modal Collapse" id="addaddressModalCollapse">
+
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <input type="text" autocorrect="off" pattern="^[\x20-\x7E]*$" 
+                                		data-pattern-mismatch="Please enter a valid address" 
+                                		class="form-control floating__input form-control-lg" <isprint value="${addressFields.address2.attributes}" encoding="off"/> id="address2" placeholder="Street Address 2" aria-label="Street Address 2">
+                                    <label class="float-label" for="address2" data-content="Street Address 2 (Optional)"></label>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <input type="text" minlength="3" data-missing-error="This field is required" data-range-error="Please enter a valid city." pattern="^[\x20-\x7E]*$" <isprint value="${addressFields.city.attributes}" encoding="off"/> required autocorrect="off" class="form-control floating__input form-control-lg"  id="city" placeholder="City"
+                                    data-pattern-mismatch="Please enter a valid city">
+                                    <label class="float-label" for="city" data-content="City*"></label>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+
+                                <div class="form-group col-md-6">
+                                	<select style="padding-top: 18px;" data-missing-error="${Resource.msg('error.message.parse.Prefecture','forms',null)}"  id="addressmodal-stateUS" autocorrect="off"  required class="form-control floating__input form-control-lg pl-3">
+										<isloop items="${addressFields.states.stateCode.options}" var="states" status="status">
+											<option class="select-option"  id="${states.id}" label="${Resource.msg(states.label,'forms',null)}" value="${states.htmlValue}">${Resource.msg(states.label,'forms',null)}</option>
+										</isloop>
+									</select>
+									<select style="padding-top: 18px;" data-missing-error="${Resource.msg('error.message.parse.Prefecture','forms',null)}"  id="addressmodal-stateNonUS" autocorrect="off"  required class="form-control floating__input form-control-lg pl-3">
+										<isloop items="${provinceList}" alias="province">
+											<isif condition="${province.country == 'CA'}">
+												<isloop items="${province.states}" alias="pstate">
+													<option class="select-option" label="${pstate.label}" value="${pstate.value}">${pstate.label}</option>
+												</isloop>
+											</isif>
+										</isloop>
+									</select>
+									<input type="text" data-missing-error="Please enter a valid state."   autocorrect="off" style="display:none;"  class="form-control floating__input form-control-lg"  id="addressmodal-stateText" placeholder="Province*">
+									<label class="float-label state-modal-label" for="${addressFields.states.stateCode.htmlName}" data-content="State*"></label>
+                                    <div class="invalid-feedback modal-state"></div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <input type="text" data-missing-error="Please enter a valid zipcode." <isif condition="${selectedCountry === 'CA'}">pattern="^[ABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Z]{1} *(?:\d{1}[A-Z]{1}\d{1})?$"<iselseif condition="${selectedCountry === 'US'}">pattern="^\d{5}(?:[-\s]\d{4})?$"</isif>  required  class="form-control floating__input form-control-lg addModalZipcode" <isprint value="${addressFields.postalCode.attributes}" encoding="off"/> id="postal" placeholder="Zipcode"
+                                    data-pattern-mismatch="${Resource.msg('error.message.parse.postalCode','forms',null)}" data-range-error="${Resource.msg('error.message.parse.postalCode','forms',null)}">
+                                    <label class="float-label" for="postal" data-content="Zipcode*"></label>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-12">
+                                    <select style="padding-top: 18px;" required id="address-modal-country" <isprint value=${addressFields.country.attributes} encoding="off"/> class="floating__input form-control  form-control-lg pl-3 country">
+                                    <option label=""></option>
+                                    <isloop items="${countriesList}" alias="country">
+                                        <isset name="selectedCountry" value="US" scope="page" />
+                                        <isif condition="${selectedCountry == country.value}">
+                                            <option value="${country.value}" selected><isprint value="${country.label}" /></option>
+                                            <iselse>
+                                                <option value="${country.value}"><isprint value="${country.label}" /></option>
+                                        </isif>
+                                    </isloop>
+                                    </select>
+                                    <label class="float-label" for="address-modal-country" data-content="Country*"></label>
+                                    <div class="invalid-feedback"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-12">
+								<a class="phone-tooltip" tabindex="0" title href="javascript:void(0)"  data-trigger="hover click" data-toggle="tooltip" data-placement="top" aria-label="A phone number is required in case our shipping carrier needs to contact you with updates." data-original-title="A phone number is required in case our shipping carrier needs to contact you with updates."> <i class="fa fa-question-circle"></i> </a>
+                                <input  <isif condition="${selectedCountry == 'US' || selectedCountry == 'CA'}">pattern="^[\+]?1?[\s-]?\(?([2-9][0-9][0-9])\)?[\-\. ]?([0-9][0-9]{2})[\-\. ]?([0-9]{4})(\s*x[0-9]+)?$"</isif> type="tel" required inputmode="tel" autocorrect="off" autocomplete="tel" data-pattern-mismatch="Please enter a valid phone number" class="form-control addModalPhoneNo  form-control-lg floating__input phone" <isprint value="${addressFields.phone.attributes}" encoding="off"/>  id="phone" placeholder="Phone Number"
+                                data-missing-error="This field is required." data-range-error="This field is required.">
+                                <label class="float-label" for="phone" data-content="Phone Number*"></label>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                        </div>
+
+						<div>
+                        	<div class="float-left"><input type="checkbox"  id="makeDefault" value="false"/>
+                            	<span class="default-shipping-label">Set as default shipping address</span>
+                            </div>
+                        	<div class="actions float-right">
+                            	<button class="btn btn-outline-dark cancel address-button" data-dismiss="modal" value="cancel">Cancel</button>
+                            	<button class="btn btn-primary btn-checkout-continue add-shipping-address"  type="button" value="address">Save</button>
+                        	</div>
+                    	</div>
+                    	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LOQATE_verification_enabled')}">
+							<input  type="hidden"  id="loqateVerificationEnabled"  value="true">
+						</isif>
+                    	<input type="hidden" id="addressModal-mode" value="">
+                        <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+                    </form>
+               </div>
+            </div>
+         </div>
+    </div>
+</div>

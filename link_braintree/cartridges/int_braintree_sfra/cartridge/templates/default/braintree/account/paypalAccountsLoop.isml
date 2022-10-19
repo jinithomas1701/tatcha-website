@@ -1,0 +1,25 @@
+<isloop items="${pdict.braintree.paypalPaymentInstruments}" var="paymentInstrument">
+    <div class="card-body clearfix card-body-bt" id="uuid-${paymentInstrument.UUID}">
+        <div class="card-info-group pull-left position-relative">
+            <span style="font-weight:${paymentInstrument.isDefault ? 'bold' : ''}">
+                ${paymentInstrument.email}
+            </span>
+        </div>
+        <div>
+            <button class="card-link braintree-make-default-card uuid-${paymentInstrument.UUID}"
+                style="display:${paymentInstrument.isDefault ? 'none' : 'inline-block'}" aria-label="Make default payment"
+                data-loader="paypalAccountBtLoader"
+                data-id="${paymentInstrument.UUID}"
+                data-make-default-url="${pdict.braintree.makePaymentMethodDefaultUrl}">
+                    ${Resource.msg('braintree.creditcard.makedefault', 'locale', null)}
+            </button>
+            <button class="card-link remove-bt-payment pull-right" aria-label="Remove payment"
+                data-loader="paypalAccountBtLoader"
+                data-url="${pdict.braintree.deletePaymentUrl}"
+                data-id="${paymentInstrument.UUID}"
+                data-card="${paymentInstrument.email}">
+                    ${Resource.msg('braintree.accountslist.remove', 'locale', null)}
+            </button>
+        </div>
+    </div>
+</isloop>

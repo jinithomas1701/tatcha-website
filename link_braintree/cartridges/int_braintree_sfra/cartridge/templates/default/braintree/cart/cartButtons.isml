@@ -1,0 +1,42 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets');
+    assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+    assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+
+    assets.addJs(pdict.braintree.prefs.clientSdk3PayPalUrl);
+    assets.addJs(pdict.braintree.prefs.clientSdk3PayPalCheckoutUrl);
+
+    assets.addJs(pdict.braintree.prefs.clientSdk3ApplePayUrl);
+
+    assets.addJs(pdict.braintree.prefs.googlePaySdkUrl);
+    assets.addJs(pdict.braintree.prefs.braintreeGooglePaySdkUrl);
+
+    assets.addJs(pdict.braintree.prefs.srcSdkUrl);
+    assets.addJs(pdict.braintree.prefs.braintreeSrcSdkUrl);
+
+    assets.addCss('/css/braintree.css');
+</isscript>
+
+<div class="braintree-cart-buttons-wrap"
+    data-checkout-form-fields="${JSON.stringify(pdict.braintree.sfraCheckoutFormFields)}" 
+    data-checkout-from-cart-url="${pdict.braintree.checkoutFromCartUrl}"
+    data-checkout-placeorder-url="${pdict.braintree.placeOrdeUrl}"
+>
+    <isif condition="${pdict.braintree && pdict.braintree.payPalButtonConfig !== null}">
+        <isinclude template="braintree/cart/paypalButton" />
+    </isif>
+
+    <isif condition="${pdict.braintree && pdict.braintree.prefs.googlepayVisibilityOnCart}">
+        <isinclude template="braintree/cart/googlepayButton" />
+    </isif>
+
+    <isif condition="${pdict.braintree && pdict.braintree.prefs.applepayVisibilityOnCart}">
+        <isinclude template="braintree/cart/applepayButton" />
+    </isif>
+
+    <isif condition="${pdict.braintree && pdict.braintree.prefs.srcVisibilityOnCart}">
+        <isinclude template="braintree/cart/srcButton" />
+    </isif>
+
+    <input type="hidden" id="csrf_token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+</div>

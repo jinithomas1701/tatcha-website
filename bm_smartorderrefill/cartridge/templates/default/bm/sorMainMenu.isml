@@ -1,0 +1,15 @@
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+    <div class="flex sor-module__buttons-container">
+        <a class="button ${pdict.navigation == 'manageSOR' ? 'navCurrentTab' : ''}" href="${dw.web.URLUtils.url('SmartOrderRefillReport-ManageSOR')}">
+            ${Resource.msg('forms.sorsubscriptions.label','sor_forms',null)}
+        </a>
+        <a class="button ${pdict.navigation == 'orderSummary' ? 'navCurrentTab' : ''}" href="${dw.web.URLUtils.url('SmartOrderRefillReport-OrdersSummary')}">
+            ${Resource.msg('forms.sorsubscriptions.labelordersummury','sor_forms',null)}
+        </a>
+        <a class="button ${pdict.navigation == 'subscriptionSummary' ? 'navCurrentTab' : ''}" href="${dw.web.URLUtils.url('SmartOrderRefillReport-SubscriptionsSummary')}">
+            ${Resource.msg('forms.sorsubscriptions.labelsubscriptionsummary','sor_forms',null)}
+        </a>
+    </div>

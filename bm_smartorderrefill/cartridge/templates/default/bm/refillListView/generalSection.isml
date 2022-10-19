@@ -1,0 +1,66 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="order-section general-section"> 
+    <div class="content-section">
+        <table class='sor-module__subscription_table'>
+            <tr class="sor-module__titles-row">
+                <td class="label-col">${Resource.msg('smartorderrefill.listview.general.name', 'smartorderrefill', null)}:</td>
+                <td>
+                    <span class="name">${pdict.ProductList.billingAddress.fullName}</span>
+                </td>
+            </tr>
+
+            <tr class="sor-module__titles-row">
+                <td class="label-col">${Resource.msg('smartorderrefill.listview.general.email', 'smartorderrefill', null)}: </td>
+                <td>${pdict.currentCustomer.profile.email}</td>
+            </tr>
+
+            <tr class="sor-module__titles-row">
+                <td class="label-col">${Resource.msg('smartorderrefill.listview.general.phone', 'smartorderrefill', null)}: </td>
+                <td>${pdict.ProductList.billingAddress.phone}</td>
+            </tr>
+
+            <isif condition="${pdict.isSubscription}">
+                <tr class="sor-module__titles-row">
+                    <td class="label-col">${Resource.msg('smartorderrefill.listview.general.dateofsubs', 'smartorderrefill', null)}: </td>
+                    <td>${pdict.ProductList.createdAt.toLocaleDateString("en-US")}</td>
+                </tr>
+                <tr class="sor-module__titles-row">
+                    <td class="label-col">${Resource.msg('smartorderrefill.listview.general.dateofexp', 'smartorderrefill', null)}: </td>
+                    <td>${pdict.ProductList.validUntil.toLocaleDateString("en-US")}</td>
+                </tr>
+            <iselse/>
+                <tr class="sor-module__titles-row">
+                    <td class="label-col">${Resource.msg('smartorderrefill.listview.general.dateoforder', 'smartorderrefill', null)}: </td>
+                    <td>${pdict.ProductList.createdAt.toLocaleDateString("en-US")}</td>
+                </tr>
+            </isif>
+
+
+            <tr class="sor-module__titles-row">
+                <td class="label-col">${Resource.msg('smartorderrefill.listview.general.refillinterval', 'smartorderrefill', null)}: </td>
+                <td>
+                <isloop items="${pdict.ProductList.products}" var="product">
+                    ${product.interval} ${product.periodicity + " "}  
+                </isloop>
+                </td>
+            </tr>
+            <div class="order-section">
+                <div class="content-section">
+                    <tr class="sor-module__titles-row">
+                            <td>
+                            ${Resource.msg('smartorderrefill.listview.shippingmet', 'smartorderrefill', null)}
+                        </td>
+
+                        <td class="label-col">
+                            ${pdict.ShippingMethodName}
+                        </td>
+                    </tr>
+                </div>
+            </div>
+        </table>
+    </div>
+</div>

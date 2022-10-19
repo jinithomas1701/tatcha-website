@@ -1,0 +1,420 @@
+<isif condition="${pdict.resetAttributes}">
+	<isscript>
+		var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+		var url = dw.web.URLUtils.url('Product-Variation', 'pid', pdict.Product.ID, 'format', 'ajax');
+		var qs = ProductUtils.getQueryString(pdict.CurrentHttpParameterMap, ["source", "uuid", "Quantity"]);
+		if (qs && qs.length>0) { url+="&"+qs; }
+	</isscript>
+	<isinclude url="${url}"/>
+<iselse/>
+	<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+	<isscript>
+		let product = pdict.Product;
+		let masterId = product.isVariant() || product.isVariationGroup() ? product.getMasterProduct().getID() : product.getID();
+		let variationModel = pdict.CurrentVariationModel || product.getVariationModel();
+		let selectedVariant = variationModel.getSelectedVariant();
+
+		let avm = selectedVariant ? selectedVariant.getAvailabilityModel() : product.getAvailabilityModel();
+		pdict.isProductAvailable = avm.availability > 0;
+
+		let availableCount = "0";
+		if (pdict.isProductAvailable && !empty(avm.inventoryRecord)) {
+			availableCount = avm.inventoryRecord.perpetual ? "999" : avm.inventoryRecord.ATS.value.toFixed().toString();
+		}
+		<!-- GTM for PDP view -->
+
+		var TagManagerUtils = require('~/cartridge/scripts/util/GoogleTagManager.js');
+	 	var gtmDataLayer = TagManagerUtils.getProductPageDataLayer(product);
+	 	if (!empty(gtmDataLayer)) { 
+	 	  var productPageView = JSON.stringify(gtmDataLayer);
+	 	}
+	 	
+	 	var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+		var maxQuantityStatus = ProductUtils.checkMaximumQuatity(pdict.Product.ID);
+	</isscript>
+	<script>
+	    try {
+	    	if (!window.dataLayer) {
+				window.dataLayer = [];
+			}
+	    	dataLayer.push(<isprint value="${productPageView}" encoding="off"/>);
+	    } catch (e) {
+
+	    }
+	</script>
+	<iscomment>
+		primary details
+		=============================================================
+	</iscomment>
+
+	<h2 class="visually-hidden">Details</h2>
+	<span class="visually-hidden" itemprop="url">${URLUtils.http('Product-Show','pid', pdict.Product.ID)}</span>
+
+	<isscript>
+		let productNumber = masterId;
+
+		if (pdict.isProductAvailable) {
+			let product = pdict.Product;
+			let variationModel = pdict.CurrentVariationModel || product.getVariationModel();
+			let selectedVariant = variationModel.getSelectedVariant();
+			productNumber = selectedVariant
+				? selectedVariant.getID()
+				: product.getID();
+		}
+	</isscript>
+	<div class="product-number" style="display:none">
+		${Resource.msg('product.item','product',null)} <span itemprop="productID" data-masterid="${masterId}"><isprint value="${productNumber}"/></span>
+	</div>
+
+	<iscomment>
+		view detail link for quick view
+		=============================================================
+	</iscomment>
+
+	<isif condition="${pdict.CurrentHttpParameterMap.source && pdict.CurrentHttpParameterMap.source.stringValue != 'giftregistry'}">
+
+	</isif>
+
+	<iscomment>
+		product name, marketing flag and product pricing
+		=============================================================
+	</iscomment>
+	<div class="product-summary-desktop">
+	<isif condition="${pdict.GetImages}">
+		<isinclude template="product/components/marketingflags"/>
+		<isinclude template="product/components/productname"/>
+	</isif>
+	<isprint value="${marketingFlags}" encoding="off"/>
+	<isprint value="${productNameSlot}" encoding="off"/>	
+	</div>
+	
+	<iscomment>Description (Benefits - What it is) </iscomment>
+	<isif condition="${! empty(pdict.Product.custom.benefitsSection1)}">
+	<div class="product-description-block">
+		<p><isprint value="${StringUtils.pad(pdict.Product.custom.benefitsSection1,210)}" encoding="off"/></p>
+	</div>
+	</isif>
+	<isset name="gCounter" value="0" scope="page"/>
+	<isset name="totalPrice" value="0" scope="page" />
+	<div class="product-set-selector demo-empty" id="selectd_products">
+		<isif condition="${!empty(pdict.CurrentSession.custom.selectedProductList)}"> 
+			<div class="set-selections">
+				<isloop items="${pdict.CurrentSession.custom.selectedProductList}" var="rec" status="pStatus">
+					<isscript>
+						let product = dw.catalog.ProductMgr.getProduct(rec.ID);
+					</isscript>
+					<isset name="selectedGiftProduct" value="${product}" scope="pdict"/>
+					<isset name="PriceModel" value="${pdict.selectedGiftProduct.getPriceModel()}" scope="page"/>
+					<isinclude template="product/giftbuilder/selecteditem"/>
+					<isscript>
+						totalPrice = parseInt(totalPrice) + parseInt(PriceModel.price);
+						gCounter++;
+					</isscript>
+				</isloop>
+				<isset name="limit" value="3" scope="pdict" />
+				<isif condition="${gCounter < pdict.limit}">
+					<isscript>
+						var emptySlots = [];
+						for(var i = 0; i < (pdict.limit-gCounter); i++) { 
+							emptySlots.push(i);
+						}
+					</isscript>
+					<isloop items="${emptySlots}" var="slot" status="slotStatus">
+						<div class="set-selection-item giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}">
+							<a href="#" class="vertical-middle">
+								<i class="fal fa-plus fa-2x select-icon"></i>
+							</a>
+						</div>
+					</isloop>
+				</isif>
+			</div>
+		<iselse>
+			<div class="set-selections">
+				<div class="set-selection-item giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}">
+					<a href="#" class="vertical-middle"> 
+						<i class="fal fa-plus fa-2x select-icon"></i>
+					</a>
+				</div>
+				<div class="set-selection-item giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}">
+					<a href="#" class="vertical-middle"> 
+						<i class="fal fa-plus fa-2x select-icon"></i>
+					</a>
+				</div>
+				<div class="set-selection-item giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}">
+					<a href="#" class="vertical-middle">
+						<i class="fal fa-plus fa-2x select-icon"></i>
+					</a>
+				</div>
+			</div>
+		</isif>
+		<div class="set-selector-btn-block">
+			<isif condition="${!empty(session.custom.selectedProductList)}"> 
+				<button class="btn btn-default giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}" <isif condition="${maxQuantityStatus==true}">disabled</isif>>${Resource.msg('giftbuilder.editbutton','product',null)}</button>
+			<iselse>
+				<button class="btn btn-default giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}" <isif condition="${maxQuantityStatus==true}">disabled</isif>>${Resource.msg('giftbuilder.selectbutton','product',null)}</button>
+			</isif>
+		</div>
+	</div>
+	
+	<isset name="pam" value="${pdict.Product.getAttributeModel()}" scope="page"/>
+	<isset name="group" value="${pam.getAttributeGroup('mainAttributes')}" scope="page"/>
+	<isinclude template="product/components/group"/>
+	
+	<iscomment>
+		add to cart form
+		=============================================================
+	</iscomment>
+
+	<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+		<fieldset>
+			<iscomment>
+				product options (Must be inside form)
+				=============================================================
+			</iscomment>
+
+			<legend class="visually-hidden">Add to cart options</legend>
+			<isinclude template="product/components/options"/>
+
+			
+			<iscomment>SmartOrderRefill modification</iscomment>
+			<isinclude template="product/components/pdprefillinclude" /> 
+
+			<div class="product-add-to-bag product-add-to-cart giftproduct-add-to-cart">
+			
+			
+			<h2 class="visually-hidden">Product Actions</h2>
+
+			<iscomment>
+				availability
+				=============================================================
+			</iscomment>
+
+			<isscript>
+				let product = pdict.Product;
+				let variationModel = pdict.CurrentVariationModel || product.getVariationModel();
+				let selectedVariant = variationModel.getSelectedVariant();
+				let availableForInStorePickup = selectedVariant ? selectedVariant.custom.availableForInStorePickup : product.custom.availableForInStorePickup;
+				let isStorePickUpEnabled = dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp');
+			</isscript>
+			<isif condition="${isStorePickUpEnabled && availableForInStorePickup}">
+					<div class="availability-storepickup">
+						<div class="availability-web">
+							<i class="fa fa-truck fa-lg pull-left"></i>
+							<label for="Stock">${Resource.msg('product.webstock','product',null)}</label>
+							<isif condition="${!pdict.Product.master && !pdict.Product.variationGroup}">
+								<span class="value"><isinclude template="product/components/availability"/></span>
+							<iselse/>
+								<div class="availability-novariation">${Resource.msg('product.selectforstock','product',null)}</div>
+							</isif>
+						</div>
+						<div class="availability-instore">
+							<i class="fa fa-briefcase fa-lg pull-left"></i>
+							<label for="Stock">${Resource.msg('product.instorestock','product',null)}</label>
+							<isif condition="${empty(pdict.CurrentHttpParameterMap.uuid.value)}">
+								<div id="${pdict.Product.ID}" class="availability-results availability-msg store-stock">
+									<span class="label set-preferred-store"><a href="${URLUtils.url('StoreInventory-SetZipCodeCore','pid', pdict.Product.ID)}" title="${pdict.Product.name}">${Resource.msg('storelist.check.availablity','storepickup',null)}</a></span>
+								</div>
+							<iselse/>
+								<div id="${pdict.CurrentHttpParameterMap.uuid.value}" class="availability-results store-stock"></div>
+							</isif>
+						</div>
+					</div>
+			<iselse/>
+					<div class="availability-web" style="display:none;">
+						<label for="Stock">${Resource.msg('global.availability','locale',null)}</label>
+						<isif condition="${!pdict.Product.master && !pdict.Product.variationGroup}">
+							<span class="value"><isinclude template="product/components/availability"/></span>
+						<iselse/>
+							<div class="availability-novariation">${Resource.msg('product.selectforstock','product',null)}</div>
+						</isif>
+					</div>
+			</isif>
+
+				<iscomment>
+					product quantity
+					=============================================================
+				</iscomment>
+				
+				<isscript>
+					let product = pdict.Product;
+					let pid = pdict.Product.getID();
+					let disabledAttr = pdict.isProductAvailable && !product.master ? '' : ' disabled="disabled"';
+	
+					if (product.isVariationGroup()) {
+						let variationModel = pdict.CurrentVariationModel || product.getVariationModel();
+						let selectedVariant = variationModel.getSelectedVariant();
+						if (selectedVariant) {
+							pid = selectedVariant.getID();
+						} else {
+							disabledAttr = ' disabled="disabled"';
+						}
+					};
+				</isscript>	
+				<isscript>
+						var updateSources = ["cart", "giftregistry", "wishlist"];
+						var source = pdict.CurrentHttpParameterMap.source.stringValue;
+						var buttonTitle = dw.web.Resource.msg('global.addtocart','locale','Add to Cart');
+						var plid = null;
+						if (updateSources.indexOf(source) > -1) {
+							buttonTitle = dw.web.Resource.msg('global.update','locale','Update');
+							if (pdict.CurrentHttpParameterMap.productlistid && pdict.CurrentHttpParameterMap.productlistid.stringValue) {
+								plid = pdict.CurrentHttpParameterMap.productlistid.stringValue;
+							}
+						} else {
+							// Only pass on white-listed sources
+							source = null;
+						}
+				</isscript>
+				
+				<isif condition="${!disabledAttr}">
+					<div class="row">
+						<isscript>
+						var maxQty = 0;
+						if(!empty(dw.system.Site.current.getCustomPreferenceValue('maxOrderQuantity')) && (dw.system.Site.current.getCustomPreferenceValue('maxOrderQuantity') > 0)){
+							maxQty = dw.system.Site.current.getCustomPreferenceValue('maxOrderQuantity');
+						} 
+						if(!empty(pdict.Product.custom.maxOrderQuantity) && pdict.Product.custom.maxOrderQuantity > 0){
+							maxQty = pdict.Product.custom.maxOrderQuantity;
+						} 
+						</isscript>
+						<div class="col-sm-4 col-md-3">
+							<div class="product-price-block demo-empty">
+								<isif condition="${!empty(totalPrice)}">
+									<span class="form-label">${Resource.msg('giftbuilder.total','product',null)}</span> <span class="product-price">$<isprint value="${totalPrice}"/></span>
+								<iselse>
+									<span class="form-label">${Resource.msg('giftbuilder.total','product',null)}</span> <span class="product-price">$0</span>
+								</isif>
+							</div>
+						</div>
+						<iscomment>add to cart submit</iscomment>
+						<isset name="cartAction" value="add" scope="page"/>	
+						<isif condition="${pdict.CurrentHttpParameterMap.uuid.stringValue}">
+							<input type="hidden" name="uuid" id="uuid" value="${pdict.CurrentHttpParameterMap.uuid.stringValue}" />
+							<isset name="cartAction" value="update" scope="page"/>
+						</isif>
+						<isif condition="${source}">
+							<input type="hidden" name="source" id="source" value="${source}" />
+						</isif>
+						<isif condition="${plid}">
+							<input type="hidden" name="productlistid" id="productlistid" value="${plid}" />
+						</isif>
+						<input type="hidden" name="cartAction" id="cartAction" value="${cartAction}" />					
+						<input type="hidden" name="pid" id="pid" value="${pid}" />
+						<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+						<input type="hidden" name="page" value="pdp" />
+						<div class="col-sm-8 col-md-9">
+							<button data-pid="${pid}" id="add-to-cart-gift" type="submit" title="${buttonTitle}" value="${buttonTitle}" class="btn btn-primary btn-lg btn-block button-fancy-large dd-to-cart-gift" <isif condition="${(!empty(gCounter) && gCounter <3) || maxQuantityStatus}">disabled</isif>>${buttonTitle}</button>
+							<isapplepay sku="${pdict.Product.ID}"></isapplepay>
+						</div>
+						<iscomment> Custom limit msg </iscomment>						
+					</div>
+					<isif condition="${!empty(pdict.Product.custom.qtyMsg)}">
+						<div class="help-block"><isprint value="${StringUtils.pad(pdict.Product.custom.qtyMsg,36)}"/></div>
+					<iselse>
+						<div class="help-block"></div>
+					</isif>
+					<isif condition="${maxQuantityStatus}"> 
+						<div class="alert alert-danger add-to-bag-alert" role="alert">${Resource.msg('giftbuilder.maximumqty','product',null)}</div>	
+					<iselse>
+						<div class="alert alert-danger add-to-bag-alert" role="alert" style="display: none;" id="qtyError"></div>	
+					</isif>
+
+				<iselse>
+					<isscript>
+					var pvm = pdict.Product.getVariationModel();
+					var it = pvm.getProductVariationAttributes().iterator();
+					var array = [];
+					var options = '';
+					var requiredOptions = '';
+					while (it.hasNext()) {
+						var text = it.next();
+						array.push(text.displayName);
+					}
+					options = array.join(', ');
+					var lastIndex = options.lastIndexOf(',');
+					if (lastIndex > 0 && options.length > 1 && array.length > 1) {
+						requiredOptions = options.substr(0,lastIndex) + ' ' + Resource.msg('product.attributedivider', 'product', null) + options.substr(lastIndex+1, options.length);
+					} else {
+						requiredOptions = options;
+					}
+					var buttonTitleDisabledSelectVariation = StringUtils.format(Resource.msg('product.missingval','product', null), requiredOptions);
+					</isscript>
+					<iscomment> Notify Modal </iscomment>
+					<div class="row">
+					<div class="product-not-available">
+					<h2>
+						<isif condition="${(Product.custom.oosProductStatus.value == 'comingsoon')}">
+							${Resource.msg('global.comingsoon', 'locale', null)}
+						<iselse/>
+							<isif condition="${(pdict.Product.custom.oosProductStatus.value == 'comingsoon')}">
+								${Resource.msg('global.comingsoon', 'locale', null)}
+							<iselse>
+								${Resource.msg('global.outofstock', 'locale', null)}
+							</isif>
+						</isif>
+					</h2>
+							<div class="product-not-available-text notify-me"><a href="#" data-toggle="modal" data-target="#notify-me-modal"> ${Resource.msg('global.notifyme', 'locale', null)}</a></div>
+					</div>					
+					</div>				
+				</isif>			
+				
+			</fieldset>
+		</form>
+	<isif condition="${!isQuickView}">
+		<iscomment>
+			product actions
+			=============================================================
+		</iscomment>
+		
+		<iscomment>
+		product promotions and marketing banner
+		=============================================================
+		</iscomment>
+		<isset name="showTieredPrice" value="${false}" scope="page"/>
+		<isinclude template="product/components/promotions"/>	
+		
+		<iscomment>Display use it with module</iscomment>
+		<isif condition="${!empty(pdict.Product.custom.upsellDisplay.value) && pdict.Product.custom.upsellDisplay.value == 'ppage' || pdict.Product.custom.upsellDisplay.value == 'both'}"> 		
+			<isif condition="${!empty(pdict.Product.custom.pairsWith)}">
+				<isinclude url="${URLUtils.url('Product-ProductTile','pid',pdict.Product.custom.pairsWith,'page','productuseitwith')}">
+			</isif>
+		</isif>
+		<iscomment>This is ugly, but it works until we can get a better solution</iscomment>
+		<isif condition="${pdict.GetImages}">
+			<div id="update-images" style="display:none">
+				<iscomment> Mobile Section </iscomment>
+				<iscomment>Added mobile div to this ugly code</iscomment>
+				<div class="product-summary-mobile">
+					<isprint value="${marketingFlags}" encoding="off"/>
+					<isprint value="${productNameSlot}" encoding="off"/>
+					<div class="product-price-block">
+						<isset name="showTieredPrice" value="${true}" scope="page"/>
+						<isinclude template="product/components/pricing"/>
+					</div>
+				</div>		
+				<isinclude template="product/components/productimages"/>
+			</div>
+		</isif>
+		<isif condition="${pdict.updateVariantContent}">
+			<div id="update-content" style="display:none">
+				<isinclude url="${URLUtils.url('Product-GetProductContent','pid', pdict.Product.ID)}">				
+			</div>
+		</isif>	
+	<iselse>
+		<isif condition="${pdict.GetImages}">
+			<div id="update-images" style="display:none">
+				<iscomment> Mobile Section </iscomment>
+				<iscomment>Added mobile div to this ugly code</iscomment>
+				<div class="product-summary-mobile">
+					<isprint value="${marketingFlags}" encoding="off"/>
+					<isprint value="${productNameSlot}" encoding="off"/>
+					<div class="product-price-block">
+						<isset name="showTieredPrice" value="${true}" scope="page"/>
+						<isinclude template="product/components/pricing"/>
+					</div>
+				</div>		
+				<isinclude template="product/components/productimages"/>
+			</div>
+		</isif>
+	</isif>
+</isif>

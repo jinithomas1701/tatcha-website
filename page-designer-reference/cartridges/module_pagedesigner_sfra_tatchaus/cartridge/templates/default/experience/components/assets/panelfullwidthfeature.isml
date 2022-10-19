@@ -1,0 +1,33 @@
+<iscache type="relative" hour="24"/>
+<div class="panel-fullwidth-feature container-fluid container-fluid-max container-flush">
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> style="background-color: ${pdict.bgColor}" class="${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''} panel-fullwidth-feature row no-gutters <isif condition="${pdict.desktopLayout === 'Text Left - Image Right'}">flex-row-reverse</isif>">
+	
+	<div class="col-12 col-md-6 panel-image">
+		<img data-src="${pdict.desktopImage.src.desktop}" height="960" width="720" class="img-fluid lazyImage" alt="${pdict.imageAlt}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}"/>
+	</div>
+	<div class="col-12 col-md-6">
+		<div class="${pdict.textColor != 'White' ? 'black-text': 'white-text'} text-container">
+			<h2>
+				<isif condition="${!empty(pdict.overline)}">
+					<div class="pre-header">
+						<isprint value="${pdict.overline}" />
+					</div>
+				</isif>
+				<isif condition="${!empty(pdict.mainHeading)}">
+					<div class="title">
+						<isprint value="${pdict.mainHeading}" />
+					</div>
+				</isif>
+			</h2>
+			<isif condition="${!empty(pdict.body)}">
+				<p>
+					<isprint value="${pdict.body}" />
+				</p>
+			</isif>
+			<isif condition="${!empty(pdict.buttonText)}">
+					<a class="btn ${pdict.textColor != 'White' ? 'btn-outline-dark': 'btn-outline-light'}" href="${pdict.url}">${pdict.buttonText}</a>
+			</isif>
+		</div>
+	</div>
+</div>
+</div>

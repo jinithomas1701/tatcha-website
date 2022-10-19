@@ -1,0 +1,116 @@
+<isdecorate template="application/MenuFrame">
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isinclude template="components/header" />
+<isinclude template="bm/util/sorModules"/>
+<isset name="client" value="${request.httpParameterMap.client.stringValue}" scope="page" />
+<isset name="listID" value="${request.httpParameterMap.sid.stringValue}" scope="page" />
+<isset name="formAction" value="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', listID, 'client', client, 'action', 'updateCreditCardSave')}" scope="page" />
+
+<div id="editCard">
+    <a id="backbutton" class="button button--right" href="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', listID, 'client', client, 'action', 'view', 'section', 'payment')}">
+       &#171; ${Resource.msg('forms.sorsubscriptions.backTo.label', 'sor_forms', null)}
+        ${Resource.msg('forms.sorsubscriptions.subscriptionDetails.label', 'sor_forms', null)}
+    </a>
+
+    <div class="sor-module sor-module__subscription-details">
+        <div class="order-section">
+            <div class="content-section">
+                <isif condition="${pdict.options.procesor == pdict.options.PAYMENTPROCESSOR.CYBERSOURCE || pdict.options.procesor == pdict.options.PAYMENTPROCESSOR.BASIC || pdict.options.procesor == pdict.options.PAYMENTPROCESSOR.BRAINTREE}">
+                    <form action="${formAction}" method="post">
+                        <table class="sor-table sor-module__subscription_table ">
+                            <tr class="sor-module__filters-row">
+                                <td>
+                                    <h3 class="order-section-title"> ${Resource.msg('forms.sorsubscriptions.updatecard', 'sor_forms', null)}</h3>
+                                </td>
+                            </tr>
+                                <isif condition="${pdict.options.canUpdateAll}">
+                                    <tr class="sor-table__member">
+                                        <td>
+                                            <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.updatecard.type}" type="select" />
+                                        </td>
+                                    </tr>
+                                    <tr class="sor-table__member">
+                                        <td>
+                                            <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.updatecard.number}" type="input" dynamicname="true" />
+                                        </td>
+                                    </tr>
+                                </isif>
+                                <tr class="sor-table__member">
+                                    <td>
+                                        <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.updatecard.expiration.month}" type="select" />
+                                    </td>
+                                </tr>
+                                <tr class="sor-table__member">
+                                    <td>
+                                        <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.updatecard.expiration.year}" type="select" />
+                                    </td>
+                                </tr>
+                        </table>
+                        <input class="button button--right confirm_btn" type="submit" value="${Resource.msg('forms.sorsubscriptions.confirm.label', 'sor_forms', null)}" name="${pdict.CurrentForms.cancelationfee.save.htmlName}"/>
+                    </form>
+                <iselseif condition="${pdict.options.procesor == pdict.options.PAYMENTPROCESSOR.ADYEN}" />
+                    <table class="sor-table sor-module__subscription_table card-choose-table">
+                        <tr class="sor-module__filters-row">
+                            <td>
+                                <h3 class="order-section-title"> ${Resource.msg('forms.sorsubscriptions.choosecard', 'sor_forms', null)}</h3>
+                            </td>
+                        </tr>
+                        <tr>
+                            <isif condition="${empty(pdict.options.savedCreditCards)}">
+                                <td>
+                                    ${Resource.msg('club.vieworder.nocard', 'sor_smartorderrefill', null)}
+                                </td>
+                            </isif>
+                            <isloop items="${pdict.options.savedCreditCards}" var="savedCreditCard" status="loopstatus">
+                                <td>
+                                    <form action="${formAction}" method="post">
+                                        <table class="card-choose">
+                                            <tr>
+                                                <td>${Resource.msg('smartorderrefill.paymentview.cardType', 'smartorderrefill', null)}</td>
+                                                <td>
+                                                    ${savedCreditCard.creditCardType}
+                                                    <input type="hidden" name="${pdict.CurrentForms.updatecard.type.htmlName}" value="${savedCreditCard.creditCardType}">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>${Resource.msg('smartorderrefill.paymentview.cardNumber', 'smartorderrefill', null)}</td>
+                                                <td>
+                                                    ${savedCreditCard.creditCardNumber}
+                                                    <input type="hidden" name="${pdict.CurrentForms.updatecard.number.htmlName}" value="${savedCreditCard.creditCardNumber}">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>${Resource.msg('smartorderrefill.paymentview.expirationMonth', 'smartorderrefill', null)}</td>
+                                                <td>
+                                                    ${savedCreditCard.creditCardExpirationMonth}
+                                                    <input type="hidden" name="${pdict.CurrentForms.updatecard.expiration.month.htmlName}" value="${savedCreditCard.creditCardExpirationMonth}">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>${Resource.msg('smartorderrefill.paymentview.expirationYear', 'smartorderrefill', null)}</td>
+                                                <td>
+                                                    ${savedCreditCard.creditCardExpirationYear}
+                                                    <input type="hidden" name="${pdict.CurrentForms.updatecard.expiration.year.htmlName}" value="${savedCreditCard.creditCardExpirationYear}">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <input class="button button--right confirm_btn" type="submit" value="${Resource.msg('forms.sorsubscriptions.confirm.label', 'sor_forms', null)}" name="${pdict.CurrentForms.cancelationfee.save.htmlName}"/>
+                                                    <input type="hidden" name="${pdict.CurrentForms.updatecard.token.htmlName}" value="${savedCreditCard.creditCardToken}">
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </form>
+                                </td>
+                            </isloop>
+                        </tr>
+                    </table>
+                </isif>
+            </div>
+        </div>
+    </div>
+</isdecorate>
+<isinclude template="components/footer" />

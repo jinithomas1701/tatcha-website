@@ -1,0 +1,130 @@
+//search lading page & no search results page styles
+
+@import "tatcha-custom";
+@import "tatcha-variables-utils";
+@import "node_modules/bootstrap/scss/mixins";
+
+//search page promo
+.search-promo-container{
+	width: 100%;
+	padding-bottom: 10px;
+    h2{
+    	margin-top: 4rem;
+    	@include media-breakpoint-down(sm){
+    		margin-top: 75px;
+		}
+    	text-align: center;
+    	font-size: 18px;
+    	font-weight: 300;
+    }
+    .vsa-subtitle{
+    	color: $text-black;
+    	display: block;
+    	margin-top: 14px;
+        text-transform: none;
+    	text-align: center;
+    }
+    .vsa-block-content{
+    	margin-top: 17px !important;
+    	position: relative;
+    	border: none !important;
+    	box-shadow: none !important;
+    	background-color: white !important;
+    	margin-bottom: 20px !important;
+    	.promo-container{
+    		box-shadow: 0 2px 4px 0 rgba(0,0,0,0.10);
+			border-radius: 8px;
+			border: 1px solid #f7f9fa;
+    	}
+
+    	img{
+			border-radius: 8px;
+		}
+    	.vsa-main-block{
+    		.vsa-heading{
+    			margin-top: 2rem !important;
+    			padding: 0 2rem;
+    			@include media-breakpoint-down(sm){
+    				margin-top: 1.25rem !important;
+    				padding: 0 1.25rem;
+				}
+    		}
+    		.vsa-cta-block{
+    			padding-bottom: 16px;
+    			min-height: 64px;
+    			margin-top: 21px;
+    			.vsa-cta{
+	    			text-align: center;
+    			}
+    		}
+    		h2{
+    			margin-top: 0;
+    		}
+    	}
+    }
+}
+
+
+.nohits-main{
+	.container {
+		@include media-breakpoint-up(xl){
+			max-width: 1260px;
+		}
+		@include media-breakpoint-up(xxl){
+			max-width: 1300px;
+		}
+	}
+	.vsa-block-content{
+		background-repeat: no-repeat;
+		background-position: center;
+		background-size: cover;
+		margin-bottom: 20px;
+		img{
+			@include media-breakpoint-down(sm){
+				border-radius: 8px;
+			}
+		}
+		.vsa-main-block{
+				position:absolute;
+				top:0;
+				left:50%;
+				transform:translate(-50%);
+				width:100%;
+				padding: 0 15px 0 15px;
+				.vsa-heading{
+					h2{
+						font-size: 17px;
+						letter-spacing: 1px;
+						font-weight: 400;
+						margin-top: 20px;
+						font-family: 'minion-pro', serif;
+						@include media-breakpoint-up(lg){
+							font-size: 24px;
+						}
+					}
+				.vsa-subtitle{
+					font-size: 14px;
+					@include media-breakpoint-up(lg){
+						font-size: 16px;
+					}
+				}
+			}
+			.vsa-cta-block{
+				button{
+					font-size: 12px;
+					padding: .45rem .75rem;
+				}
+			}
+		}
+	}
+}
+
+.search-tabs .search-promo-container{
+	padding-left: 0;
+    padding-right: 0;
+    h2{
+    	@include media-breakpoint-down(sm){
+    		margin-top: 2rem;
+		}
+    }
+}

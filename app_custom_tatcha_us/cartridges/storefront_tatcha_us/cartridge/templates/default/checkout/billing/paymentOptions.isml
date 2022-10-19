@@ -1,0 +1,109 @@
+<isinclude template="braintree/checkout/clientSideJsAndCss" />
+<div class="braintree-billing-payment-wrap"
+     data-billing-form-fields-names="${JSON.stringify(pdict.braintree.sfraBillingFormFieldsNames)}">
+</div>
+
+<isif condition="${pdict.order.totals.nonGcAmount == 0.0}">
+     <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="${pdict.order.totals.gcPaymentMethodId}" >
+</isif>
+<isset name="selectedCountry" value="${pdict.order.billing.billingAddress.address ? pdict.order.billing.billingAddress.address.countryCode : ''}" scope="page"/>
+<isset name="countriesList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('CountriesList'))}" scope="page"/>
+<isset name="provinceList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('provinceList'))}" scope="page"/>
+
+<isif condition="${!empty(dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput'))}">
+    <isset name="countryArrayList" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput')}" scope="page" />
+<iselse/>
+    <isset name="countryArrayList" value="${'AU|BR|ET|DE|IN|MX|FM|MM|NG|PW|SD'}" scope="page" />
+</isif>
+<input type="hidden" id="countryWithState" value="${countryArrayList}"/>
+<isset name="stateUsStyle" value="style='display:none'" scope="page" />
+<isset name="stateCaStyle" value="style='display:none'" scope="page" />
+<isset name="stateTextStyle" value="style='display:none'" scope="page" />
+
+<isif condition="${!empty(selectedCountry) && selectedCountry.value === 'US'}">
+	<isset name="stateUsStyle" value="required" scope="page" />
+<iselseif condition="${!empty(selectedCountry) && selectedCountry.value === 'CA'}">
+	<isset name="stateCaStyle" value="required" scope="page" />
+<iselse>
+	<isif condition="${!empty(selectedCountry) && countryArrayList.indexOf(selectedCountry.value) > -1}">
+		<isset name="stateTextStyle" value="required" scope="page" />
+	<iselse>
+		<isset name="stateTextStyle" value="style='display:none'" scope="page" />
+	</isif>
+</isif>
+
+<isif condition="${(!empty(selectedCountry) && countryArrayList.indexOf(selectedCountry.value) > -1) || (!empty(selectedCountry) && selectedCountry.value === 'US') ||  (!empty(selectedCountry) && selectedCountry.value === 'CA')}">
+	<isset name="labelHide" value="" scope="page" />
+	<isset name="postalWidthClass" value="${'col-md-6'}" scope="page" />
+<iselse>
+	<isset name="labelHide" value="${'d-none'}" scope="page" />
+	<isset name="postalWidthClass" value="${'col-12'}" scope="page" />
+</isif>
+
+<isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
+    <isif condition="${paymentOption.ID === 'CREDIT_CARD'}">
+        <!-- Credit Card -->
+        <div class="credit-payment d-flex align-items-start">
+            <span>
+                <input type="radio" class="d-none" id="is-CREDIT_CARD" name="payment" aria-label="Select if payment1">
+                <label class="mb-0 mt-1 creditcard-payment-selector <isif condition="${pdict.order.totals.nonGcAmount == 0.0}"> disabled-state </isif>" for="is-CREDIT_CARD" tabindex="0">
+                    <span class="sr-only">Pay with credit card Select</span>
+                    <i class="fa fa-check-circle"></i>
+                    <i class="fal fa-circle"></i>
+                </label>
+            </span>
+            <span class="payment-text <isif condition="${pdict.order.totals.nonGcAmount == 0.0}"> disabled-state </isif>">Pay with credit card <i class="fas fa-lock"></i></span>
+        </div>
+
+        <div class="creditcard-pay" id="creditcardCollapse">
+            <isif condition="${pdict.order.totals.nonGcAmount != 0.0}">
+                <isinclude template="braintree/checkout/creditcardContent" />
+                <isinclude template="checkout/billing/billingForm"/>
+            </isif>
+        </div>
+    </isif>
+
+    <!-- AfterPay Payment-->
+    <iscomment>Show afterpay ineligible message if there is auto delivery items in the cart</iscomment>
+    <isif condition="${pdict.hasAutoDeliveryProduct && paymentOption.ID === 'AFTERPAY_PBI' && !pdict.hasOnlyGiftCertificate}">
+        <div class="installment-payment d-flex align-items-start">
+            <span class="disabled-state afterpay-input-radio">
+                <input type="radio" class="d-none" id="is-AFTERPAY_PBI" name="payment" aria-label="Select Afterpay payment method">
+                <label class="mb-0 mt-1" for="is-AFTERPAY_PBI">
+                    <i class="fa fa-check-circle"></i>
+                    <i class="fal fa-circle"></i>
+
+                </label>
+            </span>
+            <div>
+                <span class="payment-text disabled-state">Pay with Afterpay</span>
+                <p class="afterpay-notavailable-msg payment-text disabled-state">${Resource.msg('billing.afterpay.autodelivery', 'checkout', null)}</p>
+            </div>
+        </div>
+    </isif>
+
+    <isif condition="${paymentOption.ID === 'AFTERPAY_PBI' && !pdict.hasAutoDeliveryProduct && !pdict.hasOnlyGiftCertificate}">
+        <div class="afterpay-container ${(pdict.showAfterpayPayment === true) ? '' : 'd-none'}">
+            <div class="installment-payment d-flex align-items-start">
+                <span>
+                    <input type="radio" class="d-none" id="is-AFTERPAY_PBI" name="payment" aria-label="Pay in 4 interest-free installments with afterpay">
+                    <label class="mb-0 mt-1 afterpay-payment-selector <isif condition="${pdict.order.totals.nonGcAmount == 0.0 || pdict.hasGCPI}"> disabled-state </isif>" for="is-AFTERPAY_PBI" aria-labelledby="Pay in 4 interest-free installments with afterpay" tabindex="0">
+                        <span class="sr-only">Pay with Afterpay Select</span>
+                        <i class="fa fa-check-circle"></i>
+                        <i class="fal fa-circle"></i>
+                    </label>
+                </span>
+                <div>
+                    <span class="payment-text <isif condition="${pdict.order.totals.nonGcAmount == 0.0 || pdict.hasGCPI}"> disabled-state </isif>">Pay with Afterpay</span>
+                    <isif condition="${pdict.order.totals.nonGcAmount == 0.0 || pdict.hasGCPI}"><p class="afterpay-gift-msg payment-text disabled-state" id="afterpay-gift-msg">${Resource.msg('billing.afterpay.giftcard', 'checkout', null)}</p></isif>
+                </div>
+            </div>
+            <div class="panel-section checkout-afterpay-block" id="containerAfterPay"  style="display: none;">
+                <isinclude template="checkout/billing/paymentOptions/afterpayContent" />
+            </div>
+        </div>
+    </isif>
+
+</isloop>
+
+

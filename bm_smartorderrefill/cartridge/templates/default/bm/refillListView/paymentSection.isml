@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="order-section payment-section visualy-hidden">
+    <div class="content-section">
+        <isset name="credit" value="${pdict.currentCreditCard}" scope="page"/>
+        <table class="sor-table">
+            <tr class="sor-module__titles-row">
+                <td>${Resource.msg('smartorderrefill.paymentview.cardNumber', 'smartorderrefill', null)}</td>
+                <isif condition="${!empty(credit.number)}" >
+                    <td class="label-col">${credit.number}</td>
+                </isif>
+            </tr>
+            <tr class="sor-module__titles-row">
+                <td>${Resource.msg('smartorderrefill.paymentview.cardType', 'smartorderrefill', null)}</td>
+                <isif condition="${!empty(credit.type)}" >
+                    <td class="label-col">${credit.type}</td>
+                </isif>
+            </tr>
+            <tr class="sor-module__titles-row">
+                <td>${Resource.msg('smartorderrefill.paymentview.expirationMonth', 'smartorderrefill', null)}</td>
+                <isif condition="${credit.expMonth}" >
+                    <td class="label-col">${credit.expMonth} </td>
+                </isif>
+            </tr>
+            <tr class="sor-module__titles-row">
+                <td>${Resource.msg('smartorderrefill.paymentview.expirationYear', 'smartorderrefill', null)}</td>
+                <isif condition="${credit.expYear}" >
+                    <td>${credit.expYear}</td>
+                </isif>
+            </tr>
+            <td class="label-col">
+                <a class="button updateCard" href="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', pdict.ProductList.ID, 'client', pdict.ProductList.customerNo, 'action', 'updateCreditCard')}">
+                    <isif condition="${credit.procesor == 'ADYEN_CREDIT'}">
+                        ${Resource.msg('smartorderrefill.paymentview.addcard','smartorderrefill',null)}
+                    <iselse/>
+                        ${Resource.msg('smartorderrefill.paymentview.edit','smartorderrefill',null)}
+                    </isif>
+                </a>
+            </td>
+        </table>
+    </div>
+</div>

@@ -1,0 +1,110 @@
+<iscache type="relative" hour="24"/>
+<div class="container ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+	<div class="featureset3-container row m-top t-large">
+		<div class="col-md-3 feature-set-block">
+			<isif condition="${!empty(pdict.set1desktopimage) && !empty(pdict.set1desktopimage.src.desktop)}">
+				<div class="feature-icon">
+					<img data-src="${pdict.set1desktopimage.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="img-fluid lazyImage" alt="${pdict.set1imageAlt}" height="300" width="300"/>
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set1heading)}">
+				<div class="heading">
+					<isprint value="${pdict.set1heading}" />
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set1body)}">
+				<p class="content">
+					<isprint value="${pdict.set1body}" />
+				</p>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set1linktext) && !empty(pdict.set1linkurl)}">
+				<div class="featureset-link">
+					<a href="${pdict.set1linkurl}" class="btn btn-link">${pdict.set1linktext}</a>
+				</div>
+			</isif>
+			
+		</div>
+		<div class="col-md-3 feature-set-block">
+			<isif condition="${!empty(pdict.set2desktopimage) && !empty(pdict.set2desktopimage.src.desktop)}">
+				<div class="feature-icon">
+					<img data-src="${pdict.set2desktopimage.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="img-fluid lazyImage" alt="${pdict.set2imageAlt}" height="300" width="300" />
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set2heading)}">
+				<div class="heading">
+					<isprint value="${pdict.set2heading}" />
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set2body)}">
+				<p class="content">
+					<isprint value="${pdict.set2body}" />
+				</p>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set2linktext) && !empty(pdict.set2linkurl)}">
+				<div class="featureset-link">
+					<a href="${pdict.set2linkurl}" class="btn btn-link">${pdict.set2linktext}</a>
+				</div>
+			</isif>
+			
+		</div>
+		<div class="col-md-3 feature-set-block">
+			<isif condition="${!empty(pdict.set3desktopimage) && !empty(pdict.set3desktopimage.src.desktop)}">
+				<div class="feature-icon">
+					<img data-src="${pdict.set3desktopimage.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="img-fluid lazyImage" alt="${pdict.set3imageAlt}" height="300" width="300"/>
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set3heading)}">
+				<div class="heading">
+					<isprint value="${pdict.set3heading}" />
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set3body)}">
+				<p class="content">
+					<isprint value="${pdict.set3body}" />
+				</p>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set3linktext) && !empty(pdict.set3linkurl)}">
+				<div class="featureset-link">
+					<a href="${pdict.set3linkurl}" class="btn btn-link">${pdict.set3linktext}</a>
+				</div>
+			</isif>
+			
+		</div>
+		
+		<div class="col-md-3 feature-set-block">
+			<isif condition="${!empty(pdict.set4desktopimage) && !empty(pdict.set4desktopimage.src.desktop)}">
+				<div class="feature-icon">
+					<img data-src="${pdict.set4desktopimage.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="img-fluid lazyImage" alt="${pdict.set4imageAlt}" height="300" width="300" />
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set4heading)}">
+				<div class="heading">
+					<isprint value="${pdict.set4heading}" />
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set4body)}">
+				<p class="content">
+					<isprint value="${pdict.set4body}" />
+				</p>
+			</isif>
+			
+			<isif condition="${!empty(pdict.set4linktext) && !empty(pdict.set4linkurl)}">
+				<div class="featureset-link">
+					<a href="${pdict.set4linkurl}" class="btn btn-link">${pdict.set4linktext}</a>
+				</div>
+			</isif>
+			
+		</div>
+	</div>
+</div>

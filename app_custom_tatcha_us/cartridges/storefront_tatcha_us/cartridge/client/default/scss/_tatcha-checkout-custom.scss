@@ -1,0 +1,451 @@
+$brand-primary: $tatcha-luminous !default; // #337ab7
+
+input[name="orderID"], input[name="orderToken"] {
+    display: none;
+}
+
+.billing-address {
+    display: block;
+}
+
+.error-message {
+    display: none;
+}
+
+span.ship-to-name,
+span.ship-to-address1,
+span.ship-to-address2,
+span.ship-to-phone,
+span.ship-to-city-st-zip {
+    display: block;
+}
+
+.data-checkout-stage {
+    // Initial states ------------------------
+    &[data-checkout-stage] {
+        .payment-summary,
+        .shipping-summary {
+            display: none;
+        }
+
+        button.place-order {
+            display: none;
+        }
+
+        button.submit-payment,.disabled-po {
+            display: none;
+        }
+
+        button.submit-shipping,.disabled-s-po,.disabled-pay {
+            display: none;
+        }
+    }
+
+    // Customer ------------------------------
+    &[data-checkout-stage=customer] {
+        .ghost.customer {
+            display: none;
+        }
+
+        .customer-summary {
+            display: none;
+        }
+
+        .shipping-section {
+            display: none;
+        }
+
+        .payment-form {
+            display: none;
+        }
+
+        button.submit-customer {
+            display: block;
+        }
+    }
+
+    // Shipping ------------------------------
+    &[data-checkout-stage=shipping] {
+        // .card.customer-section {
+        //     display: none;
+        // }
+
+        // button.submit-customer {
+        //     display: none;
+        // }
+
+        // .card.ghost.customer {
+        //     display: none;
+        // }
+
+        // .card.ghost {
+        //     display: none;
+        // }
+
+        &.multi-ship .order-product-summary {
+            display: none;
+        }
+
+        .payment-form {
+            display: none;
+        }
+
+        button.submit-shipping,.disabled-s-po,.disabled-pay {
+            display: block;
+        }
+
+        .shipment-selector-block {
+            .btn-show-details,
+            .btn-add-new {
+                border: none;
+            }
+        }
+
+        [data-address-mode=customer] {
+            .shipping-address-block {
+                display: none;
+            }
+        }
+
+        [data-address-mode=shipment] {
+            .shipping-address-form {
+                display: none;
+            }
+        }
+
+        [data-address-mode=edit] {
+            .shipping-address-block {
+                display: none;
+            }
+        }
+
+        [data-address-mode=new] {
+            .btn-show-details,
+            .btn-add-new {
+                display: none;
+            }
+        }
+    }
+
+    // Payment -------------------------------
+    &[data-checkout-stage=payment] {
+        button.submit-customer {
+            display: none;
+        }
+        .customer-section,
+        .shipping-section,
+        .ghost {
+            display: none;
+        }
+
+        .payment-form,
+        .shipping-summary {
+            display: block;
+        }
+
+        button.submit-payment,.disabled-po {
+            display: block;
+        }
+
+        .address-selector-block {
+            .btn-show-details,
+            .btn-add-new {
+                border: none;
+            }
+        }
+
+        [data-address-mode=customer] {
+            .billing-address {
+                display: none;
+            }
+        }
+
+        [data-address-mode=shipment] {
+            .billing-address {
+                display: none;
+            }
+        }
+
+        [data-address-mode=edit] {
+            .billing-address {
+                display: block;
+            }
+        }
+
+        [data-address-mode=new] {
+            .btn-show-details,
+            .btn-add-new {
+                display: none;
+            }
+        }
+
+        [data-address-mode=details] {
+            .btn-show-details,
+            .btn-add-new {
+                display: none;
+            }
+        }
+    }
+
+    // Place Order -----------------------------
+    &[data-checkout-stage=placeOrder] {
+        button.submit-customer,
+        .customer-section,
+        .shipping-section,
+        .payment-form,
+        .ghost {
+            display: none;
+        }
+
+        .payment-button{
+            border-top: 0px;
+        }
+
+        .payment-summary,
+        .shipping-summary {
+            display: block;
+        }
+
+        button.place-order {
+            display: block;
+        }
+    }
+
+    &[data-checkout-stage=submitted] {
+        .shipping-section.contactCollapseItem,
+        .shipping-form,
+        .payment-form,
+        button.submit-customer,
+        .ghost {
+            display: none;
+        }
+
+        .summary-section-label.shipping-addr-label {
+            display: none;
+        }
+
+        .payment-summary,
+        .shipping-summary {
+            display: block;
+        }
+
+        button.place-order {
+            display: none;
+        }
+    }
+
+    option[value=new] {
+        display: none;
+    }
+
+    h5 > span {
+        font-size: 0.8em;
+    }
+}
+
+[data-customer-type=guest] .single-shipping .shipment-selector-block {
+    display: none;
+}
+
+.single-shipping .multi-ship-action-buttons {
+    display: none;
+}
+
+.single-shipping .view-address-block {
+    display: none;
+}
+.disabled-pay,.disabled-po,.disabled-s-po{
+    .outer-section-inner{
+        opacity: 0.5;
+    }
+}
+.redirect-text {
+    text-align: center;
+    margin-top: 2.1875em;
+    font-size: 1.375em;
+}
+
+
+// Credit card field styles
+.creditcard-pay {
+    .form-control {
+        border-radius: 4px;
+        color: $text-black;
+        font-size: 1rem;
+        font-weight: $font-weight-normal;
+    }
+}
+.credit-card-field{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+}
+
+.credit-card-field {
+    &::placeholder {
+        color: $gray-700;
+
+    }
+}
+
+#creditcard_container {
+    .braintree-addcard {
+        &:hover {
+            background-color: $gray-700;
+        }
+    }
+}
+
+.payment-method-braintree {
+    .invalid-feedback {
+        margin-top:1rem;
+    }
+
+    #card-image {
+        position: absolute;
+        top: 9px;
+        right: 1em;
+        width: 44px;
+        height: 28px;
+        background-image: url(../images/icons/payment_cards.png);
+        background-size: 86px 458px;
+        border-radius: 4px;
+        background-position: -100px 0;
+        background-repeat: no-repeat;
+        margin-bottom: 1em;
+        &.visa {
+            background-position: 0 -398px;
+        }
+        &.master-card {
+            background-position: 0 -281px;
+        }
+        &.american-express {
+            background-position: 0 -370px;
+        }
+        &.discover {
+            background-position: 0 -163px;
+        }
+        &.maestro {
+            background-position: 0 -251px;
+        }
+        &.jcb {
+            background-position: 0 -221px;
+        }
+        &.diners-club {
+            background-position: 0 -133px;
+        }
+    }
+
+}
+
+//loader
+
+.loader {
+    .loader-centering {
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    &.loader-fullpage {
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        z-index: 9999;
+        top: 0
+    }
+    &.loader-show-nav {
+        height: 100%;
+        width: 100%;
+        position: fixed;
+        z-index: 1029;
+        .loader-centering {
+            top: 30%;
+        }
+    }
+    &.loader-preventive {
+        background-color: rgba(247,249,250, 0.9); // $gray-100
+    }
+    &.loader-content {
+        background-color: $gray-100;
+    }
+    .loader-text {
+        text-align: center;
+        font-size: 1 * $font-size-base;
+        text-transform: uppercase;
+        color: $brand-primary;
+        color: $gray-700;
+    }
+}
+
+.loader .loader-animation,
+.loader .loader-animation:after {
+    border-radius: 50%;
+    width: 10em;
+    height: 10em;
+}
+.loader .loader-animation {
+    margin: $g-unit auto;
+    font-size: 4px;
+    position: relative;
+    text-indent: -9999em;
+    border-top: 1.45em solid rgba(104,91,199, 0.2);
+    border-right: 1.45em solid rgba(104,91,199, 0.2);
+    border-bottom: 1.45em solid rgba(104,91,199, 0.2);
+    border-left: 1.45em solid $brand-primary;
+    border-top: 1.45em solid rgba(134, 145, 150, 0.4);
+    border-right: 1.45em solid rgba(134, 145, 150, 0.4);
+    border-bottom: 1.45em solid rgba(134, 145, 150, 0.4);
+    border-left: 1.45em solid $gray-700;
+    -webkit-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-animation: load8 1.1s infinite linear;
+    animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+@keyframes load8 {
+    0% {
+        -webkit-transform: rotate(0deg);
+        transform: rotate(0deg);
+    }
+    100% {
+        -webkit-transform: rotate(360deg);
+        transform: rotate(360deg);
+    }
+}
+.giftbox-eligibility {
+    color: rgb(220, 53, 69);
+    font-size: 14px;
+    padding: 1rem 0px;
+    .giftbox-circle {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 5px;
+    }
+    .giftbox-msg {
+        display: inline-block;
+        width: 90%;
+        font-weight: 300;
+    }
+}
+
+.has-error .form-control {
+    border-color: #b82e67 !important;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075); }
+.has-error .form-control:focus {
+    border-color: #8f2450;
+    box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 6px #db709d; }
+
+
+[data-checkout-stage=payment] .contact-info-submitted .otgiftcard {
+        display: none;
+    }
+

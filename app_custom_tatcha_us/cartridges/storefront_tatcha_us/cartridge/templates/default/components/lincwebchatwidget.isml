@@ -1,0 +1,49 @@
+<!--- TEMPLATENAME: lincwebchatwidget.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+    var Site = require('dw/system/Site');
+    var lincPublicID = Site.getCurrent().getCustomPreferenceValue('LincPublicID');
+    var lincWebchatURL = Site.getCurrent().getCustomPreferenceValue('LincWebchatURL');
+</isscript>
+<script type="text/javascript">
+    var lincprddata = document.getElementById("lincWidgetProductData")? document.getElementById("lincWidgetProductData").value: '';
+    window.lincWebChatAsyncInit = function() {
+        LincWebChat.init({
+            "publicId": "${lincPublicID}",
+            "locale": "en-US",
+            "shopperEmail": "${((typeof lincWidgetData != 'undefined')&& lincWidgetData.shopperEmail)? lincWidgetData.shopperEmail : ''}",
+            "pageContext": {
+                "pageCategory": "${((typeof lincWidgetData != 'undefined') && lincWidgetData.pageCategory)? lincWidgetData.pageCategory : ''}",
+                "productsInfo": lincprddata
+            }
+        });
+    };
+    var loadOnce = false;
+    function handleStart() {
+        if (loadOnce) {
+            return;
+        }
+        loadOnce = true;
+        if ('ontouchstart' in window) {
+            window.removeEventListener("touchstart", handleStart);
+        } else {
+            window.removeEventListener("mousemove", handleStart);
+        }
+
+        (function(d, s, id) {
+            var js, ljs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) { return; }
+            js = d.createElement(s); js.id = id;
+            js.src = "${lincWebchatURL}";
+            ljs.parentNode.insertBefore(js, ljs);
+        }(document, "script", "linc-web-chat-js"));
+    }
+
+    if ('ontouchstart' in window) {
+        window.addEventListener("touchstart", handleStart);
+    } else {
+        window.addEventListener("mousemove", handleStart);
+    }
+</script>
+
+<div class="linc-web-chat" />

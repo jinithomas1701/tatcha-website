@@ -1,0 +1,27 @@
+<div class="modal gwp-sample-product-container tatcha-gwp-gift-modal" id="gwpbonusModal" data-removecouponlineitem="${pdict.actionUrls.removeCouponLineItem}" data-couponlineitemuuid="${pdict.editGwpProducts ? pdict.editGwpProducts.gwpCouponUUID : ''}" data-addtocarturl="${URLUtils.url('CartSFRA-AddBonusProducts')}" data-uuid="${pdict.editGwpProducts ? pdict.editGwpProducts.uuid : ''}" tabindex="-1" role="dialog" aria-labelledby="gwpSampleLabel" aria-hidden="true" >
+	<div class="ajax-loader">
+            <img src="${URLUtils.staticURL('/images/loading-progress-98x22.gif')}" class="loader-img">
+     </div>
+    <div id="bonus-product-list-options" data-options=''></div>
+        <div class="modal-content" style="height: 100%">
+             <div class="samples-title">
+        		<span class="samples-back-icon">
+            		<i class="fas fa-arrow-left"></i>
+        		</span>
+    		</div>
+            <div class="modal-body container-fluid samples-modal" style="overflow-y: auto; overflow-x: hidden;" data-uuid="">
+                <div class="row no-gutters modal-body-content sample-products">
+                </div>
+            </div>
+            <div class="samples-action">
+                <span class="product-count gwp-sample-count gwp-sample-name">
+                    <span class="gwp-selected d-inline">0</span>/<span class="gwp-max-select d-inline"></span>
+                        Selected
+                    </span>
+                <div class="">
+                    <div class="selected-bonus-products"></div>
+                    <button class="btn btn-primary w-100 sample-submit gwp-add-products add-bonus-products" data-url="${URLUtils.url('CartSFRA-AddBonusProducts')}" data-success-url="${typeof successUrl !== 'undefined' ? URLUtils.url(successUrl): ''}" type="button">Done</button>
+                </div>
+            </div>
+        </div>
+</div>

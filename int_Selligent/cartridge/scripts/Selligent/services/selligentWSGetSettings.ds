@@ -1,0 +1,30 @@
+importPackage( dw.svc );
+importPackage( dw.net );
+importPackage( dw.io );
+
+
+ServiceRegistry.configure("SelligentGetSettings", {             
+     createRequest: function (svc:SOAPService) {    
+     	svc.setServiceClient(webreferences2.ECommerceProxy.getDefaultService());     	
+		var requestObject = "";
+		return requestObject;
+ 	 },
+    
+     parseResponse : function (svc:SOAPService, listOutput) {
+	 },
+
+     /**
+	 * Initialises the webservice object parsed from the given WSDL File
+	 */
+	 initServiceClient: function(svc:SOAPService, json) {
+       	svc.setServiceClient(webreferences2.ECommerceProxy.getDefaultService());
+
+	},
+	/**
+	 * Call the service and return the response.
+	 *
+	 */
+	execute: function(svc:SOAPService, request) {
+		return svc.serviceClient.uploadSettings();
+	}
+ });

@@ -1,0 +1,31 @@
+<div class="mb-0 collapsed paymentCollapseItem payment-form" data-toggle="collapse" data-target="#paymentCollapse" aria-expanded="true" aria-controls="collapseOne">
+    <span class="outer-section" tabindex="0">
+        <div class="section-heading outer-section-inner" tabindex="-1">2. Payment
+            <a href="#paymentCollapse" class="text-primary float-right edit-payment-section d-none" aria-label="Edit payment">Edit</a>
+        </div>
+    </span>
+</div>
+
+
+<div class="payment-form payment-sec">
+    <form autocomplete="on" class="billing-payment-sec" method="POST" action="${URLUtils.url('CheckoutServices-SubmitPayment')}"
+        data-address-mode="${!pdict.order.billing.billingAddress.address ? 'new' : 'edit'}"
+        <isprint value=${pdict.forms.billingForm.attributes} encoding="off" /> novalidate>
+
+        <isinclude template="components/giftcertificate/giftcertificateredemption" />
+
+        <!-------------------------------------------------------------------------->
+        <!-- Payment Options                                                      -->
+        <!-------------------------------------------------------------------------->
+        <fieldset class="payment-container">
+            <isinclude template="checkout/billing/paymentOptions" />
+        </fieldset>
+    </form>
+</div>
+
+<isif condition="${customer.authenticated && pdict.braintree.creditCardConfig.customerSavedCreditCards.length > 0}">
+    <isinclude template="checkout/billing/billingAddCardModal" />
+</isif>
+<isinclude template="components/giftcertificate/giftcertificatemodal"/>
+
+

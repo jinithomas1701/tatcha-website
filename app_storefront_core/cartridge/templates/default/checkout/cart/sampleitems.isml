@@ -1,0 +1,89 @@
+<!--- TEMPLATENAME: sampleitems.isml --->
+<iscomment>Bonus discount line items</iscomment>
+<isscript>
+var Site = require('dw/system/Site');
+var samplePromoID = Site.getCurrent().getCustomPreferenceValue('samplePromotionID');
+</isscript>
+<isloop items="${pdict.Basket.bonusDiscountLineItems}" var="bonusDiscountLineItem" status="loopstate">
+	<iscomment>Display appropriate text based on status of bonus discount and number of selected bonus products.</iscomment>
+	<isif condition="${bonusDiscountLineItem.getPromotion().ID != samplePromoID}"><iscontinue/></isif>
+	<isif condition="${bonusDiscountLineItem.getBonusProductLineItems().size() > 0}">
+		<isif condition="${bonusDiscountLineItem.getMaxBonusItems() > 1}">
+			<isset name="bonusButtonText" value="${Resource.msg('cart.editsamples','checkout',null)}" scope="page" />
+		<iselse/>
+			<isset name="bonusButtonText" value="${Resource.msg('cart.editsamples','checkout',null)}" scope="page" />
+		</isif>
+	<iselse/>
+		<isif condition="${bonusDiscountLineItem.getMaxBonusItems() > 1}">
+			<isset name="bonusButtonText" value="${Resource.msg('cart.addsamples','checkout',null)}" scope="page" />
+		<iselse/>
+			<isset name="bonusButtonText" value="${Resource.msg('cart.addsamples','checkout',null)}" scope="page" />
+		</isif>
+	</isif>
+	
+	<div class="product-samples-select">
+		<div class="samples-banner">
+		<div class="container-fluid">
+		 <div class="row d-none d-md-flex">
+		  <div class="col-md-8">
+		  <div class="d-flex justify-content-between">
+			<div class="samples-header">
+				<isif condition="${bonusDiscountLineItem.getBonusProductLineItems().size() === bonusDiscountLineItem.getMaxBonusItems()}"> 
+					<isprint value="${Resource.msg('cart.samples','checkout',null)}" />
+				<iselse>
+					<isprint value="${bonusDiscountLineItem.getPromotion().getCalloutMsg()}" encoding="off"/>
+				</isif>
+			</div>
+			<div class="banner-images"><img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/cart/samples.png')}" alt="Add three free samples" class="img-fluid"> </div>
+		  </div>
+		  </div>
+			<div class="col-md-4 d-flex flex-column justify-content-center">
+				<a role="button" class="add-sample-btn btn btn-outline-dark mx-auto bonusModalLink" aria-label="${bonusButtonText}" id="bonusModalLink" href="${URLUtils.url('Product-GetBonusProducts','bonusDiscountLineItemUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false, 'pageSize',10, 'pageStart', 0, 'bpTotal', -1, 'format', 'ajax', 'usetatchamodal', true)}">
+					<isprint value="${bonusButtonText}" />
+				</a>
+			</div>
+		  </div>
+		  
+		  <div class="d-flex justify-content-between d-md-none p-2">
+		  <div>
+		  	<div class="samples-header"><div><isprint value="${bonusDiscountLineItem.getPromotion().getCalloutMsg()}" encoding="off"/></div></div>
+			
+			<a role="button" class="add-sample-btn btn btn-outline-dark mx-auto bonusModalLink" aria-label="${bonusButtonText}" id="bonusModalLinkSm" href="${URLUtils.url('Product-GetBonusProducts','bonusDiscountLineItemUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false, 'pageSize',10, 'pageStart', 0, 'bpTotal', -1, 'format', 'ajax', 'usetatchamodal', true)}">
+				<isprint value="${bonusButtonText}" />
+			</a>
+		 </div>
+			<div class="banner-images"><img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/cart/samples.png')}" alt="Add three free samples" class="img-fluid"> </div>
+		  </div>
+		  	
+		</div>
+		</div>	
+		<iscomment>
+			Display the selected bonus products for this bonus discount line item.
+			This requires looping through all form items and matching by UUID.
+	
+			Note: we display these bonus products outside of any shipment even
+			though each one is contained in a shipment. This display does not make
+			sense in multiple-shipment scenario.
+		</iscomment>
+		
+	</div>
+	<iscomment>Done looping selected bonus products.</iscomment>
+</isloop>
+<iscomment>Done looping selected bonus discount line items.</iscomment>
+
+<!-- Samples Modal HTML -->
+<div id="bonusModal" class="modal fade modal-primary modal-tatcha-samples modal-promotion modal-fullscreen tatcha-samples">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Content will be loaded here from "remote.php" file -->
+        </div>
+    </div>
+</div>
+<!-- GWP Modal HTML -->
+<div id="gwpbonusModal" class="modal fade modal-primary modal-promotion modal-fullscreen tatcha-gwp-gift-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <!-- Content will be loaded here from "remote.php" file -->
+        </div>
+    </div>
+</div>

@@ -1,0 +1,95 @@
+{
+  "name": "Text only Title",
+  "description": "Text only title section",
+  "group": "assets",
+  "attribute_definition_groups": [
+  	{
+  	  "id": "anchor",
+      "name": "Anchor Id",
+      "description": "The anchor Id for the content",
+      "attribute_definitions": [
+  		{
+  	      "id": "anchorid",
+  	      "name": "Anchor Id",
+  	      "type": "string",
+  	      "required": false
+  		}
+	  ]
+  	},
+  	{
+      "id": "overline",
+      "name": "Overline",
+      "description": "The overline values for the content.",
+      "attribute_definitions": [
+        {
+          "id": "overline",
+          "name": "Overline",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "heading",
+      "name": "Heading",
+      "description": "The heading values for the content.",
+      "attribute_definitions": [
+        {
+          "id": "title",
+          "name": "Title",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "body",
+      "name": "Body",
+      "description": "The body values for the content.",
+      "attribute_definitions": [
+        {
+          "id": "body",
+          "name": "Body",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margins for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

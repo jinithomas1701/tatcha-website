@@ -1,0 +1,113 @@
+.product-list-slider {
+    margin-left: 20px;
+    padding-bottom: 30px;
+    @include media-breakpoint-up(lg) {
+        margin-left: auto;
+        margin-right: auto;
+        max-width: 832px;
+        padding-bottom: 0;
+    }
+    @include media-breakpoint-up(xl) {
+        max-width: 1113px;
+    }
+    @include media-breakpoint-up(xxl) {
+        max-width: 1396px;
+    }
+    &__cell {
+        width: 250px;
+        margin-right: 20px;
+        background-color: $white;
+        padding: 2px;
+        @include media-breakpoint-up(lg) {
+            width: 263px;
+        }
+    }
+    &__image {
+        height: 246px;
+        width: 246px;
+        margin: 0 auto;
+    }
+    &__link {
+        color: $black;
+        display: block;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    &__header {
+        font-size: 1rem;
+        margin-top: 0.5rem;
+        margin-bottom: 0;
+    }
+    &__title {
+        display: block;
+        line-height: 18px;
+        font: {
+            size: rem-calc(14);
+            weight: 600;
+        };
+        @include media-breakpoint-up(sm) {
+            font-size: rem-calc(15);
+            line-height: 20px;
+        }
+    }
+    &__subtitle {
+        display: block;
+        line-height: 18px;
+        margin-top: 3px;
+        font: {
+            size: rem-calc(13);
+            weight: 300;
+        };
+        @include media-breakpoint-up(sm) {
+            font-size: rem-calc(14);
+            line-height: 20px;
+        }
+    }
+    &__cta {
+        a {
+            text-decoration: none;
+        }
+        @include media-breakpoint-up(md) {
+            .btn {
+                padding-top: .5rem;
+                padding-bottom: .5rem;
+            }
+        }
+    }
+    .reviews-ratings-link {
+        display: flex;
+        margin-top: .8rem;
+        margin-bottom: 1rem;
+        height: 20px;
+    }
+    .flickity-prev-next-button {
+        display: none;
+        @include media-breakpoint-up(md) {
+            display: block;
+        }
+        &.previous {
+            left: -60px;
+        }
+        &.next {
+            right: -60px;
+        }
+    }
+    .flickity-page-dots {
+        bottom: 0;
+        .dot {
+            border: 1px solid #000;
+            opacity: 1;
+            margin: 0 6px;
+            &:not(.is-selected) {
+                background: transparent;
+            }
+        }
+    }
+    .yotpo .star-clickable {
+        outline: 0;
+        &:focus {
+            box-shadow: 0 0 0 1pt #a68bb6;
+        }
+    }
+}

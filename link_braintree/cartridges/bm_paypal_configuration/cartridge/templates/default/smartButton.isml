@@ -1,0 +1,100 @@
+<div class="row">
+    <form class="col-6" id="smartbutton-config-form" action="${URLUtils.url('PaypalConfig-SaveSmartButton')}"
+        data-smart-styles="${pdict.savedSmartStyles}">
+        <div class="alert alert-success ${pdict.savedSBLocation ? 'show' : 'fade'}" id="smart-button-alert-message" role="alert">
+            <isif condition="${pdict.savedSBLocation}">
+                 <h5>${Resource.msgf('smartbutton.saved.title', 'paypalbmconfiguration', null, pdict.savedSBLocation)} </h5>
+            </isif>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                    <h3><span class="badge badge-secondary">${Resource.msgf('smartbutton.locationbutton.title', 'paypalbmconfiguration', null)}</span><h3>
+                <select class="form-control" name="location" id="location_button">
+                    <option>${Resource.msgf('smartbutton.locationbutton.option.billing', 'paypalbmconfiguration', null)}</option>
+                    <isif condition="${pdict.cartButtonEnabled}">
+                        <option>${Resource.msgf('smartbutton.locationbutton.option.cart', 'paypalbmconfiguration', null)}</option>
+                    </isif>
+                    <isif condition="${pdict.minicartButtonEnabled}">
+                        <option>${Resource.msgf('smartbutton.locationbutton.option.minicart', 'paypalbmconfiguration', null)}</option>
+                    </isif>
+                    <isif condition="${pdict.pdpButtonEnabled}">
+                        <option>${Resource.msgf('smartbutton.locationbutton.option.pdp', 'paypalbmconfiguration', null)}</option>
+                    </isif>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="color_button">${Resource.msgf('smartbutton.color.title', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="color" id="color_button">
+                    <option>${Resource.msgf('smartbutton.color.option.gold', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.color.option.blue', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.color.option.black', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.color.option.white', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.color.option.silver', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="shape_button">${Resource.msgf('smartbutton.shape.title', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="shape" id="shape_button">
+                    <option>${Resource.msgf('smartbutton.shape.option.rect', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.shape.option.pill', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+         <div class="form-row">
+            <div class="form-group col-6">
+                <label for="layout_button">${Resource.msgf('smartbutton.layout.title', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="layout" id="layout_button">
+                    <option>${Resource.msgf('smartbutton.layout.option.vertical', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.layout.option.horizontal', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="label">${Resource.msgf('smartbutton.label.title', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="label" id="label">
+                    <option>${dw.web.Resource.msgf('smartbutton.label.option.checkout', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.label.option.paypal', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.label.option.buynow', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.label.option.pay', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('smartbutton.label.option.installment', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="tagline_button">${Resource.msgf('smartbutton.tagline.title', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="tagline" id="tagline_button">
+                    <option value="false">${Resource.msgf('smartbutton.tagline.option.false', 'paypalbmconfiguration', null)}</option>
+                    <option value="true" >${Resource.msgf('smartbutton.tagline.option.true', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group col-6">
+            <label for="height_formControlRange">${Resource.msgf('smartbutton.height.title', 'paypalbmconfiguration', null)}</label>
+            <div class="input-group mb-3">
+                 <div class="input-group-prepend">
+                    <span class="input-group-text">${Resource.msgf('smartbutton.max.height', 'paypalbmconfiguration', null)}</span>
+                </div>
+                <input type="number" min="25" max="55" id="height__formControlNumber" class="form-control" aria-describedby="minNumber">
+                <div class="input-group-append">
+                    <span class="input-group-text">${Resource.msgf('smartbutton.min.height', 'paypalbmconfiguration', null)}</span>
+                </div>
+            </div>
+            <input type="range" name="heightFormControlRange" class="form-control-range" list="height__tickmarks" min="25" max="55" step="1" id="height__formControlRange">
+            <datalist id="height__tickmarks">
+                <option value="25" label="25"></option>
+                <option value="35"></option>
+                <option value="45"></option>
+                <option value="55" label="55"></option>
+            </datalist>
+        </div>
+        </br>
+        <button type="submit" class="btn btn-primary">${Resource.msgf('smartbutton.button.title', 'paypalbmconfiguration', null)}</button>
+    </form>
+    <div class="paypal-cart-button col-6"></div>
+</div>

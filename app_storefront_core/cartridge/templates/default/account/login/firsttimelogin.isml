@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account">
+<isscript> 
+				var CustomerMgr =require('dw/customer/CustomerMgr'); 
+				var useremail = pdict.CurrentForms.login.username.htmlValue;
+				var Customerobj =CustomerMgr.getCustomerByLogin(useremail); 
+				var customerName =	Customerobj.profile.firstName; 
+				if(!empty(Customerobj.profile)){
+					pdict.CurrentSession.custom.userExist = true;
+				}
+				var firstLogin = Customerobj.profile.lastLoginTime;
+			</isscript>
+<div class="my-account my-account-reset-password">
+	
+<div class="checkout-platform-xfer" style="display: block;">
+					<h1 class="text-center">Welcome back, <isprint value="${customerName}" />!</h1>
+					<div class="account-standard">
+						<div class="row">
+						<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+						<div class="alert alert-default text-center">
+							<h3><isprint value="${Resource.msg('account.login.logininclude.checkoutnewwelcome','account',null)}" /></h3>
+							<p><strong><isprint value="${Resource.msg('account.login.logininclude.checkoutnewwelcometext1','account',null)}" /></strong></p>
+							<p></p>
+							<div class="row">
+								<div class="col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
+								<form action="${URLUtils.url('Account-PasswordResetForm')}" method="post" name="PasswordResetForm" id="PasswordResetForm">
+									<input type="hidden" value="${useremail}" name= "${pdict.CurrentForms.requestpassword.email.htmlName}"/>
+									<button type="submit" class="btn btn-default btn-lg btn-block m-top m-btm demo-success" value="${Resource.msg('account.passwordreset.button','account',null)}" name="${pdict.CurrentForms.requestpassword.send.htmlName}">
+										<isprint value="${Resource.msg('account.passwordreset.button','account',null)}" />
+									</button>
+									<input name='${pdict.CurrentForms.requestpassword.send.htmlName}' type='hidden' />
+									<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+								</form>
+							</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+	
+</isdecorate>

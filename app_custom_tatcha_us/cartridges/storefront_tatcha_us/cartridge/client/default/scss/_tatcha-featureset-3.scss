@@ -1,0 +1,39 @@
+.featureset3-container{
+    text-align: center;
+    .feature-icon{
+        img{
+            width: 75px;
+    		height: 75px;
+            margin-bottom:16px;
+        }
+    }
+    .heading{
+        font-weight: $font-weight-bold;
+        font-size: 1rem;
+        margin-bottom:8px;
+    }
+    .featureset-link{
+        a{
+            color: $text-black;
+            text-transform: uppercase;
+            text-decoration: underline;
+            font-size: 0.875 * $font-size-base;
+            &:hover{
+                color: $text-black;
+            }
+        }
+    }
+    .contnet{
+        margin-bottom: 1rem;
+    }
+    .feature-set-block{
+        @include media-breakpoint-down(md) {
+            padding-bottom: 32px;
+        }
+        @include media-breakpoint-up(md) {
+            padding-bottom: 0;
+        }
+
+
+    }
+}

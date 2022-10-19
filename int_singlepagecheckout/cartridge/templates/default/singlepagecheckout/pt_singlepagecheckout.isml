@@ -1,0 +1,42 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'Checkout',
+			type: 'checkout',
+			ns: 'checkout'
+		};
+		var Site = require('dw/system/Site');
+		var headerText = Site.getCurrent().getCustomPreferenceValue('CheckoutHeaderText');		
+	</isscript>
+	<isinclude template="components/header/htmlhead_checkout_bs"/>
+	<isinclude template="checkout/pt_checkout_UI"/>	
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/bootstrap-checkout.css')}"/>
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/tatcha-extension-checkout.css')}"/>
+</head>
+
+<body class="tatcha-standard">   
+	<isinclude template="singlepagecheckout/components/header/spcheader"/> 
+     
+	<main class="checkout-page">
+		<isinclude template="components/browsertoolscheck"/>
+		<isreplace/>
+	</main>
+
+
+	<isif condition="${dw.system.Site.current.getCustomPreferenceValue('enableGTM')}">
+		<isinclude template="googletagmanager/googletagmanager"/>
+	</isif>
+	<isinclude template="util/reporting/ReportUserRegistration.isml"/>
+	<isinclude template="product/components/modalslegal"/>
+	<isinclude template="components/footer/footer_checkout_UI"/>
+	<isinclude template="checkout/pt_checkout_VARS"/>
+	<script src="${URLUtils.staticURL('js/checkout/app.js')}"></script> 
+</body>
+</html>

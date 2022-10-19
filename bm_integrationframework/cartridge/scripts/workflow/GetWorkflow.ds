@@ -1,0 +1,26 @@
+/**
+* Demandware Script File
+* @input  LibWorkflow : Object
+* @input  SiteId : String
+* @input  WorkflowDefinitionId : String
+* @input  PlannedStart : String
+* @output Workflow : Object the workflow
+*
+*/
+importPackage( dw.system );
+importScript('workflow/libWorkflowUI.ds');
+
+/**
+ * The main function.
+ * 
+ * @param args : PipelineDictionary The pipeline dictionary.
+ * 
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+function execute( args : PipelineDictionary ) : Number
+{
+	var libWorkflowUI = new LibWorkflowUI();
+	args.Workflow = libWorkflowUI.getSingleWorkflow(args.LibWorkflow, args.SiteId, args.WorkflowDefinitionId, args.PlannedStart);
+
+    return PIPELET_NEXT;
+}

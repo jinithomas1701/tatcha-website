@@ -1,0 +1,87 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isinclude template="util/modules.isml" />
+
+<isif condition="${!empty(pdict.CurrentCustomer.profile.addressBook.addresses)}">
+	<iscomment>addresses are sorted, preferred first, than alphabetic </iscomment>
+	<isif condition="${pdict.Status != null && pdict.Status.isError()}"> 
+		<iscomment>Use the error code value to build an appropriate error message </iscomment>
+		<span class="form-error">
+			<isprint value="${Resource.msg('addressdetails.' + pdict.Status.code, 'account',null)}" />
+		</span> 
+	</isif> 
+	<isloop items="${pdict.CurrentCustomer.profile.addressBook.addresses}" 	var="address" status="loopstate">
+		 <isscript> 
+		 	var isDefault = !empty(pdict.CurrentCustomer.profile.addressBook.preferredAddress) && (pdict.CurrentCustomer.profile.addressBook.preferredAddress.ID == address.ID); 
+			var cssClass = "address-tile ";
+			if (isDefault) { cssClass+=" default"; }
+		 </isscript>
+
+		<isif condition="${!isDefault}">
+			<div class="card card-panel data-group address-list">
+				<div class="card-body card-split">
+					<div class="card-body-main">
+						<isminiaddress p_address="${address}" />
+					</div>
+					<div class="card-action">
+						<a href="#" class="icon-default icon-action" data-toggle="modal" data-target="${'#myModal-' + address.UUID}">
+							<i class="fal fa-times fa-lg"></i>
+						</a>
+					</div>
+				</div>
+
+				<div class="card-footer">
+					<a href="${URLUtils.url('Address-Edit','AddressID', address.ID)}"
+						title="${Resource.msg('account.addressbook.addressinclude.edit.label','account',null)}"
+						class="btn btn-outline-secondary btn-sm edit-address btn-address-book">
+						<isprint value="${Resource.msg('global.edit','locale',null)}" /> </a>
+					<isif condition="${!isDefault}"> <a
+						href="${URLUtils.url('Address-SetDefault','AddressID', address.ID)}"
+						class="btn btn-outline-secondary btn-sm btn-address-book">
+						<isprint value="${Resource.msg('account.addressbook.editaddress.makedefaultaddress','account',null)}" />
+					</a> </isif>
+				</div>
+			</div>
+		</isif>
+		
+		<!-- Modal -->
+		<div class="modal fade modal-primary" id="${'myModal-' + address.UUID}"
+			tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"
+							aria-label="Close">
+							<i class="fal fa-times"></i>
+						</button>
+						<h4 class="modal-title" id="myModalLabel">
+							<strong>Are you sure?</strong>
+						</h4>
+					</div>
+					<div class="modal-body">
+						<p>
+							<em>Please confirm the deletion of this address:</em>
+						</p>
+						<p class="address-block">
+							<isminiaddress p_address="${address}" />
+						</p>
+						<p>
+							<strong>Please note:</strong> Deleting this address will not delete
+							any pending orders being shipped to this address. To ensure
+							uninterrupted delivery of future orders, please update your
+							auto-delivery settings.
+						</p>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-outline-secondary rounded" data-dismiss="modal">Cancel</button>
+		
+						<a href="${URLUtils.url('Address-Delete','AddressID', address.ID)}"
+							title="${Resource.msg('account.addressbook.addressinclude.delete.label','account',null)}"
+							class="btn btn-primary rounded">
+							<isprint value="${Resource.msg('account.addressbook.addressinclude.delete','account',null)}" />
+						</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</isloop>
+</isif>

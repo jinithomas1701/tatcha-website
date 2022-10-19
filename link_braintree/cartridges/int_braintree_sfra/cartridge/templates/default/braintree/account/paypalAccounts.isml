@@ -1,0 +1,39 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    if (pdict.braintree.paypal.isPaypalVaultAllowed) {
+        assets.addJs(pdict.braintree.prefs.clientSdk3PayPalUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3PayPalCheckoutUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+    }
+    </isscript>
+
+<div id="paypalAccountBtLoader" class="braintree-loader-container">
+    <i class="braintree-loader"></i>
+</div>
+<div class="paypal-accounts"
+    data-payment-method-id="${pdict.braintree.prefs.paymentMethods.BRAINTREE_PAYPAL.paymentMethodId}">
+    <isinclude template="braintree/account/paypalAccountsLoop" />
+</div>
+<isif condition="${pdict.braintree.paypal.isPaypalVaultAllowed}">
+    <div class="card-footer card-footer-border text-center">
+        <div class="js_braintree_accountPaypalButton_wrapper" style="display: none">
+            <div id="braintreePayPalAccLoader" class="braintree-loader-container">
+                <i class="braintree-loader"></i>
+            </div>
+            <div class="error" id="paypalAccountErrorContainer"></div>
+
+            <div class="js_braintree_accountPaypalButton"
+                data-braintree-config="${JSON.stringify(pdict.braintree.paypal.paypalAccountButtonConfig)}"
+                data-paypal-account-form-fields="${JSON.stringify(pdict.braintree.paypal.paypalAccountFormFields)}"
+                data-paypal-add-account-handler="${pdict.braintree.paypal.paypalAddAccountHandler}">
+            </div>
+            <input type="hidden" id="csrf_token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+        </div>
+
+        <div class="card-link add-paypal-account"
+            aria-label="${Resource.msg('label.payment.addnewpayment', 'payment', null)}">
+            ${Resource.msg('link.addnew', 'account', null)}
+        </div>
+    </div>
+</isif>

@@ -1,0 +1,26 @@
+
+<iscache type="relative" hour="24" />
+<isif condition="${pdict.Content != null}">
+	<div class="prenav-marketing" style="display: table;width: 100%;">
+		<div id="js-rotating" class="minibar-top-text">
+			<isif condition="${'body' in pdict.Content.custom && pdict.Content.custom.body != null}">
+				<!-- dwMarker="content" dwContentID="${pdict.Content.UUID}" -->
+				<div class="content-asset tatcha-promo-text">										
+					<div class="content-asset-body hidden-xs hidden-sm d-none d-xs-none d-sm-none d-md-block" role="navigation" aria-label="tatcha-promo-block">
+						<isprint value="${pdict.Content.custom.body}" encoding="off"/>
+					</div>
+					<div class="content-asset-mobile-body hidden-md hidden-lg hidden-xl d-md-none d-lg-none d-xl-none d-sm-block">
+						<isif condition="${pdict.Content.custom.mobileBody != null}">
+							<isprint value="${pdict.Content.custom.mobileBody}" encoding="off"/>
+						<iselse>
+							<isprint value="${pdict.Content.custom.body}" encoding="off"/>
+						</isif>
+					</div>			
+				</div>
+				<!-- End content-asset -->
+			<iselse/>
+				${Resource.msg('global.nocontent','locale',null)}
+			</isif>
+		</div>
+	</div>
+</isif>

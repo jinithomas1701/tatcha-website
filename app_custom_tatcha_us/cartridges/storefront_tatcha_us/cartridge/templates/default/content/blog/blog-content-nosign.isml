@@ -1,0 +1,154 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type = "relative" hour = "24">
+<isinclude template="util/modules"/>
+<isset name="DecoratorTemplate" value="content/blog/pt_blog" scope="page"/>
+<isdecorate template="${DecoratorTemplate}">
+	<iscomment> New exposed mobile nav </iscomment>
+	<iscontentasset aid="mobile-exposed-nav"/>
+<div class="container-fluid breadcrumb-container blog-breadcrumb">
+	<ol class="breadcrumb container">
+	  <li><a href="${URLUtils.url('Blog-Show')}" class="blog-back"><i class="fal fa-angle-double-left"></i> T &#9642; House</a></li>
+	</ol>
+</div>
+<isscript>
+	  importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	  var Site = require('dw/system/Site');
+	  var giftBuilderSku = Site.getCurrent().getCustomPreferenceValue('giftBuilderSKU');
+	  var EgiftProduct = Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID');
+</isscript>
+<main class="blog blog-post" tabindex="-1">
+	<isif condition="${pdict.content && pdict.content.custom}">
+		<div class="container">
+			<h2 class="section-anchor"><a href="${URLUtils.url('Search-Blog')}">T &#9642; House</a></h2>
+			<h1><isprint value="${pdict.content.custom.blogTitle}" encoding="off"/></h1>
+			<isif condition="${pdict.content.custom.postHeroImage}">
+			<isset name="blogContentImageUrl" value="${getBlogMediaUrl(pdict.content.custom.postHeroImage,'blogPost')}" scope="page"/>
+				<div class="blog-post-hero-img-container">
+					<img class="blog-post-img img-responsive" alt="${pdict.content.custom.blogTitle}" src="${blogContentImageUrl}" />
+				</div>
+			<iselse>
+				<div class="blog-post-hero-img-container">
+					<img class="blog-post-img img-responsive" alt="${pdict.content.custom.blogTitle}" src="${URLUtils.staticURL('/images/blog-index-placeholder.png')}" />
+				</div>
+			</isif>
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2">
+					<div class="blog-post-body-container">
+						<isprint value="${pdict.content.custom.body}" encoding="off"/>
+					</div>
+					<div class="blog-date">
+						${Resource.msg('blog.post.publish','content',null)} <isprint value="${pdict.content.custom.date.toLocaleDateString('en-us')}" encoding="off"/>
+					</div>
+					<div class="blog-share">
+						<h5>${Resource.msg('blog.post.share-post','content',null)}</h5>
+						<isscript>
+						var browsing = require('app_storefront_controllers/cartridge/scripts/util/Browsing');
+						var shareUrl = session.clickStream.last.host + session.clickStream.last.url;
+						</isscript>
+						<ul class="list-inline">
+							<li>
+								<a aria-label="social-icon-facebook" class="social-icon" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=${shareUrl}" src=sdkpreparse">
+									<i class="fab fa-2x fa-facebook-square"></i>
+								</a>
+							</li>
+							<li>
+								<a aria-label="social-icon-twitter" class="social-icon" href="https://twitter.com/share?url=${shareUrl}" target="_blank">
+									<i class="fab fa-2x fa-twitter-square"></i>
+								</a>
+							</li>
+							<li>
+								<a aria-label="social-icon-pinterest"  class="social-icon" href="http://pinterest.com/pin/create/button/?url=${shareUrl}" data-pin-do="buttonPin" data-pin-config="beside" count-layout="horizontal">
+								    <i class="fab fa-2x fa-pinterest-square"></i>
+								</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</div>
+
+			<iscomment>Carousel</iscomment>
+			<isscript>
+				importScript("int_tatcha_dis:common/GetImageUrl.ds");
+				var Site = require('dw/system/Site');
+				var giftBuilderSku = Site.getCurrent().getCustomPreferenceValue('giftBuilderSKU');
+				var productList : dw.util.ArrayList = [];
+				if (!empty(pdict.content.custom.featuredProducts)) {
+					pdict.content.custom.featuredProducts.forEach(function (productId) {
+						productList.push(dw.catalog.ProductMgr.getProduct(productId));
+					});
+				}
+			</isscript>
+			<isif condition="${!empty(productList)}">
+			   <div class="row">
+			      <div class="col-12">
+			         <!-- Product Carousel -->
+			         <div class="product-merchandise-cross-sell">
+						<isinclude template="content/content_carousel"/>
+			         </div>
+			      </div>
+			   </div>
+			</isif>
+
+
+			<isscript>
+				var relatedStory1, relatedStory2;
+				relatedStory1 = pdict.content.custom.relatedStory1 ? dw.content.ContentMgr.getContent(pdict.content.custom.relatedStory1) : null;
+				relatedStory2 = pdict.content.custom.relatedStory2 ? dw.content.ContentMgr.getContent(pdict.content.custom.relatedStory2) : null;
+			</isscript>
+
+			<isif condition="${!empty(relatedStory1) || !empty(relatedStory2)}">
+				<div class="blog-related-stories">
+					<h2 class="h3">${Resource.msg('blog.post.related-stories','content',null)}</h2 class="h3">
+					<div class="row">
+						<isif condition="${!empty(relatedStory1)}">
+							<div class="col-md-4 offset-lg-2">
+								<a class="blog-index-post" href="${relatedStory1.ID}.html">
+									<isif condition="${relatedStory1.custom.postImage.getURL()}">
+										<div class="blog-post-img-container">
+											<img class="blog-post-img img-responsive" src="${getBlogMediaUrl(relatedStory1.custom.postImage,'blogPost')}" alt="T�House: Beauty Found and Shared">
+										</div>
+									<iselse>
+										<div class="blog-post-img-container">
+											<img class="blog-post-img img-responsive" src="http://via.placeholder.com/556x321/DFE3E6?text=556x321">
+										</div>
+									</isif>
+									<div class="blog-post-description">
+										<h3 class="blog-post-title h2">
+											<isprint value="${relatedStory1.custom.blogTitle}" />
+										</h3>
+									</div>
+								</a>
+							</div>
+						</isif>
+						<isif condition="${!empty(relatedStory2)}">
+							<div class="col-md-4">
+								<a class="blog-index-post" href="${relatedStory2.ID}.html">
+									<isif condition="${relatedStory2.custom.postImage.getURL()}">
+										<div class="blog-post-img-container">
+											<img class="blog-post-img img-responsive lazyImage" data-src="${getBlogMediaUrl(relatedStory2.custom.postImage,'blogPost')}" alt="T�House: Beauty Found and Shared">
+										</div>
+									<iselse>
+										<div class="blog-post-img-container">
+											<img class="blog-post-img img-responsive lazyImage" data-src="http://via.placeholder.com/556x321/DFE3E6?text=556x321">
+										</div>
+									</isif>
+									<div class="blog-post-description">
+										<h3 class="blog-post-title h2">
+											<isprint value="${relatedStory2.custom.blogTitle}" />
+										</h3>
+									</div>
+								</a>
+							</div>
+						</isif>
+					</div>
+				</div>
+			</isif>
+			<div class="blog-bottom">
+				<a href="${URLUtils.url('Blog-Show')}" class="btn btn-default blog-back">Back to T &#9642; House</a>
+			</div>
+		</div>
+	</isif>
+</main>
+
+<iscomment>This content piece must deliver a valid wrapping div!</iscomment>
+</isdecorate>

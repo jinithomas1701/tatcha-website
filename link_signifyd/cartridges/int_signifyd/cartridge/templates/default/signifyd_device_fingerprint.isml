@@ -1,0 +1,1 @@
+<script async type="text/javascript" id="sig-api" data-order-session-id="${require('int_signifyd/cartridge/scripts/service/signifyd').getOrderSessionId()}" src="https://cdn-scripts.signifyd.com/api/script-tag.js"></script>

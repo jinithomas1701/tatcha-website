@@ -1,0 +1,46 @@
+<iscontent type="text/html" charset="UTF-8"/>
+<isinclude template="util/modules"/>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+
+<subject>
+	<isif condition="${!empty(pdict.MailSubject)}">
+		${pdict.MailSubject}
+	<iselse/>
+		<isprint value="${pdict.CurrentForms.contactus.subject.value}"/>
+	</isif>
+</subject>
+
+<head>
+
+</head>
+
+<body>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<td align="center" style="background:#e0e0e0;padding:50px 0;">
+			<center>
+				<table  style="background:#ffffff;border:1px solid #999999;">
+					<tr>
+						<td style="font-size:16pt;font-family:arial;padding:20px 10px;vertical-align:top;">
+						
+							<p style="font-family:georgia;font-size:20px;">Tatcha - Contact us</p>
+							
+							<p>${Resource.msg('contactus.name','email',null)} <isprint value="${pdict.CurrentForms.contactus.fullname.value}"/></p>
+							
+							<p>${Resource.msg('contactus.email','email',null)} <isprint value="${pdict.CurrentForms.contactus.email.value}"/></p>
+							
+							<p>${Resource.msg('contactus.subject','email',null)}<isprint value="${pdict.CurrentForms.contactus.subject.value}"/></p>
+							
+							<p>${Resource.msg('contactus.comment','email',null)}<isprint value="${pdict.CurrentForms.contactus.comment.value}"/></p>
+
+						</td>
+					</tr>
+				</table>						
+			</center>
+		</td>
+	</tr>
+</table>
+
+</body>
+</html>

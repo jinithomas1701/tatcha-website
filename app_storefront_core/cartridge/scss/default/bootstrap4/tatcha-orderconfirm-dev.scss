@@ -1,0 +1,112 @@
+@import "node_modules/bootstrap/scss/functions";
+@import "tatcha-custom";
+@import "node_modules/bootstrap/scss/mixins";
+@import "tatcha-variables-utils";
+.pt_order-confirmation {
+  .optin_description{
+    color:$text-black !important;
+    font-size:16px !important;
+  }
+  .optin_title{
+    font-size:16px !important;
+    line-height:1.4 !important;
+    color:$text-black !important;
+  }
+  .signup-form{
+    label{font-size:14px !important;
+      span{font-size:12px !important;}
+    }
+  }
+  .order-confirm-page .signup-form label{
+    margin-top:2px;
+  }
+  .tatcha-header-nav {
+    .search-form-list {
+      .simple-search-desktop {
+        margin-bottom: 0px;
+        margin-top: 5px;
+      }
+    }
+  }
+}
+.order-confirm-page {
+  .signup-form {
+    .form-row {
+      .form-group {
+        .form-caption {
+          display: none;
+        }
+      }
+    }
+  }
+
+  .shipping-updates-container {
+    .shipping-container-linc {
+      display: block;
+      @media only screen and (min-width: 768px) {
+        display: inline-block;
+      }
+      @media(max-width: 767px){
+        width:69%;
+      }
+      width: 66%;
+      vertical-align: middle;
+    }
+    .shipping-orde-qns {
+      width: 32%;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .vr {
+      height: 80px !important;
+    }
+
+    .optin_info {
+      @media only screen and (max-width: 767.98px) {
+        text-align: center;
+        margin-top: 1rem;
+      }
+    }
+  }
+
+  .sign-up-container {
+    @media only screen and (max-width: 767.98px) {
+      background-image: url('../../images/welcome-email-3-2@2x.png');
+      background-size: cover;
+    }
+  }
+  .sign-up-benefits {
+    width: 100%;
+    @media only screen and (min-width: 768px) {
+      width: 50%;
+    }
+  }
+
+  #extole_zone_confirmation_link {
+    a {
+      display: inline-block;
+      font-weight: $font-weight-normal;
+      color: #F7F9FA;
+      text-align: center;
+      vertical-align: middle;
+      user-select: none;
+      text-transform: uppercase;
+      cursor: pointer;
+      letter-spacing: 1px;
+      background-color: transparent;
+      border: 1px solid #F7F9FA;
+      padding: 0.35rem 0.75rem;
+      font-size: 0.875rem;
+      line-height: 1.4;
+      border-radius: 0.25rem;
+      transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    a:hover {
+      color: #212629;
+      background-color: #F7F9FA;
+      border-color: #F7F9FA;
+      text-decoration: none;
+    }
+
+  }
+}

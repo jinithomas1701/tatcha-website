@@ -1,0 +1,96 @@
+<div class="order-totals">
+
+    <!--- Sub Total --->
+    <div class="d-flex justify-content-between mt-2">
+        <div class="order-property">Merchandise Total</div>
+        <div class="sub-total order-value">${pdict.order.totals.subTotal}</div>
+    </div>
+
+	<div class="merc-disc">
+	    <!--- Discount --->
+	    <isinclude template="checkout/checkoutDiscountsTotalDisplay" />
+	</div>
+
+    <!--- Shipping Cost --->
+    <div class="d-flex justify-content-between mt-2">
+    	<div class="order-property">
+	    	<isif condition="${pdict.order.totals.totalShippingCost && pdict.currentStage !== 'shipping'}">
+	    		Shipping
+	    	<iselse/>
+	    		Estimated Shipping
+	    	</isif>
+        </div>
+        <div class="shipping-total-cost order-value">
+            <isif condition="${pdict.order.totals.getShippingPrices && pdict.order.totals.getShippingPrices.shippingTotalPrice != 0 && pdict.order.totals.getShippingPrices.adjustedShippingTotalPrice != 0}">
+                <isprint value="${pdict.order.totals.getShippingPrices.shippingTotalPriceFormatted}"/>
+                <isif condition="${pdict.order.totals.getShippingPrices.shippingTotalPrice != pdict.order.totals.getShippingPrices.adjustedShippingTotalPrice}">
+                    (<isprint value="${pdict.order.totals.getShippingPrices.adjustedShippingTotalPriceFormatted}"/>)
+                </isif>
+            <iselse/>
+                Free
+            </isif>
+        </div>
+    </div>
+
+    <!--- Sales Tax --->
+    <div class="d-flex justify-content-between mt-2">
+        <div class="order-property">
+            <div class="order-tax">
+                <isif condition="${pdict.order.totals.totalTax && pdict.currentStage !== 'shipping'}">
+                    Tax
+                <iselse/>
+                    Estimated Tax
+                </isif>
+            </div>
+        </div>
+        <div class="tax-total order-value">
+            <isif condition="${pdict.currentStage !== 'shipping'}">
+                ${pdict.order.totals.totalTax}
+            <iselse/>
+                TBD
+            </isif>
+        </div>
+    </div>
+</div>
+<hr class="seperator"/>
+
+<!--- Grand Total --->
+<div class="d-flex justify-content-between estimated-total">
+    <div class="property">
+    	<isif condition="${pdict.currentStage !== 'shipping'}">
+    		Total
+    	<iselse/>
+	    	Estimated Total
+    	</isif>
+    </div>
+    <div class="grand-total-sum value">${pdict.order.totals.grandTotal}</div>
+</div>
+
+
+
+<!--- Commented -->
+
+
+<!--- Order Discount --->
+<iscomment>
+<div class="row leading-lines order-discount <isif condition="${pdict.order.totals.orderLevelDiscountTotal.value === 0}">hide-order-discount</isif>">
+    <div class="col-6 start-lines">
+        <p class="order-receipt-label"><span>${Resource.msg('label.order.discount', 'common', null)}</span></p>
+    </div>
+    <div class="col-6 end-lines">
+        <p class="text-right"><span class="order-discount-total">- ${pdict.order.totals.orderLevelDiscountTotal.formatted}</span></p>
+    </div>
+</div>
+</iscomment>
+
+<!--- Shipping Discount --->
+<iscomment>
+<div class="row leading-lines shipping-discount <isif condition="${pdict.order.totals.shippingLevelDiscountTotal.value === 0}">hide-shipping-discount</isif>">
+    <div class="col-6 start-lines">
+        <p class="order-receipt-label"><span>${Resource.msg('label.shipping.discount', 'common', null)}</span></p>
+    </div>
+    <div class="col-6 end-lines">
+        <p class="text-right"><span class="shipping-discount-total">- ${pdict.order.totals.shippingLevelDiscountTotal.formatted}</span></p>
+    </div>
+</div>
+</iscomment>

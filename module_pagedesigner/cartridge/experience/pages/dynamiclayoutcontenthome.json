@@ -1,0 +1,19 @@
+{
+	"name":"Home - Single Region, Open Layout",
+	"description":"Use layout components to create a custom home page layout",
+	"region_definitions":[
+	  {
+	    "id":"main",
+	    "name":"Main Region",
+	    "component_type_exclusions": [
+	      { "type_id": "assets.productcarouseltile" },
+	      { "type_id": "layouts.productcarousel" },
+	      { "type_id": "einstein.noanchorgrid" },
+	      { "type_id": "einstein.categoryrecommendation" },
+	      { "type_id": "einstein.noanchorrecommendation" },
+	      { "type_id": "einstein.productrecommendation" }
+	    ],
+	    "max_components":16
+	  }
+	]
+}

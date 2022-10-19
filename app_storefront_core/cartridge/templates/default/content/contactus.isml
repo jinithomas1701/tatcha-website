@@ -1,0 +1,76 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/pt_customerservice">
+
+	<isinclude template="util/modules"/>
+	
+	<div class="content content-sidenav">
+		<div class="container">
+			<div class="content-header">
+				<h2 class="section-anchor">${Resource.msg('global.servicecenter','locale',null)}</h2>
+			</div>
+		</div>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-4 col-md-3">
+					<div class="sidenav-nav-block">
+						<isscript>var pageId = !empty(pdict.Content) ? pdict.Content.ID : pdict.pageId;</isscript>
+						<isinclude url="${URLUtils.url('CustomerService-LeftNav', 'pageId', pageId)}"/>
+					</div>
+				</div>
+				<div class="col-sm-8 col-md-7 col-md-offset-1">
+					<isif condition="${!empty(pdict.ConfirmationMessage)}">
+						<div class="alert alert-success add-to-bag-alert">
+							<strong>${Resource.msg('contactus.messagesent','forms',null)}</strong><br/>
+							${Resource.msg('contactus.messagerequires','forms',null)}
+						</div>
+					</isif>
+					<div class="content-body-header">
+						<h1>${Resource.msg('global.contactus','locale',null)}</h1>
+						<form action="${URLUtils.https('CustomerService-Submit')}" method="post" class="contact-us" id="RegistrationForm">
+							<isinputfield formfield="${pdict.CurrentForms.contactus.fullname}" type="input" placeholder="Full Name"/>
+							<isinputfield formfield="${pdict.CurrentForms.contactus.email}" type="email"  placeholder="Email Address"/>
+							
+							<isscript>
+							var Site = require('dw/system/Site');
+	 						var options = JSON.parse(Site.getCurrent().getCustomPreferenceValue('contactus-options'));
+							</isscript>
+							<div class="form-row form-group ">
+								<label for="dwfrm_contactus_subject" class="control-label"><span>${Resource.msg('contactus.subject.label','forms',null)}</span></label>
+								<div class="field-wrapper">
+									<select class="form-control input-select required" id="${pdict.CurrentForms.contactus.subject.htmlName}" name="${pdict.CurrentForms.contactus.subject.htmlName}">
+										<isloop items="${options}" var="option">
+											<option value="${option.value}">${option.label}</option>
+										</isloop>
+									</select>
+								</div>
+								<span class="form-caption help-block"></span>
+							</div>
+							
+							<isscript>
+								var attributes = {
+									rows: 4,
+									cols: 40
+								};
+							</isscript>
+							<isinputfield formfield="${pdict.CurrentForms.contactus.comment}" type="textarea" attributes="${attributes}" />
+							<p><strong><small>All personal information is strictly confidential.</small></strong></p>
+							<div class="row">
+								<div class="col-md-4 col-md-offset-8">
+									<button id="sendBtn" class="btn btn-primary btn-lg btn-block" type="submit" value="${Resource.msg('global.send','locale',null)}" name="${pdict.CurrentForms.contactus.send.htmlName}">
+										${Resource.msg('global.send','locale',null)}
+									</button>
+								</div>
+							</div>
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+						</form>
+						<hr class="m-top-lg m-btm-lg">
+						<div class="content-editor-container">
+							<iscontentasset aid="contactus-details"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</isdecorate>

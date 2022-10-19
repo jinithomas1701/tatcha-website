@@ -1,0 +1,93 @@
+{
+  "name": "Block Text",
+  "description": "Shows Block Text section",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "images",
+      "name": "Image Content",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "desktopImage",
+          "name": "Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "contentfields",
+      "name": "Text Fields",
+      "description": "The Text Fields to show a full width panel component",
+      "attribute_definitions": [
+      	{
+      	  "id": "anchorid",
+          "name": "Anchor Id",
+          "type": "string",
+          "required": true
+      	},
+        {
+          "id": "contentbody",
+          "name": "Text",
+          "type": "string",
+          "required": false
+        },
+        {  
+          "id": "linkurl",
+          "name": "Link URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "linktext",
+          "name": "Link Text",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },    
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+      {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

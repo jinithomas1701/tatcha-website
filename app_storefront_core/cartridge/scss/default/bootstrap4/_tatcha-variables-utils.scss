@@ -1,0 +1,60 @@
+//
+// Tatcha SASS Extended Variables & Utilities *******************
+//
+
+@mixin placeholder {
+    ::-webkit-input-placeholder {@content}
+    :-moz-placeholder           {@content}
+    ::-moz-placeholder          {@content}
+    :-ms-input-placeholder      {@content}  
+  }
+  
+  @mixin desktop-headings {
+      h1, .h1 { font-size: round($font-size-base * 2.75);margin: (2.5 * $font-size-base) 0 (2.5 * $font-size-base); }
+  }
+  
+  @mixin default-container-shadow {
+      -webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.25);
+      -moz-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.25);
+      box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.25);
+  }
+  
+  @mixin light-container-shadow {
+      -webkit-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);
+      -moz-box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);
+      box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.05);
+  }
+  
+  //
+  // EXTENDED VARIABLES *******************
+  //
+  
+  // scale measurement so styles adjust accordingly if there is a font size change.
+  // similar to rems but SASS defined instead of browser
+  // uses 8pt grid methodology in units of 16
+  $g-unit: $font-size-base !default;
+  
+  $background-gray: $gray-100; 
+  
+  $border-default: $gray-400;
+  $border-section: $gray-200;
+  
+  $icon-default: $gray-400;
+  $icon-primary: $primary;
+  $icon-dark: $gray-700;
+  
+  
+  // XL Variables
+  $screen-xl:                  1560px !default;
+  $screen-xl-min:              $screen-xl !default;
+  //** Deprecated `$screen-lg-desktop` as of v3.0.1
+  $screen-xl-desktop:          $screen-xl-min !default;
+  
+  
+  
+  $screen-lg-max:              ($screen-xl-min - 1) !default;
+  
+  $container-xlarge-desktop:      (1500px + $grid-gutter-width) !default;
+  //** For `$screen-lg-min` and up.
+  
+  $container-xl:                 $container-xlarge-desktop !default;

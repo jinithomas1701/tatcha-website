@@ -1,0 +1,1717 @@
+{
+    "step-types": {
+        "script-module-step": [
+            {
+                "@type-id": "custom.CleanUpFiles",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "StandardComponents-CleanUpFiles"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FilePattern",
+                            "@description": "File name pattern (Default is \".*\")",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "DirectoriesToPurge",
+                            "@description": "Directories to purge",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "DirectoriesToArchive",
+                            "@description": "Directories to archive",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "DaysToKeep",
+                            "@description": "Number of days to keep old files",
+                            "@type": "double",
+                            "@required": true,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.DateCondition",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-DateCondition"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "date",
+                            "@description": "Date",
+                            "@type": "date-string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "mode",
+                            "@description": "Mode",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "NOW_BEFORE_X",
+                                    "NOW_AFTER_X"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.DateTimeCondition",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-DateTimeCondition"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "datetime",
+                            "@description": "Date and time",
+                            "@type": "datetime-string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "mode",
+                            "@description": "Mode",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "NOW_BEFORE_X",
+                                    "NOW_AFTER_X"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.Export-Catalog",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralExport-Catalog"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "CatalogID",
+                            "@description": "CatalogID",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FileNamePrefix",
+                            "@description": "File name prefix",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ExportCategories",
+                            "@description": "Export Categories",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ExportCategoryAssignments",
+                            "@description": "Export Category Assignment",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ExportProductOptions",
+                            "@description": "Export Product Options",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ExportProducts",
+                            "@description": "Export Products",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ExportRecommendations",
+                            "@description": "Export Recommendations",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ExportVariationAttributes",
+                            "@description": "Export Variation Attributes",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "OverwriteExportFile",
+                            "@description": "Overwrite export file",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.Export-Order",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralExport-Order"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "orderStatus",
+                            "@description": "Input Order Status",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "All",
+                                    "Confirmed and Paid"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.Export-Pricebook",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralExport-PriceBook"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "PriceBookID",
+                            "@description": "Price Book ID",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FileNamePrefix",
+                            "@description": "File name prefix (for example \"^[\\w\\-]{1,}\\.xml$\"(*.xml))",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "OverwriteExportFile",
+                            "@description": "Overwrite export file",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.Rebuild_indexes",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildIndexes"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ProductIndexes",
+                            "@description": "Rebuild product related search indexes(product, suggest, synonym)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "AvailabilityIndex",
+                            "@description": "Rebuild availability search indexes",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ContentIndex",
+                            "@description": "Rebuild content search indexes",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.RebuildActiveDataIndex",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildActiveDataIndex"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Asynchronous",
+                            "@description": "Asynchronous Indexer-Mode ('False' for Synchronous Index-Mode)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FullRebuild",
+                            "@description": "Full Index-Rebuild ('False' for Incremental Index-Rebuild)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "RebuildAllSites",
+                            "@description": "Index-Rebuild for All Sites ('False' to Rebuild the Indexes only on the Current Site)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.RebuildContentSearchIndex",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildContentSearchIndex"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Asynchronous",
+                            "@description": "Asynchronous Indexer-Mode ('False' for Synchronous Index-Mode)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FullRebuild",
+                            "@description": "Full Index-Rebuild ('False' for Incremental Index-Rebuild)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "RebuildAllSites",
+                            "@description": "Index-Rebuild for All Sites ('False' to Rebuild the Indexes only on the Current Site)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.RebuildProductAvailabilityIndex",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildProductAvailabilityIndex"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Asynchronous",
+                            "@description": "Asynchronous Indexer-Mode ('False' for Synchronous Index-Mode)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FullRebuild",
+                            "@description": "Full Index-Rebuild ('False' for Incremental Index-Rebuild)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "RebuildAllSites",
+                            "@description": "Index-Rebuild for All Sites ('False' to Rebuild the Indexes only on the Current Site)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.RebuildProductSearchIndex",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildProductSearchIndex"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Asynchronous",
+                            "@description": "Asynchronous Indexer-Mode ('False' for Synchronous Index-Mode)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FullRebuild",
+                            "@description": "Full Index-Rebuild ('False' for Incremental Index-Rebuild)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "RebuildAllSites",
+                            "@description": "Index-Rebuild for All Sites ('False' to Rebuild the Indexes only on the Current Site)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.RebuildSearchRedirectIndex",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildSearchRedirectIndex"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Asynchronous",
+                            "@description": "Asynchronous Indexer-Mode ('False' for Synchronous Index-Mode)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FullRebuild",
+                            "@description": "Full Index-Rebuild ('False' for Incremental Index-Rebuild)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "RebuildAllSites",
+                            "@description": "Index-Rebuild for All Sites ('False' to Rebuild the Indexes only on the Current Site)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.RebuildSuggestIndex",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildSuggestIndex"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Asynchronous",
+                            "@description": "Asynchronous Indexer-Mode ('False' for Synchronous Index-Mode)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FullRebuild",
+                            "@description": "Full Index-Rebuild ('False' for Incremental Index-Rebuild)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "RebuildAllSites",
+                            "@description": "Index-Rebuild for All Sites ('False' to Rebuild the Indexes only on the Current Site)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.RebuildSynonymIndex",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-RebuildSynonymIndex"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Asynchronous",
+                            "@description": "Asynchronous Indexer-Mode ('False' for Synchronous Index-Mode)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "FullRebuild",
+                            "@description": "Full Index-Rebuild ('False' for Incremental Index-Rebuild)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "RebuildAllSites",
+                            "@description": "Index-Rebuild for All Sites ('False' to Rebuild the Indexes only on the Current Site)",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.StandardComponents-DownloadFiles",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "StandardComponents-DownloadFiles"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "serverType",
+                            "@description": "Server type",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "FTP",
+                                    "SFTP",
+                                    "WEBDAV"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "serverUrl",
+                            "@description": "Url (e.g. ftp://host.com:port/path)",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "userName",
+                            "@description": "User name",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "password",
+                            "@description": "Password",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "filePattern",
+                            "@description": "File pattern (Regexp. e.g. ^cat.*xml)",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "targetRootFolder",
+                            "@description": "Target Root Folder",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "IMPEX",
+                                    "TEMP",
+                                    "CATALOGS",
+                                    "LIBRARIES",
+                                    "STATIC"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "targetFolder",
+                            "@description": "Target Folder (in IMPEX)",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "deleteFile",
+                            "@description": "Delete File",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "DELETE",
+                                    "KEEP_ON_SERVER",
+                                    "MOVE_TO_ARCHIVE"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "extractArchives",
+                            "@description": "Extract Archives",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "scanRecursively",
+                            "@description": "Scan Recursively",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "createReport",
+                            "@description": "Create Report",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.StandardComponents-Import",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "StandardComponents-Import"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "objectType",
+                            "@description": "Object Type",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "abtestabtest",
+                                    "activedata",
+                                    "catalog",
+                                    "coupon",
+                                    "customer",
+                                    "customergroup",
+                                    "customobject",
+                                    "giftcertificate",
+                                    "inventory",
+                                    "keyvaluemapping",
+                                    "library",
+                                    "pricebook",
+                                    "productlist",
+                                    "promotion",
+                                    "shipping",
+                                    "slot",
+                                    "sourcecode",
+                                    "store",
+                                    "tax"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "workingFolder",
+                            "@description": "Working folder in IMPEX (e.g src/catalog)",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "filePattern",
+                            "@description": "File name pattern (RegExp e.g. ^cat_.*)",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "importMode",
+                            "@description": "Import Mode",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "MERGE",
+                                    "REPLACE",
+                                    "UPDATE",
+                                    "DELETE"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "noFileFoundStatus",
+                            "@description": "Treat 'no files found' as",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "OK",
+                                    "WARN",
+                                    "ERROR"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "importFailedStatus",
+                            "@description": "Treat Import Failed as",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "WARN",
+                                    "ERROR"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "catalogImportConfig",
+                            "@description": "Catalog Import config (JSON) or Key/Value Mapping Name (String)",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "afterProcessAction",
+                            "@description": "Handle file after process",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "DELETE_FILE",
+                                    "KEEP_FILE",
+                                    "ARCHIVE_ZIPPED_WITH_LOGS",
+                                    "ARCHIVE_PLAIN_FILE"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "archiveFolder",
+                            "@description": "Archive folder e.g. (src/archive)",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.StandardComponents-UploadFiles",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "StandardComponents-UploadFiles"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "serverType",
+                            "@description": "Server type",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "FTP",
+                                    "SFTP",
+                                    "WEBDAV"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "serverUrl",
+                            "@description": "Url (e.g. ftp://host.com:port/path)",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "userName",
+                            "@description": "User name",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "password",
+                            "@description": "Password",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "filePattern",
+                            "@description": "File pattern (Regexp. e.g. ^cat.*xml)",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "sourceFolder",
+                            "@description": "Source Folder (in IMPEX)",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "targetFolder",
+                            "@description": "Target Folder",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "deleteFile",
+                            "@description": "Delete File",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "DELETE",
+                                    "KEEP_ON_SERVER"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.TimeCondition",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralComponent-TimeCondition"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "time",
+                            "@description": "Time",
+                            "@type": "time-string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "mode",
+                            "@description": "Mode",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "NOW_BEFORE_X",
+                                    "NOW_AFTER_X"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.Transfer_From_FTP",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralTransfer-FromFtp"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "HostURL",
+                            "@description": "Host URL",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "HostPort",
+                            "@description": "Host Port",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "UserID",
+                            "@description": "User Name",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Password",
+                            "@description": "Password",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "SecureFtp",
+                            "@description": "Type of FTP connection",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "FTP",
+                                    "SFTP"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "FilePattern",
+                            "@description": "Input File pattern to search in local folder(default is \"^[\\w\\-]{1,}\\.xml$\"(*.xml))",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "SourceFolder",
+                            "@description": "Source Folder",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "TargetFolder",
+                            "@description": "Local folder in which files will be placed, relatively to IMPEX/",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "DeleteFile",
+                            "@description": "When file is downloaded, delete or keep it?",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "Delete",
+                                    "Keep on server"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.Transfer_To_FTP",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "GeneralTransfer-ToFtp"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "HostURL",
+                            "@description": "Host URL",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "HostPort",
+                            "@description": "Host Port",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "UserID",
+                            "@description": "User Name",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "Password",
+                            "@description": "Password",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "SecureFtp",
+                            "@description": "Type of FTP connection",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "FTP",
+                                    "SFTP"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "FilePattern",
+                            "@description": "Input File pattern to search in local folder (default is \"^[\\w\\-]{1,}\\.xml$\" (*.xml))",
+                            "@type": "string",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "SourceFolder",
+                            "@description": "Local folder with files, relative to IMPEX/",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "TargetFolder",
+                            "@description": "Remote folder of FTP Server",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "ArchiveFile",
+                            "@description": "When file is uploaded,move it to archive folder?",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "Keep",
+                                    "Move to archive"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "noFileFoundStatus",
+                            "@description": "Treat 'no files found' as",
+                            "@type": "string",
+                            "@required": true,
+                            "@trim": true,
+                            "enum-values": {
+                                "value": [
+                                    "OK",
+                                    "WARN",
+                                    "ERROR"
+                                ]
+                            }
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.Workflow-CleanUp",
+                "module": "bc_integrationframework/cartridge/scripts/workflow/legacy/PipelineStepRunner",
+                "function": "execute",
+                "parameters": {
+                    "parameters": [
+                        {
+                            "@name": "Action",
+                            "@description": "Legacy action of the community suite IF, to be called through the new Step Execution",
+                            "@type": "string",
+                            "@required": "true",
+                            "enum-values": {
+                                "value": [
+                                    "Workflow-CleanUp"
+                                ]
+                            }
+                        },
+                        {
+                            "@name": "Verbose",
+                            "@description": "Enables verbose logging",
+                            "@type": "boolean",
+                            "@required": false,
+                            "@trim": true
+                        },
+                        {
+                            "@name": "workflowMaximumObjectAgeBeforeDeletion",
+                            "@description": "Maximum age of integration framework object before deletion",
+                            "@type": "double",
+                            "@required": true,
+                            "@trim": true
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when an error occurred."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when everything went well."
+                        },
+                        {
+                            "@code": "WARN",
+                            "description": "Used when small, but acceptable problems occurred."
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

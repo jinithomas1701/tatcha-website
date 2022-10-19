@@ -1,0 +1,88 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/wishlist/pt_wishlist">
+	<isinclude template="util/modules"/>
+	
+	<isscript>
+		var formID = pdict.CurrentForms.wishlist.htmlName + '_items';
+ 		var isListOwner = pdict.TargetPipeline ? pdict.CurrentCustomer === pdict.ProductList.owner && pdict.TargetPipeline === 'Wishlist-Show' : pdict.CurrentCustomer === pdict.ProductList.owner;
+	</isscript>
+	
+	<isif condition="${pdict.CurrentCustomer == pdict.ProductList.owner && isListOwner}">
+		<isinclude template="account/returntoaccounthome" />
+	</isif>
+	<isslot id="wishlist-banner" description="Banner on Wish List pages" context="global" />
+	
+	<iscomment>wishlist items form</iscomment>
+	<div class="container">
+		<isif condition="${pdict.CurrentCustomer == pdict.ProductList.owner && isListOwner}">
+		<div class="compact-h1-group">
+			<h1 class="text-center">Wishlist</h1>
+			<p class="text-center">View all your saved treasures.</p>
+		</div>
+		</isif>
+		<div class="row">
+			<isif condition="${empty(pdict.CurrentForms.wishlist.items)}">
+				<div class="col-lg-10 offset-lg-1">
+					<isif condition="${pdict.CurrentCustomer != pdict.ProductList.owner && !isListOwner}">
+						<h1 class="text-center">
+							<isprint value="${pdict.ProductList.owner.profile.firstName}"/>${Resource.msg('other.wishlistheader','account',null)}
+						</h1>
+						<div class="alert alert-default text-center empty-state">
+							<p>There are no items in this wishlist.</p>
+							<div class="m-top mt-4">
+								<a href="${URLUtils.url('Search-Show','cgid', 'shop_all')}" class="btn btn-default" title="${Resource.msg('global.storename','locale',null)}">${Resource.msg('wishlist.emptyadd','account',null)}</a>
+							</div>
+						</div>
+					<iselse>
+						<div class="alert alert-default text-center empty-state">
+							<p>Hello, Beautiful! There's nothing on your wish list - yet. Explore below to discover new Tatcha treasures.</p>
+							<div class="m-top mt-4">
+								<a href="${URLUtils.url('Search-Show','cgid', 'shop_all')}" class="btn btn-default" title="${Resource.msg('global.storename','locale',null)}">${Resource.msg('wishlist.emptyadd','account',null)}</a>
+							</div>
+						</div>												
+					</isif>		
+				</div>
+			<iselse/>
+				<div class="col-lg-10 offset-lg-1 wishlist-container">
+					<iscomment> wishlist share block </iscomment>
+					<isif condition="${pdict.CurrentCustomer == pdict.ProductList.owner && isListOwner}">
+						<form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.wishlist.htmlName}_share">
+							<isscript>
+								pdict.url = URLUtils.https('Wishlist-ShowOther', 'WishListID', pdict.ProductList.UUID);
+							</isscript>	
+							<div class="share-block">
+								<isinclude template="components/socialsharing"/>
+								<div class="share-link-content share-link-block text-center" role="alert" style="display: none;">
+									<div class="input-group input-group-sm">
+								      <input type="text" class="form-control" id="shareLinkField" value="${pdict.url}" readonly>
+								      <span class="input-group-btn">
+								        <button type="button" data-target="#shareLinkField" class="btn btn-default copyText">Copy</button>
+								      </span>
+								    </div>
+								</div>
+							</div>	
+						</form>
+					<iselse/>
+						<h1 class="text-center">
+							<isprint value="${pdict.ProductList.owner.profile.firstName}"/>${Resource.msg('other.wishlistheader','account',null)}
+						</h1>
+					</isif>
+					
+					<iscomment> Wishlist products </iscomment>
+					<div id="wishlist-remove-notification" class="sr-only sr-only-focusable" aria-live="assertive" aria-atomic="true">Test</div>
+					<iswishlistproducts products="${pdict.ProductList.items}" pagingmodel="${pdict.wishlistPagingModel}"/>
+				</div>
+			</isif>
+		</div>
+	</div>
+	
+	<isif condition="${empty(pdict.CurrentForms.wishlist.items)}">
+		<div class="container">
+			<isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnCartWithOutProduct')}">
+				<isslot id="einstein-cart-empty" description="Einstein Empty Cart page slot." context="global" context-object="${pdict.Basket}" />
+			<iselse>
+				<isslot id="cart-empty" description="Empty Cart page slot." context="global" />
+			</isif>
+		</div>
+	</isif>
+</isdecorate>

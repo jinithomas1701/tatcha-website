@@ -1,0 +1,4 @@
+<iscache type="relative" hour="24"/>
+<div class="container">
+<h2 <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> class="outline-global section-heading text-center ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''} col-md-12 col-lg-10 col-xl-8 ml-auto mr-auto" >${pdict.title}</h2>
+</div>

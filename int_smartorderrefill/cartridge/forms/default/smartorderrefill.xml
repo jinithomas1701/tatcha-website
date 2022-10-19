@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="hasSmartOrderRefill" type="boolean" binding="custom.hasSmartOrderRefill" mandatory="false">
+        <options>
+            <option optionid="multiple" value="true" label="refill.multiple" />
+            <option optionid="single" value="false" label="refill.single" />
+        </options>
+    </field>
+
+    <field formid="SorMonthInterval" type="integer" binding="custom.SorMonthInterval" mandatory="false"></field>
+    <field formid="SorWeekInterval" type="integer" binding="custom.SorWeekInterval" mandatory="false"></field>
+
+    <action formid="update" valid-form="true"/>
+</form>

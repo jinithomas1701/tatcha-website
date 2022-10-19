@@ -1,0 +1,73 @@
+<div class="shipping-content">
+    <form method="post" class="shipping-form" autocomplete="on" novalidate
+          action="${shipmentLoopState
+          ? URLUtils.url('CheckoutAddressServices-AddNewAddress')
+          : URLUtils.url('CheckoutShippingServices-SubmitShipping')}"
+          data-address-mode="${shippingModel.matchingAddressId ? 'edit' : 'new'}"
+          <isprint value=${pdict.forms.shippingForm.attributes} encoding="off"/>
+    >
+        <isif condition="${lineItem}">
+            <input name="productLineItemUUID" type="hidden" value="${lineItem.UUID}" />
+        </isif>
+
+        <input name="originalShipmentUUID" type="hidden" value="${shippingModel.UUID}" />
+        <input name="shipmentUUID" type="hidden" value="${shippingModel.UUID}" />
+        <isif condition="${!(customer.registered && customer.authenticated)}">
+            <h5 class="section-title">Contact Info</h5>
+        </isif>
+        <div class="shipping-address ${pdict.order.usingMultiShipping ? 'd-none' : ''}">
+            <fieldset class="shipment-selector-block ${(pdict.order.usingMultiShipping || shipmentLoopState) || (pdict.customer.addresses && pdict.customer.addresses.length > 0) ? '' : 'd-none'} ">
+                <isinclude template="checkout/shipping/shipmentSelector" />
+            </fieldset>
+            <div id="shipping-sec">
+                <div class="contact-shipping <isif condition="${pdict.customer.addresses.length > 0}"> d-none </isif>">
+                    <div class="shipping-address-block contact-info-container">
+                        <isinclude template="checkout/shipping/shippingAddress" />
+                    </div>
+                </div>
+                <div class="delivery-container">
+                    <h5 class="section-title mt-4">Delivery and Gift</h5>
+                    <div class="delivery-guarantee-message">
+                        <iscontentasset aid="checkout-shipping-note"/>
+                    </div>
+                    <div class="delivery-type-container radio-selector shipping-method-block">
+                        <isinclude template="checkout/shipping/shippingMethod" />
+                    </div>
+                    <isinclude template="checkout/shipping/giftwrapandwarnings" />
+                    <div class="next-step-cta">
+                        <isif condition="${!pdict.paymentInfoAvailable}">
+                            <button class="btn btn-primary submit-shipping" type="submit" name="submit" aria-label="Continue  to payment" value="submit-shipping" <isif condition="${(pdict.order.usingMultiShipping && !pdict.order.shippable) || (pdict.showAdWarning && pdict.order.shipping[0] && pdict.order.shipping[0].shippingAddress && pdict.order.shipping[0].shippingAddress.countryCode.value !== 'US')}">disabled</isif>>
+                                Continue to payment
+                            </button>
+                            <iselse>
+                                <button class="btn btn-primary submit-shipping" type="submit" name="submit" aria-label="Save and Review " value="submit-shipping" <isif condition="${(pdict.order.usingMultiShipping && !pdict.order.shippable) || (pdict.showAdWarning &&  pdict.order.shipping[0] && pdict.order.shipping[0].shippingAddress && pdict.order.shipping[0].shippingAddress.countryCode.value !== 'US')}">disabled</isif>>
+                                    Save and Review
+                                </button>
+                        </isif>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="view-address-block ${shippingModel.shippingAddress ? '' : 'd-none' }">
+            <isinclude template="checkout/shipping/shippingCard" />
+        </div>
+
+        <isinclude template="checkout/shipping/multiShippingButtons" />
+
+        <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+    <span class="outer-section disabled-pay">
+        <div class="section-heading outer-section-inner" tabindex="-1">2. Payment
+        </div>
+    </span>
+    <span class="outer-section disabled-s-po">
+        <div class="section-heading outer-section-inner" tabindex="-1">3. Place Order
+        </div>
+    </span>
+    </form>
+    <isinclude template="checkout/shipping/giftwrapmodal" />
+    <isif condition="${customer.authenticated && pdict.customer.addresses.length > 0}">
+        <isinclude template="checkout/shipping/addressmodal"/>
+    </isif>
+
+</div>

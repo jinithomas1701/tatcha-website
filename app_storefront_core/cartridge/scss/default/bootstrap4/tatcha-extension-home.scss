@@ -1,0 +1,49 @@
+// EXTENDED STYLES FOR TATCHA
+
+@import "node_modules/bootstrap/scss/functions";
+@import "tatcha-custom";
+@import "node_modules/bootstrap/scss/mixins";
+@import "../mixins/common";
+@import "../functions/common";
+@import "../components/flickity";
+@import "tatcha-margin";
+@import "tatcha-hero-heading";
+@import "tatcha-footer";
+@import "tatcha-loader";
+@import "tatcha-navbar";
+@import "tatcha_home_hero";
+@import "tatcha-product-carousel";
+@import "tatcha-card-panel";
+@import "tatcha-homepage-link";
+@import "tatcha-section-heading";
+// @import "tatcha-product-unit";
+@import "tatcha-editorial-title";
+@import "tatcha-block-text";
+@import "tatcha-featureset-3";
+@import "tatcha-fullwidth-feature";
+@import "tatcha-panel-fullwidth-product";
+@import "tatcha-panel-info";
+@import "tatcha-fullpage-quotation";
+@import "tatcha-textimage-side";
+@import "tatcha-image-link";
+@import "tatcha-inpage-nav";
+@import "tatcha-video";
+@import "tatcha-textonly-title";
+// @import "tatcha-set-hero";
+@import "tatcha-texteditor";
+// @import "tatcha-minbag.scss";
+@import "tatcha-browser-detection";
+@import "tatcha-twouppromo";
+@import "tatcha-home-dev";
+
+
+// @import "tatcha-gift-finder-page";
+.grecaptcha-badge { visibility: hidden; }
+.anchor-style-reset{
+  color:$text-black;
+  text-decoration: none;
+  &:hover{
+    color:$text-black;
+    text-decoration: none;
+  }
+}

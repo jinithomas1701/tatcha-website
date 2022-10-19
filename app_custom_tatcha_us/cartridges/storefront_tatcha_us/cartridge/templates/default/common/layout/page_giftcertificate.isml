@@ -1,0 +1,384 @@
+<!--- TEMPLATENAME: page.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isinclude template="/components/modules" sf-toolkit="off" />
+
+<!DOCTYPE html>
+<html lang="${require('dw/util/Locale').getLocale(request.getLocale()).getLanguage()}">
+<head>
+
+	<isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addCss('/css/tatcha-category-page.css');
+        assets.addJs('/js/search.js');
+
+		var pageContext = {
+			title: 'Product Search Results',
+			type:'search',
+			ns:'search'
+		};
+	</isscript>
+    <!--[if gt IE 9]>
+    <isinclude sf-toolkit="off" template="/common/scripts" />
+    <!--<![endif]-->
+    <isinclude template="common/htmlHead" />
+    <isinclude template="content/content/contentogtags"/>
+    <isloop items="${ require('*/cartridge/scripts/assets.js').styles }" var="style">
+        <link rel="stylesheet" href="${style.src}" <isif condition="${style.integrity != null}">integrity="${style.integrity}" crossorigin="anonymous"</isif> />
+    </isloop>
+
+
+    <isif condition="${pdict.canonicalUrl}" >
+        <link rel="canonical" href="${pdict.canonicalUrl}"/>
+    </isif>
+    <isactivedatahead/>
+    <isinclude template="/components/schema" />
+
+	<iscomment>Add  template-specific header information here.</iscomment>
+	<style>
+		#navigation .nav-desktop .search-updated-form {
+			margin-bottom: 0em !important;
+			pading-top: .3rem;
+		}
+	</style>
+
+</head>
+<body>
+
+    <isinclude template="common/UI_Includes"/>
+    <div class="page" data-action="${pdict.action}" data-querystring="${pdict.queryString}" >
+    <isinclude template="/components/header/pageHeader" />
+    <iscontentasset aid="mobile-exposed-nav"/>
+    <isset name="searchResultsCss" value="search-results" scope="page" />
+	<main id="main" role="main" class="product product-gift-card product-gift-card-bs clearfix pt_product-search-result ${searchResultsCss} product-list-v2" tabindex="-1">
+		<isinclude template="components/browsertoolscheck"/>
+		<isscript>
+			var validGC = false;
+			var GiftCertificate = require('dw/order/GiftCertificate');
+			var giftCardId = pdict.CurrentHttpParameterMap.view.stringValue;
+			var pmin = pdict.CurrentHttpParameterMap.pmin.intValue;
+			var pmax = pdict.CurrentHttpParameterMap.pmax.intValue;
+			var sz = pdict.CurrentHttpParameterMap.sz ? pdict.CurrentHttpParameterMap.sz.intValue : 120;
+			var gc = require('dw/order/GiftCertificateMgr').getGiftCertificateByMerchantID(giftCardId);
+			var StringHelpers = require('~/cartridge/scripts/util/StringHelpers');
+			if ((gc) &&
+                (gc.isEnabled()) &&
+                (gc.getStatus() !== GiftCertificate.STATUS_PENDING)) {
+                    validGC = true;
+                }
+		</isscript>
+		<isif condition="${validGC == true}">
+			<iscomment>Gift card details </iscomment>
+			<div class="container">
+					<h1 class="text-center">${Resource.msg('gift.header','giftcertificate',null)}</h1>
+					<div class="row" style="margin-top: 16px;">
+						<div class="col-sm-8 offset-sm-2 col-md-5 offset-md-1 col-lg-4 offset-lg-2">
+							<div class="row no-gutter">
+								<div class="col-xs-8 offset-xs-2 col-md-12 offset-md-0">
+									<div class="product-img-main">
+										<isif condition="${!empty(gc.custom.giftCertificateImage)}">
+										<img class="img-responsive img-fluid" src="${gc.custom.giftCertificateImage}">
+										<iselse>
+										<img class="img-responsive img-fluid" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null,'/images/giftcertificate/demo-e-giftcard-750.jpg')}">
+										</isif>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-xs-10 offset-xs-1 col-sm-8 offset-sm-2 col-md-5 offset-md-0 col-lg-4">
+							<div style="margin: 16px 8px;">
+								<div style="text-transform: uppercase; font-size: 24px;" >${Resource.msg('gift.header.recipient','giftcertificate',null)}<isprint value="${gc.recipientName}" />!</div>
+								<p style="font-size: 20px;">${Resource.msg('gift.header.recipient.message1','giftcertificate',null)} <strong>$<isprint style="INTEGER" value="${gc.amount.value}" /> ${Resource.msg('gift.header.recipient.giftcard','giftcertificate',null)}</strong> from <isprint value="${gc.senderName} " /> ${Resource.msg('gift.header.recipient.message2','giftcertificate',null)}</p>
+								<!-- <div class="row">
+									<div class="col-sm-6 col-sm-offset-3 col-md-offset-0">
+										<button class="btn btn-default btn-block btn-thankyou btn-sm" data-toggle="modal" data-target="#thankyouNote">Send A Thank You Note</button>
+									</div>
+								</div> -->
+								<p style="margin-top: 12px;"><a href="#" class="anchor-link" data-toggle="modal" data-target="#giftTerms" style="text-decoration: underline; color: #495257;">${Resource.msg('gift.terms','giftcertificate',null)}</a></p>
+								<div class="alert alert-success alert-thankyou" role="alert" style="display: none;">
+									<div class="alert-icon">
+										<span class="fa-layers fa-fw">
+											<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+											<i class="fal fa-check fa-inverse" data-fa-transform="shrink-3"></i>
+										</span>
+									</div>
+									<div class="alert-text">${Resource.msg('gift.recipient.thankyou.note','giftcertificate',null)}</div>
+								</div>
+							</div>
+						</div>
+					</div>
+			</div>
+
+			<iscomment>Recommendations if any </iscomment>
+			<isif condition="${!empty(gc.custom.giftCertificateRecommendedItems)}">
+				<div class="container product-list" style="border-top: 1px solid #CCD4D9;margin-top: 16px;">
+					<h2 class="gift-card-h2 text-center" style="margin-top: 24px;"><isprint value="${gc.senderName}" /> ${Resource.msg('gift.recommends','giftcertificate',null)}</h2>
+					<div class="row product-list-row">
+						<isscript>
+						 var gCounter = 0;
+						 var recommendedItemsArr = gc.custom.giftCertificateRecommendedItems.split(',');
+						</isscript>
+							<isloop items="${recommendedItemsArr}" var="rec" status="pStatus">
+								<isscript>
+									var productHitURL = URLUtils.url('Tile-Show');
+									productHitURL.append('pid', rec);
+									productHitURL.append('isUpdatedProductTile', 'true');
+									productHitURL.append('isGiftLanding', 'true');
+								</isscript>
+								<div class="col-sm-4 product-list-col">
+									<isinclude url="${productHitURL}"/>
+								</div>
+								<isscript>
+									gCounter++;
+								</isscript>
+							</isloop>
+							<isset name="limit" value="3" scope="pdict" />
+							<isif condition="${gCounter < pdict.limit}">
+								<isscript>
+									var emptySlots = [];
+									for(var i = 0; i < (pdict.limit-gCounter); i++) {
+										emptySlots.push(i);
+									}
+								</isscript>
+								<isloop items="${emptySlots}" var="slot" status="slotStatus">
+									<div class="col-sm-4 product-list-col">
+									</div>
+								</isloop>
+							</isif>
+					</div>
+				</div>
+			</isif>
+
+			<div class="container product-list gc-filter-wrap" style="border-top: 1px solid #CCD4D9;margin-top: 16px;">
+			<h2 class="gift-card-h2 text-center" style="margin-top: 24px;">${Resource.msg('gift.other.products','giftcertificate',null)}</h2>
+
+			<isif condition="${pdict.productSearch}">
+				<isset name="Refinements" value="${pdict.apiProductSearch.refinements}" scope="page"/>
+				<isif condition="${Refinements != null && Refinements.refinementDefinitions.size() > 0}">
+				<div class="row">
+					<div class="col-md-6 offset-md-3">
+						<div class="nl-filter text-center" style="background-color: #F7F9FA;padding: 10px 10px 12px 10px;font-size: 18px;">
+							<h5>${Resource.msg('gift.need.guidance','giftcertificate',null)}</h5>
+							<form style="padding-bottom: 8px;line-height: 2;">
+								I have
+								<select class="nl-select gc-skintype-filter" style="width: 152px;padding: 0.1em;">
+								  <option data-url="${StringHelpers.unsanitizeOR(pdict.apiProductSearch.urlRelaxAttribute('Search-Show','skinType'))}&view=${giftCardId}&sz=${sz}" disabled selected>SKIN TYPE</option>
+								  <isloop items="${Refinements.refinementDefinitions}" var="RefinementDefinition" status="refinementsLoopState">
+									  <isif condition="${RefinementDefinition.getDisplayName() == 'Skin Type'}">
+										  <isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue" status="RefinementValueStatus">
+										  <isif condition="${pdict.apiProductSearch.isRefinedByAttributeValue(RefinementDefinition.attributeID,RefinementValue.value)}">
+										  <isset name="selected" value="selected" scope="page" />
+										  <iselse>
+										  <isset name="selected" value="" scope="page" />
+										  </isif>
+										  <isscript>
+										  var filterUrl = pdict.apiProductSearch.urlRelaxAttribute('Search-Show',RefinementValue.getID());
+										  var delimeter = '?';
+                                          var prefAvailable = true;
+										  try{
+											  if(filterUrl.toString().indexOf('?') != -1){
+											  	delimeter = '&';
+											  } else {
+											  	delimeter = '?';
+											  }
+                                              if(filterUrl.toString().indexOf('prefn') != -1 || filterUrl.toString().indexOf('prefv') != -1){
+                                                  prefAvailable = true;
+                                              } else {
+                                                  prefAvailable = false;
+                                              }
+										  } catch(err){}
+										  </isscript>
+                                          <isif condition="${prefAvailable}">
+                                              <option ${selected} data-url="${StringHelpers.unsanitizeOR(filterUrl)}${delimeter}view=${giftCardId}&prefn2=skinType&prefv2=${RefinementValue.value}&sz=${sz}&is_gc=true"><isprint value="${RefinementValue.getDisplayValue()}" /></option>
+                                          <iselse/>
+                                              <option ${selected} data-url="${StringHelpers.unsanitizeOR(filterUrl)}${delimeter}view=${giftCardId}&prefn1=skinType&prefv1=${RefinementValue.value}&sz=${sz}&is_gc=true"><isprint value="${RefinementValue.getDisplayValue()}" /></option>
+                                          </isif>
+										  </isloop>
+									  </isif>
+								  </isloop>
+								</select>.
+								<br />
+								${Resource.msg('gift.want.solution.for','giftcertificate',null)}
+								<select class="nl-select gc-solution-filter" style="width: 184px;padding:0.1em;">
+								  <option value="" disabled selected>SOLUTION</option>
+								  <isloop items="${Refinements.refinementDefinitions}" var="RefinementDefinition" status="refinementsLoopState">
+									  <isif condition="${RefinementDefinition.getDisplayName() == 'Solution'}">
+										  <isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue" status="RefinementValueStatus">
+										  <isif condition="${pdict.apiProductSearch.isRefinedByAttributeValue(RefinementDefinition.attributeID,RefinementValue.value)}">
+										  <isset name="selected" value="selected" scope="page" />
+										  <iselse>
+										  <isset name="selected" value="" scope="page" />
+										  </isif>
+										  <isscript>
+										  var filterUrl = pdict.apiProductSearch.urlRelaxAttribute('Search-Show',RefinementValue.getID());
+										  var delimeter = '?';
+                                          var prefAvailable = true;
+										  try{
+											  if(filterUrl.toString().indexOf('?') != -1){
+											  	delimeter = '&';
+											  } else {
+											  	delimeter = '?';
+											  }
+                                              if(filterUrl.toString().indexOf('prefn') != -1 || filterUrl.toString().indexOf('prefv') != -1){
+                                                  prefAvailable = true;
+                                              } else {
+                                                  prefAvailable = false;
+                                              }
+										  } catch(err){}
+										  </isscript>
+                                          <isif condition="${prefAvailable}">
+                                              <option ${selected} data-url="${StringHelpers.unsanitizeOR(filterUrl)}${delimeter}view=${giftCardId}&prefn2=skinConcerns&prefv2=${RefinementValue.value}&sz=${sz}&is_gc=true"><isprint value="${RefinementValue.getDisplayValue()}" /></option>
+                                          <iselse/>
+                                              <option ${selected} data-url="${StringHelpers.unsanitizeOR(filterUrl)}${delimeter}view=${giftCardId}&prefn1=skinConcerns&prefv1=${RefinementValue.value}&sz=${sz}&is_gc=true"><isprint value="${RefinementValue.getDisplayValue()}" /></option>
+                                          </isif>
+										  </isloop>
+									  </isif>
+								  </isloop>
+								</select>.
+								<div id="hiddenDiv" style="visibility:hidden"></div>
+							</form>
+							<isscript>
+								 var clearUrl = URLUtils.url('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid);
+								 var delimeter = '?';
+								 try{
+									 if(clearUrl.toString().indexOf('?') != -1){
+										delimeter = '&';
+									 } else {
+										delimeter = '?';
+									 }
+									} catch(err){}
+							</isscript>
+							<button class="btn btn-link btn-sm"><a href="${clearUrl}${delimeter}view=${giftCardId}&pmin=${pmin}&pmax=${pmax}&prefn3=1&sz=${sz}&is_gc=true">Clear</a></button>
+						</div>
+					</div>
+				</div>
+				</isif>
+			 </isif>
+
+
+			<isreplace/>
+			</div>
+
+		    <iscomment>Greetings popup </iscomment>
+		    <div class="modal fade modal-fullscreen modal-takeover" id="greetingModal" tabindex="-1" role="dialog" aria-labelledby="greetingModal">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content fluid media">
+						<div class="modal-body giftbox-section-wrap no-gutter">
+							<div class="eventWrapper">
+						      <div class="eventBox">
+						        <div class="giftBoxBottom">
+						          <img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, '/images/gift-card-images/gift-box-bottom.png')}" />
+						          <div class="cards">
+						            <div class="card">
+									  <div class="front-view" style="background-image: url(<isprint value="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, '/images/gift-card-images/card-front-tatcha.png')}">);">
+
+									  </div>
+									  <div class="back-view" style="background-image: url(<isprint value="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, '/images/gift-card-images/card-front.png')}">);">
+									    <div class="card-contents">
+						                  <div class="gift-card-image-wrapper">
+						                  	<isif condition="${!empty(gc.custom.giftCertificateImage)}">
+						                  		<img
+							                      src="${gc.custom.giftCertificateImage}"
+							                      class="gift-card-image img-fluid"
+							                    />
+						                  	<iselse>
+						                  		<img
+							                      src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, '/images/gift-card-images/gift-card.jpg')}"
+							                      class="gift-card-image img-fluid"
+							                    />
+						                  	</isif>
+
+						                  </div>
+						                  <div class="gift-card-amount">
+						                    <isprint value="${gc.getAmount()}" />
+						                  </div>
+						                  <div class="gift-card-name">
+						                    From: <isprint value="${gc.senderName}" />
+						                  </div>
+						                  <isscript>
+						                  	  if(!empty(gc.custom.giftMessageFont)){
+						                  	     var msgClass = 'gift-card-message '+gc.custom.giftMessageFont;
+						                  	  }else{
+						                  	  	var msgClass = 'gift-card-message';
+						                  	  }
+						                    </isscript>
+						                    <div class="gift-message-wrap <isprint value="${msgClass}" />">
+						                    	<isscript>
+						                    		var giftMessage = gc.getMessage().split('\n');
+						                    	</isscript>
+						                        <isloop items="${giftMessage}" var="message">
+						                      		<isprint value="${message}" /><br/>
+						                        </isloop>
+						                    </div>
+						                    <div class="gift-card-cta">
+						                      <a href="#" data-dismiss="modal">Continue</a>
+											</div>
+										</div>
+									  </div>
+									</div>
+						          </div>
+						        </div>
+						        <div class="giftBoxTop">
+						          <img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, '/images/gift-card-images/gift-box-top.png')}" />
+						        </div>
+						        <div class="giftBoxUBorder">
+						          <img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, '/images/gift-card-images/box-u.png')}" />
+						        </div>
+						      </div>
+						    </div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<iscomment>Thank you note </iscomment>
+			<div class="modal fade modal-primary " id="thankyouNote" tabindex="-1" role="dialog" aria-labelledby="thankyouNote">
+				<div class="modal-dialog" role="document">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close close-round" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+							<h4 class="modal-title"><strong>${Resource.msg('gift.send.thankyou.note','giftcertificate',null)}</strong></h4>
+						</div>
+						<form>
+							<div class="modal-body">
+								<div class="form-group">
+									<label for="thankYouMessage" class="control-label control-label-lg">${Resource.msg('gift.thank.you.vicky','giftcertificate',null)}</label>
+									<textarea id="thankYouMessage" class="form-control font-sans" rows="5">${Resource.msg('gift.add.custom.message','giftcertificate',null)}</textarea>
+									<span class="help-block" style="display: none;">${Resource.msg('gift.inline.message','giftcertificate',null)}
+									</span>
+								</div>
+							</div>
+							<div class="modal-footer">
+								<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+								<button type="button" class="btn btn-primary send-thankyou"  data-dismiss="modal">Send</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</isif>
+	</main>
+	<isset name="pageName" value="search" scope="page" />
+	<isinclude template="product/components/modals"/>
+    <isinclude template="/components/footer/pageFooter" />
+    </div>
+
+</body>
+<div class="error-messaging"></div>
+<div class="modal-background"></div>
+<iscontentasset aid="cookie_hint" />
+
+<isinclude sf-toolkit="off" template="/common/scripts" />
+
+
+<iscomment>
+    hook for Marketing Cloud connector & other integration which need to inject
+    logic at the page end
+    IMPORTANT: Note that this hook will be called to cached as well as uncached pages
+    which means you need to put privacy information into another remote include
+</iscomment>
+
+
+${dw.system.HookMgr.callHook('app.template.afterFooter', 'afterFooter', pdict) ||''}
+<iscomment><isinclude url="${dw.web.URLUtils.url('ConsentTracking-Check')}"/></iscomment>
+</html>

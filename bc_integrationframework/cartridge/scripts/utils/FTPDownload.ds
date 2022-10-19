@@ -1,0 +1,197 @@
+/**
+* Demandware Script File
+* 
+*
+* Copies files from a remote FTP-Location
+*
+*   @input HostURL : String (S)FTP-Service-URL.
+*   @input UserID : String The User-ID.
+*   @input Password : String The Password.
+*   @input FilePattern : String Input File pattern to search in remote folder(default is  "^[\\w\-]{1,}\\.xml$" (*.xml)).
+*   @input SourceFolder : String Remote folder of FTP Server.
+*   @input TargetFolder : String Local folder in which will placed files, relatively to IMPEX/.
+*   @input SecureFtp : String Type of connection (FTP / SFTP).
+*   @input DeleteFile : String When file is uploaded, delete or keep it? ("Delete" / "Keep on server").
+*   @input Timeout : Number The timeout for this client, in milliseconds.
+*   @input NoFileFoundStatus : String Desired result when no files were found
+*
+*   @output ErrorMsg : String An Error message
+* 	@output NoFilesFound : Boolean True if no files were found
+*
+*/
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.io );
+importPackage( dw.util );
+
+//file size download limit 200MB
+var MEGABYTE : Number = 1024*1024;
+var FILE_SIZE_DOWNLOAD_LIMIT : Number = 200*MEGABYTE;
+
+/**
+ * The main function.
+ * 
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ * 
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+function execute( pdict : PipelineDictionary ) : Number
+{	
+	var ftpClient : Object;
+	var copyResult : boolean = true;
+	
+	//Test mandatory paramater
+	if(!empty(pdict.HostURL) && !empty(pdict.SecureFtp) && !empty(pdict.DeleteFile) && !empty(pdict.SourceFolder) && !empty(pdict.TargetFolder))
+	{
+		
+		var sftp : boolean = false;
+		if("FTP".equals(pdict.SecureFtp))
+		{
+			ftpClient = new FTPClient();
+		}
+		else
+		{
+			ftpClient = new SFTPClient();
+			sftp = true;
+		}
+		//set connection timeout
+		if(ftpClient != null && pdict.Timeout != null && pdict.Timeout > 0)
+		{
+			ftpClient.setTimeout(pdict.Timeout);
+		}
+		
+		// Try to connect
+		if(!empty(pdict.UserID) && !empty(pdict.Password))
+		{
+			ftpClient.connect(pdict.HostURL, pdict.UserID, pdict.Password);
+		}
+		else
+		{
+			if(sftp)
+			{
+				pdict.ErrorMsg = "User-ID and Password are manadatory for SFTP-Connection.";
+				return PIPELET_ERROR;
+			}
+			else
+			{
+				ftpClient.connect(pdict.HostURL);
+			}
+		}
+		if(ftpClient.connected)
+		{
+			var filePattern : string;
+			if(!empty(pdict.FilePattern))
+			{
+			filePattern = pdict.FilePattern;
+			}
+			else
+			{
+				filePattern = "^[\\w\-]{1,}\\.xml$";
+		
+			}
+		
+			//Delete flag
+			var deleteFile : boolean = false;
+			if("Delete".equals(pdict.DeleteFile))
+			{
+				deleteFile = true;
+			}
+			//copying process
+	   	 	var copyResult = copyFilesToTarget(sftp, ftpClient, pdict.SourceFolder, filePattern, pdict.TargetFolder, deleteFile);
+		}
+		else
+		{
+			pdict.ErrorMsg = "the connection couldn't be established.";
+			return PIPELET_ERROR;
+		}
+	}
+	else
+	{
+		pdict.ErrorMsg = "one or more mandatory parameters are missing.";
+		return PIPELET_ERROR;
+	}
+	if(ftpClient != null && ftpClient.connected)
+	{
+		ftpClient.disconnect();
+	}
+	
+	if(!copyResult)
+	{
+		pdict.ErrorMsg = "File-List was empty.";
+		pdict.NoFilesFound = true;
+		
+		if(pdict.NoFileFoundStatus == 'OK') {
+			return PIPELET_NEXT;
+		} else {
+			return PIPELET_ERROR;
+		}
+	}
+	
+	return PIPELET_NEXT;
+    
+   
+}
+/**
+*	Copy (and delete) files from a remote FTP-Folder locally
+*	@param ftpClient 	: Object 	FTP Client used
+*	@param sourceFolder : String 	source Folder
+*	@param filePattern 	: String 	The pattern for the filenames
+*	@param targetFolder : String 	target FTP Folder
+*	@param deleteFile 	: Boolean 	Flag if files should be deleted after successful copying 
+*	
+*	@returns Boolean If files were found at the specified location.
+**/
+function copyFilesToTarget( sftp : Boolean,
+							ftpClient : Object, 
+							sourceFolder : string, 
+							filePattern : string, 
+							targetFolder : string, 
+							deleteFile : boolean) : boolean
+{
+	var cd : boolean = ftpClient.cd(sourceFolder);
+	var regExp : RegExp = new RegExp(filePattern);
+	var fileInfoList : Array = sftp ? ftpClient.list() : ftpClient.list(sourceFolder);  //sFTPClient.list(src) doesn't work
+	var result : boolean = false;	
+	if(fileInfoList != null && fileInfoList.length > 0)
+	{
+		for(var i : Number = 0; i < fileInfoList.length; i++)
+		{
+			var fileInfo : FTPFileInfo = fileInfoList[i];
+			if(regExp.test(fileInfo.name))
+			{
+				var fileSize : Number = fileInfo.size;
+				if ( fileSize > FILE_SIZE_DOWNLOAD_LIMIT ) {
+					throw new Error( 'FTP download file size limit of 200 MB exceeded for ' + fileInfo.name + '. Actual size is ' + (fileSize/MEGABYTE).toFixed(2) + ' MB.');
+				} else {
+					copyFileToTargetFolder(ftpClient, targetFolder, fileInfo.name, deleteFile);
+					result = true;
+				}
+			}
+		}
+	}
+	return result;
+} 
+/**
+*	Copy (and delete) a file from a remote FTP-Folder locally
+*	@param ftpClient 	: Object 	FTP Client used
+*	@param targetFolder : String 	target FTP Folder
+*	@param fileName 	: String 	The file to copy
+*	@param deleteFile 	: Boolean	Flag if files should be deleted after successful copying 
+*
+**/
+function copyFileToTargetFolder(ftpClient : Object, targetFolder : string, fileName : string, deleteFile : boolean)
+{
+	var targetDirStr : string = targetFolder.charAt(0).equals("/") ? targetFolder  : "/" + targetFolder;
+	var theDir : File = new File("IMPEX" + targetDirStr);
+	theDir.mkdirs();
+	
+	var theFile : File = new File(theDir.fullPath + "/" + fileName);
+	ftpClient.getBinary(fileName, theFile);
+	theFile.createNewFile();
+	
+	if(deleteFile)
+	{
+		ftpClient.del(fileName);
+	}
+	 
+}

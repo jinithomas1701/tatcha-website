@@ -1,0 +1,58 @@
+<!-- Payment using gift card starts here -->
+<isset name="gcApplicable" value="${'false'}" scope="page"/>
+<iscomment>SmartOrderRefill modification</iscomment>
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE).isActive() && !pdict.CurrentSession.custom.HasSORProducts && !pdict.CurrentSession.custom.hasSORProducts }">
+    <isset name="gcApplicable" value="${'true'}" scope="page"/>
+</isif>
+
+<isset name="gcPITotal" value="${0}" scope="pdict"/>
+<isset name="OrderTotal" value="${basketObject.totalGrossPrice.value}" scope="pdict"/>
+<isif condition="${gcApplicable == 'true'}">
+<iscomment>only provide gift certificate redemption, if the basket doesn't contain any gift certificates</iscomment>
+	<isif condition="${basketObject.giftCertificateLineItems.size() == 0}">
+		<div class="panel-section checkout-gift-card-block" id="checkout-gift-card-block">
+		    <isif condition="${basketObject.giftCertificatePaymentInstruments.size() == 0}">
+				<div class="giftcard-flag">
+				 	Do you have a gift card?
+					<a href="#gift" class="mr-2" data-toggle="modal" aria-label="Redeem your gift card" data-target="#modalCheckoutGiftCertificateRedemption">
+				        Redeem
+				    </a>
+				</div>
+			</isif>
+            <iscomment>render gift cert redeemed success message for each gift certificate payment instrument</iscomment>
+            <isset name="gcPITotal" value="${0}" scope="pdict"/>
+            <isif condition="${basketObject.giftCertificatePaymentInstruments.size() > 0}">
+                <isloop items="${basketObject.giftCertificatePaymentInstruments}" var="giftCertPI">
+                    <isset name="gcPITotal" value="${pdict.gcPITotal + giftCertPI.paymentTransaction.amount}" scope="pdict"/>
+                         <div class="giftcard-applied">
+                         	$${Resource.msgf('billing.giftcertredeemed', 'checkout', null, parseFloat(giftCertPI.paymentTransaction.amount).toFixed(2))}
+                         	<span class="undo-link">                                    
+								<a href="#" id="remove-giftcert" class="remove" data-url="${URLUtils.https('COBilling-RemoveGiftCertificate', 'giftCertificateID', giftCertPI.getGiftCertificateCode(),'format','spcheckout')}">					                                 
+	                                ${Resource.msg('global.undo','locale',null)}
+	                            </a>
+	                        </span>
+                       	</div>
+                </isloop>
+                
+                <isscript>
+                 	var app = require('app_storefront_controllers/cartridge/scripts/app');
+                 	var cartModel = app.getModel('Cart').get();
+                 	var balanceAmount = cartModel.getNonGiftCertificateAmount();
+             	</isscript>
+             	<isif condition="${!empty(balanceAmount) && balanceAmount.value > 0}">
+             			<div class="redemption-remaining-msg">
+                         	<isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">
+                         		${Resource.msgf('billing.giftcertWithCreditCard', 'checkout', null, balanceAmount.value)}
+                         	<iselse>
+                         		${Resource.msgf('billing.giftcertbalance', 'checkout', null, balanceAmount.value)}
+                         	</isif>
+                     	</div>
+             	</isif>
+
+                <isif condition="${basketObject.totalNetPrice!=null && basketObject.totalNetPrice.value-pdict.gcPITotal<=0}">
+                    <isset name="OrderTotal" value="${basketObject.totalGrossPrice.value-pdict.gcPITotal}" scope="pdict"/>
+                </isif>
+            </isif>
+		</div>
+	</isif>
+</isif>

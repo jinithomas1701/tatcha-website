@@ -1,0 +1,384 @@
+<!--- TEMPLATENAME: subscriptions.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isset name="subscriptionsList" value="${pdict.refillCustomer.getActiveSubscriptions()}" scope="page" />
+<isset name="auto_renewal" value="${pdict.refillCustomer.preferences.SorAutomaticRenewalEnabled}" scope="page"/>
+<isscript>
+	var SorCancellationReasons = JSON.parse(pdict.refillCustomer.preferences.SorCancellationReasons);
+</isscript>
+<div class="my-account my-account-auto-delivery">
+<div class="container">
+	<h1 class="text-center">${Resource.msg('smartorderrefill.account.autodelivery','account',null)}</h1>
+	<div class="row">
+		<div class="col-md-12 col-lg-4">
+			<isscript>
+			var paymentToken = customer.profile.custom.OsfSorSubscriptionToken;
+			var paymentInstruments = customer.getProfile().getWallet().getPaymentInstruments(dw.order.PaymentInstrument.METHOD_CREDIT_CARD);
+			var defaultCard;
+			for each(var card in paymentInstruments) { 
+				if(card.creditCardToken == paymentToken) {
+					defaultCard = card;
+				}
+			} 
+			</isscript>
+			<div class="card card-default data-group ad-details-panel">
+				<div class="card-heading card-split">
+				    <h5 class="card-title">${dw.web.Resource.msg('account.autodelivery.payment','account',null)}</h5>
+				</div>
+				<isif condition="${!empty(defaultCard)}">
+					<div class="card-body">
+						<div class="row">
+							<div class="col-3 offset-1">
+								<isif condition="${('Master' == defaultCard.creditCardType)}">
+									<i class="fab fa-cc-mastercard fa-2x"></i>
+								</isif>
+								<isif condition="${('JCB' == defaultCard.creditCardType)}">
+									<i class="fab fa-cc-jcb fa-lg"></i>
+								</isif>
+								<isif condition="${('Visa' == defaultCard.creditCardType)}">
+									<i class="fab fa-cc-visa fa-2x"></i>
+								</isif>
+								<isif condition="${('Amex' == defaultCard.creditCardType)}">
+									<i class="fab fa-cc-amex fa-2x"></i>
+								</isif>
+								<isif condition="${('Discover' == defaultCard.creditCardType)}">
+									<i class="fab fa-cc-diners-club fa-2x"></i>
+								</isif>
+							</div>
+							<div class="col-7 col-lg-8 col-xl-6">
+								<table class="table table-borderless table-valign-bottom">
+									<tbody><tr>
+						  				<th class="data-label">Ending In</th>
+						  				<td><isprint value="${defaultCard.maskedCreditCardNumber.toString().substring(11)}" /></td>
+						  			</tr>
+						  			<tr>
+						  				<th class="data-label">Expires</th>
+						  				<td>
+											<isprint value="${defaultCard.creditCardExpirationMonth}"/> /
+                							<isprint value="${defaultCard.creditCardExpirationYear.toString().substring(2)}"/>
+										</td>
+						  			</tr></tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div class="card-footer">
+						<a href="#" id="ad-edit-payment" class="btn btn-outline-secondary btn-md" data-toggle="modal" data-target="#addCardModal">${dw.web.Resource.msg('global.edit','locale',null)}</a>
+					</div>
+				<iselse/>
+					<div class="card-body">
+						<isprint value="${dw.web.Resource.msg('account.autodelivery.nocard','account',null)}" />
+					</div>
+				</isif>
+			</div>
+		</div>
+		<div class="col-lg-8">
+			<isif condition="${!empty(subscriptionsList) && subscriptionsList.length > 0}">
+			<isscript>
+					var Tatcha = require('app_storefront_core/cartridge/scripts/util/Tatcha');
+			    </isscript>
+
+			<isloop items="${subscriptionsList}" var="subscription">
+			
+				<isscript>
+		    		var nextOrder = Tatcha.getNextSOROrder(subscription);
+		    		var secondnextOrder = Tatcha.getSecondNextSOROrder(subscription);
+		    		var nextOrderDate = !empty(nextOrder) ? new Date(nextOrder.createdAt) : '';
+		    		if(pdict.CurrentHttpParameterMap.nxtdel && pdict.CurrentHttpParameterMap.plid.stringValue == subscription.ID) {
+		    			nextOrderDate = new Date(pdict.CurrentHttpParameterMap.nxtdel.stringValue);
+		    		}
+		    		
+		    	</isscript>
+		    	
+			<div class="card card-default ad-subscription-item ad-details-panel subscriptionSection" id="sid-${subscription.ID}">
+				<input type="hidden" id="sorCancelReasonArray" value="${JSON.stringify(SorCancellationReasons)}">
+			    <isloop items="${subscription.products}" var="prod">
+			            <isset name="product" value="${dw.catalog.ProductMgr.getProduct(prod.ID)}" scope="page"/>
+			            
+			            <div class="card-heading card-split">
+						    <h4 class="card-title product-name">
+									<isprint value="${product.name}" />
+									<input type="hidden" id="ad-subscription-prdId" value="${product.ID}" />
+							</h4>
+						    <div class="card-status">
+						    	<strong>Next Shipment:
+						    		<isif condition="${!empty(nextOrderDate)}"> 
+						    			<span class="next-shipment-date"><isprint value="${nextOrderDate}" style="DATE_SHORT" timezone="utc" /></span>
+						    		<iselse/>
+						    			Processing
+						    		</isif>
+						    	</strong>
+						    </div>
+						</div>
+				<div class="card-body">
+		            <iscomment>Subscription details</iscomment>
+		            <isinclude url="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', 'view')}" />
+			    </div>
+			     </isloop>
+			
+			            <br /> 
+			            <div class="subscription-info" style="display: none;">
+			                <span class="description-label">${Resource.msg('smartorderrefill.subscription.subscriptiondate', 'smartorderrefill', null)}: </span>
+			                <span class="description-value"><strong>${new Date(subscription.createdAt).toLocaleDateString("en-US")}</strong></span>
+			                <isif condition="${subscription.status === subscription.constructor.STATUS_PAUSED}">
+			                    <span>${Resource.msg('smartorderrefill.account.pause', 'account', null)}</span>
+			                </isif>
+			                <br>
+			                <isif condition="${auto_renewal}">
+			                    <p>
+			                        <span class="description-label">${Resource.msg('smartorderrefill.subscription.subscriptionexpdate', 'smartorderrefill', null)}:</span>
+			                        <span class="description-value"><strong>${new Date(subscription.validUntil).toLocaleDateString("en-US")}</strong></span>
+			                        <br>
+			                        <isif condition="${!subscription.renewal}">
+			                            <p class="sub-canceled">
+			                                <span class="description-value">
+			                                    <strong><i><isprint value="${Resource.msg('smartorderrefill.subscription.canceled', 'smartorderrefill', null)}" /></i></strong>
+			                                </span>
+			                            </p>
+			                        </isif>
+			                    </p>
+			                <iselse>
+			                    <span class="description-label">${Resource.msg('smartorderrefill.subscription.subscriptionexpdate', 'smartorderrefill', null)}:</span>
+			                    <span class="description-value"><strong>${new Date(subscription.validUntil).toLocaleDateString("en-US")}</strong></span>
+			                </isif>
+			                
+			                <p class="subscription-buttons">
+			                    <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', 'view')}"
+			                        class="subscription view sorlink visually-hidden">
+			                        <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDU2MSA1NjEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDU2MSA1NjE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8ZyBpZD0idmlzaWJpbGl0eSI+CgkJPHBhdGggZD0iTTI4MC41LDg5LjI1QzE1Myw4OS4yNSw0My4zNSwxNjguMywwLDI4MC41YzQzLjM1LDExMi4yLDE1MywxOTEuMjUsMjgwLjUsMTkxLjI1UzUxNy42NSwzOTIuNyw1NjEsMjgwLjUgICAgQzUxNy42NSwxNjguMyw0MDgsODkuMjUsMjgwLjUsODkuMjV6IE0yODAuNSw0MDhDMjA5LjEsNDA4LDE1MywzNTEuOSwxNTMsMjgwLjVjMC03MS40LDU2LjEtMTI3LjUsMTI3LjUtMTI3LjUgICAgYzcxLjQsMCwxMjcuNSw1Ni4xLDEyNy41LDEyNy41QzQwOCwzNTEuOSwzNTEuOSw0MDgsMjgwLjUsNDA4eiBNMjgwLjUsMjA0Yy00My4zNSwwLTc2LjUsMzMuMTUtNzYuNSw3Ni41ICAgIGMwLDQzLjM1LDMzLjE1LDc2LjUsNzYuNSw3Ni41YzQzLjM1LDAsNzYuNS0zMy4xNSw3Ni41LTc2LjVDMzU3LDIzNy4xNSwzMjMuODUsMjA0LDI4MC41LDIwNHoiIGZpbGw9IiNGRkZGRkYiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />
+			                        <span>
+			                            <isprint value="${Resource.msg('smartorderrefill.view', 'smartorderrefill', null)}" />
+			                        </span>
+			                    </span>
+			                    <isif condition="${subscription.type == subscription.constructor.TYPE_SOR}">
+			                        <isif condition="${pdict.refillCustomer.preferences.SorPauseSubscription}">
+			                            <isif condition="${subscription.status === subscription.constructor.STATUS_PAUSED}">
+			                                <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', 'reactivate')}"
+			                                    class="reactivatesubscription sorlink visually-hidden">
+			                                    <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzMi4xNTMgMjMyLjE1MyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjMyLjE1MyAyMzIuMTUzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCI+CjxnIGlkPSJQbGF5Ij4KCTxwYXRoIHN0eWxlPSJmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDsiIGQ9Ik0yMDMuNzkxLDk5LjYyOEw0OS4zMDcsMi4yOTRjLTQuNTY3LTIuNzE5LTEwLjIzOC0yLjI2Ni0xNC41MjEtMi4yNjYgICBjLTE3LjEzMiwwLTE3LjA1NiwxMy4yMjctMTcuMDU2LDE2LjU3OHYxOTguOTRjMCwyLjgzMy0wLjA3NSwxNi41NzksMTcuMDU2LDE2LjU3OWM0LjI4MywwLDkuOTU1LDAuNDUxLDE0LjUyMS0yLjI2NyAgIGwxNTQuNDgzLTk3LjMzM2MxMi42OC03LjU0NSwxMC40ODktMTYuNDQ5LDEwLjQ4OS0xNi40NDlTMjE2LjQ3MSwxMDcuMTcyLDIwMy43OTEsOTkuNjI4eiIgZmlsbD0iI0ZGRkZGRiIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />
+			                                    <span>
+			                                        <isprint value="${Resource.msg('smartorderrefill.reactivate', 'smartorderrefill', null)}" />
+			                                    </span>
+			                                </span>
+			                                <iselse>
+			                                    <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', subscription.constructor.STATUS_PAUSED)}"
+			                                        data-title="${Resource.msg('smartorderrefill.pausesubs.title', 'smartorderrefill', null)}"
+			                                        data-content="${Resource.msg('smartorderrefill.pausesubs.message', 'smartorderrefill', null)}"
+			                                        data-yes="${Resource.msg('smartorderrefill.dialog.button.yes', 'smartorderrefill', null)}"
+			                                        data-no="${Resource.msg('smartorderrefill.dialog.button.no', 'smartorderrefill', null)}"
+			                                        class="pausesubscription sorlink visually-hidden sorshowmodal">
+			                                        <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzMi42NzkgMjMyLjY3OSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjMyLjY3OSAyMzIuNjc5OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCI+CjxnIGlkPSJQYXVzZSI+Cgk8cGF0aCBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7IiBkPSJNODAuNTQzLDBIMzUuNzk3Yy05Ljg4NSwwLTE3Ljg5OCw4LjAxNC0xNy44OTgsMTcuODk4djE5Ni44ODMgICBjMCw5Ljg4NSw4LjAxMywxNy44OTgsMTcuODk4LDE3Ljg5OGg0NC43NDZjOS44ODUsMCwxNy44OTgtOC4wMTMsMTcuODk4LTE3Ljg5OFYxNy44OThDOTguNDQsOC4wMTQsOTAuNDI3LDAsODAuNTQzLDB6IE0xOTYuODgyLDAgICBoLTQ0Ljc0NmMtOS44ODYsMC0xNy44OTksOC4wMTQtMTcuODk5LDE3Ljg5OHYxOTYuODgzYzAsOS44ODUsOC4wMTMsMTcuODk4LDE3Ljg5OSwxNy44OThoNDQuNzQ2ICAgYzkuODg1LDAsMTcuODk4LTguMDEzLDE3Ljg5OC0xNy44OThWMTcuODk4QzIxNC43ODEsOC4wMTQsMjA2Ljc2NywwLDE5Ni44ODIsMHoiIGZpbGw9IiNGRkZGRkYiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />
+			                                        <span>
+			                                            <isprint value="${Resource.msg('smartorderrefill.pause', 'smartorderrefill', null)}" />
+			                                        </span>
+			                                    </span>
+			                            </isif>
+			                        </isif>
+			                        <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', subscription.constructor.STATUS_CANCELED)}"
+			                            data-title="${Resource.msg('smartorderrefill.deletesubs.title', 'smartorderrefill', null)}"
+			                            data-content="${Resource.msg('smartorderrefill.deletesubs.message', 'smartorderrefill', null)}"
+			                            data-yes="${Resource.msg('smartorderrefill.dialog.button.yes', 'smartorderrefill', null)}" data-no="${Resource.msg('smartorderrefill.dialog.button.no', 'smartorderrefill', null)}"
+			                            class="cancelsubscription sorlink visually-hidden sorshowmodal">
+			                            <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzLjMzMSAyMy4zMzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIzLjMzMSAyMy4zMzE7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4Ij4KPGc+Cgk8cGF0aCBkPSJNMTYuMDQzLDExLjY2N0wyMi42MDksNS4xYzAuOTYzLTAuOTYzLDAuOTYzLTIuNTM5LDAtMy41MDJsLTAuODc1LTAuODc1ICAgYy0wLjk2My0wLjk2NC0yLjUzOS0wLjk2NC0zLjUwMiwwTDExLjY2Niw3LjI5TDUuMDk5LDAuNzIzYy0wLjk2Mi0wLjk2My0yLjUzOC0wLjk2My0zLjUwMSwwTDAuNzIyLDEuNTk4ICAgYy0wLjk2MiwwLjk2My0wLjk2MiwyLjUzOSwwLDMuNTAybDYuNTY2LDYuNTY2bC02LjU2Niw2LjU2N2MtMC45NjIsMC45NjMtMC45NjIsMi41MzksMCwzLjUwMWwwLjg3NiwwLjg3NSAgIGMwLjk2MywwLjk2MywyLjUzOSwwLjk2MywzLjUwMSwwbDYuNTY3LTYuNTY1bDYuNTY2LDYuNTY1YzAuOTYzLDAuOTYzLDIuNTM5LDAuOTYzLDMuNTAyLDBsMC44NzUtMC44NzUgICBjMC45NjMtMC45NjMsMC45NjMtMi41MzksMC0zLjUwMUwxNi4wNDMsMTEuNjY3eiIgZmlsbD0iI0ZGRkZGRiIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />
+			                            <span>
+			                                <isprint value="${Resource.msg('smartorderrefill.cancel', 'smartorderrefill', null)}" />
+			                            </span>
+			                        </span>
+			                    </isif>
+			                    <isif condition="${auto_renewal && subscription.renewal}">
+			                        <span class="sorlink cancelrenewal sorshowmodal"
+			                            data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', 'updateRenewal')}"
+			                            data-title="${Resource.msg('smartorderrefill.cancelrenewal.title', 'smartorderrefill', null)}"
+			                            data-content="${Resource.msg('smartorderrefill.cancelrenewal.message', 'smartorderrefill', null)}"
+			                            data-yes="${Resource.msg('smartorderrefill.dialog.button.yes', 'smartorderrefill', null)}" data-no="${Resource.msg('smartorderrefill.dialog.button.no', 'smartorderrefill', null)}">
+			                            <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzLjMzMSAyMy4zMzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIzLjMzMSAyMy4zMzE7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4Ij4KPGc+Cgk8cGF0aCBkPSJNMTYuMDQzLDExLjY2N0wyMi42MDksNS4xYzAuOTYzLTAuOTYzLDAuOTYzLTIuNTM5LDAtMy41MDJsLTAuODc1LTAuODc1ICAgYy0wLjk2My0wLjk2NC0yLjUzOS0wLjk2NC0zLjUwMiwwTDExLjY2Niw3LjI5TDUuMDk5LDAuNzIzYy0wLjk2Mi0wLjk2My0yLjUzOC0wLjk2My0zLjUwMSwwTDAuNzIyLDEuNTk4ICAgYy0wLjk2MiwwLjk2My0wLjk2MiwyLjUzOSwwLDMuNTAybDYuNTY2LDYuNTY2bC02LjU2Niw2LjU2N2MtMC45NjIsMC45NjMtMC45NjIsMi41MzksMCwzLjUwMWwwLjg3NiwwLjg3NSAgIGMwLjk2MywwLjk2MywyLjUzOSwwLjk2MywzLjUwMSwwbDYuNTY3LTYuNTY1bDYuNTY2LDYuNTY1YzAuOTYzLDAuOTYzLDIuNTM5LDAuOTYzLDMuNTAyLDBsMC44NzUtMC44NzUgICBjMC45NjMtMC45NjMsMC45NjMtMi41MzksMC0zLjUwMUwxNi4wNDMsMTEuNjY3eiIgZmlsbD0iI0ZGRkZGRiIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />
+			                            <span>
+			                                <isprint value="${Resource.msg('smartorderrefill.subscription.cancel', 'smartorderrefill', null)}" />
+			                            </span>
+			                        </span>
+			                    <iselseif condition="${auto_renewal && !subscription.renewal}" >
+			                        <span class="reactivaterenewal sorshowmodal sorlink"
+			                            data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', 'reactivateRenewal')}"
+			                            data-title="${Resource.msg('smartorderrefill.reactivaterenewal.title', 'smartorderrefill', null)}"
+			                            data-content="${Resource.msg('smartorderrefill.reactivaterenewal.message', 'smartorderrefill', null)}"
+			                            data-yes="${Resource.msg('smartorderrefill.dialog.button.yes', 'smartorderrefill', null)}" data-no="${Resource.msg('smartorderrefill.dialog.button.no', 'smartorderrefill', null)}">
+			                            <span>
+			                                <isprint value="${Resource.msg('smartorderrefill.subscription.reactivate', 'smartorderrefill', null)}" />
+			                            </span>
+			                        </span>
+			                    </isif>
+			                </p>
+			                
+			                <br />
+			                <div class='show-hide-orders'>
+			                    <span><isprint value="${Resource.msg('smartorderrefill.subscription.seeupcomingorders', 'smartorderrefill', null)}" /></span>
+			                    <span class="down-arrow"><img width="10px" src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDI1NSAyNTUiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDI1NSAyNTU7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8ZyBpZD0iYXJyb3ctZHJvcC1kb3duIj4KCQk8cG9seWdvbiBwb2ludHM9IjAsNjMuNzUgMTI3LjUsMTkxLjI1IDI1NSw2My43NSAgICIgZmlsbD0iIzAwMDAwMCIvPgoJPC9nPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" /></span>
+			                </div>
+			        
+			            </div>
+			            <isset name="ordersList" value="${subscription.getActiveOrders()}" scope="page"/>
+			            <div class="subscriptionOrders" style="display: none;" >
+			                <isinclude template="smartOrderRefill/dashboard/nextOrders" />
+			            </div>
+			            <div class="card-footer">
+							<div class="row">
+								<div class="col-lg-6 col-xl-4 offset-xl-4">
+									<button id="ad-skip" <isif condition="${empty(nextOrderDate)}">disabled</isif> class="btn skip-btn btn-outline-secondary btn-md btn-block button-default-small" data-toggle="modal" data-target="${'#skipModal-' + subscription.ID}">
+										<isprint value="${Resource.msg('smartorderrefill.skip','smartorderrefill', null)}"/>
+									</button>
+									
+								</div>
+								<div class="col-lg-6 col-xl-4">
+									<button id="ad-cancel" class="btn btn-outline-secondary btn-md btn-block button-default-small" name="sorDelete" data-toggle="modal" data-target="${'#deleteModal-' + subscription.ID}" data-sid="${subscription.ID}">
+										<isprint value="${Resource.msg('smartorderrefill.cancel','smartorderrefill', null)}"/>
+									</button>
+								</div>
+							</div>
+						</div>
+			        </div>
+			        
+			        <div class="modal fade modal-primary" id="${'skipModal-' + subscription.ID}">
+						<div class="modal-dialog ad-cancel-modal" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+									<h4 class="modal-title" id="myModalLabel">
+										<strong>${Resource.msg('smartorderrefill.areyousure','account',null)}</strong>
+									</h4>
+								</div>
+								<div class="modal-body">
+									<isscript>
+										var secondNextShipDate;
+										if(secondnextOrder) {
+											secondNextShipDate = (secondnextOrder.createdAt.getMonth() + 1) + '/' + secondnextOrder.createdAt.getDate();
+										}
+									</isscript>
+									<p><em>${Resource.msg('smartorderrefill.confirmskip','account',null)}<span class="second-del-date" style="margin-left: 5px;"><isprint value="${secondnextOrder ? secondnextOrder.createdAt : ''}" style="DATE_SHORT" timezone="utc" /></span></em></p>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-outline-secondary rounded" data-dismiss="modal">${Resource.msg('global.cancel','locale',null)}</button>
+									<a class="btn btn-primary rounded" data-pid="${product.ID}" id="skipnextshipment" href="javascript:;" 
+									data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'oid', nextOrder.ID, 'action', nextOrder.constructor.STATUS_CANCELED)}" 
+									>
+										<isprint value="${Resource.msg('smartorderrefill.skip','smartorderrefill', null)}"/>
+									</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					  
+					<div class="modal fade modal-primary" id="${'deleteModal-' + subscription.ID}" tabindex="-1" role="dialog" aria-labelledby="orderCancel">
+						<div class="modal-dialog modal-md ad-cancel-modal" role="document">
+							<div class="modal-content">
+								<div class="modal-header cancellation-modal-header">
+									<h4 class="modal-title modal-small-title" id="myModalLabel">
+										<strong>${Resource.msg('smartorderrefill.areyousure','account',null)}</strong>
+									</h4>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true"><i class="fal fa-times"></i></span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p class="order-cancel-warning">${Resource.msg('smartorderrefill.confirmdelete','account',null)}</p>
+									<h5 class="cancel-reason-heading">
+										${Resource.msg('smartorderrefill.confirmmessage','account',null)}
+									</h5>
+									<div class="form-group">
+										<isset name="sorcount" value="${0}" scope="page">
+										<isloop items="${SorCancellationReasons}" alias="reason" status="count">
+											<isset name="sorcount" value="${sorcount+1}" scope="page"/>
+											<label class="order-cancel-text">
+												<input type="radio" value="" id="SORCancelReason${parseInt(sorcount).toFixed()}-${subscription.ID}" name="SORCancelReason" data-sid="${subscription.ID}">
+												<span class="sorReason${parseInt(sorcount).toFixed()}-${subscription.ID}"></span>
+												<span class="checkmark"></span>
+											</label>
+										</isloop>
+										<textarea class="cancellation-textbox" id="SORCancelReasonText-${subscription.ID}" rows="2" ></textarea>
+									</div>
+									<div class="modal-bottom-wrap">
+										<button type="button" class="btn btn-outline-dark" data-dismiss="modal">${Resource.msg('global.keep','locale',null)}</button>
+										<button class="btn btn-primary btn-margin" id="cancelsubscription" data-pid="${product.ID}" data-sid="${subscription.ID}" data-order="${subscription.originalOrder}" href="javascript:;"
+										   data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', subscription.ID, 'action', subscription.constructor.STATUS_CANCELED)}">
+											<isprint value="${Resource.msg('smartorderrefill.cancel','smartorderrefill', null)}"/>
+										</button>
+									</div>
+									<div class="warning-message display-none">
+										<i class="fal fa-exclamation-circle" style="color:red"></i>
+										<span class="text-danger warning-text">Please select a reason for cancellation</span>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>	
+		
+			    </isloop>
+			<iselse>
+			        <iscontentasset aid="no-subscriptions"/>
+			</isif>
+		</div>
+	</div>
+</div>
+</div>
+<div class="modal fade modal-primary" id="addCardModal" style="display: none;">
+	<div class="modal-dialog">
+		<div class="modal-content ad-modal">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+				<h4 class="modal-title"><strong>Select a Card</strong></h4>
+			</div>
+			<form class="switch-card-form" method="post" action="${URLUtils.url('SmartOrderRefillController-SwitchCard')}">
+				<div class="modal-body">
+					<div class="checkout-form" style="margin:0">
+						<div class="checkout-stack-options-block">
+							<isif condition="${typeof paymentInstruments != 'undefined' && !empty(paymentInstruments)}">
+								<input type="hidden" id="currCard" value="${typeof defaultCard != 'undefined' ? defaultCard.UUID : ''}">
+								<isloop items="${paymentInstruments}" alias="card">
+									<isscript>
+									var selected = (!empty(defaultCard) && card.UUID == defaultCard.UUID) ? true : false;
+									</isscript>
+									<div class="radio checkout-radio-block radio-payment ${selected ? 'selected' : ''}">
+										<label class="checkout-radio" for="${card.UUID}">
+											<input type="radio" name="cardId" id="${card.UUID}" ${selected ? 'checked=""' : ''} value="${card.UUID}">
+											<div class="radio-text-block">
+												<span class="card-icon">
+													<isif condition="${('Master' == card.creditCardType || 'Mastercard' == card.creditCardType)}">
+														<i class="fab fa-cc-mastercard fa-lg"></i>
+													</isif>
+													<isif condition="${('JCB' == card.creditCardType || 'Jcb' == card.creditCardType)}">
+														<i class="fab fa-cc-jcb fa-lg"></i>
+													</isif>
+													<isif condition="${('Visa' == card.creditCardType)}">
+														<i class="fab fa-cc-visa fa-lg"></i>
+													</isif>
+													<isif condition="${('Amex' == card.creditCardType || 'American express' == card.creditCardType)}">
+														<i class="fab fa-cc-amex fa-lg"></i>
+													</isif>
+													<isif condition="${('Discover' == card.creditCardType)}">
+														<i class="fab fa-cc-diners-club fa-lg"></i>
+													</isif>
+												</span> ending in <isprint value="${card.maskedCreditCardNumber.toString().substring(11)}" />
+											</div>
+										</label>
+										<span class="selected-icon">
+											<i class="fal fa-check-circle"></i>
+										</span>
+									</div>
+								</isloop>
+							</isif>
+							<div class="panel-section-cta text-center">
+								<a href="${URLUtils.url('BraintreePayments-ShowAddCard', 'scope', 'auto-delivery')}" class="btn btn-outline-secondary btn-md braintree-addcard">Add A Card</a>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-outline-secondary rounded" data-dismiss="modal">${dw.web.Resource.msg('global.cancel','locale',null)}</button>
+					<button type="submit" class="btn btn-primary rounded" id="ad-update-payment" value="Save">${dw.web.Resource.msg('global.save','locale',null)}</button>
+				</div>
+			</form>			
+		</div>
+	</div>
+</div>

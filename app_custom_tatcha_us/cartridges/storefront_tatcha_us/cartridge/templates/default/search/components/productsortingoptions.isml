@@ -1,0 +1,42 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Displays the product sorting options.
+	It expects the name of the key of the pageable in a parameter
+    pageable.
+</iscomment>
+
+<div class="sort-by view-option-group view-sort float-left">
+    <div class="dropdown">
+        <button class="btn view-option-btn dropdown-toggle outline-global" tabindex="0" type="button" id="sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="Select Sort By">
+            <div class="view-option-hdr">Sort By</div>
+            <div class="view-option">
+                <isloop items="${pdict.productSearch.productSort.options}" var="SortingOption" status="Status">
+                    <isif condition="${SortingOption.id == pdict.productSearch.productSort.ruleId}">
+                        <span class="view-option-value text-capitalize" id="sort-selected-value"><isprint value="${SortingOption.displayName}" /> </span>
+                        <i class="fas float-right fa-sort-down dropdown-icon"></i>
+                    </isif>
+                </isloop>
+            </div>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="sort">
+            <isloop items="${pdict.productSearch.productSort.options}" var="SortingOption" status="Status">
+                <isif condition="${(pdict.productSearch.category.defaultSortingRuleID != 'featured') && SortingOption.id =='featured'} ">
+                        <iscomment>Replace featured with default </iscomment>
+                        <li>
+                            <a href="${SortingOption.url}" data-sort="${SortingOption.displayName}">
+                                ${SortingOption.displayName}
+                            </a>
+                        </li>
+                    <iselse>
+                        <li>
+                            <a href="${SortingOption.url}" data-sort="${SortingOption.displayName}">
+                                ${SortingOption.displayName}
+                            </a>
+                        </li>
+                </isif>
+            </isloop>
+        </ul>
+    </div>
+    <div class="sr-only sort-sr-only" aria-live="polite" aria-atomic="true"></div>
+</div>
+<!-- END: sortby -->

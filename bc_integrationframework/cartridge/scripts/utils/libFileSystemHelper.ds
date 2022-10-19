@@ -1,0 +1,112 @@
+/**
+*	@output FileSystemHelper : Object
+*/
+importPackage( dw.system );
+
+
+/**
+ * @deprecated - collection of useless functions
+ * The main function:
+ *
+ * Provides file system utility functions
+ * 
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ * 
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+function execute( args : PipelineDictionary ) : Number
+{
+	args.FileSystemHelper = new FileSystemHelper();
+	return PIPELET_NEXT;
+}
+
+var FileSystemHelper = function(){}
+/**
+ * Constructor
+ */
+FileSystemHelper.prototype = {
+	trim : function(str : String,c : String,left : Boolean,right : Boolean){
+		c = this.checkSlash(c);
+		if (str != undefined && str!=null && str!='')
+		{
+			var tt = str[0];
+			if (left!=true && str[0]==c) 
+				str = str.substring(1,str.length);
+			if (right!=true && str[str.length-1]==c) 
+				str = str.substring(0,str.length-1);
+		}
+		else
+		{
+			return "";
+		}
+		return str;
+	},
+	ltrim : function(str : String, c : String){
+		return this.trim(str,c,true);
+	},
+	rtrim : function(str : String, c : String){
+		return this.trim(str,c,false,true);
+	},
+	checkSlash : function(c : String){
+		if (c == undefined || c==null || c=='')
+		{
+			c = '/';
+		}
+		if (c.length>1)
+		{
+			//sdsa
+			c = c[0];
+		}
+		return c;
+	},
+	addLeftSlash : function(str : String){
+		str = '/'+this.trim(str);
+		return str;
+	},
+	addRightSlash : function(str : String){
+		str = this.trim(str)+'/';
+		return str;
+	},
+	addBothSlashes: function(str : String){
+		str = '/'+this.trim(str)+'/';
+		return str;
+	},
+	addImpexPrefix : function(str : String){
+		str = 'IMPEX/' + this.ltrim(str);
+		return str;
+	},
+	dirExistsCreateObject : function(directoryObject : dw.io.File){
+		if ( empty(directoryObject) ) {
+       		 return false;
+    	}		
+		if (directoryObject.exists()){
+			return true;
+		} else {
+			return directoryObject.mkdirs();
+		}
+	},
+	dirExistsCreate : function(directoryPath : String){
+	    var directoryObject : dw.io.File = null;
+
+	    if ( empty(directoryPath) ) {
+	        return false;
+	    }
+		
+		try
+		{
+			directoryObject = new dw.io.File(directoryPath);
+		}
+		catch(invalidPath)
+		{
+			 var logger : Log = Logger.getLogger("utils.libFileSystemHelper");
+			 logger.error('utils/libFileSystemHelper.ds - dirExistsCreate:' + invalidPath);
+			 return false;
+		}
+	    
+		if (directoryObject.exists()){
+			return true;
+		} else {
+			return directoryObject.mkdirs();
+		}
+	},
+}

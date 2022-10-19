@@ -1,0 +1,134 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isscript>
+    importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<div class="compareWidgetContainer">
+<isset name="categoryName" value="${(pdict.productSearch) ? pdict.productSearch.category.name : pdict.category.displayName}" scope="page"/>
+<isset name="categoryId" value="${(pdict.productSearch) ? pdict.productSearch.category.id : pdict.category.ID}" scope="page"/>
+
+<h3 class="text-center my-3 pt-4 compare-title">Compare ${categoryName} </h3>
+<section id="compare-section" class="compare-section">
+	<div class="container">
+	<table class="compare-table">
+		<tbody>
+			<tr class="sr-only sr-only-focusable" >
+				<td>
+					<div tabindex="0">Compare ${categoryName}</div>
+				</td>
+			</tr>
+			<tr class="main-row">
+				<isloop items="${pdict.productList}" var="compareProduct" status="status">
+				<isset name="Product" value="${compareProduct}" scope="pdict"/>
+				<isset name="comparisonProductId" value="${compareProduct.ID}" scope="page">
+					<td class="compareProductId" data-pid="${comparisonProductId}">
+						<isscript>
+							var VariationUtils = require('*/cartridge/scripts/product/VariationUtilsSfra.js');
+						    var context = VariationUtils.getContext(pdict);
+						    var hasVariant = false;
+						</isscript>
+						<isset name="benefitsSection2ImageUrl" value="${getBlogMediaUrl(compareProduct.custom.benefitsSection2Image,'category')}" scope="page"/>
+						<a href="${URLUtils.url('Product-Show', 'pid', compareProduct.ID, 'compare_category', categoryId)}" class="compare-product-img-link" data-pid="${compareProduct.ID}">
+							<img data-pid="${compareProduct.ID}" alt="${compareProduct.name}" class="comapare-product-img img-fluid lazyImage" data-src="${benefitsSection2ImageUrl}"/>
+						</a>
+						<div class="product-name mb-2">
+							<a class="product-link-view" href="${URLUtils.url('Product-Show', 'pid', compareProduct.ID, 'compare_category', categoryId)}" data-pid="${compareProduct.ID}">
+								<isprint value="${compareProduct.name}" />
+							</a>
+						</div>
+						<isif condition="${context.isValidProductType}">
+							<isloop items="${context.attrs}" var="attr">
+								<isif condition="${attr.hasSwatch && attr.values.length > 1}">
+									<isif condition="${attr.attributeId == 'color'}">
+										<div class="color-variant d-flex mb-2">
+											<isloop items="${attr.values}" var="attrValue" status="attrStatus">
+												<isif condition="${compareProduct.ID === attrValue.productID}">
+													<input type="hidden" id="pearlProdID" value="${compareProduct.ID}">
+												</isif>
+												<div class="color-img mr-2 variant-selection-plp ${attrValue.swatchClass == 'selectable selected' ? 'selected' : ''}" href="${attrValue.plpVariantLinkUrl}" data-attrid="${attrValue.productID}" data-cgid=${categoryId}>
+												<isscript>
+												hasVariant=true;
+												</isscript>
+													<img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, attrValue.swatchImageUrl)}" alt="color - ${attrValue.displayValue}"/>
+												</div>
+											</isloop>
+										</div>
+									</isif>
+								</isif>
+							</isloop>
+						</isif>
+					</td>
+				</isloop>
+			</tr>
+			<tr class="action-row">
+				<isloop items="${pdict.productList}" var="compareProduct" status="status">
+				<isset name="Product" value="${compareProduct}" scope="pdict"/>
+				<isscript>
+					let avm = pdict.Product.availabilityModel;
+					let available = avm.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK
+					&& avm.inventoryRecord != null
+					&& avm.inventoryRecord.stockLevel.available;
+					var comingSoonMsg = (pdict.Product.custom.oosProductStatus.value)?pdict.Product.custom.oosProductStatus.value:"";
+
+					// Added for mParticle and other analytics
+					var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+					var productInfo = mParticleUtil.getProductInfo(pdict.Product);
+				</isscript>
+				<div style="display: none;">
+					<isinclude template="product/components/valuepricing"/>
+				</div>
+					<td>
+						<isif condition="${(comingSoonMsg == 'comingsoon')}">
+							<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" title="${pdict.Product.name + ' coming soon link'}"><button class="btn btn-md btn-outline-dark btn-block compare-atb">${Resource.msg('global.comingsoon', 'locale', null)}</button></a>
+						<iselseif condition="${available != true}">
+					 		<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" title="${pdict.Product.name + ' out of stock'}"><button class="btn btn-md btn-outline-dark btn-block compare-atb" tabindex="0"  data-pid="${pdict.Product.ID}">${Resource.msg('global.outofstock', 'locale', null)}</button></a>
+					 	<iselse/>
+							<button class="btn btn-md btn-outline-dark btn-block compare-atb compare-add-to-bag" data-toggle="modal" data-pid="${pdict.Product.ID}" data-price="${pdict.Product.priceModel.getPrice().value}" data-productname="${pdict.Product.name}" data-url="${URLUtils.url('Product-Show', 'pid', pdict.Product.ID)}" data-product-info="${JSON.stringify(productInfo)}">Add to Bag - <isprint value="${pdict.Product.priceModel.getPrice().value}" formatter="$#0"/> </button>
+						</isif>
+					</td>
+				</isloop>
+			</tr>
+			<isloop items="${pdict.attributegroups}" var="attributeGroup">
+				<isloop items="${attributeGroup.attributes}" var="attribute">
+					<isset name="isAllEmpty" value="true" scope="page"/>
+					<isloop items="${pdict.productList}" var="compareProduct">
+						<isif condition="${attribute.descriptor.ID in compareProduct || attribute.descriptor.ID in compareProduct.custom}">
+							<isset name="isAllEmpty" value="false" scope="page"/>
+						</isif>
+					</isloop>
+					<isif condition="${isAllEmpty == 'false' && attribute.descriptor.ID !== 'comparisonAttribute3' && attribute.descriptor.ID !== 'comparisonAttribute4'}">
+						<tr class="row-heading">
+								<td colspan="${pdict.comparisonProductsSize}">
+									<div class="sticky-container">
+										<div class="sticky-element"><isprint value="${attribute.displayName}"/></div>
+									</div>
+								</td>
+						</tr>
+						<tr>
+							<isloop items="${pdict.productList}" var="compareProduct" status="status">
+								<isif condition="${attribute.descriptor.ID in compareProduct}">
+									<isset name="value" value="${compareProduct[attribute.descriptor.ID]}" scope="page"/>
+								<iselseif condition="${attribute.descriptor.ID in compareProduct.custom}">
+									<isset name="value" value="${compareProduct.custom[attribute.descriptor.ID]}" scope="page"/>
+								<iselse>
+									<isset name="value" value="-" scope="page"/>
+								</isif>
+
+								<td class="">
+									<iscomment>special formatting for some types</iscomment>
+									<isif condition="${value == '-'}">
+										<isprint value="${value}"/>
+									<iselse/>
+										<isprint value="${compareProduct.getAttributeModel().getDisplayValue(attribute.descriptor)}" encoding="off"/>
+									</isif>
+								</td>
+							</isloop>
+						</tr>
+					</isif>
+				</isloop>
+			</isloop>
+		</tbody>
+	</table>
+	</div>
+</section>
+</div>

@@ -1,0 +1,64 @@
+{
+  "name": "Card Panel",
+  "description": "Panel Component for 3 Column Layout",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "images",
+      "name": "Image Block",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "image",
+          "name": "Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "textcontent",
+      "name": "Text Block",
+      "description": "The text content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "header",
+          "name": "Heading",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "description",
+          "name": "Body Text",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "buttonText",
+          "name": "CTA Text",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "buttonLink",
+          "name": "URL Link",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "buttonAriaLabel",
+          "name": "Aria Label",
+          "type": "string",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

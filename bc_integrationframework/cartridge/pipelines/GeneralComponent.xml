@@ -1,0 +1,3520 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="integrationframework" type="job">
+  <branch basename="DateCondition">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="DateCondition" secure="false"/>
+        <node-display x="2" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Init Parameter" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('date')" key="From_0"/>
+          <key-binding alias="Time" key="To_0"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="new dw.util.Calendar()" key="From_1"/>
+          <key-binding alias="CurrentTime.setTimeZone(dw.system.System.getInstanceTimeZone())" key="From_2"/>
+          <key-binding alias="CurrentTime" key="To_1"/>
+          <key-binding alias="DoIt" key="To_2"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('mode')" key="From_3"/>
+          <key-binding alias="Mode" key="To_3"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Mode == 'NOW_AFTER_X'" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="TimeTime.setTime(TimeTime.getTime() - 1)" key="From_2"/>
+                <key-binding alias="DoIt" key="To_2"/>
+                <key-binding alias="Time.setTime(TimeTime)" key="From_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+                <key-binding alias="Time.getTime()" key="From_1"/>
+                <key-binding alias="TimeTime" key="To_1"/>
+                <key-binding alias="Time.add(dw.util.Calendar.DAY_OF_YEAR, 1)" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="DoIt" key="To_3"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="2"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <transition target-connector="in2" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="1" y="0"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="Mode == 'NOW_BEFORE_X'" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="CurrentTime.before(Time)" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <end-node name="OK"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="ERROR"/>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-2"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="CurrentTime.after(Time)" condition-operator="expr"/>
+        <node-display x="2" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="SUSPEND"/>
+        <node-display x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="TimeCondition">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="TimeCondition" secure="false"/>
+        <node-display x="3" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('time')" key="From_0"/>
+          <key-binding alias="Time" key="To_0"/>
+          <key-binding alias="Time.set(dw.util.Calendar.YEAR, CurrentTime.get(dw.util.Calendar.YEAR))" key="From_4"/>
+          <key-binding alias="DoIt" key="To_4"/>
+          <key-binding alias="Time.set(dw.util.Calendar.MONTH, CurrentTime.get(dw.util.Calendar.MONTH))" key="From_5"/>
+          <key-binding alias="DoIt" key="To_5"/>
+          <key-binding alias="Time.set(dw.util.Calendar.DAY_OF_YEAR, CurrentTime.get(dw.util.Calendar.DAY_OF_YEAR))" key="From_6"/>
+          <key-binding alias="DoIt" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="new dw.util.Calendar()" key="From_1"/>
+          <key-binding alias="CurrentTime.setTimeZone(dw.system.System.getInstanceTimeZone())" key="From_2"/>
+          <key-binding alias="CurrentTime" key="To_1"/>
+          <key-binding alias="DoIt" key="To_2"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('mode')" key="From_3"/>
+          <key-binding alias="Mode" key="To_3"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="/DateCondition.2"/>
+    </segment>
+  </branch>
+  <branch basename="DateTimeCondition">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="DateTimeCondition" secure="false"/>
+        <node-display x="4" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('datetime')" key="From_0"/>
+          <key-binding alias="Time" key="To_0"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="new dw.util.Calendar()" key="From_1"/>
+          <key-binding alias="CurrentTime.setTimeZone(dw.system.System.getInstanceTimeZone())" key="From_2"/>
+          <key-binding alias="CurrentTime" key="To_1"/>
+          <key-binding alias="DoIt" key="To_2"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('mode')" key="From_3"/>
+          <key-binding alias="Mode" key="To_3"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="/DateCondition.4"/>
+    </segment>
+  </branch>
+  <branch basename="CleanUpFiles">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CleanUpFiles" secure="false"/>
+        <node-display x="10" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="((CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToArchive')!=null)||(CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToPurge')!=null))&amp;&amp;(CurrentWorkflowComponentInstance.getParameterValue('DaysToKeep')!=null)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Init Parameters" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="(CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToArchive')!=null&amp;&amp;CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToArchive')!='')?CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToArchive').split(','):new Array()" key="From_0"/>
+                <key-binding alias="DirectoriesToArchive" key="To_0"/>
+                <key-binding alias="(CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToPurge')!=null&amp;&amp;CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToPurge')!='')?CurrentWorkflowComponentInstance.getParameterValue('DirectoriesToPurge').split(','):new Array()" key="From_1"/>
+                <key-binding alias="DirectoriesToPurge" key="To_1"/>
+                <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('DaysToKeep')" key="From_2"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+                <key-binding alias="DaysToKeep" key="To_2"/>
+                <key-binding alias="!empty(CurrentWorkflowComponentInstance.getParameterValue('FilePattern')) ? CurrentWorkflowComponentInstance.getParameterValue('FilePattern') : '.*'" key="From_3"/>
+                <key-binding alias="FilePattern" key="To_3"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="Init Directory for !FilePattern.match(File.name)" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="dw.io.File(&quot;TEMP/DontArchiveTheseFiles&quot;)" key="From_0"/>
+                <key-binding alias="DontArchiveTheseFiles" key="To_0"/>
+                <key-binding alias="DontArchiveTheseFiles.mkdirs()" key="From_1"/>
+                <key-binding alias="DoIt" key="To_1"/>
+                <key-binding alias="dw.io.File(&quot;TEMP/DontPurgeTheseFiles&quot;)" key="From_2"/>
+                <key-binding alias="DontPurgeTheseFiles" key="To_2"/>
+                <key-binding alias="DontPurgeTheseFiles.mkdirs()" key="From_3"/>
+                <key-binding alias="DoIt" key="To_3"/>
+                <key-binding alias="dw.util.HashMap()" key="From_4"/>
+                <key-binding alias="DontArchiveFileMap" key="To_4"/>
+                <key-binding alias="dw.util.HashMap()" key="From_5"/>
+                <key-binding alias="DontPurgeFileMap" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <loop-node element-key="DirectoryToArchive" iterator-key="DirectoriesToArchive"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="do">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <config-property key="OnError" value="PIPELET_ERROR"/>
+                      <config-property key="ScriptFile" value="utils/GetFilesFromDirectory.ds"/>
+                      <key-binding alias="null" key="ScriptLog"/>
+                      <key-binding alias="FilePattern" key="FilePattern"/>
+                      <key-binding alias="dw.io.File(DirectoryToArchive)" key="Directory"/>
+                      <key-binding alias="false" key="OnlyFiles"/>
+                      <key-binding alias="true" key="RecursiveSearch"/>
+                      <key-binding alias="ASCENDING" key="SortDirection"/>
+                      <key-binding alias="FileList" key="FileList"/>
+                      <key-binding alias="true" key="NegateFilePattern"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in1" target-path="../../+2"/>
+                    </branch>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <pipelet-node custom-name="Add file list of current dir to map" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <key-binding alias="DoIt" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                      <key-binding alias="DontArchiveFileMap.put(DirectoryToArchive, FileList)" key="From_0"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <loop-node element-key="aFile" iterator-key="FileList"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="do">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <config-property key="OnError" value="PIPELET_ERROR"/>
+                            <config-property key="ScriptFile" value="utils/MoveOnlyFilesCopyDirs.ds"/>
+                            <key-binding alias="null" key="ScriptLog"/>
+                            <key-binding alias="aFile" key="SourceFile"/>
+                            <key-binding alias="DontArchiveTheseFiles" key="TragetLocation"/>
+                            <key-binding alias="DontArchiveTheseFiles" key="TragetDir"/>
+                            <key-binding alias="dw.io.File(DirectoryToArchive)" key="DirToArchive"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in2" target-path="../../../+3"/>
+                          </branch>
+                        </node>
+                        <transition target-connector="loop" target-path="..">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                            <bend-point relative-to="source" x="-1" y="1"/>
+                            <bend-point relative-to="target" x="-1" y="0"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1">
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="target" x="1" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="2"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="-2" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="-5"/>
+                  </node>
+                  <transition target-connector="loop" target-path=".."/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="2"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="3"/>
+            </node>
+            <transition target-connector="in" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="target" x="2" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <loop-node element-key="DirectoryToPurge" iterator-key="DirectoriesToPurge"/>
+              <node-display x="-1" y="2"/>
+              <branch basename="b2" source-connector="do">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <pipelet-node custom-name="Add file list of current dir to map" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <key-binding alias="DontArchiveFileMap.put(DirectoryToPurge, FileList)" key="From_0"/>
+                      <key-binding alias="DoIt" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition/>
+                  <node>
+                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <config-property key="OnError" value="PIPELET_ERROR"/>
+                      <config-property key="ScriptFile" value="utils/GetFilesFromDirectory.ds"/>
+                      <key-binding alias="null" key="ScriptLog"/>
+                      <key-binding alias="FilePattern" key="FilePattern"/>
+                      <key-binding alias="dw.io.File(DirectoryToPurge)" key="Directory"/>
+                      <key-binding alias="false" key="OnlyFiles"/>
+                      <key-binding alias="true" key="RecursiveSearch"/>
+                      <key-binding alias="ASCENDING" key="SortDirection"/>
+                      <key-binding alias="FileList" key="FileList"/>
+                      <key-binding alias="true" key="NegateFilePattern"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in1" target-path="../../+4"/>
+                    </branch>
+                  </node>
+                  <transition target-connector="in" target-path="./+1">
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+                <segment>
+                  <node>
+                    <loop-node element-key="aFile" iterator-key="FileList"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="do">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <config-property key="OnError" value="PIPELET_ERROR"/>
+                            <config-property key="ScriptFile" value="utils/MoveOnlyFilesCopyDirs.ds"/>
+                            <key-binding alias="null" key="ScriptLog"/>
+                            <key-binding alias="aFile" key="SourceFile"/>
+                            <key-binding alias="DontPurgeTheseFiles" key="TragetLocation"/>
+                            <key-binding alias="DontPurgeTheseFiles" key="TragetDir"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in2" target-path="../../../+5"/>
+                          </branch>
+                        </node>
+                        <transition target-connector="loop" target-path="..">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                            <bend-point relative-to="source" x="-1" y="1"/>
+                            <bend-point relative-to="target" x="-1" y="0"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1">
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="target" x="1" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="2"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="-2" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="-5"/>
+                  </node>
+                  <transition target-connector="loop" target-path=".."/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="6"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="-1" y="0"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node custom-name="Init Itrators of moved files map" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="DontArchiveFileMap.keySet().iterator()" key="From_0"/>
+                <key-binding alias="DontArchiveFileMapKeyIter" key="To_0"/>
+                <key-binding alias="DontPurgeFileMap.keySet().iterator()" key="From_1"/>
+                <key-binding alias="DontPurgeFileMapKeyIter" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <loop-node element-key="aDir" iterator-key="DontArchiveFileMapKeyIter"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="do">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <loop-node element-key="DATFElement" iterator-key="DontArchiveFileMap.get(aDir)"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="do">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <config-property key="OnError" value="PIPELET_ERROR"/>
+                            <config-property key="ScriptFile" value="utils/MoveOnlyFilesCopyDirs.ds"/>
+                            <key-binding alias="null" key="ScriptLog"/>
+                            <key-binding alias="DATFElement" key="SourceFile"/>
+                            <key-binding alias="DontPurgeTheseFiles" key="TragetLocation"/>
+                            <key-binding alias="dw.io.File(aDir)" key="TragetDir"/>
+                            <key-binding alias="DontArchiveTheseFiles" key="SourceDir"/>
+                            <key-binding alias="true" key="CopyBack"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in2" target-path="../../../+8"/>
+                          </branch>
+                        </node>
+                        <transition target-connector="loop" target-path="..">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                            <bend-point relative-to="source" x="-1" y="1"/>
+                            <bend-point relative-to="target" x="-1" y="0"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="loop" target-path="..">
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="source" x="1" y="4"/>
+                      <bend-point relative-to="source" x="-2" y="4"/>
+                      <bend-point relative-to="target" x="-2" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="3" y="0"/>
+                <bend-point relative-to="target" x="3" y="-1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <loop-node element-key="aDir" iterator-key="DontPurgeFileMapKeyIter"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="do">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <loop-node element-key="DPTFElement" iterator-key="DontPurgeFileMap.get(aDir)"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="do">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <config-property key="OnError" value="PIPELET_ERROR"/>
+                            <config-property key="ScriptFile" value="utils/MoveOnlyFilesCopyDirs.ds"/>
+                            <key-binding alias="null" key="ScriptLog"/>
+                            <key-binding alias="DPTFElement" key="SourceFile"/>
+                            <key-binding alias="DontPurgeTheseFiles" key="TragetLocation"/>
+                            <key-binding alias="dw.io.File(aDir)" key="TragetDir"/>
+                            <key-binding alias="DontPurgeTheseFiles" key="SourceDir"/>
+                            <key-binding alias="true" key="CopyBack"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in2" target-path="../../../+9"/>
+                          </branch>
+                        </node>
+                        <transition target-connector="loop" target-path="..">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                            <bend-point relative-to="source" x="-1" y="1"/>
+                            <bend-point relative-to="target" x="-1" y="0"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="loop" target-path="..">
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="source" x="1" y="5"/>
+                      <bend-point relative-to="source" x="-2" y="5"/>
+                      <bend-point relative-to="target" x="-2" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="Delete temp folders" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <description>Delete temp folders  of files which not be archived or purged</description>
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="DontArchiveTheseFiles.remove()" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="DontPurgeTheseFiles.remove()" key="From_1"/>
+                <key-binding alias="DoIt" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="1" y="3"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="utils/ArchiveAndDeleteOldFiles.ds"/>
+                <key-binding alias="null" key="ScriptLog"/>
+                <key-binding alias="DirectoriesToArchive" key="DirectoriesToArchive"/>
+                <key-binding alias="DirectoriesToPurge" key="DirectoriesToPurge"/>
+                <key-binding alias="DaysToKeep" key="DaysToKeep"/>
+                <key-binding alias="FilePattern" key="FilePattern"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="error">
+                <transition target-connector="in1" target-path="../+10"/>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="Log successful end" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;Old files successfully removed/archived.&quot;,'INFO')" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="4"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="3"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="3"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="4"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Log error end" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;An error occurred while removing/archiving old files.&quot;,'ERROR')" key="From_0"/>
+          <key-binding alias="DoIt" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="ERROR"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildIndexes">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildIndexes" secure="false"/>
+        <node-display x="14" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="CurrentWorkflowComponentInstance.getParameterValue('ProductIndexes') === true" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="product"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="synonym"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="suggest"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="4"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="CurrentWorkflowComponentInstance.getParameterValue('AvailabilityIndex') === true" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="availability"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+          <bend-point relative-to="target" x="2" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="CurrentWorkflowComponentInstance.getParameterValue('ContentIndex') === true" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="content"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+          <bend-point relative-to="target" x="2" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildActiveDataIndex">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildActiveDataIndex" secure="false"/>
+        <node-display x="18" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('Asynchronous')).valueOf()" key="From_0"/>
+          <key-binding alias="Asynchronous" key="To_0"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('FullRebuild')).valueOf()" key="From_1"/>
+          <key-binding alias="FullRebuild" key="To_1"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('RebuildAllSites')).valueOf()" key="From_2"/>
+          <key-binding alias="RebuildAllSites" key="To_2"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Asynchronous" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="0" y="2"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                            <config-property key="IndexerType" value="Full"/>
+                            <config-property key="IndexerMode" value="Asynchronous"/>
+                            <config-property key="Index" value="activedata"/>
+                            <config-property key="IndexScope" value="AllSites"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="1"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="activedata"/>
+                      <config-property key="IndexScope" value="CurrentSite"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Incremental"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="activedata"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Asynchronous"/>
+                <config-property key="Index" value="activedata"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Synchronous"/>
+                      <config-property key="Index" value="activedata"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="activedata"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="2"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="activedata"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+          <config-property key="IndexerType" value="Incremental"/>
+          <config-property key="IndexerMode" value="Synchronous"/>
+          <config-property key="Index" value="activedata"/>
+          <config-property key="IndexScope" value="CurrentSite"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_7">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="17" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_8">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="17" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_9">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="23" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_10">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="23" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildProductAvailabilityIndex">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildProductAvailabilityIndex" secure="false"/>
+        <node-display x="24" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('Asynchronous')).valueOf()" key="From_0"/>
+          <key-binding alias="Asynchronous" key="To_0"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('FullRebuild')).valueOf()" key="From_1"/>
+          <key-binding alias="FullRebuild" key="To_1"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('RebuildAllSites')).valueOf()" key="From_2"/>
+          <key-binding alias="RebuildAllSites" key="To_2"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Asynchronous" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="0" y="2"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                            <config-property key="IndexerType" value="Full"/>
+                            <config-property key="IndexerMode" value="Asynchronous"/>
+                            <config-property key="Index" value="availability"/>
+                            <config-property key="IndexScope" value="AllSites"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="1"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="availability"/>
+                      <config-property key="IndexScope" value="CurrentSite"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Incremental"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="availability"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Asynchronous"/>
+                <config-property key="Index" value="availability"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Synchronous"/>
+                      <config-property key="Index" value="availability"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="availability"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="2"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="availability"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+          <config-property key="IndexerType" value="Incremental"/>
+          <config-property key="IndexerMode" value="Synchronous"/>
+          <config-property key="Index" value="availability"/>
+          <config-property key="IndexScope" value="CurrentSite"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildContentSearchIndex">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildContentSearchIndex" secure="false"/>
+        <node-display x="30" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('Asynchronous')).valueOf()" key="From_0"/>
+          <key-binding alias="Asynchronous" key="To_0"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('FullRebuild')).valueOf()" key="From_1"/>
+          <key-binding alias="FullRebuild" key="To_1"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('RebuildAllSites')).valueOf()" key="From_2"/>
+          <key-binding alias="RebuildAllSites" key="To_2"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Asynchronous" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="0" y="2"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                            <config-property key="IndexerType" value="Full"/>
+                            <config-property key="IndexerMode" value="Asynchronous"/>
+                            <config-property key="Index" value="content"/>
+                            <config-property key="IndexScope" value="AllSites"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="1"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="content"/>
+                      <config-property key="IndexScope" value="CurrentSite"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Incremental"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="content"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Asynchronous"/>
+                <config-property key="Index" value="content"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Synchronous"/>
+                      <config-property key="Index" value="content"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="content"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="2"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="content"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+          <config-property key="IndexerType" value="Incremental"/>
+          <config-property key="IndexerMode" value="Synchronous"/>
+          <config-property key="Index" value="content"/>
+          <config-property key="IndexScope" value="CurrentSite"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_13">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="29" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_14">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="29" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_15">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="35" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_16">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="35" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildProductSearchIndex">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildProductSearchIndex" secure="false"/>
+        <node-display x="36" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('Asynchronous')).valueOf()" key="From_0"/>
+          <key-binding alias="Asynchronous" key="To_0"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('FullRebuild')).valueOf()" key="From_1"/>
+          <key-binding alias="FullRebuild" key="To_1"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('RebuildAllSites')).valueOf()" key="From_2"/>
+          <key-binding alias="RebuildAllSites" key="To_2"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Asynchronous" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="0" y="2"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                            <config-property key="IndexerType" value="Full"/>
+                            <config-property key="IndexerMode" value="Asynchronous"/>
+                            <config-property key="Index" value="product"/>
+                            <config-property key="IndexScope" value="AllSites"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="1"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="product"/>
+                      <config-property key="IndexScope" value="CurrentSite"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Incremental"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="product"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Asynchronous"/>
+                <config-property key="Index" value="product"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Synchronous"/>
+                      <config-property key="Index" value="product"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="product"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="2"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="product"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+          <config-property key="IndexerType" value="Incremental"/>
+          <config-property key="IndexerMode" value="Synchronous"/>
+          <config-property key="Index" value="product"/>
+          <config-property key="IndexScope" value="CurrentSite"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildSearchRedirectIndex">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildSearchRedirectIndex" secure="false"/>
+        <node-display x="42" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('Asynchronous')).valueOf()" key="From_0"/>
+          <key-binding alias="Asynchronous" key="To_0"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('FullRebuild')).valueOf()" key="From_1"/>
+          <key-binding alias="FullRebuild" key="To_1"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('RebuildAllSites')).valueOf()" key="From_2"/>
+          <key-binding alias="RebuildAllSites" key="To_2"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Asynchronous" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="0" y="2"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                            <config-property key="IndexerType" value="Full"/>
+                            <config-property key="IndexerMode" value="Asynchronous"/>
+                            <config-property key="Index" value="redirect"/>
+                            <config-property key="IndexScope" value="AllSites"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="1"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="redirect"/>
+                      <config-property key="IndexScope" value="CurrentSite"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Incremental"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="redirect"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Asynchronous"/>
+                <config-property key="Index" value="redirect"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Synchronous"/>
+                      <config-property key="Index" value="redirect"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="redirect"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="2"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="redirect"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+          <config-property key="IndexerType" value="Incremental"/>
+          <config-property key="IndexerMode" value="Synchronous"/>
+          <config-property key="Index" value="redirect"/>
+          <config-property key="IndexScope" value="CurrentSite"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_19">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="41" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_20">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="41" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_21">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="47" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_22">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="47" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildSuggestIndex">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildSuggestIndex" secure="false"/>
+        <node-display x="48" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('Asynchronous')).valueOf()" key="From_0"/>
+          <key-binding alias="Asynchronous" key="To_0"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('FullRebuild')).valueOf()" key="From_1"/>
+          <key-binding alias="FullRebuild" key="To_1"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('RebuildAllSites')).valueOf()" key="From_2"/>
+          <key-binding alias="RebuildAllSites" key="To_2"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Asynchronous" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="0" y="2"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                            <config-property key="IndexerType" value="Full"/>
+                            <config-property key="IndexerMode" value="Asynchronous"/>
+                            <config-property key="Index" value="suggest"/>
+                            <config-property key="IndexScope" value="AllSites"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="1"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="suggest"/>
+                      <config-property key="IndexScope" value="CurrentSite"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Incremental"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="suggest"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Asynchronous"/>
+                <config-property key="Index" value="suggest"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Synchronous"/>
+                      <config-property key="Index" value="suggest"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="suggest"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="2"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="suggest"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+          <config-property key="IndexerType" value="Incremental"/>
+          <config-property key="IndexerMode" value="Synchronous"/>
+          <config-property key="Index" value="suggest"/>
+          <config-property key="IndexScope" value="CurrentSite"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="RebuildSynonymIndex">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="RebuildSynonymIndex" secure="false"/>
+        <node-display x="54" y="0"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('Asynchronous')).valueOf()" key="From_0"/>
+          <key-binding alias="Asynchronous" key="To_0"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('FullRebuild')).valueOf()" key="From_1"/>
+          <key-binding alias="FullRebuild" key="To_1"/>
+          <key-binding alias="new Boolean(CurrentWorkflowComponentInstance.getParameterValue('RebuildAllSites')).valueOf()" key="From_2"/>
+          <key-binding alias="RebuildAllSites" key="To_2"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="Asynchronous" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+              <node-display x="0" y="4"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+                    <node-display x="0" y="2"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="0" y="2"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                            <config-property key="IndexerType" value="Full"/>
+                            <config-property key="IndexerMode" value="Asynchronous"/>
+                            <config-property key="Index" value="synonym"/>
+                            <config-property key="IndexScope" value="AllSites"/>
+                          </pipelet-node>
+                          <node-display orientation="horizontal" x="1" y="1"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../../../+2"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="synonym"/>
+                      <config-property key="IndexScope" value="CurrentSite"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="1" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Incremental"/>
+                      <config-property key="IndexerMode" value="Asynchronous"/>
+                      <config-property key="Index" value="synonym"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Asynchronous"/>
+                <config-property key="Index" value="synonym"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+2"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="FullRebuild" condition-operator="expr"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="1" y="0"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                      <config-property key="IndexerType" value="Full"/>
+                      <config-property key="IndexerMode" value="Synchronous"/>
+                      <config-property key="Index" value="synonym"/>
+                      <config-property key="IndexScope" value="AllSites"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Full"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="synonym"/>
+                <config-property key="IndexScope" value="CurrentSite"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="RebuildAllSites" condition-operator="expr"/>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="2"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+                <config-property key="IndexerType" value="Incremental"/>
+                <config-property key="IndexerMode" value="Synchronous"/>
+                <config-property key="Index" value="synonym"/>
+                <config-property key="IndexScope" value="AllSites"/>
+              </pipelet-node>
+              <node-display orientation="horizontal" x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="UpdateSearchIndex" pipelet-set-identifier="bc_api">
+          <config-property key="IndexerType" value="Incremental"/>
+          <config-property key="IndexerMode" value="Synchronous"/>
+          <config-property key="Index" value="synonym"/>
+          <config-property key="IndexScope" value="CurrentSite"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="-1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="5"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node name="OK"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_25">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="53" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_26">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="53" y="3"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_27">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+Current Site</description>
+        </text-node>
+        <node-display x="17" y="4"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_28">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="17" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_29">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="17" y="6"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_30">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+CurrentSite</description>
+        </text-node>
+        <node-display x="17" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_31">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+Current Site</description>
+        </text-node>
+        <node-display x="23" y="4"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_32">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="23" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_33">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="23" y="6"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_34">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+CurrentSite</description>
+        </text-node>
+        <node-display x="23" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_35">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+Current Site</description>
+        </text-node>
+        <node-display x="29" y="4"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_36">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="29" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_37">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="29" y="6"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_38">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+CurrentSite</description>
+        </text-node>
+        <node-display x="29" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_39">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+Current Site</description>
+        </text-node>
+        <node-display x="35" y="4"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_40">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="35" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_41">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="35" y="6"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_42">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+CurrentSite</description>
+        </text-node>
+        <node-display x="35" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_43">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+Current Site</description>
+        </text-node>
+        <node-display x="41" y="4"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_44">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="41" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_45">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="41" y="6"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_46">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+CurrentSite</description>
+        </text-node>
+        <node-display x="41" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_47">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+Current Site</description>
+        </text-node>
+        <node-display x="47" y="4"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_48">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="47" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_49">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="47" y="6"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_50">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+CurrentSite</description>
+        </text-node>
+        <node-display x="47" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_51">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+Current Site</description>
+        </text-node>
+        <node-display x="53" y="4"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_52">
+    <segment>
+      <node>
+        <text-node>
+          <description>Synchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="53" y="5"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_53">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Incremental
+All Sites</description>
+        </text-node>
+        <node-display x="53" y="6"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_54">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="53" y="7"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_55">
+    <segment>
+      <node>
+        <text-node>
+          <description>It makes no sense to SUSPEND the component. For dates it is not possible anymore to make the condition true and for a time the execution would be done on the next day on 00:00.</description>
+        </text-node>
+        <node-display height="2" x="5" y="10"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_56">
+    <segment>
+      <node>
+        <text-node>
+          <description>Wait until the point of time is reached.</description>
+        </text-node>
+        <node-display x="7" y="10"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_57">
+    <segment>
+      <node>
+        <text-node>
+          <description>TODO @aree: If the time lies near the end of day, it is possible, that the component never ends.</description>
+        </text-node>
+        <node-display x="7" y="11"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_58">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="17" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_59">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="17" y="9"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_60">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="23" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_61">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="23" y="9"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_62">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="29" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_63">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="35" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_64">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="41" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_65">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+Current Site</description>
+        </text-node>
+        <node-display x="47" y="8"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_66">
+    <segment>
+      <node>
+        <text-node>
+          <description>Asynchronous
+Full
+All Sites</description>
+        </text-node>
+        <node-display x="53" y="8"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

@@ -1,0 +1,55 @@
+<isset name="braintreeSrcPaymentMethodNonce" value="${pdict.braintree.srcConfig.braintreePaymentMethodNonce}"
+    scope="page" />
+<isset name="braintreeSrcCardDescription" value="${pdict.braintree.srcConfig.braintreeSrcCardDescription}"
+    scope="page" />
+
+<div class="tab-pane src-content js_braintree_srcContent" id="src-content" role="tabpanel"
+    data-paypal-is-hide-continue-button="${pdict.braintree.srcButtonConfig.isNeedHideContinueButton}">
+    <fieldset class="payment-form-fields">
+        <div class="alert alert-info" role="alert">
+            ${Resource.msg('braintree.checkout.src.billingaddressinfo', 'locale', null)}
+        </div>
+        <div class="form-group braintree_used_src_account">
+            <label class="form-control-label"
+                for="braintreeSrcAccountsList">${Resource.msg('braintree.checkout.src.label', 'locale', null)}</label>
+            <select name="braintreeSrcAccountsList" id="braintreeSrcAccountsList" class="form-control">
+                <option id="newSrcAccount" value="newaccount" ${!braintreeSrcCardDescription ? 'selected' : ''}>
+                    ${Resource.msg('braintree.cardlist.newcard', 'locale', null)}
+                </option>
+
+                <iscomment> session account </iscomment>
+                <option id="sessionSrcAccount"
+                    value="${braintreeSrcCardDescription}" ${braintreeSrcCardDescription ? 'selected' : ''}
+                    class="form-account"
+                    data-save="${pdict.braintree.srcConfig.isSaveSessionAccount}">
+                    ${braintreeSrcCardDescription}
+                </option>
+            </select>
+        </div>
+        <div class="braintree-billingpage-src-button js_braintree_src_button"
+            data-braintree-config="${JSON.stringify(pdict.braintree.srcButtonConfig)}">
+            <img src="${pdict.braintree.srcButtonConfig.SRCImageUrl}" alt="Visa Checkout"
+                class="v-button" role="button" />
+        </div>
+        <div class="braintreeSrcLoader braintree-loader-container">
+            <i class="braintree-loader"></i>
+        </div>
+
+         <isif condition="${customer.authenticated && pdict.braintree.prefs.vaultMode}">
+            <div id="braintreeSaveSRCContainer" class="form-group custom-control custom-checkbox">
+                <input class="custom-control-input" name="braintreeSaveSRCAccount" id="braintreeSaveSRCAccount" type="checkbox" checked="checked" value="true" />
+                <label class="custom-control-label" for="braintreeSaveSRCAccount"><span>${Resource.msg('braintree.checkout.src.saveaccount', 'locale', null)}</span></label>
+            </div>
+        </isif>
+
+        <input type="hidden" class="form-control" name="isBraintree" value="true" disabled="disabled" />
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}"
+            value="SRC" />
+        <input id="braintreeSrcCardDescription" type="hidden" name="braintreeSrcCardDescription"
+            value="${braintreeSrcCardDescription}" />
+        <input type="hidden" id="braintreeSRCNonce" name="braintreeSrcNonce"
+            value="${braintreeSrcPaymentMethodNonce}" />
+        <input type="hidden" id="braintreeSrcBillingAddress" name="braintreeSrcBillingAddress" />
+        <input type="hidden" id="braintreeSrcDeviceData" name="braintreeSrcDeviceDataInput" value=""/>
+    </fieldset>
+</div>

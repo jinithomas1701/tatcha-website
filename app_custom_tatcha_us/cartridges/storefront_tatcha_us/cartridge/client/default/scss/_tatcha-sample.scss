@@ -1,0 +1,85 @@
+.tatcha-samples,.tatcha-gwp-gift-modal {
+    z-index: 1090;
+
+    .modal-dialog {
+        @include media-breakpoint-up(md) {
+            width: 970px;
+        }
+
+
+        @include media-breakpoint-down(md) {
+            width: 100%;
+        }
+    }
+
+    .modal-header h2 {
+        line-height: 1.5;
+        text-transform: none;
+        font-size: 1rem;
+        font-weight: bolder;
+    }
+
+    .modal-body .row {
+        margin: 0;
+    }
+
+    .product-img-block {
+        position: relative;
+        margin: 0 auto;
+        max-width: 250px;
+
+        @include media-breakpoint-up(sm) {
+            max-width: 250px;
+        }
+
+
+        @include media-breakpoint-up(md) {
+            max-width: none;
+        }
+    }
+
+    .product-slot {
+        text-align: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+
+        .product-name {
+            font-size: 0.875 * $font-size-base;
+            font-weight: $font-weight-bold;
+            height: 6.2rem;
+            overflow: hidden;
+            @include media-breakpoint-up(md){
+                height: 5rem;
+            }
+            display: block;
+            &.free-sample-product-name{
+                overflow:unset;
+                .product-subtitle{
+                    line-height: 1.5;
+                    &.secondary-name-subtitle{
+                        margin-top: 0.2rem;
+                    }
+                }
+                @include media-breakpoint-up(lg){
+                    height: 4rem;
+                }
+                @include media-breakpoint-down(md){
+                    height: 4rem;
+                }
+
+                //@media(max-width:320px){
+                //    height:14rem;
+                //}
+
+                @media(max-width:767px) and (min-width:481px){
+                    height:6rem;
+                }
+            }
+            a{color:$black;}
+            .product-subtitle {
+                margin-top: 0.5rem;
+                font-size: 0.75 * $font-size-base;
+                display: block;
+            }
+        }
+    }
+}

@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<div class="saved-shipping-details radio-selector mb-4">
+	<span class="outer-section" tabindex="0">
+		<div class="address-line-item outer-section-inner" tabindex="-1">
+			<div class="selector">
+				<input checked="" type="radio" id="address1" aria-label="Select for first shipping address" name="shippingAddress">
+                <label class="address-select" for="address1">
+                	<i class="fa fa-check-circle mr-4"></i>
+                	<i class="fal fa-circle mr-4"></i>
+                </label>
+            </div>
+            <div class="address-details">
+            	<div>Full Name</div>
+            	<div>123 Main St. ,San Francisco, CA, 94015</div>
+            	<div>555-555-555</div>
+            </div>
+            <div class="address-actions text-primary">
+            	<span class="outer-section" tabindex="0"><span class="outer-section-inner" tabindex="-1">Remove</span></span> <div class="d-inline-block px-2"> | </div><span class="outer-section" tabindex="0"><span class="outer-section-inner" tabindex="-1">Edit</span></span>
+            </div>
+          </div>
+      </span>
+      <a href="#addressModal" class="text-primary add-address-link" aria-label="Add new address" data-toggle="modal">
+      <i class="fal fa-plus-circle mr-2 mt-3"></i>
+      <span class="ml-2">Add new address</span></a>
+</div>

@@ -1,0 +1,19 @@
+<iscomment>renders order totals information</iscomment><ismodule template="singlepagecheckout/components/ordertotals" name="spcordersummary" attribute="p_lineitemctnr" attribute="p_coupons" attribute="p_hide_promo_section" attribute="p_isdesktopsummary">
+<iscomment>renders mini lineitems for order summary</iscomment><ismodule template="singlepagecheckout/components/minilineitems" name="spminilineitems" attribute="p_lineitemctnr">
+<iscomment>renders product line item for order summary</iscomment><ismodule template="singlepagecheckout/components/summaryminilineitem" name="spsummaryminilineitem" attribute="p_productitem" attribute="p_samplepromoid">
+<iscomment>renders shipping summary </iscomment><ismodule template="singlepagecheckout/components/shipping/shippingsummary" name="spshippingsummary" attribute="p_checkoutobj">
+<iscomment>renders shipping address form</iscomment><ismodule template="singlepagecheckout/components/singleshipping" name="spsingleshipping" attribute="p_checkoutobj" attribute="p_singleshippingform">
+<iscomment>renders shipping address loggedIn</iscomment><ismodule template="singlepagecheckout/components/singleshippingsaved" name="spsingleshippingsaved" attribute="p_checkoutobj">
+<iscomment>renders checkout summary </iscomment><ismodule template="singlepagecheckout/components/checkoutcontainer" name="spcheckoutcontainer" attribute="p_checkoutobj" attribute="p_responsecode" attribute="p_responsemsg">
+<iscomment>renders address list </iscomment><ismodule template="singlepagecheckout/components/addressselectlist" name="spaddressselectlist" attribute="p_checkoutobj">
+<iscomment>renders address list </iscomment><ismodule template="singlepagecheckout/components/giftwrapandwarnings" name="spgiftwrapandwarnings" attribute="p_checkoutobj">
+<iscomment>renders address states (US) </iscomment><ismodule template="singlepagecheckout/components/addressstates" name="spaddressstates" attribute="p_selectedstate" attribute="p_selectedcountry" attribute="p_type">
+<iscomment>renders checkout summary</iscomment><ismodule template="singlepagecheckout/components/summary/summary" name="spsummary" attribute="p_checkoutobj">
+<iscomment>renders shipping methods only edit</iscomment><ismodule template="singlepagecheckout/shippingedit/alternateshippingmethods" name="spcshippingonly" attribute="p_checkoutobj">
+
+<iscomment>SPC Billing Page</iscomment>
+<ismodule template="singlepagecheckout/billing/spcbilling" name="spcbilling" attribute="p_checkoutobj">
+<ismodule template="singlepagecheckout/components/billing/spcbillingsummary" name="spcbillingsummary" attribute="p_checkoutObj"/>
+<ismodule template="singlepagecheckout/components/billing/spcbillingform" name="spcbillingform" attribute="p_billingaddr" attribute="p_billingaddrmodal"/>
+<ismodule template="singlepagecheckout/components/billing/spcbillingpaymentmethods" name="spcbillingpaymentmethods" attribute="p_billingaddr"/>
+<ismodule template="singlepagecheckout/shipping/giftcardonlyshipping" name="spcgiftcardonlyshipping" attribute="p_checkoutObj"/>

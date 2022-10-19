@@ -1,0 +1,106 @@
+{
+  "name": "Product Carousel",
+  "description": "Product Carousel Component",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "product_spec",
+      "name": "Product Selector",
+      "description": "Specify the product to be displayed from this product tile.",
+      "attribute_definitions": [
+        {
+          "id": "product1",
+          "name": "Product 1",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": true
+        },
+        {
+          "id": "product2",
+          "name": "Product 2",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": true
+        },
+        {
+          "id": "product3",
+          "name": "Product 3",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": true
+        },
+        {
+          "id": "product4",
+          "name": "Product 4",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": true
+        },
+        {
+          "id": "product5",
+          "name": "Product 5",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": false
+        },
+        {
+          "id": "product6",
+          "name": "Product 6",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": false
+        },
+         {
+          "id": "product7",
+          "name": "Product 7",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": false
+        },
+        {
+          "id": "product8",
+          "name": "Product 8",
+	  	  "description": "Select the product SKU to be displayed.",
+          "type": "product",
+          "required": false
+        }                                        
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margin Options for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

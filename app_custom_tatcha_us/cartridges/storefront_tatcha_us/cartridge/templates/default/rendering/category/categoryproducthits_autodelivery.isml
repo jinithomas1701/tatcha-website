@@ -1,0 +1,134 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="common/layout/page">
+<isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addCss('/css/tatcha-category-page.css');
+        assets.addJs('/js/search.js');
+
+        var pageContext = {
+            title: 'Product Search Results',
+            type: 'search',
+            ns: 'search'
+        };
+    </isscript>
+	<isscript>
+		var lincWidgetData = {};
+		lincWidgetData.pageCategory = (pdict.productSearch && pdict.productSearch.category)? pdict.productSearch.category.id : '';
+		if(customer.authenticated){
+			lincWidgetData.shopperEmail = customer.profile.email;
+		}
+	</isscript>
+	<script>
+	    try {
+	    	if (!window.dataLayer) {
+				window.dataLayer = [];
+			}
+	    	dataLayer.push(<isprint value="${pdict.gtmCategoryView}" encoding="off"/>);
+	    	dataLayer.push({'event': 'tatcha_category_view'});
+	    } catch (e) {
+
+	    }
+	</script>
+
+	<iscomment>
+		Use the decorator template based on the requested output. If
+		a partial page was requested an empty decorator is used.
+		The default decorator for the product hits page is
+		search/pt_productsearchresult.
+	</iscomment>
+
+	<iscache type="relative" minute="30" varyby="price_promotion"/>
+
+	<isinclude template="util/modules"/>
+
+	<iscomment>
+		Configured as default template for the product search results.
+		Displays a global slot with static html and the product search
+		result grid.
+	</iscomment>
+
+	<iscomment>create reporting event</iscomment>
+	<isinclude template="util/reporting/ReportSearch.isml"/>
+
+	<iscomment>
+		Render promotional content at the top of search results as global slot.
+		This content is only displayed if the search result is refined by a category.
+		If the search result is not refined by a category a global default is displayed.
+	</iscomment>
+  <div class="category-page product product-list-v2 clearfix">
+
+	<div class="header-standard">
+		<div class="container text-center" style="color:${pdict.categoryHeaderFont}">
+			<isif condition="${!empty(pdict.productSearch.category.name)}">
+				<h1 class="demo-normal"><isprint value="${pdict.productSearch.category.name}"></h1>
+				<isif condition="${!empty(pdict.productSearch.category.description)}">
+					<p><isprint value="${StringUtils.pad(pdict.productSearch.category.description,92)}"></p>
+				</isif>
+			<iselse>
+				<h1 class="demo-normal">${Resource.msg('search.header','search',null)}</h1>
+				<isif condition="${!empty(pdict.productSearch.searchKeywords)}">
+
+					<isif condition="${!empty(pdict.productSearch.suggestionPhrases)}">
+						<p class="search-message lead state-fuzzy" style="">${Resource.msg('search.nohits.message','search',null)} <strong><isprint value="${pdict.productSearch.searchKeywords}"/></strong>. ${Resource.msg('search.results.label','search',null)} <strong><isprint value="${pdict.productSearch.suggestionPhrases}"/></strong>.</p>
+					<iselse>
+						<p class="search-message lead state-normal">${Resource.msg('search.results.label','search',null)} <strong><isprint value="${pdict.productSearch.searchKeywords}"/></strong>.</p>
+					</isif>
+
+				</isif>
+			</isif>
+		</div>
+	</div>
+
+	<iscomment> Add to bag error container </iscomment>
+	<div class="container">
+		<div class="alert alert-danger page-alert m-top" role="alert" style="display: none;">Add to Bag Errors can go here.</div>
+	</div>
+
+
+	<div class="container demo-auto pt-4" style="">
+		<div class="row">
+			<div class="col-md-5">
+				<iscontentasset aid="auto-delivery-program-image"/>
+			</div>
+			<div class="col-md-7">
+				<iscontentasset aid="auto-delivery-program-description"/>
+			</div>
+		</div>
+	</div>
+
+	<isif condition="${!(pdict.productSearch == null) && !pdict.productSearch.empty}">
+		<div class="container w-100 categoryProducts">
+			<div class="product-list-row">
+				<div class="row search-products search-result-content" style="overflow: hidden; padding-top:5px;">
+					<isset name="categoryName" value="about_auto_delivery" scope="page" />
+					<isset name="currentPromoPoition" value="${0}" scope="page" />
+					<isset name="initialPromoPoition" value="${3}" scope="page" />
+					<isproductgridv1 pagingmodel="${pdict.productSearch}" category="${pdict.productSearch.category}"/>
+				</div>
+			</div>
+		</div>
+
+		<isif condition="${!empty(pdict.productSearch.category)}">
+			<isif condition="${!empty(pdict.productSearch.category.categoryDescription)}">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-8 col-sm-offset-2">
+							<div class="product-list-description">
+								<p> <isprint value="${pdict.productSearch.category.categoryDescription}"/> </p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</isif>
+		</isif>
+
+	<iselse/>
+
+		<iscomment>display no results</iscomment>
+		<div class="no-results">
+			${Resource.msg('productresultarea.noresults','search',null)}
+		</div>
+
+	</isif>
+ </div>
+</isdecorate>

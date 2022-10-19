@@ -1,0 +1,69 @@
+<!--- TEMPLATENAME: nextorders.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isif condition="${ !empty(ordersList) && ordersList.length > 0 }" >
+    <ul class="orders">
+        <isloop items="${ordersList}" var="order">
+            <li>
+                <span class="orders-date">
+                    ${new Date(order.createdAt).toLocaleDateString("en-US")}
+                    <isif condition="${order.status === order.constructor.STATUS_PAUSED}">
+                        <span>${Resource.msg('smartorderrefill.account.pause', 'account', null)}</span>
+                    </isif>
+                </span>
+
+                <span class="orders-buttons">
+                    <isif condition="${order.status != order.constructor.STATUS_CCEXPIRED && order.status != order.constructor.STATUS_OUTOFSTOCK}" >
+                        <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'oid', order.ID, 'action', 'view')}" id='subscriptionOrders__view-button' class="order view sorlink visually-hidden" >
+                            <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTYuMC4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDU2MSA1NjEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDU2MSA1NjE7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4KPGc+Cgk8ZyBpZD0idmlzaWJpbGl0eSI+CgkJPHBhdGggZD0iTTI4MC41LDg5LjI1QzE1Myw4OS4yNSw0My4zNSwxNjguMywwLDI4MC41YzQzLjM1LDExMi4yLDE1MywxOTEuMjUsMjgwLjUsMTkxLjI1UzUxNy42NSwzOTIuNyw1NjEsMjgwLjUgICAgQzUxNy42NSwxNjguMyw0MDgsODkuMjUsMjgwLjUsODkuMjV6IE0yODAuNSw0MDhDMjA5LjEsNDA4LDE1MywzNTEuOSwxNTMsMjgwLjVjMC03MS40LDU2LjEtMTI3LjUsMTI3LjUtMTI3LjUgICAgYzcxLjQsMCwxMjcuNSw1Ni4xLDEyNy41LDEyNy41QzQwOCwzNTEuOSwzNTEuOSw0MDgsMjgwLjUsNDA4eiBNMjgwLjUsMjA0Yy00My4zNSwwLTc2LjUsMzMuMTUtNzYuNSw3Ni41ICAgIGMwLDQzLjM1LDMzLjE1LDc2LjUsNzYuNSw3Ni41YzQzLjM1LDAsNzYuNS0zMy4xNSw3Ni41LTc2LjVDMzU3LDIzNy4xNSwzMjMuODUsMjA0LDI4MC41LDIwNHoiIGZpbGw9IiM3ZmJjMDAiLz4KCTwvZz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />
+                            <span><isprint value="${Resource.msg('smartorderrefill.view','smartorderrefill', null)}"/></span>
+                        </span>
+                        <isif condition="${order.type == order.constructor.TYPE_SOR}" > 
+                            <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'oid', order.ID, 'action', order.constructor.STATUS_CANCELED)}" 
+                                    data-title="${Resource.msg('smartorderrefill.skiporder.title', 'smartorderrefill', null)}" 
+                                    data-content="${Resource.msg('smartorderrefill.skiporder.message', 'smartorderrefill', null)}" 
+                                    data-yes="${Resource.msg('smartorderrefill.dialog.button.yes', 'smartorderrefill', null)}" 
+                                    data-no="${Resource.msg('smartorderrefill.dialog.button.no', 'smartorderrefill', null)}" 
+                                    class="order skip sorlink visually-hidden sorshowmodal">
+                                    <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzLjMzMSAyMy4zMzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIzLjMzMSAyMy4zMzE7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4Ij4KPGc+Cgk8cGF0aCBkPSJNMTYuMDQzLDExLjY2N0wyMi42MDksNS4xYzAuOTYzLTAuOTYzLDAuOTYzLTIuNTM5LDAtMy41MDJsLTAuODc1LTAuODc1ICAgYy0wLjk2My0wLjk2NC0yLjUzOS0wLjk2NC0zLjUwMiwwTDExLjY2Niw3LjI5TDUuMDk5LDAuNzIzYy0wLjk2Mi0wLjk2My0yLjUzOC0wLjk2My0zLjUwMSwwTDAuNzIyLDEuNTk4ICAgYy0wLjk2MiwwLjk2My0wLjk2MiwyLjUzOSwwLDMuNTAybDYuNTY2LDYuNTY2bC02LjU2Niw2LjU2N2MtMC45NjIsMC45NjMtMC45NjIsMi41MzksMCwzLjUwMWwwLjg3NiwwLjg3NSAgIGMwLjk2MywwLjk2MywyLjUzOSwwLjk2MywzLjUwMSwwbDYuNTY3LTYuNTY1bDYuNTY2LDYuNTY1YzAuOTYzLDAuOTYzLDIuNTM5LDAuOTYzLDMuNTAyLDBsMC44NzUtMC44NzUgICBjMC45NjMtMC45NjMsMC45NjMtMi41MzksMC0zLjUwMUwxNi4wNDMsMTEuNjY3eiIgZmlsbD0iI2Y1NmE0NyIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />
+                                    <span><isprint value="${Resource.msg('smartorderrefill.skip', 'smartorderrefill', null)}"/></span>
+                            </span>
+                            <isif condition="${!pdict.refillCustomer.preferences.SorPauseSubscription}">
+                                
+                                <isif condition="${order.status === order.constructor.STATUS_PAUSED}" >
+                                    <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'oid', order.ID, 'action', 'reactivate')}" class="order reactivate sorlink visually-hidden">
+                                        <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzMi4xNTMgMjMyLjE1MyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjMyLjE1MyAyMzIuMTUzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCI+CjxnIGlkPSJQbGF5Ij4KCTxwYXRoIHN0eWxlPSJmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDsiIGQ9Ik0yMDMuNzkxLDk5LjYyOEw0OS4zMDcsMi4yOTRjLTQuNTY3LTIuNzE5LTEwLjIzOC0yLjI2Ni0xNC41MjEtMi4yNjYgICBjLTE3LjEzMiwwLTE3LjA1NiwxMy4yMjctMTcuMDU2LDE2LjU3OHYxOTguOTRjMCwyLjgzMy0wLjA3NSwxNi41NzksMTcuMDU2LDE2LjU3OWM0LjI4MywwLDkuOTU1LDAuNDUxLDE0LjUyMS0yLjI2NyAgIGwxNTQuNDgzLTk3LjMzM2MxMi42OC03LjU0NSwxMC40ODktMTYuNDQ5LDEwLjQ4OS0xNi40NDlTMjE2LjQ3MSwxMDcuMTcyLDIwMy43OTEsOTkuNjI4eiIgZmlsbD0iIzRlOTdlMiIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />
+                                        <span>
+                                            <isprint value="${Resource.msg('smartorderrefill.reactivate', 'smartorderrefill', null)}"/>
+                                        </span>
+                                    </span>
+                                <iselse>
+                                    <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'oid', order.ID, 'action', order.constructor.STATUS_PAUSED)}" 
+                                            data-title="${Resource.msg('smartorderrefill.pauseorder.title', 'smartorderrefill', null)}" 
+                                            data-content="${Resource.msg('smartorderrefill.pauseorder.message', 'smartorderrefill', null)}" 
+                                            data-yes="${Resource.msg('smartorderrefill.dialog.button.yes', 'smartorderrefill', null)}" 
+                                            data-no="${Resource.msg('smartorderrefill.dialog.button.no', 'smartorderrefill', null)}"
+                                            class="order pause sorlink visually-hidden sorshowmodal">
+                                            <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzMi42NzkgMjMyLjY3OSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjMyLjY3OSAyMzIuNjc5OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCI+CjxnIGlkPSJQYXVzZSI+Cgk8cGF0aCBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7IiBkPSJNODAuNTQzLDBIMzUuNzk3Yy05Ljg4NSwwLTE3Ljg5OCw4LjAxNC0xNy44OTgsMTcuODk4djE5Ni44ODMgICBjMCw5Ljg4NSw4LjAxMywxNy44OTgsMTcuODk4LDE3Ljg5OGg0NC43NDZjOS44ODUsMCwxNy44OTgtOC4wMTMsMTcuODk4LTE3Ljg5OFYxNy44OThDOTguNDQsOC4wMTQsOTAuNDI3LDAsODAuNTQzLDB6IE0xOTYuODgyLDAgICBoLTQ0Ljc0NmMtOS44ODYsMC0xNy44OTksOC4wMTQtMTcuODk5LDE3Ljg5OHYxOTYuODgzYzAsOS44ODUsOC4wMTMsMTcuODk4LDE3Ljg5OSwxNy44OThoNDQuNzQ2ICAgYzkuODg1LDAsMTcuODk4LTguMDEzLDE3Ljg5OC0xNy44OThWMTcuODk4QzIxNC43ODEsOC4wMTQsMjA2Ljc2NywwLDE5Ni44ODIsMHoiIGZpbGw9IiMyNjk4ZTgiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />
+                                            <span><isprint value="${Resource.msg('smartorderrefill.pause', 'smartorderrefill', null)}"/></span>
+                                    </span>
+                                </isif>
+                            </isif>
+                        </isif>
+                    <iselse/>
+                        <isif condition="${order.status == order.constructor.STATUS_CCEXPIRED}" >
+                            ${Resource.msg('smartorderrefill.ccexpired', 'smartorderrefill', null)}
+                        <iselse/>
+                            ${Resource.msg('smartorderrefill.outofstock', 'smartorderrefill', null)}
+                        </isif>
+                    </isif>
+                </span>
+            </li>
+        </isloop>
+    </ul>    
+<iselse>
+    <isinclude url="${URLUtils.url('Page-Include', 'cid', 'no-refill-orders')}"/>
+</isif>

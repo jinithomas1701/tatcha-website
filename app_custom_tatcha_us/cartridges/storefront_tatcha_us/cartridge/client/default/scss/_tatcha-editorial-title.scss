@@ -1,0 +1,49 @@
+.editorial-title-container{
+    width: 100%;
+    position: relative;
+    text-align:center;
+    img{
+        width: 100%;
+    }
+    .pre-header{
+        font-size: 0.875 * $font-size-base;
+        text-transform: uppercase;
+        font-weight: $font-weight-bold;
+        letter-spacing: 1.5px;
+    }
+    .heading{
+        font-size:2.375 * $font-size-base;
+    }
+    .text-container{
+        &.white{
+            color:$white;
+        }
+        &.black{
+            color:$black;
+        }
+
+        @include media-breakpoint-down(xxl) {
+            padding: 15% 0;
+        }
+        @include media-breakpoint-down(lg) {
+            padding: 10% 0;
+        }
+        @include media-breakpoint-down(sm) {
+            padding: 2rem 1rem;
+        }
+
+
+        position: absolute;
+        top:50%;
+        left: 50%;
+        transform: translate(-50%,-50%);
+
+        @include media-breakpoint-down(md) {
+            .heading{
+                font-size: 1.625rem;
+                font-weight: $font-weight-normal;
+            }
+
+        }
+    }
+}

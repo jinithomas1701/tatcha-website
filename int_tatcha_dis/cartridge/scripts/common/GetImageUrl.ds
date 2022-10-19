@@ -1,0 +1,510 @@
+/**
+* This script file returns ImageURLs based on:
+* - product : Product
+* - role : one of [original, pdpMain, pdpAlt. recommend, pdpLarge, grid, sample, minicart, cart, wishlist]
+* - color : String.
+* It also references the protocol type of the request [http or https] 
+* and the status of the userImagesTransformationServer SitePreference
+* 
+*/
+importPackage( dw.system );
+importPackage( dw.catalog );
+importPackage( dw.web );
+importPackage( dw.content );
+importPackage( dw.io );
+
+//SET THE PROTOCALL
+var strprotocall : String;
+strprotocall = request.httpProtocol;
+
+// UPDATE THIS REFERENCE WITH THE NAME OF THE MASTER CATALOG
+var CATALOG_MASTER : String = !empty(dw.catalog.CatalogMgr.getSiteCatalog()) ? dw.catalog.CatalogMgr.getSiteCatalog().ID : 'master_catalog_tatcha';
+
+function getImageUrl(product:Product, role : String, index : Number, absolute : Boolean, pageType : String) : String
+{
+	if(index == null) {
+		index = 0;
+	}
+
+	if ((product != null) || (role != null))
+	{
+		var image : MediaFile;
+		
+		var sitePrefs = Site.getCurrent().preferences;
+		
+		var cloudinaryEnabled : Boolean = 'cloudinary_enabled' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_enabled"] ? sitePrefs.getCustom()["cloudinary_enabled"] : null;
+		
+		if(cloudinaryEnabled) {
+			
+			var cloudinaryBaseUrl : String = 'cloudinary_url' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_url"] ? sitePrefs.getCustom()["cloudinary_url"] : null;
+			
+			if(cloudinaryBaseUrl) {
+		
+				var cloudinaryRegex : String = 'cloudinary_image_split_regex' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_image_split_regex"] ? sitePrefs.getCustom()["cloudinary_image_split_regex"] : null;
+			
+				image = product.getImage(Resource.msg('productImage.'+role+'.type','imagesizes',null),index);
+				
+				if ( image == null && product.hasOwnProperty('name') && product.variationModel.getVariants().length > 0 ) {
+					image = product.variationModel.getVariants()[0].getImage(Resource.msg('productImage.'+role+'.type','imagesizes',null),index);
+				}
+				if ( image != null ){
+					var relativeUrl = image.getURL().relative().toString();
+					if(cloudinaryRegex) {
+						var regex = new RegExp(cloudinaryRegex);
+						relativeUrl = relativeUrl.split(regex)[1];
+					}
+					var cloudinaryURL =  cloudinaryBaseUrl + role + relativeUrl;
+					return cloudinaryURL;
+				}
+				
+			}
+		
+		}
+
+		var useITS : Boolean = sitePrefs.custom.useImageTransformationServer;
+		var imgQuality : String;
+
+		if (useITS == null || useITS == false)
+		{
+			image = product.getImage(Resource.msg('productImage.'+role+'.type','imagesizes',null),0);
+			if ( image != null)
+			{
+				return image.url;
+			} 
+		} else {
+			
+			image = product.getImage(Resource.msg('productImage.'+role+'.type','imagesizes',null),index);
+			// use hasOwnProperty to make sure it's a product
+			if ( image == null && product.hasOwnProperty('name') && product.variationModel.getVariants().length > 0 ) {
+				image = product.variationModel.getVariants()[0].getImage(Resource.msg('productImage.'+role+'.type','imagesizes',null),index);
+			}
+			if ( image != null)
+			{
+				var resourceString : String = 'productImage.' + role + '.';
+				if(pageType == 'category') {
+					imgQuality = Site.getCurrent().preferences.custom.catPrdImgQlty;
+				}
+				
+				else if(pageType == 'pdp') {
+					imgQuality = Site.getCurrent().preferences.custom.prdImgQlty;
+				}
+				
+				if ( !empty(imgQuality)) {
+				var transform : Object = {
+					'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+					'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null)),
+					'quality': parseInt(imgQuality)
+				};
+				}
+				else {
+					var transform : Object = {
+					'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+					'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+					};
+				}
+				var url:URL = (absolute === true) ? image.getAbsImageURL(transform) : image.getImageURL(transform);	
+				return url;
+			}
+		}
+	}
+	var nullFile:String = '/images/noimagelarge.png';
+	if (role != null)
+	{
+		nullFile = '/images/noimage'+ Resource.msg('productImage.'+role+'.type', 'imagesizes', null) +'.png';
+  		var resourceString : String = 'productImage.' + role + '.';
+		var transform : Object = {
+			'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+			'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+		};
+		return URLUtils.imageURL(nullFile,transform);
+	}
+	return URLUtils.imageURL(nullFile);
+}
+
+/**
+* Return the 'alt' string for the 'large' image associated with a product
+**/
+function getImageAlt(product:Product,index:Number) : String
+{
+	if (product != null)
+	{
+		if(index != null) {
+			var image : MediaFile = product.getImage('large',index);
+		} else {
+			var image : MediaFile = product.getImage('large',0);
+		}
+		if ( image != null && image.alt != null )
+		{				
+			return image.alt;
+		} else if (product.hasOwnProperty('name')) {
+			return product.getName();
+		}
+	}
+	return "";
+}
+
+/**
+* Return the 'title' string for the 'large' image associated with a product
+**/
+function getImageTitle(product:Product,index:Number) : String
+{
+	if (product != null)
+	{
+		if(index != null) {
+			var image : MediaFile = product.getImage('large',index);
+		} else {
+			var image : MediaFile = product.getImage('large',0);
+		}
+		if ( image != null && image.title != null )
+		{				
+			return image.title;
+		} else if (product.hasOwnProperty('name')) {
+			return product.getName();
+		}
+	} 
+	return "";
+}
+
+
+function getCustomProductImage(product:Product, role : String, field : String, absolute : Boolean) : String
+{
+	if ((product != null) || (role != null))
+	{
+		var image : MediaFile;
+
+		var useITS : Boolean = Site.getCurrent().preferences.custom.useImageTransformationServer;
+
+		image = product.custom[field];
+		if ( image != null)
+		{
+			var resourceString : String = 'productImage.' + role + '.';
+			var transform : Object = {
+				'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+				'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+			};
+			var url:URL = (absolute === true) ? image.getAbsImageURL(transform) : image.getImageURL(transform);	
+			return url;
+		}
+	}
+	var nullFile:String = '/images/noimagelarge.png';
+	if (role != null)
+	{
+		nullFile = '/images/noimage'+ Resource.msg('productImage.'+role+'.type', 'imagesizes', null) +'.png';
+  		var resourceString : String = 'productImage.' + role + '.';
+		var transform : Object = {
+			'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+			'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+		};
+		return URLUtils.imageURL(nullFile,transform);
+	}
+	return URLUtils.imageURL(nullFile);
+}
+
+/**
+* Return the URL of an image (as refined by role)
+* If the ITS is not configured, then just return the URL of the image
+**/
+function refineImageUrl(image:MediaFile, role : String) : String
+{
+	if ( image != null)
+	{		
+		var useITS : Boolean = Site.getCurrent().preferences.custom.useImageTransformationServer;
+		if (useITS == null || useITS == false)
+		{
+			return image.url;
+		} else {		
+			var resourceString : String = 'productImage.' + role + '.';
+			var transform : Object = {'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'product', null))};
+			var url:URL = image.getImageURL(transform);		
+			return url;
+		}
+	} 
+
+	var nullFile:String = '/images/noimagelarge.png';
+	if (role != null)
+	{
+		nullFile = '/images/noimage'+ Resource.msg('productImage.'+role+'.type', 'product', null) +'.png';
+	}
+	var file : File = new File(File.CATALOGS + File.SEPARATOR + CATALOG_MASTER + File.SEPARATOR + "default"  + File.SEPARATOR + nullFile);
+  	if( file.exists() ) {
+  		var resourceString : String = 'productImage.' + role + '.';
+		var transform : Object = {
+			'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'product', null)),
+			'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'product', null))
+		};
+		var NoImageURL : String = URLUtils.imageURL("/images/" + file.name, transform).toString().replace("/-/", "/Sites-" + CATALOG_MASTER + "/");
+  		return NoImageURL;
+  	}	
+	return URLUtils.staticURL(nullFile);
+}
+
+
+
+function SmallImageUrl(image: MediaFile, role : String) : String
+{
+	if ( image != null)
+	{
+		var resourceString : String = 'productImage.' + role + '.';
+		var transform : Object = {'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'product', null)),
+					'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'product', null))};
+		var url:URL = image.getImageURL(transform);		
+				
+		return url;
+	} 
+	var nullFile:String = '/images/noimagelarge.png';
+	if (role != null)
+	{
+		nullFile = '/images/noimage'+ Resource.msg('productImage.'+role+'.type', 'product', null) +'.png';
+	}
+	var file : File = new File(File.CATALOGS + File.SEPARATOR + CATALOG_MASTER + File.SEPARATOR + "default"  + File.SEPARATOR + nullFile);
+  	if( file.exists() ) {
+  		var resourceString : String = 'productImage.' + role + '.';
+		var transform : Object = {
+			'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'product', null)),
+			'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'product', null))
+		};
+		var NoImageURL : String = URLUtils.imageURL("/images/" + file.name, transform).toString().replace("/-/", "/Sites-" + CATALOG_MASTER + "/");
+  		return NoImageURL;
+  	}	
+	return URLUtils.httpStatic(nullFile);
+}
+
+function getCatImageUrl(category:Category, role : String) : String
+{
+	if ((category != null) || (role != null))
+	{
+		var image : MediaFile;
+
+		var useITS : Boolean = Site.getCurrent().preferences.custom.useImageTransformationServer;
+		if (useITS == null || useITS == false)
+		{
+			image = category.image;
+			if ( image != null)
+			{
+				return image.url;
+			} 
+		} else {
+			image = category.image;
+			if ( image != null)
+			{
+				var resourceString : String = 'categoryImage.' + role + '.';
+				var transform : Object = {
+					'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+					'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+				};
+				var url:URL = image.getImageURL(transform);
+				return url;
+			} 
+		}
+	}
+	var nullFile:String = '/images/noimagelarge.png';
+	if (role != null)
+	{
+		nullFile = '/images/noimage'+ Resource.msg('categoryImage.'+role+'.type', 'imagesizes', null) +'.png';
+  		var resourceString : String = 'categoryImage.' + role + '.';
+		var transform : Object = {
+			'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+			'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+		};
+		return URLUtils.imageURL(nullFile,transform);
+	}
+	return URLUtils.imageURL(nullFile);
+}
+
+function getLibraryImageUrl(relPath: String, role : String, deviceType : String)
+{
+	if ( !empty(relPath))
+	{		
+		var useITS : Boolean = Site.getCurrent().preferences.custom.useImageTransformationServer;
+		if (useITS == null || useITS == false)
+		{
+			return relPath;
+		} else {		
+			var resourceString : String = 'libraryImage.' + role + '.' + deviceType + '.';
+			var transform : Object = {
+				'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null))
+			};	
+			var url:URL = URLUtils.httpImage( URLUtils.CONTEXT_LIBRARY, "tatcha", relPath , transform );
+			return url;
+		}
+	} 
+
+	var nullFile:String = '/images/noimagelarge.png';
+	return URLUtils.staticURL(nullFile);
+}
+
+function getMediaUrl( image : dw.content.MediaFile , role : String, absolute : Boolean ) : String
+{
+	if(image != null && role != null){
+
+		var useITS : Boolean = Site.getCurrent().preferences.custom.useImageTransformationServer;
+
+		var resourceString : String = 'image.' + role + '.';
+		var transform : Object = {
+			'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null))
+			//,'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+		};
+		var url:URL = (absolute === true) ? image.getAbsImageURL(transform) : image.getImageURL(transform);	
+		return url;
+	} 
+	var nullFile:String = '/images/noimagelarge.png';
+	if (role != null)
+	{
+		nullFile = '/images/noimage'+ Resource.msg('image.'+role+'.type', 'imagesizes', null) +'.png';
+  		var resourceString : String = 'productImage.' + role + '.';
+		var transform : Object = {
+			'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null)),
+			'scaleHeight': parseInt(Resource.msg(resourceString+'height', 'imagesizes', null))
+		};
+		return URLUtils.imageURL(nullFile,transform);
+	}
+	return URLUtils.imageURL(nullFile);
+}
+
+function getBlogMediaUrl( image : dw.content.MediaFile , pageType : String, absolute : Boolean ) : String
+{
+	if(image != null && pageType != null){
+		
+		var sitePrefs = Site.getCurrent().preferences;
+		
+		var cloudinaryEnabled : Boolean = 'cloudinary_enabled' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_enabled"] ? sitePrefs.getCustom()["cloudinary_enabled"] : null;
+		
+		if(cloudinaryEnabled) {
+					
+			var cloudinaryBaseUrl : String = 'cloudinary_url' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_url"] ? sitePrefs.getCustom()["cloudinary_url"] : null;
+			
+			var cloudinaryRegex : String = 'cloudinary_image_split_regex' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_image_split_regex"] ? sitePrefs.getCustom()["cloudinary_image_split_regex"] : null;
+			
+			if(cloudinaryBaseUrl) {
+		
+				var relativeUrl = image.getURL().relative().toString();
+				if(cloudinaryRegex) {
+					var regex = new RegExp(cloudinaryRegex);
+					relativeUrl = relativeUrl.split(regex)[1];
+				}
+				var cloudinaryURL =  cloudinaryBaseUrl + relativeUrl;
+				return cloudinaryURL;
+			
+			}
+		
+		}
+
+		var useITS : Boolean = sitePrefs.custom.useImageTransformationServer;
+		var imgQuality : String;
+		var url : URL;
+		if(pageType == 'blogIndex') {
+			imgQuality = sitePrefs.custom.blogIndexImgQlty;
+		}
+		else if (pageType == 'blogPost') {
+			imgQuality = sitePrefs.custom.blogPostImgQlty; 
+		}
+		else if (pageType == 'category') {
+			imgQuality = sitePrefs.custom.catPrdImgQlty; 
+		}
+		else if (pageType == 'pdp') {
+			imgQuality = sitePrefs.custom.prdImgQlty; 
+		}
+				
+		var transform : Object = {
+			'quality': parseInt(imgQuality)
+		};
+		
+		var url = (absolute === true) ? image.getAbsImageURL(transform) : image.getImageURL(transform);	
+		return url;
+	} 
+}
+
+function getStaticUrl(urlPath : String, role : String ) : String {
+	var resourceString : String = 'image.' + role + '.';
+	var transform : Object = {
+		'scaleWidth': parseInt(Resource.msg(resourceString+'width', 'imagesizes', null))
+	};
+	return URLUtils.imageURL(urlPath,transform);
+}
+
+function ApplyLibrarySITS(AssetBody : MarkupText, role : String) : String
+{
+	var HtmlOut : String = AssetBody.markup;
+	
+	if(!empty(AssetBody))
+	{
+		var startsAt = AssetBody.markup.indexOf("~"); 
+		var endsAt = 0;
+		var fileLoc, newFileLoc = "";
+		if(startsAt > -1)
+		{
+			endsAt = AssetBody.markup.indexOf("~", startsAt + 1); 
+			fileLoc = AssetBody.markup.substr(startsAt + 1, endsAt - startsAt - 1);
+			newFileLoc = getLibraryImageUrl(fileLoc, role, GetDeviceType());
+			HtmlOut = AssetBody.markup.substr(0, startsAt) + newFileLoc + AssetBody.markup.substr(endsAt + 1);
+		}
+	}
+	return HtmlOut;
+}
+
+function GetDeviceType()
+{
+	var deviceType : String = "desktop";
+    var iPhoneDevice : String = "iPhone";
+    var iPadDevice : String = "iPad";
+    var andriodDevice : String = "Android"; //Mozilla/5.0 (Linux; U; Android 2.3.4; en-us; ADR6300 Build/GRJ22) AppleWebKit/533.1 (KHTML, like Gecko) Version/4.0 Mobile Safari/533.1
+    
+    //var httpUserAgent : String = pdict.CurrentRequest.httpUserAgent;
+    var httpUserAgent : String = "";
+    
+    //check if the device is iPhone
+    if (httpUserAgent.indexOf(iPhoneDevice) > 1) {
+    	
+    	deviceType = "mobile";
+
+    //check if the device is Android mobile device
+    } else if (httpUserAgent.indexOf(andriodDevice) > 1) {
+    	
+    	if (httpUserAgent.indexOf("mobile") > 1) 
+	    	deviceType = "mobile";
+
+    } else if (httpUserAgent.indexOf(iPadDevice) > 1) {
+
+    	deviceType = "tablet";
+    }
+    
+	return deviceType;
+}
+
+function getCatalogImageURL(image : MediaFile) {
+	
+	if ( image != null ){
+	
+		var image : MediaFile;
+			
+		var sitePrefs = Site.getCurrent().preferences;
+		
+		var cloudinaryEnabled : Boolean = 'cloudinary_enabled' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_enabled"] ? sitePrefs.getCustom()["cloudinary_enabled"] : null;
+		
+		if(cloudinaryEnabled) {
+			
+			var cloudinaryBaseUrl : String = 'cloudinary_url' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_url"] ? sitePrefs.getCustom()["cloudinary_url"] : null;
+		
+			var cloudinaryRegex : String = 'cloudinary_image_split_regex' in sitePrefs.getCustom() && sitePrefs.getCustom()["cloudinary_image_split_regex"] ? sitePrefs.getCustom()["cloudinary_image_split_regex"] : null;
+			
+			if(cloudinaryBaseUrl) {
+			
+					var relativeUrl = image.getURL().relative().toString();
+					if(cloudinaryRegex) {
+						var regex = new RegExp(cloudinaryRegex);
+						relativeUrl = relativeUrl.split(regex)[1];
+					}
+					var cloudinaryURL =  cloudinaryBaseUrl + relativeUrl;
+					return cloudinaryURL;
+				}
+			
+		}
+		
+		
+		return image.httpURL;
+		
+	}
+	
+	return null;
+	
+}

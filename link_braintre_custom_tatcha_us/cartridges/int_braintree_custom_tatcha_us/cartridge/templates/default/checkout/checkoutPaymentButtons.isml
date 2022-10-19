@@ -1,0 +1,16 @@
+<div class="braintree-checkout-buttons-wrap ${pdict.hasPayPalPI? 'd-none': ''}">
+	<div class="d-flex">
+		<div class="w-100 mr-3 cart-pay-button after-express-btn  ${(pdict.showAfterpayPayment === true) ? '' : 'd-none'}">
+			<isinclude template="afterpay/afterpayButton" />
+		</div>
+
+		<div class="w-100 pl-0 cart-pay-button paypal-checkout-btn">
+			<isinclude template="braintree/cart/paypalButton"/>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-12 checkout-apple-pay-btn">
+			<isinclude template="braintree/checkout/applepayCheckoutButton"/>
+		</div>
+	</div>
+</div>

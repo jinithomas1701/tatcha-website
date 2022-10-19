@@ -1,0 +1,95 @@
+<iscomment>It displays the product reviews for the current product. In case of variant product, 
+it might retrieve reviews for master product depending on the site preference. It also calls
+a pipeline to retrieve reviews from Yotpo in real time. The response is cached for performance requirements. </iscomment>
+<iscontent encoding="html" />
+
+<isif condition="${dw.system.Site.getCurrent().preferences.custom.yotpoCartridgeEnabled}">
+
+		<isif condition="${!empty(pdict.product)}">
+			<isscript>
+				importPackage( dw.util );
+				importPackage( dw.web );
+				
+				var YotpoUtils = require('~/cartridge/scripts/yotpo/utils/YotpoUtils');
+				
+				var currentLocaleID : String  = YotpoUtils.getCurrentLocale(request);
+				var yotpoAppKey : String = YotpoUtils.getAppKeyForCurrentLocale(currentLocaleID);
+				var isReviewEnabled : Boolean = YotpoUtils.isReviewsEnabledForCurrentLocale(currentLocaleID);
+				var producInformationFromMaster : Boolean = dw.system.Site.getCurrent().preferences.custom.producInformationFromMaster;
+				
+				if(isReviewEnabled){
+					var product : dw.catalog.Product = pdict.product;
+					var currentProduct : dw.catalog.Product;
+					var defaultVariantproduct : dw.catalog.Product;
+					var productName = '';
+					var description = '';
+
+					currentProduct = product;
+					
+					if(product.variant) {
+						if(producInformationFromMaster) {
+							currentProduct = product.getVariationModel().master;
+						}
+					}
+					
+					
+					var model : String = currentProduct.brand;
+					
+					if(empty(model)){
+						model = "";
+					}
+					
+					var domainAddress : String = URLUtils.home(); 		
+					
+					var productURL : String = URLUtils.abs('Product-Show','pid', currentProduct.ID);
+					productURL = encodeURI(productURL);
+					
+					var regex : String = "([\/])";
+					var productID : String = YotpoUtils.escape(currentProduct.ID, regex, "-");
+					
+					var imageURL : String = encodeURI(YotpoUtils.getImageLink(currentProduct));
+					imageURL = empty(imageURL) ? "Image not available" : imageURL;
+					
+					var separator = " > ";
+                    var productCategory : String = YotpoUtils.getCategoryPath(currentProduct, separator);
+                    
+                    
+					// Changed the code to pull the info from corresponding varient
+					productName = currentProduct.name;
+					if (currentProduct.isMaster()) {
+                            defaultVariantproduct = require('app_storefront_core/cartridge/scripts/product/ProductUtils').getDefaultVariant(currentProduct.variationModel);
+                            if(defaultVariantproduct) {
+	            				imageURL = encodeURI(YotpoUtils.getImageLink(defaultVariantproduct));
+								imageURL = empty(imageURL) ? "Image not available" : imageURL;
+								productURL = URLUtils.abs('Product-Show','pid', defaultVariantproduct.ID);
+								productURL = encodeURI(productURL);				
+								if(!empty(defaultVariantproduct.name)){
+									productName = defaultVariantproduct.name;
+								}
+								model = defaultVariantproduct.brand;
+								description = defaultVariantproduct.custom.benefitsSection1;
+								productCategory = YotpoUtils.getCategoryPath(defaultVariantproduct, separator);
+							}							
+        			}                    
+                    
+				}
+			</isscript>
+			<isif condition="${isReviewEnabled}">						
+				<div id="yotpo-reviews-top-div" class="yotpo yotpo-main-widget"
+				    data-appkey="${yotpoAppKey}"
+				    data-domain="${domainAddress}"
+				    data-product-id="${productID}"
+				    data-product-models="${model}"
+				    data-name="${productName}"
+				    data-url="${productURL}"
+				    data-image-url="${imageURL}"
+				    data-description="${description}"
+				    data-bread-crumbs="${productCategory}">				    
+				</div>
+			</isif>
+		</isif>
+		
+
+		
+		
+</isif>

@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	<form class="d-inline-block navbar-search navbar-form mr-2 simple-search-desktop search-updated-form" action="${URLUtils.url('Search-Show')}" method="get" name="simpleSearch" style="position: relative;">
+	  <div class="input-group dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+	    <div class="sr-only" id="serach-suggestion-notification" aria-live="assertive" aria-atomic="true"></div>
+	    <span class="input-group-addon"><i class="fal fa-search search-icon-spec"></i></span>
+	    <input id="q" name="q" type="text" class="form-control" data-toggle="tooltip" data-placement="bottom" title="Search" placeholder="Search" aria-label="Enter text to search">
+	  </div>
+	</form>
+ </iscomment>
+<div class="input-group dropdown-toggle" aria-haspopup="true" aria-expanded="false">
+    <div class="sr-only" id="serach-suggestion-notification" aria-live="assertive" aria-atomic="true"></div>
+    <span class="input-group-addon" data-target="#searchDesktopModal" data-toggle="modal" tabindex="0" role="button" aria-label="Click here to search"><i class="fal fa-search search-icon-spec"></i></span>    
+</div>

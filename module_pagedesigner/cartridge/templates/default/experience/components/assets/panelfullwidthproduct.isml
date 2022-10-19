@@ -1,0 +1,66 @@
+<iscache type="relative" hour="24"/>
+<isinclude template="util/modules"/>
+<isinclude template="product/components/modals"/>
+<div class="container-fluid container-fluid-max container-flush">
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> style="background-color: ${pdict.bgColor}" class="${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''} panel-fullwidth-product row no-gutters <isif condition="${pdict.desktopLayout === 'Text Left - Image Right'}">flex-row-reverse</isif>">
+	<isif condition="${!empty(pdict.product)}">
+		<isset name="PriceModel" value="${pdict.product.getPriceModel()}" scope="page"/>
+		<isset name="SalesPrice" value="${PriceModel.getPrice()}" scope="page"/>
+		
+		<div class="col-12 col-md-6 panel-image">
+			<a href="${URLUtils.http('Product-Show','pid', pdict.product.ID)}">
+        		<img data-src="${pdict.desktopImage.src.desktop}" alt="${pdict.imageAlt}" class="img-fluid lazyImage" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}"/>
+        	</a>
+	    </div>
+	    <div class="col-12 col-md-6">
+	        <div class="text-container">
+	            <div class="product-info">
+	                <div class="product-name">
+	                	<a href="${URLUtils.http('Product-Show','pid', pdict.product.ID)}">
+	                		<isprint value="${pdict.product.name.substring(0,48)}" />
+	                	</a>
+	                </div>
+	                <isif condition="${pdict.body}">
+	                	<isprint value="${pdict.body}" />
+	                </isif>
+	            </div>
+	            <isscript>
+	            	var productVariantFullName = (pdict.product && pdict.product.custom && !empty(pdict.product.custom.size)) ? pdict.product.custom.size.split('|'): '';
+	            	var productVariant;
+	            	if(productVariantFullName.length > 1) {
+	            		productVariant = productVariantFullName[1];
+	            	} else {
+	            		productVariant = productVariantFullName[0];
+	            	}
+	            	
+	            	// Added for mParticle and other analytics 
+					var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+					var productInfo = mParticleUtil.getProductInfo(pdict.product);
+					var ProductUtils = require('app_storefront_core/cartridge/scripts/product/ProductUtils.js');
+					let availability = ProductUtils.getAvailability(pdict.product,1);
+					var comingSoonMsg = (pdict.product.custom.oosProductStatus.value)?pdict.product.custom.oosProductStatus.value:"notifyme";
+					
+				</isscript>
+	            <div class="fillsize-price">
+	                <isprint value="${productVariant}" />  |  <isprint value="${SalesPrice}" />
+	            </div>
+	            <isif condition="${(comingSoonMsg == 'comingsoon')}">
+	            	<div class="btn btn-outline-dark full-width-panel-add-to-bag disabled">
+						${Resource.msg('global.comingsoon.button', 'locale', null)}
+					</div>
+	            <iselseif condition="${availability.ats > 0}">
+		            <form action="${URLUtils.url('Cart-AddProduct')}" method="post"  class="productPanel">
+						<div class="btn btn-outline-dark full-width-panel-add-to-bag" id="product-panel-add-to-bag" data-product-info="${JSON.stringify(productInfo)}" data-pid="${pdict.product.ID}" data-productname="${pdict.product.name}" data-price="${SalesPrice}">
+				       		Add to bag
+				        </div>
+					</form>
+		        <iselse>
+		        	<div class="btn btn-outline-dark full-width-panel-add-to-bag disabled">
+		        		${Resource.msg('global.outofstock', 'locale', null)}
+					</div>
+		        </isif> 
+	    	</div>
+		</div>
+	</isif>
+</div>
+</div>

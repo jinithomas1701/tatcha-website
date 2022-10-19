@@ -1,0 +1,44 @@
+<isset name="giftproductId" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID')}" scope="page"/>
+<isset name="giftproduct" value="${dw.catalog.ProductMgr.getProduct(giftproductId)}" scope="page"/>
+<isloop items="${pdict.giftCertificateItems}" var="giftCertificateItem">
+    <isset name="lineItem" value="${giftCertificateItem.lineItem}" scope="page" />
+
+    <div class="bag-product-item mobile-item gift-certificate uuid-${lineItem.UUID}">
+        <div class="bag-item-container">
+            <div class="d-flex flex-row">
+                <div class="product-image bag-item-img-block gift-card-image-wrap" role="cell">
+                    <isif condition="${!empty(lineItem.image)}">
+                        <img class="img-responsive product-img img-fluid giftcert-image" alt="${lineItem.lineItemText}" src="${lineItem.image}" />
+                        <iselse/>
+                        <img src="${URLUtils.staticURL('/images/gift_cert.gif')}" alt="${lineItem.lineItemText}" />
+                    </isif>
+                </div>
+
+                <div class="product-contnet bag-item-detail">
+                    <div class="product-name">
+                        <div class="bag-item-name-variant">
+                            <isprint value="${giftproduct.name}" />
+                        </div>
+                        <div class="product-variant-block bag-item-variant product-size-normal gift-card-subdetail">
+                        <span class="product-subtitle">Delivered via email</span>
+                        <span>|</span>
+                        <span class="gift-card-price">
+                            <isprint value="${lineItem.price.grossPrice}" />
+                        </span>
+                        </div>
+                        <p class="line-item-attributes">
+                            <isprint value="${lineItem.recipientName}" /> |
+                            <isprint value="${lineItem.recipientEmail}" />
+                        </p>
+                    </div>
+                    <div class="remove-product delete-product d-inline-block minicart-remove-product"
+                          tabindex="0"
+                         value="${Resource.msg('global.remove','locale',null)}"
+                         aria-label="remove product from bag" data-pid="${giftproductId}"
+                         data-name="${giftproduct.name}" data-uuid="${lineItem.UUID}"
+                         data-action="${pdict.actionUrls.removeGiftCertificate}">Remove</i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</isloop>

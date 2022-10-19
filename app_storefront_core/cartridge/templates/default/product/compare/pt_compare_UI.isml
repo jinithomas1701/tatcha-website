@@ -1,0 +1,3 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>Include all important information globally , e.g. meta-data, link information, and javascript.</iscomment>
+<link rel="stylesheet" type="text/css" href="${URLUtils.staticURL('/css/tatcha-comparison-chart.css')}">

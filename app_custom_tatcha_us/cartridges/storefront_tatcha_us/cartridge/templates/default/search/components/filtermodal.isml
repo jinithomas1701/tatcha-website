@@ -1,0 +1,73 @@
+<isset name="Refinements" value="${pdict.apiProductSearch ? pdict.apiProductSearch.refinements : null}" scope="page"/>
+<isif condition="${Refinements != null && Refinements.refinementDefinitions.size() > 0}">
+    <iscomment> Product Listing Filter modal </iscomment>
+    <div class="modal fade modal-fullscreen modal-mobile-filters categoryMobileFilterModal" id="filtersModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"> <i class="fal fa-times"></i></button>
+                    <h4 class="modal-title"><strong>Filter Options</strong></h4>
+                </div>
+                <div class="modal-body">
+                    <isloop items="${Refinements.refinementDefinitions}" var="RefinementDefinition" status="refinementsLoopState">
+                        <isif condition="${RefinementDefinition.attributeID.equals('skinType')}">
+                            <isif condition="${pdict.category && !empty(pdict.category.displayName) && (pdict.category.displayName =='Normal' || pdict.category.displayName =='Combination to Oily'
+						|| pdict.category.displayName =='Combination to Dry' || pdict.category.displayName =='Dry' || pdict.category.displayName =='Oily'
+						|| pdict.category.displayName =='Sensitive' || pdict.category.displayName =='Body') }">
+                                <isnext/>
+                            </isif>
+                        </isif>
+
+                        <isif condition="${RefinementDefinition.attributeID.equals('size')}">
+                            <isif condition="${pdict.category && !empty(pdict.category.displayName) && (pdict.category.displayName =='Travel Size') }">
+                                <isnext/>
+                            </isif>
+                        </isif>
+                        <div class="modal-filter-list">
+                            <button class="btn view-option-btn collapsed" type="button" data-toggle="collapse" data-target="&#35;mobileFilter${RefinementDefinition.attributeID}" aria-expanded="false" aria-controls="mobileFilter${RefinementDefinition.attributeID}">
+                                <div class="view-option">
+								<span class="view-option-value">
+									<isif condition="${RefinementDefinition.getDisplayName() == 'Solution'}">
+										<isprint value="${RefinementDefinition.getDisplayName()}"/>s
+									<iselse>
+										<isprint value="${RefinementDefinition.getDisplayName()}"/>
+									</isif>
+								</span>
+                                    <i class="fal fa-lg fa-angle-down caret-rotator dropdown-icon"></i>
+                                </div>
+                            </button>
+                            <isif condition="${refinementsLoopState.count==1}">
+                                <ul class="list-unstyled collapse in" id="mobileFilter${RefinementDefinition.attributeID}">
+                                    <iselse>
+                                        <ul class="list-unstyled collapsed collapse" id="mobileFilter${RefinementDefinition.attributeID}">
+                                    </iselse>
+                            </isif>
+
+                            <isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue" status="RefinementValueStatus">
+                                <li>
+                                    <isif condition="${pdict.apiProductSearch.isRefinedByAttributeValue(RefinementDefinition.attributeID,RefinementValue.value)}">
+                                        <a href="${StringHelpers.unsanitizeOR(pdict.apiProductSearch.urlRelaxAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()))}"  data-value="${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}" tabindex="-1">
+                                            <div class="checkbox my-0">
+                                                <label class="py-2"><input type="checkbox" checked data-filter-checked="true" data-filter-code="${RefinementValue.getValue()}" >${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}</label>
+                                            </div>
+                                        </a>
+                                        <iselse>
+                                            <a href="${StringHelpers.unsanitizeOR(pdict.apiProductSearch.urlRefineAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()))}"  data-value="${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}" tabindex="-1">
+                                                <div class="checkbox my-0">
+                                                    <label class="py-2"><input type="checkbox" data-filter-code="${RefinementValue.getValue()}">${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}</label>
+                                                </div>
+                                            </a>
+                                    </isif>
+                                </li>
+                            </isloop>
+                            </ul>
+                        </div>
+                    </isloop>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default btn-block mobile-filter-apply">${Resource.msg('search.results.done','search',null)}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</isif>

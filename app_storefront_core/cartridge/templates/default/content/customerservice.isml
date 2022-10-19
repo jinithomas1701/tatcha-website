@@ -1,0 +1,40 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/pt_customerservice">
+<isinclude template="util/modules"/>
+
+	<div class="content content-sidenav">
+		<div class="container">
+			<div class="content-header">
+				<h2 class="section-anchor">${pdict.Content.custom.sectionAnchor}</h2>
+			</div>
+		</div>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-sm-4 col-md-3">
+					<div class="sidenav-nav-block">
+						<isinclude url="${URLUtils.url('CustomerService-LeftNav', 'pageId', pdict.Content.ID)}"/>
+					</div>
+				</div>
+				<div class="col-sm-8 col-md-7 col-md-offset-1">
+					<div class="content-body-header">
+						<h1><isprint value="${pdict.Content.custom.title}"/></h1>
+						<isif condition="${'image' in pdict.Content.custom && !empty(pdict.Content.custom.image)}">
+							<div class="content-hero-img-container">
+								<img class="content-hero-img img-responsive" src="${${pdict.Content.custom.image.url}}">
+							</div>
+						</isif>
+						<isif condition="${'body' in pdict.Content.custom && pdict.Content.custom.body != null}">
+							<div class="content-editor-container">
+								<isprint value="${pdict.Content.custom.body}" encoding="off"/>
+							</div>
+						<iselse/>
+							${Resource.msg('global.nocontent','locale',null)}
+						</isif>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</isdecorate>

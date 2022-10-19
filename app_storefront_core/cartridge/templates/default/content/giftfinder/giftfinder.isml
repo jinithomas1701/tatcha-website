@@ -1,0 +1,136 @@
+<iscache type="relative" hour="24" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="content/giftfinder/pt_giftfinder" scope="page"/>
+<isinclude template="util/modules"/>
+<isdecorate template="${DecoratorTemplate}">
+	<isscript>
+		var giftfinderContent = dw.content.ContentMgr.getContent('giftfinder');
+	</isscript>
+	
+	<iscomment> taking images from content asset </iscomment>
+	<style>
+		.gift-finder-bg{
+			background: url('${giftfinderContent.custom.SetBannerImage.getURL()}');
+			background-repeat: no-repeat;
+    		background-size: cover;
+    		background-position: center center;
+    		background-attachment: fixed;
+		}
+		@media (max-width: 767.98px) {
+			.gift-finder-bg{
+				background: url('${giftfinderContent.custom.SetImage.getURL()}');
+				background-repeat: no-repeat;
+    			background-size: cover;
+    			background-position: center center;
+    			background-attachment: fixed;
+			}
+		}
+	</style>
+	<section class="gift-finder-page gift-finder-bg">
+      <div class="gift-finder-content">
+      	<iscomment>Gift finder GTM change </iscomment>
+      	<input type="hidden" id="gtmGFactiveForm" name="gtmGFactiveForm" value="gtm-nameForm">
+        <h1 class="gift-finder-heading">Gift Finder</h1>
+        <div class="gift-finder-text"><isprint value="${giftfinderContent.custom.SetDescription}" encoding="off" /></div>
+        
+        <div class="gift-finder-dots name-dot">
+          <span class="state1 active on"></span>
+          <span class="state2"></span>
+          <span class="state3"></span>
+        </div>
+        <div class="gift-finder-dots cat-dot" style="display:none;">
+          <span class="state1 active on"></span>
+          <span class="state2 active on"></span>
+          <span class="state3"></span>
+        </div>
+        <div class="gift-finder-dots price-dot" style="display:none;">
+          <span class="state1 active on"></span>
+          <span class="state2 active on"></span>
+          <span class="state3 active on"></span>
+        </div>
+        
+        <div class="gift-finder-box">
+          <div class="gift-finder-form pdtop">
+
+              <div class="form-row gift-finder-row active state1">
+                  <div class="gift-finder-subtitle col-12">Who are you shopping for?</div>
+                  <div class="col-md-6">
+                      <label class="float-label" for="giftFinderInputName">Name</label>
+                      <input type="text" maxlength="30" class="form-control  form-control-lg" id="giftFinderInputName" aria-describedby="nameHelp" aria-labelledby="Enter name" placeholder="Name">
+                      <p class="text-left text-danger d-none" id="giftFinderNameErrorMsg">Enter a valid name</p>
+                  </div>
+                  <div class=" col-12">
+                    <button disabled class="btn btn-primary gift-finder-btn findTheGiftBtn" aria-label="Find A Gift">Find A Gift</button>
+                  </div>
+              </div>
+              <div class="form-row gift-finder-row d-none state2">
+                  <div class="gift-finder-subtitle col-12" id="finderName"></div>
+                  <div class="form-row form-group gift-finder-cat radio-selector" id="categorySelector">
+
+					<isloop items="${pdict.CategoryDisplayName}" status="catLoop" var="subCategory" >
+						<div class="col-md-6 giftfinderRadioLabel">
+	                         <input id="${pdict.CategoryDisplayID[catLoop.index]}" type="radio" name="giftFinderMethod" class="d-none" value="${pdict.CategoryDisplayID[catLoop.index]}">
+	                         <label for="${pdict.CategoryDisplayID[catLoop.index]}">
+	                            ${subCategory}
+	                         </label>
+                    	</div>
+					</isloop>
+
+                  </div>
+                  <div class=" col-12">
+                    <button disabled class="btn btn-primary gift-finder-btn continueBtn" aria-label="Continue">Continue</button>
+                  </div>
+              </div>
+              <div class="form-row gift-finder-row d-none state3">
+                  <div class="gift-finder-subtitle col-12">I would like to spend...</div>
+                  <div class="form-row form-group gift-finder-cat radio-selector" id="pricerange">
+
+                    <div class="col-md-6 giftfinderRadioLabel">
+                          <input id="below50" type="radio" value="0-50" name="giftFinderResult" class="d-none">
+                          <label for="below50">
+                            Below $50
+                          </label>
+                    </div>
+                    <div class="col-md-6 giftfinderRadioLabel">
+                          <input id="spend50100" type="radio" value="50-100" name="giftFinderResult" class="d-none">
+                          <label for="spend50100">
+                            $50-100
+                          </label>
+                    </div>
+                    <div class="col-md-6 giftfinderRadioLabel">
+                          <input id="spend100200" type="radio" value="100-200" name="giftFinderResult" class="d-none">
+                          <label for="spend100200">
+                            $100-200
+                          </label>
+                    </div>
+                    <div class="col-md-6 giftfinderRadioLabel">
+                          <input id="anyamount" type="radio" value="anyamount" name="giftFinderResult" class="d-none">
+                          <label for="anyamount">
+                            Any Amount
+                          </label>
+                    </div>
+
+                  </div>
+                  <div class=" col-12">
+                    <button disabled class="btn btn-primary gift-finder-btn showResultsBtn" aria-label="Show Results">Show Results</button>
+                  </div>
+              </div>
+           
+          </div>
+        </div>
+      </div>
+      
+      <div style="display:none;">
+		<form method="get" action="${URLUtils.url('GiftFinder-RetriveProducts')}" name="giftfinderform" id="giftfinderform">
+			<fieldset>
+				<input type="hidden" id="gfname" name="gfname" value="" />
+				<input type="hidden" id="category" name="category" value="">
+				<input type="hidden" id="priceRange" name="priceRange" value="" />
+				<button type="submit" id="giftfinder-form-submit">
+			</fieldset>
+		</form>
+	</div>
+      
+		</section>
+</isdecorate>

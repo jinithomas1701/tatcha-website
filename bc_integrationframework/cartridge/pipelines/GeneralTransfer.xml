@@ -1,0 +1,608 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="Transfer" type="process">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>Copies files from a remote (s)ftp-location to a local folder relatively to IMPEX/</description>
+        </text-node>
+        <node-display x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="FromFtp">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="FromFtp" secure="false"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Init parameters" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('HostURL')" key="From_0"/>
+          <key-binding alias="HostURL" key="To_0"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('UserID')" key="From_1"/>
+          <key-binding alias="UserID" key="To_1"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('Password')" key="From_2"/>
+          <key-binding alias="Password" key="To_2"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('FilePattern')" key="From_3"/>
+          <key-binding alias="FilePattern" key="To_3"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('SourceFolder')" key="From_4"/>
+          <key-binding alias="SourceFolder" key="To_4"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('TargetFolder')" key="From_5"/>
+          <key-binding alias="TargetFolder" key="To_5"/>
+          <key-binding alias="SecureFtp" key="To_6"/>
+          <key-binding alias="DeleteFile" key="To_7"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('SecureFtp')" key="From_6"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('DeleteFile')" key="From_7"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('Timeout')" key="From_8"/>
+          <key-binding alias="Timeout" key="To_8"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('NoFileFoundStatus')" key="From_9"/>
+          <key-binding alias="NoFileFoundStatus" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="!empty(HostURL) &amp;&amp; !empty(TargetFolder) &amp;&amp; !empty(SourceFolder) &amp;&amp; !empty(SecureFtp) &amp;&amp; !empty(DeleteFile)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Log begin of download" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;Starting to download.&quot;,'INFO')" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="utils/FTPDownload.ds"/>
+                <key-binding alias="null" key="ScriptLog"/>
+                <key-binding alias="FilePattern" key="FilePattern"/>
+                <key-binding alias="HostURL" key="HostURL"/>
+                <key-binding alias="Password" key="Password"/>
+                <key-binding alias="SourceFolder" key="SourceFolder"/>
+                <key-binding alias="TargetFolder" key="TargetFolder"/>
+                <key-binding alias="UserID" key="UserID"/>
+                <key-binding alias="ErrorMsg" key="ErrorMsg"/>
+                <key-binding alias="SecureFtp" key="SecureFtp"/>
+                <key-binding alias="DeleteFile" key="DeleteFile"/>
+                <key-binding alias="10000" key="Timeout"/>
+                <key-binding alias="NoFileFoundStatus" key="NoFileFoundStatus"/>
+                <key-binding alias="FilesWereFound" key="FilesWereFound"/>
+                <key-binding alias="NoFilesFound" key="NoFilesFound"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="2" y="0"/>
+                    <bend-point relative-to="target" x="0" y="-1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <decision-node condition-key="NoFileFoundStatus == 'WARN' &amp;&amp; NoFilesFound == true" condition-operator="expr">
+                      <description>Check for empty file list + Desired &quot;warn&quot; status</description>
+                    </decision-node>
+                    <node-display x="1" y="1"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node custom-name="Log script error" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="true"/>
+                            <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;FTP-Download finished, &quot; + ErrorMsg,'WARN')" key="From_0"/>
+                            <key-binding alias="DoIt" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition>
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="1"/>
+                          </transition-display>
+                        </simple-transition>
+                        <node>
+                          <end-node name="WARN"/>
+                          <node-display x="0" y="1"/>
+                        </node>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node custom-name="Log script error" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;FTP-Download finished, &quot; + ErrorMsg,'ERROR')" key="From_0"/>
+                      <key-binding alias="DoIt" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node custom-name="Log success" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;FTP-Download finished successfuly.&quot;, 'INFO')" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="2"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Log missing parameters" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;FTP-Download finished, One or more mandatory parametrs are missing.&quot;,'ERROR')" key="From_0"/>
+          <key-binding alias="DoIt" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="4" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="2" y="3"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="ERROR"/>
+        <node-display x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>Copies files from a local folder relatively to IMPEX/ to a remote (s)ftp-location</description>
+        </text-node>
+        <node-display x="5" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="ToFtp">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="ToFtp" secure="false"/>
+        <node-display x="5" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Init parameters" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('HostURL')" key="From_0"/>
+          <key-binding alias="HostURL" key="To_0"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('UserID')" key="From_1"/>
+          <key-binding alias="UserID" key="To_1"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('Password')" key="From_2"/>
+          <key-binding alias="Password" key="To_2"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('FilePattern')" key="From_3"/>
+          <key-binding alias="FilePattern" key="To_3"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('SourceFolder')" key="From_4"/>
+          <key-binding alias="SourceFolder" key="To_4"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('TargetFolder')" key="From_5"/>
+          <key-binding alias="TargetFolder" key="To_5"/>
+          <key-binding alias="SecureFtp" key="To_6"/>
+          <key-binding alias="ArchiveFile" key="To_7"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('SecureFtp')" key="From_6"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('ArchiveFile')" key="From_7"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.getParameterValue('Timeout')" key="From_8"/>
+          <key-binding alias="Timeout" key="To_8"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <decision-node condition-key="!empty(HostURL) &amp;&amp; !empty(TargetFolder) &amp;&amp; !empty(SourceFolder) &amp;&amp; !empty(SecureFtp) &amp;&amp; !empty(ArchiveFile)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Log begin of upload." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;Starting to upload.&quot;, 'INFO')" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="utils/FTPUpload.ds"/>
+                <key-binding alias="null" key="ScriptLog"/>
+                <key-binding alias="ArchiveFile" key="ArchiveFile"/>
+                <key-binding alias="FilePattern" key="FilePattern"/>
+                <key-binding alias="HostURL" key="HostURL"/>
+                <key-binding alias="Password" key="Password"/>
+                <key-binding alias="SecureFtp" key="SecureFtp"/>
+                <key-binding alias="SourceFolder" key="SourceFolder"/>
+                <key-binding alias="TargetFolder" key="TargetFolder"/>
+                <key-binding alias="UserID" key="UserID"/>
+                <key-binding alias="ErrorMsg" key="ErrorMsg"/>
+                <key-binding alias="10000" key="Timeout"/>
+                <key-binding alias="FileNotFound" key="FileNotFound"/>
+                <key-binding alias="NoFilesFound" key="NoFilesFound"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="2" y="0"/>
+                    <bend-point relative-to="target" x="0" y="-1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node custom-name="Log script error" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;Transfer-ToFtp finished, &quot; + ErrorMsg,'ERROR')" key="From_0"/>
+                      <key-binding alias="DoIt" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="1" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <decision-node condition-key="NoFilesFound" condition-operator="expr"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="0" y="1"/>
+                          <bend-point relative-to="source" x="-1" y="1"/>
+                          <bend-point relative-to="target" x="-1" y="0"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <decision-node condition-key="CurrentWorkflowComponentInstance.getParameterValue('noFileFoundStatus') != 'OK'" condition-operator="expr"/>
+                          <node-display orientation="horizontal" x="0" y="1"/>
+                          <branch basename="b2" source-connector="yes">
+                            <transition target-connector="in">
+                              <transition-display>
+                                <bend-point relative-to="source" x="1" y="0"/>
+                                <bend-point relative-to="target" x="-1" y="0"/>
+                              </transition-display>
+                            </transition>
+                            <segment>
+                              <node>
+                                <decision-node condition-key="CurrentWorkflowComponentInstance.getParameterValue('noFileFoundStatus') != 'WARN'" condition-operator="expr"/>
+                                <node-display orientation="horizontal" x="1" y="1"/>
+                                <branch basename="b2" source-connector="yes">
+                                  <transition target-connector="in1" target-path="../../../../+2"/>
+                                </branch>
+                              </node>
+                              <simple-transition>
+                                <transition-display>
+                                  <bend-point relative-to="source" x="0" y="1"/>
+                                </transition-display>
+                              </simple-transition>
+                              <node>
+                                <end-node name="WARN"/>
+                                <node-display x="0" y="1"/>
+                              </node>
+                            </segment>
+                          </branch>
+                        </node>
+                        <transition target-connector="in1" target-path="../../+1">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="2"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="../../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="Log success" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;Transfer-ToFtp finished successfuly.&quot;, 'INFO')" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="3"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-2"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Log missing parameters" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <key-binding alias="CurrentWorkflowComponentInstance.addMessage(&quot;FTP-Download finished, One or more mandatory parametrs are missing.&quot;,'ERROR')" key="From_0"/>
+          <key-binding alias="DoIt" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="5" y="1"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="3"/>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="ERROR"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

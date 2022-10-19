@@ -1,0 +1,187 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>SLOT CONFIGURATION:  SLOT/ID: header-banner</iscomment>
+
+<isscript>
+	var accountFlag = pdict.CurrentHttpParameterMap.myaccount.stringValue;
+	var Site = require('dw/system/Site');
+	var addToHomeScreenEnabled = Site.getCurrent().getCustomPreferenceValue('addToHomeScreenEnabled');
+	var rscWidgetEnabled = Site.getCurrent().getCustomPreferenceValue('EnableRSCGPDS');
+</isscript>
+
+
+<iscomment>RDMP-1510 - ea: Notifications not announced, registration</iscomment>
+<input type="hidden" value="${session.custom.showCreateAccountSuccess}" class="ada_log" />
+<isif condition="${session.custom.showCreateAccountSuccess == true}">
+	<div id="account-creation-success-msg" aria-live="assertive" class="sr-only" tabindex="0"></div>
+</isif>
+
+<isif condition="${addToHomeScreenEnabled == true}">
+	<div class="homescreen-banner hidden-lg hidden-md hidden-sm hidden-xl" id="homescreen-banner" style="display:none;">
+		<button type="button"
+				class="close close-round dismiss-homescreen-banner">
+			<svg class="svg-inline--fa fa-times fa-w-12" aria-hidden="true"
+				 data-fa-replacement="true" data-prefix="fa" data-icon="times"
+				 role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512">
+				<path fill="currentColor"
+					  d="M323.1 441l53.9-53.9c9.4-9.4 9.4-24.5 0-33.9L279.8 256l97.2-97.2c9.4-9.4 9.4-24.5 0-33.9L323.1 71c-9.4-9.4-24.5-9.4-33.9 0L192 168.2 94.8 71c-9.4-9.4-24.5-9.4-33.9 0L7 124.9c-9.4 9.4-9.4 24.5 0 33.9l97.2 97.2L7 353.2c-9.4 9.4-9.4 24.5 0 33.9L60.9 441c9.4 9.4 24.5 9.4 33.9 0l97.2-97.2 97.2 97.2c9.3 9.3 24.5 9.3 33.9 0z"></path></svg>
+		</button>
+
+		<a class="center-block" href="#" data-toggle="modal" data-target="#addtohomescreen">
+			<iscontentasset aid="tatcha-home-screen-banner" alt="Promo Banner" />
+		</a>
+	</div>
+</isif>
+
+<isinclude url="${URLUtils.url('Promo-DisplayPromo')}"/>
+
+
+<div class="tatcha-pre-nav">
+	<isinclude template="components/header/header-promo-section-bs"/>
+</div>
+
+<iscomment> Full page loader</iscomment>
+<div class="loader loader-preventive loader-fullpage" style="display: none;">
+	<div class="loader-centering">
+		<div class="loader-animation"></div>
+		<div class="loader-text">Please wait</div>
+	</div>
+</div>
+
+<header class="tatcha-header-nav" style="z-index: 1010;" role="banner" id="mainNav">
+	<nav class="container-fluid navbar navbar-default navbar-expand-lg tatcha-navbar" role="navigation">
+
+		<div class="navbar-bag-group" style="display: flex;align-items: center;">
+			<button type="button" class="navbar-toggler navbar-icon collapsed" data-toggle="collapse"  aria-expanded="false" tabindex="0">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="sr-only">Toggle navigation</span>
+			</button>
+			<isif condition="${rscWidgetEnabled}">
+				<div id="gpds-widget-mobile-container"></div>
+			</isif>
+			<div class="sr-only" id="navbar-sr" role="status" aria-live="polite" aria-atomic="true"></div>
+		</div>
+		<ul class="d-lg-none d-xl-none mobile-search-bag" style="list-style: none;
+    		  margin-bottom: 0;padding: 0;list-style-type:none;">
+
+			<li tabindex="0" aria-label="Search" role="button" class="mobile-search-load mobile-searchicon-wrap" data-toggle="modal" data-target="#searchDesktopModal">
+				<iscomment>
+					<i tabindex="-1" class="fal fa-search float-right d-inline-block d-lg-none mr-2" data-toggle="modal" data-target="#searchMobileModal"></i>
+				</iscomment>
+				<i tabindex="-1" class="fal fa-search float-right d-inline-block d-lg-none mr-2"></i>
+			</li>
+			<li class="mini-carticon-wrap">
+				<div class="minicart mini-cart-wrap">
+					<input type="hidden" class="isUpdatedDesign" value="true" />
+					<isinclude url="${URLUtils.url('Cart-MiniCart', 'isUpdatedDesign', 'true')}"/>
+				</div>
+			</li>
+		</ul>
+		<div class="nav-mask nav-mask-4 d-none"></div>
+		<div class="collapse navbar-collapse justify-content-between" id="navigation">
+			<ul class="navbar-nav nav-desktop gtm-nav-desktop" style="align-items: center;">
+				<iscomment>This is to annunce expanded/collapsed stae </iscomment>
+				<div class="sr-only" id="header-nav-state" role="status" aria-live="polite" aria-atomic="true"></div>
+
+				<iscontentasset aid="header-nav-shop-bs4-v1"/>
+
+				<iscontentasset aid="header-nav-our-story-bs4-v1"/>
+
+				<iscontentasset aid="header-nav-learn-bs4-v1"/>
+
+ 				<iscontentasset aid="header-nav-holiday-gifting-2021"/>
+
+				<isif condition="${rscWidgetEnabled}">
+					<div id="gpds-widget-container"></div>
+				</isif>
+			</ul>
+			<div class="close-nav-wrap">
+				<div class="close-nav">
+					<button type="button" class="navbar-toggler navbar-icon p-3 close-main-nav" data-toggle="collapse" tabindex="0" style="outline:none;" aria-label="Close">
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+				</div>
+			</div>
+			<a class="navbar-brand" href="${URLUtils.url('Home-Show')}">
+				<img class="tatcha-logo img-fluid d-none d-lg-block" src="${URLUtils.staticURL('/images/bs4/tatcha-logo-nav.png')}" alt="Tatcha Official Site" width=189px height=31px>
+			</a>
+			<ul class="navbar-nav nav-mobile main-nav">
+				<iscontentasset aid="header-nav-shop-mobile-bs4"/>
+				<iscontentasset aid="header-nav-shop-skin-type-mobile-bs4"/>
+				<iscontentasset aid="header-nav-shop-benefit-mobile-bs4"/>
+				<iscontentasset aid="header-nav-our-story-mobile-bs4"/>
+				<iscontentasset aid="header-nav-learn-mobile-bs4"/>
+				<iscontentasset aid="header-nav-holiday-mobile-bs4"/>
+
+
+			</ul>
+			<ul class="navbar-nav nav-mobile mobile-account-nav" role="list">
+				<isif condition="${!empty(accountFlag) && accountFlag == 'true'}">
+					<isinclude url="${URLUtils.url('Home-IncludeHeaderCustomerInfoMobileBS','myaccount','true')}"/>
+					<iselse>
+						<isinclude url="${URLUtils.url('Home-IncludeHeaderCustomerInfoMobileBS')}"/>
+				</isif>
+			</ul>
+
+			<div class="nav-mini-footer">
+				<div class="text-center p-3 mini-footer-text" id="extole_zone_global_nav_mobile">
+				</div>
+			</div>
+			<ul class="navbar-nav navbar-right nav-desktop navbar-right-section">
+				<isif condition="${!empty(accountFlag) && accountFlag == 'true'}">
+					<isinclude url="${URLUtils.url('Home-IncludeHeaderCustomerInfoBS','myaccount','true')}"/>
+					<iselse/>
+						<isinclude url="${URLUtils.url('Home-IncludeHeaderCustomerInfoBS')}"/>
+				</isif>
+				<iscomment>INCLUDE: Mini-cart, do not cache</iscomment>
+				<li class="mini-cart-container ${dw.system.Site.getCurrent().getCustomPreferenceValue('UseSfraMiniBag') ? '' : 'minicart-sitegen'} ">
+					<div class="minicart mini-cart-wrap">
+						<input type="hidden" class="isUpdatedDesign" value="true" />
+						<isinclude url="${URLUtils.url('Cart-MiniCart', 'isUpdatedDesign', 'true')}"/>
+					</div>
+				</li>
+			</ul>
+		</div>
+		<a tabindex="-1" class="navbar-brand pl-0" href="${URLUtils.url('Home-Show')}">
+			<img class="tatcha-logo img-fluid d-block d-lg-none" src="${URLUtils.staticURL('/images/bs4/tatcha-logo-nav.png')}" alt="Tatcha Official Site" width=152px height=25px>
+		</a>
+		<isinclude template="checkout/cart/minicart-v1" />
+
+	</nav>
+	<!-- /Browser modal alert for IE -->
+	<iscomment>
+		<div class="modal fade" id="browserDetectionModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+			<div class="modal-dialog dialog-browser-spec" role="document">
+				<div class="modal-content">
+					<div class="modal-header header-browser-spec">
+						<h5 class="modal-title title-browser-spec" id="exampleModalLabel">You seem to be using an<br><span class="title-browser-inner-spec">unsupported browser</span></h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="fal fa-times close-spec"></i></span></button>
+					</div>
+					<div class="modal-body body-browser-spec">
+						<p class="body-browser-inner-spec w-100 text-center">Please use a supported browser to improve your experience</p>
+						<div class="d-flex justify-content-between icons-browser-spec">
+							<img data-src="${URLUtils.staticURL('/images/chrome.png')}" class="chrome-asset-spec lazyImage" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+							<img data-src="${URLUtils.staticURL('/images/safari.png')}" class="safari-asset-spec lazyImage" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+							<img data-src="${URLUtils.staticURL('/images/firefox.png')}" class="firefox-asset-spec lazyImage" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+						</div>
+					</div>
+				</div>
+			</div>
+	</iscomment>
+</header>
+
+<iscomment>Search Model START</iscomment>
+<isinclude template="search/searchmodal"/>
+<iscomment>Search Model END</iscomment>
+
+<div class="d-block d-xl-none hidden-md hidden-lg hidden-xl hide-mobile-search">
+	<isinclude template="search/simplesearchmobile"/>
+	<input type="hidden" name="afterpayExpressProcessOrderUrl" id="afterpayExpressProcessOrderUrl" value="${URLUtils.url('Afterpay-AfterpayExpressFromCart')}" />
+	<input type="hidden" name="afterpayExpressSummaryUrl" id="afterpayExpressSummaryUrl" value="${URLUtils.url('AfterpayHandleResponse-SummaryRedirect')}" />
+	<input type="hidden" name="getAfterpayExpressShippingMethodsUrl" id="getAfterpayExpressShippingMethodsUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetShippingMethods')}" />
+	<input type="hidden" name="getAfterpayExpressTokenUrl" id="getAfterpayExpressTokenUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetToken')}" />
+</div>
+

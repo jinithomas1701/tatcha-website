@@ -1,0 +1,207 @@
+
+<!--- TEMPLATENAME: mParticle_footer.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<!---  Enter user info at checkout --->
+<isif condition="${pdict.mParticleData.pageContext == 'checkout' && (pdict.mParticleData.checkoutState == 'billing' || pdict.mParticleData.checkoutState == 'payment') && pdict.mParticleData.authenticated == false}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+			$(document).ready(function() {
+				setTimeout(function(){ window.mParticleIdentify(profileData, false); }, 1000);
+			});
+	</script>
+</isif>
+
+<!---  Update attributes based on billing --->
+<isif condition="${pdict.mParticleData.pageContext == 'checkout' && (pdict.mParticleData.checkoutState == 'review' || pdict.mParticleData.checkoutState == 'placeOrder')}">
+	<isif condition="${pdict.mParticleData.paymentMethod == 'AFTERPAY_PBI' || pdict.mParticleData.paymentMethod == 'PayPal'}">
+		<script type="text/javascript">
+			var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+				$(document).ready(function() {
+					setTimeout(function(){ window.mParticleIdentify(profileData); }, 1000);
+				});
+		</script>
+	<iselse>
+		<script type="text/javascript">
+			var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+				$(document).ready(function() {
+					setTimeout(function(){ window.mParticleUpdateUserAttributes(profileData.profileAttributes); }, 1000);
+				});
+		</script>
+	</isif>
+</isif>
+
+<!---  Login --->
+<isif condition="${session.privacy.loginEvent == true}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleLogin(profileData, 'login'); }, 1000);
+		});
+	</script>
+</isif>
+
+<isif condition="${session.privacy.facebookLoginEvent == true}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleLogin(profileData, 'facebook'); }, 1000);
+		});
+	</script>
+</isif>
+
+<!---  Register --->
+<isif condition="${session.privacy.registrationEvent == true}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleLogin(profileData, 'register'); }, 1000);
+		});
+	</script>
+</isif>
+
+<isif condition="${(request.httpParameterMap.isProfileUpdated.value && session.privacy.emailUpdated != true) || session.privacy.addressAddEditEvent == true}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleUpdateUserAttributes(profileData.profileAttributes); }, 1000);
+		});
+	</script>
+</isif>
+
+<isif condition="${session.privacy.emailUpdated == true}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleModifyIdentity(profileData.email); }, 1000);
+		});
+	</script>
+</isif>
+
+<isif condition="${session.privacy.phoneUpdated == true}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleUpdateUserAttribute("$Mobile", profileData.profileAttributes.$Mobile); }, 1000);
+		});
+	</script>
+</isif>
+
+<!--  Order Confirmation -->
+<isif condition="${(!empty(pdict.mParticleData) && (pdict.mParticleData.pageContext == 'orderconfirmation'))}">
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var element =  document.getElementById('mParticleOrderDatalayer');
+			if (typeof(element) != 'undefined' && element != null) {
+				if(window.mParticle){
+					setTimeout(function(){ window.mParticlePurchaseAction(); }, 1000);
+				}
+			}
+		});
+	</script>
+</isif>
+
+<!-- Search data -->
+<isif condition="${(!empty(session.custom.searchParam) && (!empty(session.custom.productCount) || (session.custom.productCount === 0)))}">
+	<script type="text/javascript">
+		$(document).ready(function() {
+			if(window.mParticle){
+				setTimeout(function(){ 
+					window.mParticle.logEvent('Search',
+			     	mParticle.EventType.Other,
+			     	{
+						'searchTerm': "<isprint value="${session.custom.searchParam}" encoding="htmlcontent"/>",
+						'searchResultsCount': "<isprint value="${session.custom.productCount}" style="INTEGER" encoding="off"/>"
+					});
+				}, 0);
+			}
+		});
+	</script>
+</isif>
+
+<isif condition="${pdict.CurrentForms.profile.valid == false}">
+	<script type="text/javascript">
+		window.mParticle.logError('Account Creation failed');
+	</script>
+</isif>
+
+
+<isif condition="${(pdict.CurrentForms.login.loginsucceeded.valid == false) || (pdict.loginform && !pdict.loginform.loginsucceeded.valid)}">
+	<script type="text/javascript">
+		window.mParticle.logError('Login Failed');
+	</script>
+</isif>
+
+<isif condition="${session.privacy.facebookLoginFailedEvent == true}">
+	<script type="text/javascript">
+		window.mParticle.logError('Facebook Login Failed');
+	</script>
+</isif>
+
+<!-- Login form submit -->
+<isif condition="${session.privacy.loginEvent == true}">
+	<script type="text/javascript">
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleLoginModalClick('Submit'); }, 1000);
+		});
+	</script>
+</isif>
+
+<!---  Viewed Screen --->
+<isif condition="${pdict.mParticleData.pageTitle != '' && pdict.mParticleData.pageTitle != null && pdict.mParticleData.pageTitle != undefined}">
+	<script type="text/javascript">
+		var pageName = '<isprint value="${pdict.mParticleData.pageTitle}" encoding="off"/>';
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleViewedScreen(pageName); }, 1000);
+		});
+	</script>
+</isif>
+
+<!-- wishlist products -->
+<isif condition="${!empty(session.privacy.wishlistPids)}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleUpdateUserAttribute("$Wishlist", profileData.profileAttributes.$Wishlist); }, 1000);
+		});
+	</script>
+</isif>
+<!-- Subscribed Products -->
+<isif condition="${!empty(session.privacy.subscriptionProds)}">
+	<script type="text/javascript">
+		var profileData = <isprint value="${pdict.mParticleData.profileData}" encoding="off"/>;
+		$(document).ready(function() {
+			setTimeout(function(){ window.mParticleUpdateUserAttribute("Auto Delivery", profileData.profileAttributes['Auto Delivery']); }, 1000);
+		});
+	</script>
+</isif>
+
+<isscript>
+	if(session.privacy.loginEvent) {
+		session.privacy.loginEvent = false;
+	}
+	if(session.privacy.registrationEvent) {
+		session.privacy.registrationEvent = false;
+	}
+	if(session.privacy.emailUpdated) {
+		session.privacy.emailUpdated = false;
+	}
+	if(session.privacy.addressAddEditEvent) {
+	    session.privacy.addressAddEditEvent = false;
+	}
+	if(session.privacy.phoneUpdated) {
+		session.privacy.phoneUpdated = false;
+	}
+	if(session.privacy.facebookLoginEvent) {
+		session.privacy.facebookLoginEvent = false;
+	}
+	if(session.privacy.facebookLoginFailedEvent) {
+		session.privacy.facebookLoginFailedEvent = false;
+	}
+	if(session.privacy.wishlistPids) {
+		session.privacy.wishlistPids = '';
+	}
+	if(session.privacy.subscriptionProds){
+		session.privacy.subscriptionProds = '';
+	}
+</isscript>

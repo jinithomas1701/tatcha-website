@@ -1,0 +1,18 @@
+/**
+* Script file to get Current Customer IP.
+*/
+
+function getZipCode() {
+	var geolocation : Geolocation = request.getGeolocation();
+	var postalCode : String = geolocation.getPostalCode();
+	return postalCode;
+}
+
+function getCountryCode() {
+	var geolocation : Geolocation = request.getGeolocation();
+	var countryCode : String = geolocation.getCountryCode();
+	return countryCode;
+}
+    
+exports.getZipCode = getZipCode;
+exports.getCountryCode = getCountryCode;

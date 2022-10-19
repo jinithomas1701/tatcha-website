@@ -1,0 +1,16 @@
+<isinclude template="util/modules"/>
+<isif condition="${dw.system.Site.getCurrent().getDefaultCurrency() == 'USD'}"> 
+<iscomment> Afterpay terms and conditions </iscomment>
+<div class="modal modal-afterpay" id="afterpayModal" tabindex="-1" role="dialog" aria-labelledby="afterPayModal">
+	<div class="modal-dialog modal-lg afterpay-modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+		<button type="button" class="close afterpay-close" data-dismiss="modal" aria-label="Close"> <i class="fal fa-times"></i></button>
+		</div>
+		<div class="modal-body">
+			<iscontentasset aid="afterpay-popup-modal"/>
+		</div>
+	</div>
+	</div>
+</div>
+</isif>

@@ -1,0 +1,50 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.firstname', 'smartorderrefill', null)}:</td>
+    <td>
+        <span class="name">${addressObject.firstName}</span>
+    </td>
+</tr>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.lastname', 'smartorderrefill', null)}:</td>
+    <td>
+        <span class="name">${addressObject.lastName}</span>
+    </td>
+</tr>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.address1', 'smartorderrefill', null)}:</td>
+    <td>
+        <span class="name">${addressObject.address1 == null ? '-' : addressObject.address1}</span>
+    </td>
+</tr>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.address2', 'smartorderrefill', null)}:</td>
+    <td>
+        <span class="name">${addressObject.address2 == null ? ' -' : addressObject.address2}</span>
+    </td>
+</tr>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.city', 'smartorderrefill', null)}:</td>
+    <td>${addressObject.city}</td>
+</tr>
+
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.state', 'smartorderrefill', null)}:</td>
+    <td>${addressObject.stateCode}</td>
+</tr>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.zip', 'smartorderrefill', null)}:</td>
+    <td>${addressObject.postalCode}</td>
+</tr>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.country', 'smartorderrefill', null)}:</td>
+    <td>${addressObject.countryCode.value.toUpperCase()}</td>
+</tr>
+<tr class="sor-module__titles-row">
+    <td class="label-col">${Resource.msg('smartorderrefill.addressview.phone', 'smartorderrefill', null)}:</td>
+    <td class="phone-number">${addressObject.phone}</td>
+</tr>

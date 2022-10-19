@@ -1,0 +1,29 @@
+<isif condition="${!empty(pdict.Content)}">
+	<isscript>
+		var ogImageUrl = pdict.Content.custom.ogImage;
+		if (empty(ogImageUrl)) {
+			if (!empty(pdict.Content.custom.image)) {
+				ogImageUrl = pdict.Content.custom.image.getURL();
+			}
+		} else {
+			ogImageUrl = ogImageUrl.getURL();
+		}
+		
+		var ogTitle = pdict.Content.custom.ogTitle;
+		if (empty(ogTitle)) {
+			ogTitle = !empty(pdict.CurrentPageMetaData.title)?pdict.CurrentPageMetaData.title:pdict.Content.custom.title;
+		}
+		var ogDescription = pdict.Content.custom.ogDescription;
+		if (empty(ogDescription)) {
+			ogDescription = pdict.CurrentPageMetaData.description;
+		}
+	</isscript>
+	<meta property="og:title" content="${ogTitle}" />
+	<meta property="og:description" content="${ogDescription}" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="${URLUtils.abs('Page-Show','cid', pdict.Content.ID)}" />
+	<isif condition="${!empty(ogImageUrl)}">
+		<meta property="og:image" content="${ogImageUrl}" />
+	</isif>
+	<meta property="og:site_name" content="${Resource.msg('global.site.name', 'locale', null)}" /> 
+</isif>

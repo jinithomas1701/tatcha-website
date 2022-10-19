@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="searchMember" label="forms.sorsubscriptions.search.label" type="string" mandatory="true" binding="searchMember"/>
+
+    <field formid="searchMemberBy" type="string" mandatory="true" label="forms.sorsubscriptions.searchBy.label" binding="searchMemberBy">
+        <options>
+            <option label="forms.sorsubscriptions.customerNameFilter.label" value="customerName"/>
+            <option label="forms.sorsubscriptions.customerEmailFilter.label" value="customerEmail"/>
+        </options>
+    </field>
+
+    <field formid="searchExMember" label="forms.sorsubscriptions.search.label" type="string" mandatory="true" binding="searchExMember"/>
+
+    <field formid="searchExMemberBy" type="string" mandatory="true" label="forms.sorsubscriptions.searchBy.label" binding="searchExMemberBy">
+        <options>
+            <option label="forms.sorsubscriptions.customerNameFilter.label" value="customerName"/>
+            <option label="forms.sorsubscriptions.customerEmailFilter.label" value="customerEmail"/>
+        </options>
+    </field>
+
+    <action formid="save" valid-form="true"/>
+</form>

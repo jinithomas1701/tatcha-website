@@ -1,0 +1,144 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isscript>
+var Site = require('dw/system/Site');
+var countriesList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('CountriesList'));
+var provinceList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('provinceList'));
+var defaultShipment = {};
+var billingAddress = {};
+var p_billingaddr;
+
+try {
+	billingAddress = pdict.p_billingaddr.billingInfo.billingAddress;
+	if(billingAddress && billingAddress.firstName !== 'undefined' && billingAddress.lastName !== 'undefined' && billingAddress.stateCode !== 'undefined' && billingAddress.phone !== 'undefined') {
+		billingAddress = JSON.stringify(billingAddress);
+	
+		billingAddress = billingAddress.replace(/'/g, "\\'");
+		billingAddress = billingAddress.replace(/"/g, '\\"');
+	} 
+	
+	p_billingaddr = (pdict.p_billingaddr.billingInfo && pdict.p_billingaddr.billingInfo.defaultShipment && pdict.p_billingaddr.billingInfo.defaultShipment !== undefined)?
+	 pdict.p_billingaddr.billingInfo.defaultShipment : null;
+	 
+	if(pdict.p_billingaddr.billingInfo && pdict.p_billingaddr.billingInfo.billingAddress && pdict.p_checkoutobj.basket.productLineItems.size() == 0 && pdict.p_checkoutobj.basket.giftCertificateLineItems.size() > 0){
+		p_billingaddr = pdict.p_billingaddr.billingInfo.billingAddress;
+	}
+	if(p_billingaddr && p_billingaddr !== null) {
+		defaultShipment = JSON.stringify(p_billingaddr);
+		
+		defaultShipment = defaultShipment.replace(/'/g, "\\'");
+		defaultShipment = defaultShipment.replace(/"/g, '\\"');
+	}
+	
+	var checked = !empty(session.custom.sameasshipping) ? session.custom.sameasshipping : true;
+	var billingAddressId = 'billingaddressCollapse';
+	if(pdict.p_billingaddrmodal) {
+		if(pdict.p_checkoutobj.basket.productLineItems.size() == 0) {
+			billingAddressId = 'gCAddressModal';
+		}
+	}
+	
+
+} catch(e){}
+
+</isscript>
+
+<div class="billing-address-container">
+    <h5 class="section-title" role="heading" aria-level="3">Billing Address</h5>
+    <iscomment>Set current shipping address as billing address</iscomment>
+    <div class="billing-address-flag mb-3" <isif condition="${pdict.p_checkoutobj.basket.productLineItems.size() == 0}"> style="display: none"</isif>>
+    	<input type="checkbox" name="${pdict.CurrentForms.billing.billingAddress.sameasshipping.htmlName}" <isif condition="${checked}">checked=""</isif> value="${checked}" aria-label="Select if billing address is same as shipping address" data-address="${defaultShipment}" checked class="mr-2 spc-billing-same-as-shipping"/>
+       	<span>Same as shipping</span>
+    </div>
+    <iscomment>Set saved billing address as billing address</iscomment>
+    <input type="hidden" data-address="${billingAddress}" id="saved-billing-address" />
+    <iscomment>Billing form, firstname and lastname are hidden fields</iscomment>
+	<div class="billing-address spc-billing-address" <isif condition="${pdict.p_checkoutobj.basket.productLineItems.size() > 0}"> style="display: none"</isif>>
+	    <div class="form-row mt-2">
+	        <div class="form-group col-12">
+	            <select style="padding-top: 18px;" required="" id="dwfrm_billing_billingAddress_addressFields_country" class="form-control floating__input form-control-lg pl-3 country" name="dwfrm_billing_billingAddress_addressFields_country" id="dwfrm_billing_billingAddress_addressFields_country">
+	                <isloop items="${countriesList}" alias="country">
+	                 	<isif condition="${p_billingaddr !== null && (p_billingaddr.country === country.value) }">
+	                 		<option value="${country.value}" selected><isprint value="${country.label}" /></option>
+	                 	<iselse>
+	                 		<option value="${country.value}"><isprint value="${country.label}" /></option>
+	                 	</isif>
+	                 </isloop>
+	            </select>
+	            <label class="float-label" for="dwfrm_billing_billingAddress_addressFields_country" data-content="Country"></label>
+	            
+	        </div>
+	    </div>
+	    <div class="form-row">
+	        <div class="form-group col-12">
+	        	<iscomment> id: streetAddress</iscomment>
+	            <input type="text" required="" autocorrect="off" class="form-control floating__input form-control-lg validateForNonEnglishChars" value="${(p_billingaddr !== null) ? p_billingaddr.address1: ''}" id="dwfrm_billing_billingAddress_addressFields_address1" name="dwfrm_billing_billingAddress_addressFields_address1" placeholder="Street Address" aria-labelledby="Enter Street address if your billing address is different from shipping address">
+	             <label class="float-label" for="dwfrm_billing_billingAddress_addressFields_address1" data-content="Street Address"></label>
+	           
+	        </div>
+	    </div>
+	    
+	    <a href="${'#' + billingAddressId}" class="mb-0 enter-baddr-manually" data-toggle="collapse" aria-expanded="false" aria-controls="${billingAddressId}" aria-label="Enter address manually">
+	        <span class="enter-billing-address-link">Enter address manually</span>
+	    </a>
+	    <div class="collapse" aria-label="Billing Address Collapse"  id="${billingAddressId}">
+	        <div class="form-row">
+	        	<iscomment>id: streetAddress2 </iscomment>
+	            <div class="form-group col-12">
+	                
+	                <input type="text" autocorrect="off" class="form-control floating__input form-control-lg" value="${(p_billingaddr !== null) ? p_billingaddr.address2: ''}" id="dwfrm_billing_billingAddress_addressFields_address2" name="dwfrm_billing_billingAddress_addressFields_address2" placeholder="Street Address 2" aria-labelledby="Enter Street address manually if your billing address is different from shipping address">
+	                <label class="float-label" for="dwfrm_billing_billingAddress_addressFields_address2" data-content="Street Address 2"></label>
+	            </div>
+	        </div>
+	        <div class="form-row">
+	        	<iscomment>id: zipcode </iscomment>
+	            <div class="form-group col-md-6">
+	              	<isif condition="${p_billingaddr.country == 'US'}"> 
+	                	<input type="text" required="" inputmode="decimal" pattern="[0-9]*" class="form-control floating__input form-control-lg validatepostal" value="${(p_billingaddr !== null) ? p_billingaddr.postal: ''}" id="dwfrm_billing_billingAddress_addressFields_postal" name="dwfrm_billing_billingAddress_addressFields_postal" placeholder="Zipcode" aria-labelledby="Enter zipcode manually if your billing address is different from shipping address">	              	
+	              	<iselse>
+	                	<input type="text" required="" class="form-control floating__input form-control-lg validatepostal" value="${(p_billingaddr !== null) ? p_billingaddr.postal: ''}" id="dwfrm_billing_billingAddress_addressFields_postal" name="dwfrm_billing_billingAddress_addressFields_postal" placeholder="Zipcode" aria-labelledby="Enter zipcode manually if your billing address is different from shipping address">
+	                </isif>  
+	                  <label class="float-label" for="dwfrm_billing_billingAddress_addressFields_postal" data-content="Zipcode"></label>
+	            </div>
+	            <iscomment>id: province </iscomment>
+	            <div class="form-group col-md-6">
+	             
+	             	<iscomment>State text field </iscomment>
+					<input type="text" autocorrect="off" <isif condition="${p_billingaddr.country !== 'US' || p_billingaddr.country !== 'CA'}"> required="" </isif> class="form-control floating__input required form-control-lg ${(p_billingaddr.country === 'US' || p_billingaddr.country === 'CA')?'d-none':''}" id="billingStateText" value="${(p_billingaddr !== null) ? p_billingaddr.state : ''}" placeholder="Province"/>
+					
+					<iscomment>State select field </iscomment>
+					<select id="billingStateSelect" <isif condition="${p_billingaddr.country === 'US'}"> required="" </isif> class="form-control floating__input ${(p_billingaddr.country !== 'US')?'d-none':''} form-control-lg pl-3 required" >
+						<isloop items="${pdict.CurrentForms.billing.billingAddress.addressFields.states.state.options}" var="states" status="status">
+							<option class="select-option" <isif condition=${(p_billingaddr !== null) && (p_billingaddr.state === states.optionId)}> selected </isif> label="${Resource.msg(states.label,'forms',null)}" value="${states.optionId}">${Resource.msg(states.label,'forms',null)}</option>			
+						</isloop>
+					</select>
+					
+					<iscomment>State select field other than US</iscomment>
+					<select id="billingStateSelectNonUS" <isif condition="${p_billingaddr.country === 'CA'}"> required="" </isif> class="form-control floating__input ${(p_billingaddr.country !== 'CA')?'d-none':''} form-control-lg pl-3 validateForNonEnglishChars required" >
+						 <isloop items="${provinceList}" alias="province">
+							<isif condition="${province.country == 'CA'}"> 
+								<isloop items="${province.states}" alias="pstate">
+									<option class="select-option" <isif condition=${(p_billingaddr !== null) && (p_billingaddr.state === pstate.value)}> selected </isif> label="${pstate.label}" value="${pstate.value}">${pstate.label}</option>
+								</isloop>
+							</isif>
+						</isloop>
+					</select>
+					
+				   	<label class="float-label" for="dwfrm_billing_billingAddress_addressFields_states_state" data-content="Province"></label>	
+	            	
+	               	<input type="hidden" class="form-control form-control-lg" value="${(p_billingaddr !== null) ? p_billingaddr.state : ''}" id="dwfrm_billing_billingAddress_addressFields_states_state" name="dwfrm_billing_billingAddress_addressFields_states_state" placeholder="Province" aria-labelledby="Enter province manually if your billing address is different from shipping address">
+					
+					
+	            </div>
+	        </div>
+	        <iscomment>id: city </iscomment>
+	        <div class="form-row">
+	            <div class="form-group col-12">
+	                <input type="text" autocorrect="off" required="" class="form-control floating__input form-control-lg validateForNonEnglishChars" value="${(p_billingaddr !== null) ? p_billingaddr.city: ''}" id="dwfrm_billing_billingAddress_addressFields_city" name="dwfrm_billing_billingAddress_addressFields_city" placeholder="City" aria-labelledby="Enter city manually if your billing address is different from shipping address">
+	                 <label class="float-label" for="dwfrm_billing_billingAddress_addressFields_city" data-content="City"></label>
+	            </div>
+	        </div>
+	        <input type="hidden" id="dwfrm_billing_billingAddress_addressFields_phone" name="dwfrm_billing_billingAddress_addressFields_phone" value="${(p_billingaddr !== null) ? p_billingaddr.phone : ''}">
+	    </div>
+	</div>
+</div>

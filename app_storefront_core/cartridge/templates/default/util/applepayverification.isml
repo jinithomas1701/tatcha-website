@@ -1,0 +1,9 @@
+<isscript>
+var Site = require('dw/system/Site');
+var filePath = Site.getCurrent().getCustomPreferenceValue('ApplePayFileLocation');
+var file = new dw.io.File(dw.io.File.IMPEX + "//" + filePath);
+
+var fileReader = new dw.io.FileReader(file);
+var content = fileReader.readString();
+</isscript>
+<isprint value=${content} />

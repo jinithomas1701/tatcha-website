@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>${Resource.msg('siteoffline.title','error',null)}</title>
+<!-- Typekit -->
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/fonts.css')}">
+</head>
+<body>
+    <div style="font-family: 'proxima-nova', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; text-align: center;">
+        <img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/header/tatcha-logo-nav.png')}" alt="Tatcha Official Site" style="margin-top: 64px;">
+        <h1 style="font-weight: 200;text-transform: uppercase;">${Resource.msg('siteoffline.header','error',null)}</h1>
+        <h2 style="font-weight: 200;">${Resource.msg('siteoffline.message','error',null)}</h2>
+        <p style="font-weight: bold;">${Resource.msg('siteoffline.body','error',null)}</p>
+    </div>
+</body>

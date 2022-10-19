@@ -1,0 +1,801 @@
+'use strict';
+
+var Calendar = require('dw/util/Calendar');
+var StringUtils = require('dw/util/StringUtils');
+var Site = require('dw/system/Site');
+var ProductListMgr = require('dw/customer/ProductListMgr');
+var CustomerMgr = require('dw/customer/CustomerMgr');
+var app = require('app_storefront_controllers/cartridge/scripts/app');
+var Transaction = require('dw/system/Transaction');
+var ArrayList = require('dw/util/ArrayList');
+var getzip = require('app_storefront_core/cartridge/scripts/cart/GetCustomerIp');
+var GiftCertificateMgr = require('dw/order/GiftCertificateMgr');
+var PropertyComparator = require("dw/util/PropertyComparator");
+
+importPackage( dw.crypto );
+
+/*
+ * Get FedEx Delivery Dates
+ */
+function getRates(cart, shippingMethod) {
+    if(cart) {
+    	var selectedMethod, requestedRate;
+    	var shippingAddress = cart.getDefaultShipment().getShippingAddress();
+    	var params = this.getRequestParams();
+    	var cart = app.getModel('Cart').get();
+    	var uniqueKey = params.recipientCountryCode + '_' + params.recipientPostalCode;
+    	var cartValue =  cart.getAdjustedMerchandizeTotalPrice().value;
+    	
+    	if(empty(cart.getProductLineItems())){ return false; }
+    	if(empty(shippingAddress)){ return false; }    	
+    	
+    	var countryCode = shippingAddress.getCountryCode().value.toUpperCase();
+    	
+    	if((cartValue > 250) && (countryCode != 'DE' || countryCode != 'HR' || countryCode != 'BO' )) {
+	    	requestedRate = {'amount': 0, 'currency': cart.getCurrencyCode()};
+	    	session.custom.allowZeroFedex = true;
+	    	return requestedRate;
+	    }else{
+	   		 session.custom.allowZeroFedex = false;
+	    }
+	    
+	    if(!empty(session.custom.fedexRates) && !empty(session.custom.fedexRates[uniqueKey])) {
+     		 var fedexRates = session.custom.fedexRates[uniqueKey];
+      		if(!empty(fedexRates[shippingMethod.ID])) {
+      			 requestedRate = fedexRates[shippingMethod.ID];
+      			 return requestedRate;
+      		}      
+     	}
+     	
+	    var service = dw.svc.ServiceRegistry.get("FedEx.soap");
+	    var response = service.call();
+		
+	    if(response && response.error == 0 && response.object) {
+	    	var methods = response.object.rateReplyDetails;
+	    	for each(var method in methods) {
+	    		if(shippingMethod.ID.toLocaleLowerCase().indexOf(method.serviceType.value.toLocaleLowerCase()) >= 0) {
+	    			selectedMethod = method;
+	    			break;
+	    		}
+	    	}
+	    	
+	    	if(selectedMethod) {
+	    		var shipments = selectedMethod.ratedShipmentDetails;
+			    for each(var shipment in shipments) {
+			    	requestedRate = shipment.shipmentRateDetail.totalNetCharge;
+			    }
+	    	}
+	    	
+	    	if(empty(session.custom.fedexRates) || empty(session.custom.fedexRates[uniqueKey])) {
+	  	 		session.custom.fedexRates = {};
+	  	 		session.custom.fedexRates[uniqueKey] = {};
+	 	 	}
+			session.custom.fedexRates[uniqueKey][shippingMethod.ID] = requestedRate;
+	    }
+	    
+	    if(!requestedRate) {
+	    	requestedRate = {'amount': 0, 'currency': cart.getCurrencyCode()};
+	    }
+	    
+ 	 	return requestedRate;
+	}
+    return false;
+}
+
+
+/*
+ * Get OSF Order from OSF Product List
+ */
+function sortSubscriptions(subscriptions) {
+	var nextOrder;
+	
+	subscriptions.sort(function(a,b){
+		var nxtOrderA = getNextOrder(a);
+		var nxtOrderB = getNextOrder(b);
+		if(nxtOrderA.eventDate.getTime() == nxtOrderB.eventDate.getTime()) {
+			return 0;
+		} else if(nxtOrderA.eventDate.getTime() < nxtOrderB.eventDate.getTime()) {
+			return -1;
+		} else {
+			return 1;
+		}
+	});
+    
+    return subscriptions;
+}
+
+/*
+ * Get OSF Order from OSF Product List
+ */
+function getNextOrder(subscription) {
+	var nextOrder;
+	var Customer = CustomerMgr.getCustomerByLogin(customer.profile.email);
+	var orderlists = ProductListMgr.queryProductLists("eventType = {0} AND eventState = {1} AND eventCountry = {2}", "eventDate ASC", "order", "scheduled", subscription.ID);
+	
+	for each(var order in orderlists) {
+        nextOrder = order;
+        break;
+    }
+    return nextOrder;
+}
+
+/*
+ * Get OSF Order from Subscription
+ */
+function getNextSOROrder(subscription) {
+	var nextOrder;
+	var Customer = CustomerMgr.getCustomerByLogin(customer.profile.email);
+	var orderlists = subscription.getActiveOrders();
+	
+    var comparator = new PropertyComparator("createdAt", true);
+    orderlists.sort(comparator);
+    
+	for each(var order in orderlists) {
+        nextOrder = order;
+        break;
+    }
+    return nextOrder;
+}
+
+/*
+ * Get second next OSF Order from Subscription
+ */
+function getSecondNextSOROrder(subscription) {
+	var nextOrder;
+	var Customer = CustomerMgr.getCustomerByLogin(customer.profile.email);
+	var orderlists = subscription.getActiveOrders();
+	var comparator = new PropertyComparator("createdAt", true);
+    orderlists.sort(comparator);
+    
+	var i = 0;
+	for each(var order in orderlists) {
+        nextOrder = order;
+        i++;
+        if(i == 2) { break; }
+    }
+    return nextOrder;
+}
+
+function getRequestParams() {
+	var cart = app.getModel('Cart').get();
+	
+	var defaultShipment = cart.getDefaultShipment();
+    var shippingAddress = defaultShipment.getShippingAddress();
+	
+	var fedexConfigs = JSON.parse(Site.getCurrent().getCustomPreferenceValue('FedEx_Configs'));
+	
+	var countryCode = session.custom.fedCountryCode;
+	var postalCode = session.custom.fedPostalCode;	
+	
+	if((!countryCode || !postalCode) && !empty(shippingAddress)) {
+		countryCode = shippingAddress.getCountryCode().value;
+    	postalCode = shippingAddress.getPostalCode();
+	}    	
+	
+	if(postalCode && countryCode) {
+		session.custom.fedPostalCode = postalCode;
+		session.custom.fedCountryCode = countryCode;
+	}    
+    
+    fedexConfigs['recipientPostalCode'] = postalCode;
+    fedexConfigs['recipientCountryCode'] = countryCode;    
+    
+    return fedexConfigs;
+}
+
+function getCart() {
+	var cart = app.getModel('Cart').get();
+	return cart;
+}
+
+function getSecondNextOrder(subscription) {
+	var nextOrder;
+	var Customer = CustomerMgr.getCustomerByLogin(customer.profile.email);
+	var orderlists = ProductListMgr.queryProductLists("eventType = {0} AND eventState = {1} AND eventCountry = {2}", "eventDate ASC", "order", "scheduled", subscription.ID);
+	var i = 0;
+	for each(var order in orderlists) {
+        nextOrder = order;
+        i++;
+        if(i == 2) { break; }
+    }
+    return nextOrder;
+}
+
+function getPreviousClick() {
+
+	var click = session.getClickStream().last;        
+   	var referer = click.referer;
+  
+    return referer;
+}
+
+function syncSubscriptionStatus() {
+	var customer= session.customer;
+	if(customer.authenticated) {
+		var klaviyoEnabled = Site.getCurrent().getCustomPreferenceValue('klaviyo_subscription_sync_enabled');
+		if (klaviyoEnabled) {
+			require('int_klaviyo_services/cartridge/scripts/utils/klaviyo/KlaviyoSubscriptionUtils').syncSubscription();
+		}
+	}
+}
+
+function filterApplicableShippingMethods(cart) {
+	var ShippingMgr = require('dw/order/ShippingMgr');
+	var cartTotal = cart.getAdjustedMerchandizeTotalPrice();
+	var defaultShipment = cart.getDefaultShipment();
+	var shippingRate = defaultShipment.adjustedShippingTotalPrice.value;
+	var cartShippingID = cart.getDefaultShipment().getShippingMethodID();
+	var applicableMethods = new ArrayList(ShippingMgr.getShipmentShippingModel(defaultShipment).getApplicableShippingMethods());
+	var isEligible = false;
+	var filteredMethods = [];
+	
+	for(var i=0; i<applicableMethods.length; i++) {
+		var applicableMethod = applicableMethods[i];
+		//Skip if cartTotal is less than minOrderValue
+		if(!empty(applicableMethod.custom.minOrderValue) && cartTotal < applicableMethod.custom.minOrderValue) {
+			continue;
+		}
+		//Skip if cartTotal is greater than minOrderValue
+		if(!empty(applicableMethod.custom.orderValue) && cartTotal > applicableMethod.custom.orderValue) {
+			continue;
+		}
+		if(applicableMethod.ID == cartShippingID && applicableMethod.custom.isFedex && session.custom.allowZeroFedex != true && shippingRate <= 0) { 
+			continue;
+		}
+		//check method is applicable or not
+		if(applicableMethod.ID == cartShippingID) {
+			isEligible = true;
+			break;
+		}
+		filteredMethods.push(applicableMethod);
+	}
+	
+	if(!isEligible) {
+		if(filteredMethods.length > 0) {
+  	 		var eligibleMethodID = filteredMethods[0].ID;
+  	 		Transaction.wrap(function () {
+      			cart.updateShipmentShippingMethod(cart.getDefaultShipment().getID(),eligibleMethodID, null, null);
+      			cart.calculate();
+     		});
+     		return true;
+ 	 	}
+  		return false;
+ 	}
+}
+
+function isInternationalUser() {
+	var customer= session.customer;
+	var countryCode = getzip.getCountryCode();
+	var defaultCountry = 'US';
+	var isInterntionalUser = false;
+	if(customer.authenticated && customer.registered && customer.addressBook && customer.addressBook.preferredAddress) {
+		defaultCountry = customer.addressBook.preferredAddress.countryCode.value;
+	}
+	if(countryCode !== 'US' || defaultCountry !== 'US') {
+		isInterntionalUser = true;
+	}
+	return isInterntionalUser;
+}
+
+function isCountryDelivarable(countryCode) {
+	countryCode = countryCode.value.toLowerCase();
+	var list = Site.getCurrent().getCustomPreferenceValue('nonShippingCountries');
+	if(list.indexOf(countryCode) < 0) {
+		return true;
+	}	
+	return false;
+}
+
+function hasCartCategory(product) {
+	var specialCategory = dw.system.Site.current.getCustomPreferenceValue('AddToCartCategory');
+	var categories = product.allCategories;
+	categories = categories.iterator();
+	var hasCategory = false;
+    while (categories.hasNext()) {
+        var category = categories.next();
+        if(category.ID == specialCategory) {
+        	hasCategory = true;
+        	break;
+        }
+    }
+    return hasCategory;
+}
+
+function isWishlistItem(pid) {
+	var available = false;
+	var ProductList = app.getModel('ProductList');
+    var productList = ProductList.get();
+
+	for each(var item in productList.object.items) {
+		if(pid == item.productID) {
+			available = true;
+			break;
+		}
+	}
+	return available;
+}
+
+function giftWrapEligibility() {
+	var cart = app.getModel('Cart').get();
+	var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+	var plis = cart.getProductLineItems();	
+	if(empty(plis)){ return false; }
+	
+	var ineligible = 0;
+	for (var q = 0; q < plis.length; q++) {
+		var item = plis[q];
+		if (!empty(item.bonusProductLineItem) && item.bonusProductLineItem == false 
+		&& !empty(item.product.custom.isEligibleForGiftWrap) && item.product.custom.isEligibleForGiftWrap == false && item.productID != giftWrapId) {
+			ineligible++;
+		}
+	}
+	if (plis.length == ineligible){
+		return 'ineligible';
+	} else if(ineligible == 0){
+		return 'eligible';	
+	} else {
+		return 'part-eligible';	
+	}
+}
+
+
+
+/* getting giftcertificate details from order */
+function getGiftcertificateFromOrder(order)
+{
+	var gcIdList = new ArrayList();
+	var giftCertificatePaymentInstruments = order.giftCertificatePaymentInstruments;
+    var gcPIIter = giftCertificatePaymentInstruments.iterator();
+    while (gcPIIter.hasNext()) {
+    	var giftCertificate = GiftCertificateMgr.getGiftCertificateByCode((gcPIIter.next()).getGiftCertificateCode());
+    	if(giftCertificate.status == require('dw/order/GiftCertificate').STATUS_REDEEMED){
+    		var item = []; 
+    		item.push({"senderName" : giftCertificate.senderName, "view" : giftCertificate.merchantID});
+    		gcIdList.add(item);
+    	}
+    }
+    return gcIdList;
+}
+
+function getRecommendationSkinTypes() {
+	var data = {};
+	var skinType = [];
+	var eyeConcerns = [];
+	var skinConcerns = [];
+	var prd = [];
+	var Site = require('dw/system/Site');
+	var categoryJsonObj = JSON.parse(Site.getCurrent().getCustomPreferenceValue('recommendationConfig'));
+	
+	if(!empty(categoryJsonObj.skinType)) {
+		var skinTypeKeys = Object.keys(categoryJsonObj.skinType);
+		if(skinTypeKeys.length > 0) {
+			skinTypeKeys.forEach(function(key, index) {
+				skinType.push({
+					key: key,
+					label: categoryJsonObj.skinType[key].label
+				});
+			});
+		}
+		data.skinType = skinType;
+	}
+	
+	if(!empty(categoryJsonObj.skinConcerns)) {
+		var skinConcernKeys = Object.keys(categoryJsonObj.skinConcerns);
+		if(skinConcernKeys.length > 0) {
+			skinConcernKeys.forEach(function(key, index) {
+				skinConcerns.push({
+					key: key,
+					label: categoryJsonObj.skinConcerns[key].label
+				});
+			});
+		}
+		data.skinConcerns = skinConcerns;
+	}
+	
+	if(!empty(categoryJsonObj.eyeConcerns)) {
+		var eyeConcernsKeys = Object.keys(categoryJsonObj.eyeConcerns);
+		if(eyeConcernsKeys.length > 0) {
+			eyeConcernsKeys.forEach(function(key, index) {
+				eyeConcerns.push({
+					key: key,
+					label: categoryJsonObj.eyeConcerns[key].label
+				});
+			});
+		}
+		data.eyeConcerns = eyeConcerns;
+	}
+	
+	 if(!empty(categoryJsonObj.productSelector)) {
+		var prdSelector = Object.keys(categoryJsonObj.productSelector);
+			if(prdSelector.length > 0) {
+				prdSelector.forEach(function(key, index) {
+					
+					prd.push({
+						category: key,
+						products: categoryJsonObj.productSelector[key].products
+					});
+				});
+			} 
+		data.prd = prd;
+	} 
+	
+	return data;
+}
+
+/*
+ * Gets the cancelled orders
+ */
+function sendCancellationNotifications(pdict) { 
+	
+	dw.system.Logger.info('sendCancellationNotifications started');
+	var braintreeApiCalls = require('int_braintree/cartridge/scripts/braintree/braintreeHelper');
+	var BraintreeHelper = require('bm_braintree/cartridge/scripts/braintree/bmBraintreeHelper');
+	
+	var orderDate = new Date();
+	
+	//Consider the timezone
+
+	var orderDate = new Date();
+	var fromOrderDate = new Date();	
+		
+	// Set to the overridden date if passed	
+	if(pdict.date) {
+	    var pdate = pdict.date.split('-');
+	    orderDate = new Date(pdate[0], (pdate[1]-1), pdate[2]);
+	    fromOrderDate = new Date(pdate[0], (pdate[1]-1), pdate[2]);
+	}
+
+	// Change from date to 1 day previous
+	fromOrderDate.setHours(orderDate.getHours() - 48);
+	
+	dw.system.Logger.info('SendCancellationNotifications: From Date : {0}',fromOrderDate);
+	dw.system.Logger.info('SendCancellationNotifications: To Date {0}',orderDate);
+	
+    var ordersIterator = require('dw/order/OrderMgr').searchOrders('status={0} AND creationDate >= {1} and creationDate <= {2}', 'creationDate desc',
+    dw.order.Order.ORDER_STATUS_CANCELLED,fromOrderDate,orderDate,null,false);
+    
+    dw.system.Logger.info('SendCancellationNotifications: Order count : {0}',ordersIterator.count);
+	
+     while (ordersIterator.hasNext()) {
+
+        var order = ordersIterator.next();    
+    	dw.system.Logger.info('SendCancellationNotifications: Order number : {0}',order.orderNo);
+        
+        try {
+            // Check if cancel email sent 
+           var cancelEmailSent = (order.custom.cancelEmailSent)?order.custom.cancelEmailSent:false;  
+           dw.system.Logger.info('SendCancellationNotifications: CancelEmailSent : {0}',cancelEmailSent);        
+           if(cancelEmailSent) continue;
+        	   
+	        var orderDetails = {}; 
+	        var orderEmail = order.getCustomer().profile ? order.getCustomer().profile.email: order.customerEmail;
+	        
+			var cancelCode = (order.cancelCode)?order.cancelCode:'';
+	        var cancelDescription = (order.cancelDescription)?order.cancelDescription:'';
+	        
+			if(cancelDescription =='Declined by Signifyd.'){
+				cancelDescription = 'FRAUD';
+			} else {
+				cancelDescription = 'TEAMLOVE';
+			}
+			
+			orderDetails['ORDER_NUMBER'] = order.orderNo;
+			orderDetails['FIRST_NAME'] = (order.billingAddress.firstName)?order.billingAddress.firstName:'';
+			orderDetails['LAST_NAME'] = (order.billingAddress.lastName)?order.billingAddress.lastName:'';		
+			orderDetails['CANCEL_REASON'] = cancelDescription; //AUTODELIVERY, FRAUD, TEAMLOVE
+			
+
+	        // Send notifications
+	        require('*/cartridge/scripts/utils/klaviyo/klaviyoUtils').sendEmail(orderEmail, orderDetails, 'Order Cancellation');	
+	        
+	        //mparticle - order cancellation
+	        if(Site.getCurrent().getCustomPreferenceValue('mParticleEnabled')) {
+		    	var eventAttributes = {	    			
+		    			cancelReason : cancelDescription,
+		    			orderNumber : (order.orderNo) ? order.orderNo : '',
+		    			lastName : (order.shipments[0].shippingAddress.lastName)?order.shipments[0].shippingAddress.lastName:'',
+		    			firstName : (order.shipments[0].shippingAddress.firstName)?order.shipments[0].shippingAddress.firstName:'',
+		    			email : orderEmail
+		    	    };
+		    	require('int_mParticle/cartridge/scripts/mParticleUtils').klaviyoEventTrigger('Order Cancellation', JSON.stringify(eventAttributes));
+	        }
+	        
+	        //Send Linc Cancellation Notification
+	        require('int_linc_sfra/cartridge/scripts/helpers/lincCancellationHelper').callLincCancellationAPI(order.orderNo);	
+	         
+	        // Void BT Transaction
+	        var iter = order.getPaymentInstruments().iterator();
+	        while (iter.hasNext()) {
+		        var btPaymentInstrument = iter.next();
+		        if (btPaymentInstrument.paymentMethod === 'CREDIT_CARD') {
+		            var braintreePaymentInstrument = BraintreeHelper.getBraintreePaymentInstrument(order);
+		            var transactionId = braintreePaymentInstrument.getPaymentTransaction().getTransactionID();
+		            // Find the transaction stauts from BT 
+		            var transactionResponseBT = braintreeApiCalls.callApiMethod('find', {
+			            'transactionId' : transactionId 
+			        });
+			        // Do the BT void transaction only if the status is authorized, submitted_for_settlement or settlement_pending
+			        if(transactionResponseBT.transaction.status === 'authorized' || transactionResponseBT.transaction.status === 'submitted_for_settlement' || transactionResponseBT.transaction.status === 'settlement_pending') {
+			        	dw.system.Logger.info('Processing BT Void transaction: TansactionId : {0}',transactionId);
+			        	 var transactionResponse = braintreeApiCalls.callApiMethod('void', {
+			            'transactionId' : transactionId 
+				        });
+				        // Updating the Braintree Transaction status 
+				        Transaction.wrap(function() {
+		                    order.custom.braintreePaymentStatus = transactionResponse.transaction.status;
+		                });
+				        dw.system.Logger.info('Response from BT API: TansactionId: {0}, Transaction status: {1}',transactionResponse.transaction.id, transactionResponse.transaction.status); 			        			        	
+			        }			        		            		           
+		        }
+			}
+	        
+	        if(order.custom.apIsAfterpayOrder){
+		        var transActions = require('bm_afterpay/cartridge/scripts/transActions');
+		        dw.system.Logger.info('Processing afterpay refund: Order number : {0}, Refund Amount: {1}',order.orderNo, order.totalGrossPrice.toString());	
+		        transActions.refund(order.orderNo, order.totalGrossPrice.toString());	
+	        }
+	        
+	        // Update Order Flag
+	        Transaction.wrap(function () {
+			    order.custom.cancelEmailSent = true;
+			}); 
+        
+        	if(order.custom.hasSubscriptions){
+        		dw.system.Logger.info('sendCancellationNotifications: AD order');
+        		cancelADSubscriptions(order.orderNo);
+        	}
+        	
+        } 	catch(e){
+        	dw.system.Logger.error(e.toString());
+        } 
+        
+    }
+    
+}
+
+
+/**
+ * function to cancel AD subscriptions for cancelled orders
+ * @param orderNo
+ * @returns
+ */
+function cancelADSubscriptions(orderNo){
+	
+	try {
+		var order = require('dw/order/OrderMgr').getOrder(orderNo);
+		if(dw.system.Site.getCurrent().getCustomPreferenceValue('SorEnabled')){
+			var RefillCustomerModel = require("*/cartridge/models/smartOrderRefill/refillCustomer.js");
+			var refillCustomer = new RefillCustomerModel({
+	            preferences : require('dw/system/Site').current.preferences,
+	            customer : order.customer
+	        });
+			refillCustomer.cancelAllSubscription(orderNo);
+		}
+	}catch(e) {
+		var err = e;
+        return false;
+    }
+}
+
+/**
+ * function to get category options for gift finder
+ * @returns JSON
+ */
+function getGFCategoryOptions() {
+	var CatalogMgr = require('dw/catalog/CatalogMgr');
+	var Site = require('dw/system/Site');
+
+	var catergoryDisplayName = [], catergoryDisplayID = [];
+	var parentCategoryID = Site.getCurrent().getPreferences().custom.giftFinderParentCategoryId;
+	var parentCat = CatalogMgr.getCategory(parentCategoryID);
+	//var onlineSubCategories = parentCat.onlineSubCategories;
+	var onlineSubCategories = parentCat.getSubCategories();
+	var gfCatOrder = Site.getCurrent().getCustomPreferenceValue('gfCategoryOrder');
+	gfCatOrder = gfCatOrder.split(',');
+		
+	for (var i = 0; i < gfCatOrder.length; i++) {
+		for (var j = 0; j < onlineSubCategories.length; j++) {
+		if (gfCatOrder[i] == onlineSubCategories[j].ID) {
+			catergoryDisplayName.push(onlineSubCategories[j].displayName);
+			catergoryDisplayID.push(onlineSubCategories[j].ID);
+			}
+		}
+	}
+
+	return {catergoryDisplayName : catergoryDisplayName, catergoryDisplayID : catergoryDisplayID};
+}
+
+/*
+ * Check if the Tracking number is USPS
+ */
+ 
+function isUSPSTrackNumber(trackingNumber) {
+	
+	if(!empty(trackingNumber)){
+		
+		trackingNumber = trackingNumber.replace(/\s/g,"");
+		var usps = [];   
+	    usps[0] = '^(94|93|92|94|95)[0-9]{20}$';
+	    usps[1] = '^(94|93|92|94|95)[0-9]{22}$';
+	    usps[2] = '^(70|14|23|03)[0-9]{14}$';
+	    usps[3] = '^(M0|82)[0-9]{8}$';
+	    usps[4] = '^([A-Z]{2})[0-9]{9}([A-Z]{2})$';
+
+	    if (new RegExp(usps[0]).test(trackingNumber)){
+	      return true;
+	    }
+	    
+	    if (new RegExp(usps[1]).test(trackingNumber)){
+	      return true;
+	    }
+	    if (new RegExp(usps[2]).test(trackingNumber)){
+	      return true;
+	    }
+	    if (new RegExp(usps[3]).test(trackingNumber)){
+	      return true;
+	    }
+	    if (new RegExp(usps[4]).test(trackingNumber)){
+	      return true;
+	    }
+	    
+
+	}
+  
+    
+    return false;
+  }
+
+/**
+* Send order confirmation email reading a order CSV
+**/
+function sendOrderEmailsFromCSV(pdict) { 
+	
+	var Site = require('dw/system/Site');
+	var File = require("dw/io/File");
+	var FileReader = require("dw/io/FileReader");
+	var CSVStreamReader = require("dw/io/CSVStreamReader");
+	
+	var fileReader;
+	var emailType = 'Placed Order';
+	if(pdict.emailType){
+		emailType = pdict.emailType;
+	}
+	
+	var file = new File(File.IMPEX + "/src/tatcha/temp/orders.csv");
+	var fileReader = new FileReader(file);
+	var csvReader = new CSVStreamReader(fileReader);
+	var line;
+
+	var emailUtils = require('*/cartridge/scripts/utils/klaviyo/emailUtils');
+	var KlaviyoUtils = require('*/cartridge/scripts/utils/klaviyo/klaviyoUtils');
+	
+	while ((line = csvReader.readNext()) != null ) {
+		
+		try {
+			dw.system.Logger.info('sendOrderEmails: Processing : {0}',line[0]);
+			var orderObj : Order = require('dw/order/OrderMgr').getOrder(line[0]);
+			if(orderObj) {
+								
+				dw.system.Logger.info('sendOrderEmails: Sending Email : {0}',emailType);
+				
+				try {
+					var tatchaOrder = emailUtils.prepareOrderPayload(orderObj, false, 'orderConfirmation');
+		  			var orderEmail = orderObj.customerEmail ? orderObj.customerEmail : orderObj.getCustomer().profile.email;
+          			KlaviyoUtils.sendEmail(orderEmail, tatchaOrder, emailType);
+          
+				} catch(err){
+					dw.system.Logger.error(err.toString());
+				}
+				
+				
+				
+				
+			} else {
+				dw.system.Logger.info('sendOrderEmails: Order number not found : {0}',line[0]);
+			}
+			
+		} catch(err){
+			dw.system.Logger.error(err.toString());
+		}
+
+	}
+	fileReader.close();
+	csvReader.close();
+}
+
+/**
+ * function to get aggregate ratings from yotpo.
+ * @param pdict
+ * @constructor
+ */
+function updateProductDetails(pdict) {
+	var productMgr = require('dw/catalog/ProductMgr');
+	dw.system.Logger.info('Processing updateProductDetails');
+
+	//Get Products
+	var products = productMgr.queryAllSiteProductsSorted();
+	while(products.hasNext()) {
+		var product = products.next();
+		if (product.isMaster()) {
+			continue;
+		}
+		dw.system.Logger.info('updateProductDetails: Product ID : {0}',product.getID());
+
+		var productID = '';
+		if(product.isVariant()) {
+			var masterProduct = product.getMasterProduct();
+			productID = masterProduct.ID;
+		}else{
+			productID = product.getID();
+		}
+		//getting yotpo aggregate ratings
+		var yotpoReviewResponse = '';
+		if(!empty(productID)){
+			try{
+				//Yotpo rich snippet - aggregate ratings
+				var CommonModel = require('int_yotpo/cartridge/scripts/yotpo/model/common/CommonModel');
+				var result = CommonModel.getReviewRatings(productID);
+				if(result && result.response){
+					yotpoReviewResponse = result.response.bottomline;
+				}
+
+				if(!empty(yotpoReviewResponse) && yotpoReviewResponse.average_score && yotpoReviewResponse.total_reviews){
+					dw.system.Logger.info('updateProductDetails: Yotpo total reviews : {0}',yotpoReviewResponse.total_reviews);
+					Transaction.wrap(function () {
+						product.custom.yotpoAggregateRating = yotpoReviewResponse.average_score + ',' + yotpoReviewResponse.total_reviews;
+					});
+				}
+			} catch (e) {
+				var error = e;
+				dw.system.Logger.error("yotpo aggregate ratings service call error: " + e.toString());
+			}
+		}
+
+		//Getting vimeo video thumnail
+		var productImgVideo = product.custom.autoplayVideoSource.value;
+		if (productImgVideo == 'vimeo'){
+			try{
+				var http = new dw.net.HTTPClient();
+				http.setTimeout(30000); //30 secs
+
+				var imageUrl = 'https://www.vimeo.com/api/v2/video/' + product.custom.autoplayVideo + '.json';
+				http.open('GET', imageUrl);
+				http.send();
+				var result = JSON.parse(http.getText());
+				var videoThumbnailUrl = result[0] != null ? result[0].thumbnail_small : '';
+				if(!empty(videoThumbnailUrl)){
+					dw.system.Logger.info('updateProductDetails: Vimeo videoThumbnailUrl : {0}',videoThumbnailUrl);
+					Transaction.wrap(function () {
+						product.custom.vimeoVideoThumbnailUrl = videoThumbnailUrl;
+					});
+				}
+			}catch (e) {
+				var error = e;
+				dw.system.Logger.error("vimeo video thumnail service call error: " + e.toString());
+			}
+		}
+	}
+}
+
+module.exports.sendOrderEmailsFromCSV = sendOrderEmailsFromCSV;
+module.exports.isUSPSTrackNumber = isUSPSTrackNumber;
+module.exports.sortSubscriptions = sortSubscriptions;
+module.exports.getNextOrder = getNextOrder;
+module.exports.getNextSOROrder = getNextSOROrder;
+module.exports.getSecondNextOrder = getSecondNextOrder;
+module.exports.getSecondNextSOROrder = getSecondNextSOROrder;
+module.exports.getRates = getRates;
+module.exports.getRequestParams = getRequestParams;
+module.exports.getCart = getCart;
+module.exports.getPreviousClick = getPreviousClick;
+module.exports.syncSubscriptionStatus = syncSubscriptionStatus;
+module.exports.filterApplicableShippingMethods = filterApplicableShippingMethods;
+module.exports.isInternationalUser = isInternationalUser;
+module.exports.isCountryDelivarable = isCountryDelivarable;
+module.exports.hasCartCategory = hasCartCategory;
+module.exports.isWishlistItem = isWishlistItem;
+module.exports.giftWrapEligibility = giftWrapEligibility;
+module.exports.getGiftcertificateFromOrder = getGiftcertificateFromOrder;
+module.exports.sendCancellationNotifications = sendCancellationNotifications;
+module.exports.getGFCategoryOptions = getGFCategoryOptions;
+module.exports.UpdateProductDetails = updateProductDetails;

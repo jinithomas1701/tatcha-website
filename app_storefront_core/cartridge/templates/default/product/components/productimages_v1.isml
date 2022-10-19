@@ -1,0 +1,141 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<isif condition="${pdict.Product.master && pdict.CurrentVariationModel}">
+    <isset name="imageProduct" value="${pdict.CurrentVariationModel}" scope="page"/>
+<iselseif condition="${pdict.Product.variant && !empty(pdict.Product.getVariationModel())}">
+    <isset name="imageProduct" value="${pdict.Product.getVariationModel()}" scope="page"/>
+<iselse/>
+    <isset name="imageProduct" value="${pdict.Product}" scope="page"/>
+</isif>
+<isset name="imagesize" value="${(empty(pdict.CurrentHttpParameterMap.imagesize.stringValue) ? 'large' : pdict.CurrentHttpParameterMap.imagesize.stringValue)}" scope="page"/>
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview'}" scope="page"/>
+
+<iscomment>Main Images</iscomment>
+<div class="product-img-main">
+<isif condition="${pdict.GetImages}">
+		<isinclude template="product/components/marketingflags"/>
+	</isif>
+	<isif condition="${!empty(marketingFlags)}">
+	<div class="badge"><isprint value="${marketingFlags}" encoding="off"/></div>
+	</isif>
+	
+	<iscomment>for schema</iscomment>
+	<span class="visually-hidden" itemprop="image">${getImageUrl(imageProduct,imagesize,'0','false','pdp')}</span>
+	<div class="d-flex">
+		<div class="product-thumbnails-carousel d-none d-md-flex flex-column px-2 px-lg-3 mr-xl-4">
+			<iscomment>Thumbnail images</iscomment>
+			<isset name="largeImagesSize" value="${imageProduct.getImages('large').size()}" scope="page"/>
+			<isset name="noOfImages" value="${largeImagesSize}" scope="page"/>
+			<isset name="videoIndex" scope="page" value="0">
+			<isset name="counter" value="${1}" scope="page">
+			<isloop items="${imageProduct.getImages('large')}" var="img" status="imgSmStatus" end="9">
+				<isif condition="${imgSmStatus.count > noOfImages}">
+					<isbreak/>
+				</isif>		
+				<isif condition="${!empty(imagesize)}">
+					<isset name="lgImageUrl" value="${getImageUrl(imageProduct,imagesize,imgSmStatus.index.toFixed(0),'false','pdp')}" scope="page"/>
+				<iselse>
+					<isset name="lgImageUrl" value="${getImageUrl(imageProduct,'pdpMain',imgSmStatus.index.toFixed(0),'false','pdp')}" scope="page"/>
+				</isif>				
+				<isset name="lgImageAlt" value="${getImageAlt(imageProduct,imgSmStatus.index.toFixed(0))}" scope="page"/>
+				<isset name="lgImageTitle" value="${getImageTitle(imageProduct,imgSmStatus.index.toFixed(0))}" scope="page"/>
+				<isset name="hi_res" scope="page" value="${getImageUrl(imageProduct,'zoom',imgSmStatus.index.toFixed(0),'false','pdp')}" />
+				<isif condition = "${imgSmStatus.first}">
+					<isset name="active" scope="page" value="active">
+				<iselse>
+					<isset name="active" scope="page" value="">
+				</isif> 
+				
+				<div class="my-2 product-thumbnail-spec">
+					<a class="product-thumbnail ${active}" href="#">
+						<img class="img-fluid product-img-thumbnail rounded-circle"  src="${getImageUrl(imageProduct, 'medium',imgSmStatus.index.toFixed(0),'false','pdp')}" alt="Display ${lgImageAlt} Image, View ${counter.toFixed()}">
+					</a>
+				</div>
+				<isset name="counter" value="${counter + 1}" scope="page">  
+				<isif condition="${!empty(pdict.Product.custom.autoplayVideo) && imgSmStatus.last}">
+	            <isset name="videoIndex" scope="page" value="1">                       
+	         	 <div class="my-2 product-thumbnail-spec position-relative">
+		            <iscomment> checking video source </iscomment>
+		            <isif condition="${empty(pdict.Product.custom.autoplayVideoSource.value) || pdict.Product.custom.autoplayVideoSource.value == 'youtube'}">
+		                <a href="#" class="product-thumbnail product-img-thumbnail video-thumbnail thumbnail-link thumb ${active}" tabindex="-1" >
+		                	<iscomment>Get the thumbnail from youtube</iscomment>  
+		                	<img data-type="video" data-index="${imgSmStatus.index + 1}" tabindex="0" data-source="${pdict.Product.custom.autoplayVideoSource.value}"  data-video="${pdict.Product.custom.autoplayVideo}" class="productthumbnail img-fluid product-img-thumbnail rounded-circle" src="https://img.youtube.com/vi/${pdict.Product.custom.autoplayVideo}/mqdefault.jpg" alt="Display ${pdict.Product.name} Video, View ${counter.toFixed()}"/>                
+		                	<!-- <i class="fal fa-play-circle fa-4x" data-index="${imgSmStatus.index + 1}" id="video-thumbnail-play-icon"></i> -->
+		                </a>
+		            <iselseif condition="${pdict.Product.custom.autoplayVideoSource.value == 'vimeo'}" >    
+		                <a href="#" class="product-thumbnail product-img-thumbnail video-thumbnail thumbnail-link thumb ${active}" tabindex="-1">
+		                	<iscomment>Get the thumbnail from vimeo</iscomment> 
+		                	<img data-type="video" data-index="${imgSmStatus.index + 1}" tabindex="0" data-source="${pdict.Product.custom.autoplayVideoSource.value}" data-video="${pdict.Product.custom.autoplayVideo}" class="productthumbnail vimeoVideoSource img-fluid product-img-thumbnail rounded-circle" src="${pdict.VideoThumbnailUrl}" alt="Display ${pdict.Product.name} Video, View ${counter.toFixed()}"/>                
+		                	<!-- <i class="fal fa-play-circle fa-4x" data-index="${imgSmStatus.index + 1}" id="video-thumbnail-play-icon"></i> -->
+		                </a>
+		            </isif>	 
+		            <img src="${URLUtils.staticURL('/images/video-play-icon.svg')}" alt="${pdict.Product.name} video" class="video-play-icon">           
+	             </div>    
+	             <isset name="counter" value="${counter + 1}" scope="page">                    
+	        </isif>
+			</isloop>
+			
+		</div>	
+		<div class="carousel product-carousel carousel-lg-spec p-md-3" data-flickity = '{ "cellAlign": "center","wrapAround": true, "contain": true, "imagesLoaded": "true", "percentPosition": false, "freeScroll": false, "pageDots": true, "groupCells": false,"lazyLoad": true}'>
+			<isloop items="${imageProduct.getImages('large')}" var="img" status="imgSmStatus" end="9">
+				<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+					<isset name="imageAlt" value="${getImageAlt(imageProduct)}" scope="page"/>
+					<isset name="imageTitle" value="${getImageTitle(imageProduct)}" scope="page"/>
+				<iselse/>
+					<isset name="imageAlt" value="${pdict.Product.name}" scope="page"/>
+					<isset name="imageTitle" value="${pdict.Product.name}" scope="page"/>
+				</isif>
+				
+				<isset name="imageAlt" value="${'Image - '+imageAlt}" scope="page"/>
+			
+				<iscomment>RAP-2997, if the product name is missing from the image title, add it in</iscomment>
+				<isif condition="${imageTitle.charAt(0) == ','}">
+					<isset name="imageTitle" value="${pdict.Product.name + imageTitle}" scope="page"/>
+				</isif>
+				
+				<div id="image-container" class="main-image carousel-cell">
+					<a href="${getImageUrl(imageProduct, 'large', imgSmStatus.index.toFixed(0),'false','pdp')} " class="product-image-popup" tabindex="-1">
+						<img height="750" width="750" class="primary-image img-fluid carousel-image" data-flickity-lazyload="${getImageUrl(imageProduct, 'large', imgSmStatus.index.toFixed(0),'false','pdp')}" tabindex="0" alt="${imageAlt}" data-holder-rendered="true" />
+					</a>
+					<isif condition="${!empty(pdict.Product.custom.awardsBadging) && !empty(pdict.Product.custom.awardsBadging.httpURL) && imgSmStatus.first}">
+						<div class="awards-container"><img src="${pdict.Product.custom.awardsBadging.httpURL}" class="img-fluid" alt="${(!empty(pdict.Product.custom.awardsBadgingAltText) && pdict.Product.custom.awardsBadgingAltText != null) ? pdict.Product.custom.awardsBadgingAltText : "Award Badge"}"></div>
+					</isif>
+				</div>
+				
+				<isif condition="${imgSmStatus.last && !empty(pdict.Product.custom.autoplayVideo)}"> 
+					<div id='video-container' class='iframe-container carousel-cell video-cell'>
+						<div id='player'>
+							
+							<isif condition="${empty(pdict.Product.custom.autoplayVideoSource.value) || pdict.Product.custom.autoplayVideoSource.value == 'youtube'}">
+				                <a href="#" class="product-thumbnail video-thumbnail thumbnail-link thumb" tabindex="-1" >
+				                	<iscomment>Get the thumbnail from youtube </iscomment>  
+				                	<img data-type="video" data-source="${pdict.Product.custom.autoplayVideoSource.value}" tabindex="0" data-video="${pdict.Product.custom.autoplayVideo}" class="productthumbnail d-none" src="https://img.youtube.com/vi/${pdict.Product.custom.autoplayVideo}/mqdefault.jpg" alt="Display ${pdict.Product.name} Video, View ${imgSmStatus.index + 1}"/>
+				                	                
+				                	<!-- <i class="fal fa-play-circle fa-4x" id="video-thumbnail-play-icon"></i> -->
+				                </a>
+				            <iselseif condition="${pdict.Product.custom.autoplayVideoSource.value == 'vimeo'}" >    
+				                <a href="#" class="product-thumbnail video-thumbnail thumbnail-link thumb" tabindex="-1">
+				                	<iscomment>Get the thumbnail from vimeo </iscomment> 
+				                	<img data-type="video" tabindex="0" data-source="${pdict.Product.custom.autoplayVideoSource.value}" data-video="${pdict.Product.custom.autoplayVideo}" class="productthumbnail vimeoVideoSource d-none" src="${pdict.VideoThumbnailUrl}" alt="Display ${pdict.Product.name} Video, View ${imgSmStatus.index + 1}"/>                
+				                	<!-- <i class="fal fa-play-circle fa-4x" id="video-thumbnail-play-icon"></i> -->
+				                </a>
+				            </isif>
+						
+						</div>
+					</div>
+				</isif>
+				
+			</isloop>
+			
+		</div>
+	</div>
+	<isif condition="${!empty(pdict.Product.custom.autoplayVideo)}">
+	<div class="d-inline-block d-md-none video-icon-thumbnail">
+						
+		<img src="${URLUtils.staticURL('/images/video-icon.svg')}" alt="Play video" width=45 height=45/>
+
+	</div>
+	</isif>
+</div>

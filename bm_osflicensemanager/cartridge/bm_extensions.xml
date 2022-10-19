@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+
+    <menuitem id="osfLicenseManagerModules" position="99999" site="true">
+        <name xml:lang="x-default">OSF License Manager</name>
+        <short_description xml:lang="x-default">
+            Modules to manage licenses
+        </short_description>
+        <description xml:lang="x-default">
+            Helps manage the usage of OSF licenses
+        </description>
+        <icon>images/osf_logo.jpg</icon>
+    </menuitem>
+
+    <menuaction id="osfLicenseManagerCredentials" menupath="osfLicenseManagerModules" position="100" site="true">
+        <name xml:lang="x-default">License credentials</name>
+        <short_description xml:lang="x-default">
+            Credentials registration
+        </short_description>
+        <description xml:lang="x-default">
+            Cretentials registration page
+        </description>
+        <exec pipeline="OSFLicenses" node="GetLicenses"/>
+        <sub-pipelines>
+            <pipeline name="OSFLicenses"/>
+        </sub-pipelines>
+        <icon>images/osf_logo.jpg</icon>
+    </menuaction>
+
+</extensions>

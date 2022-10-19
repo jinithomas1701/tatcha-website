@@ -1,0 +1,24 @@
+fragment transactionFields on Transaction {
+    id
+    legacyId
+    createdAt
+    paymentMethod {
+        id,
+        legacyId
+    }
+    amount {
+        value
+        currencyCode
+    }
+    orderId
+    status
+    statusHistory {
+        status
+        timestamp
+        amount {
+            value
+            currencyCode
+        }
+    }
+    source
+}

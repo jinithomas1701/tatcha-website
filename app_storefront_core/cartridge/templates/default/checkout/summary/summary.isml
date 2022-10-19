@@ -1,0 +1,469 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="checkout/pt_checkout"/>
+<isinclude template="util/modules"/>
+
+<iscomment>
+	This template visualizes the last step of the checkout, the order summary
+	page prior to the actual order placing.
+	It displays the complete content of the cart including product line items,
+	bonus products, redeemed coupons and gift certificate line items.
+</iscomment>
+
+<isreportcheckout checkoutstep="${5}" checkoutname="${'OrderSummary'}"/>
+
+<isscript>
+var isCountryDeliverable = true;
+
+importScript("cart/CartUtils.ds");
+var Site = require('dw/system/Site');
+var Tatcha = require('~/cartridge/scripts/util/Tatcha.ds');
+var defaultShipment = pdict.Basket.getDefaultShipment();
+var shippingAddress = defaultShipment.shippingAddress;
+var billingAddress = pdict.Basket.billingAddress;
+var shippingMethod = defaultShipment.getShippingMethod();
+var paymentInstruments = pdict.Basket.paymentInstruments;
+var giftcertificatedPrice = pdict.Basket.giftCertificateTotalPrice;
+
+var hasGiftWrap = CartUtils.checkCartHasGiftWrap(pdict.Basket);
+var hasGiftMessage = defaultShipment.gift;
+var giftMessage = defaultShipment.getGiftMessage();
+var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+var giftproduct = dw.catalog.ProductMgr.getProduct(giftWrapId);
+var giftpricemodel = giftproduct.getPriceModel();
+var giftprice = giftpricemodel.getPrice();
+
+var hasOnlyGiftCertificate = CartUtils.checkCarthasOnlyGiftCertificate(pdict.Basket);
+
+
+var estimated_days = shippingMethod.custom.estimatedDays;
+var order_cutoffTime = shippingMethod.custom.order_cutoffTime;
+var Calendar = require('dw/util/Calendar');
+var StringUtils = require('dw/util/StringUtils');
+var sringHelper = require('~/cartridge/scripts/util/StringHelpers');
+pstCal = new Calendar();
+pstCal.setTimeZone('PST');
+var currentdate = StringUtils.formatCalendar(pstCal, "MM/dd/yyyy HH:mm:ss");
+var estimatedDate = sringHelper.GetEstimatedDate(currentdate, estimated_days);
+var datetime =  StringUtils.formatCalendar(pstCal, "HH");
+if(datetime > order_cutoffTime){
+	var estimatedDate = sringHelper.GetEstimatedDate(currentdate, estimated_days+1);
+}
+
+var hasAutoDeliveryProduct = CartUtils.hasAutoDeliveryProductInBag(pdict.Basket);
+var usersCountry = CartUtils.hasSavedInternationalShipping(shippingAddress);
+var showAdWarning = hasAutoDeliveryProduct && usersCountry;
+
+if(shippingAddress && shippingAddress.countryCode) {
+	isCountryDeliverable = Tatcha.isCountryDelivarable(shippingAddress.countryCode);
+}
+</isscript>
+
+<div class="checkout checkout-form summary-page">  
+	<div class="container">
+		<h1> ${Resource.msg('checkout.title','checkout',null)}</h1>
+		<isif condition="${!pdict.CurrentForms.multishipping.entered.value}">
+			<ischeckoutprogressindicator step="3" multishipping="false" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+		<iselse/>
+			<ischeckoutprogressindicator step="4" multishipping="true" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+		</isif>
+
+		<isif condition="${(pdict.CurrentHttpParameterMap.PlaceOrderError.stringValue == 'true')}">
+			<div class="alert alert-danger checkout-alert" role="alert">${Resource.msg('confirm.error.technical','checkout',null)}</div>
+		</isif>
+		<div class="row">
+			<div class="col-md-7">
+				<form action="${URLUtils.https('COSummary-Submit')}" method="post">
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					<input type="hidden" name="scope" value="checkout-summary"/>
+					<input type="hidden" name="${pdict.CurrentForms.profile.confirm.htmlName}" value="true"/>
+					<div class="panel panel-default panel-checkout">
+						<div class="panel-heading panel-split">
+						    <h2 class="panel-title">${Resource.msg('checkout.review','checkout',null)}</h2>
+						    <div class="panel-action"></div>
+						</div>
+						<div class="panel-body">
+							<isscript>
+								var PaypalShippingaddress = pdict.CurrentHttpParameterMap.braintreePaypalShippingAddress;
+								var paypalshippingAddress = !empty(PaypalShippingaddress.value) ? JSON.parse(PaypalShippingaddress) : {};
+							</isscript>
+							<isif condition="${isCountryDeliverable == true}">
+								<isif condition="${pdict.CurrentHttpParameterMap.fromCart != 'true' && !showAdWarning && !hasOnlyGiftCertificate}">
+									<isif condition="${!empty(shippingAddress.countryCode.value) && shippingAddress.countryCode.value.toUpperCase() !== 'US'}">
+										<div class="alert alert-warning customs-warning" role="alert">
+											<div class="checkbox">
+												<label>
+													<input type="checkbox"  id="chkInternationalDutiesNotification"> <strong>${Resource.msg('checkout.review.internationaldutiesnotification.line1','checkout',null)}</strong>
+												</label>
+											</div>
+											<p>${Resource.msg('checkout.review.internationaldutiesnotification.line2','checkout',null)}</p>
+										</div>
+									</isif>
+								</isif>
+								<isif condition="${pdict.CurrentHttpParameterMap.fromCart == 'true' && !showAdWarning && !hasOnlyGiftCertificate}">
+									<isif condition="${paypalshippingAddress.countryCodeAlpha2 && paypalshippingAddress.countryCodeAlpha2.toUpperCase() !== 'US'}">
+										<div class="alert alert-warning customs-warning" role="alert">
+											<div class="checkbox">
+												<label>
+													<input type="checkbox"  id="chkInternationalDutiesNotification"> <strong>${Resource.msg('checkout.review.internationaldutiesnotification.line1','checkout',null)}</strong>
+												</label>
+											</div>
+											<p>${Resource.msg('checkout.review.internationaldutiesnotification.line2','checkout',null)}</p>
+										</div>
+									</isif>
+								</isif>
+							<iselse/>
+								<div class="alert alert-warning customs-warning" role="alert">
+									<isset name="shippingCountry" value="${Resource.msg('country.'+shippingAddress.countryCode.value.toLowerCase(),'forms',null)}" scope="page" />
+									<p>${Resource.msgf('checkout.review.notdeliverable','checkout',null, shippingCountry)}</p>
+								</div>
+							 </isif>
+						    <div class="clearfix"></div>	
+							<isif condition="${!pdict.CurrentCustomer.authenticated}">
+								<div class="panel-section">
+									<p class="checkout-paragraph"><strong>${Resource.msg('checkout.review.emailreceipt','checkout',null)}:</strong> <span><isprint value="${pdict.Basket.customerEmail}" /></span></p>
+									<input type="hidden" id="dwfrm_login_username" name="dwfrm_login_username" value="${pdict.CurrentForms.login.username.value}">
+									<div class="panel-section-indent panel-section-short">
+										<div class="checkbox">
+											<label>
+												<input type="checkbox" name="${pdict.CurrentForms.profile.customer.addtoemaillist.htmlName}" value ="true"> ${Resource.msg('checkout.review.joinnewsletter','checkout',null)}
+											</label>
+										</div>
+									</div>
+									<isif condition="${!empty(pdict.CurrentSession.custom.userExist) && pdict.CurrentSession.custom.userExist==false && session.custom.HasSORProducts}"> 
+										<h5>${Resource.msg('checkout.review.creataccount','checkout',null)}</h5>
+										<isscript>
+											var accountRequired = false;
+											if(customer.registered == false && session.custom.HasSORProducts) {
+												accountRequired = true;
+											}
+										</isscript>
+										<div class="account-standard">
+											<isif condition="${accountRequired}">
+												<div class="alert alert-warning" role="alert">${Resource.msg('checkout.review.accountrequired','checkout',null)}</div>
+											<iselse/>
+												<p class="checkout-paragraph">${Resource.msg('checkout.review.creataccountnote','checkout',null)}</p>
+											</isif>
+											
+											<div class="panel-section-indent panel-section-short create-account-secton">
+												<div class="checkbox" <isif condition="${accountRequired}">style="display:none"</isif>>
+													<label>
+														<input name="${pdict.CurrentForms.billing.billingAddress.createaccount.htmlName}" 
+															class="create-account" type="checkbox" 
+															value="${pdict.CurrentForms.billing.billingAddress.createaccount.htmlValue}"
+															checked="">
+														<strong>${Resource.msg('checkout.review.confirmsave','checkout',null)}</strong>
+													</label>
+												</div>
+												<isscript>
+												var passconfirm = {
+													autocomplete: "off",
+													'data-msg-required': Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength),
+													'data-rule-equalTo': '#'+pdict.CurrentForms.profile.login.password.htmlName,	
+													'data-msg-equalTo': Resource.msg('validate.passwordconfirm', 'forms', null)
+												};
+												</isscript>
+												<div class="checkout-account-options-block create-account-standard create-account-password">
+													<isinputfield formfield="${pdict.CurrentForms.profile.login.password}" type="password"/>
+													<isinputfield formfield="${pdict.CurrentForms.profile.login.passwordconfirm}" type="password" attributes="${passconfirm}"/>
+												</div>
+											</div>
+										</div>
+									</isif>
+								</div>
+							</isif>
+							<isif condition="${hasOnlyGiftCertificate}" >
+								<isif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'PayPal'}">
+									<div class="row review-paypal-icon-container">
+										<div class="col-xs-6">
+											<div class="review-alt-pay-logo demo-paypal">
+												<img style="height: 50px" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/pp-acceptance-large.png')}"  id="paypalLogoReview" alt="PayPal Acceptance">
+											</div>
+										</div>
+										<div class="col-xs-6 panel-action">
+											
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 has-only-giftcard panel-section-indent">
+											<p>${Resource.msg('minishipments.hasOnlyEGiftCard','checkout',null)}</p>
+										</div>
+									</div>
+									
+								  <iselseif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'ApplePay'}">	
+									<div class="row review-paypal-icon-container">
+										<div class="col-xs-6">
+											<div class="review-alt-pay-logo demo-apple">
+												<img style="height: 50px;" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/applePayPaymentMark.png')}" id="appleLogoReview" alt="Apple Pay Logo">
+											</div>
+										</div>
+										<div class="col-xs-6 panel-action">
+											
+										</div>
+									</div>
+									<div class="row">
+										<div class="col-xs-12 has-only-giftcard panel-section-indent">
+											<p>${Resource.msg('minishipments.hasOnlyEGiftCard','checkout',null)}</p>
+										</div>
+									</div>
+								 
+								 </isif>
+							</isif>
+							<isif condition="${rendershipping == 'true'}">
+								<div class="panel-section checkout-review">
+									 <isif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'PayPal'}">
+										<div class="row">
+											<div class="col-xs-6">
+												<div class="review-alt-pay-logo demo-paypal">
+													<img style="height: 50px" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/pp-acceptance-large.png')}" id="paypalLogoReview" alt="PayPal Acceptance">
+												</div>
+											</div>
+											<div class="col-xs-6 panel-action">
+												
+											</div>
+										</div>	
+										
+									  <iselseif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'ApplePay'}">	
+										<div class="row">
+											<div class="col-xs-6">
+												<div class="review-alt-pay-logo demo-apple">
+													<img style="height: 50px;" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/applePayPaymentMark.png')}" id="appleLogoReview" alt="Apple Pay Logo">
+												</div>
+											</div>
+											<div class="col-xs-6 panel-action">
+												
+											</div>
+										</div>									
+									 
+									<!-- Afterpay Changes Start -->
+									<iselseif condition="${paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI'}">		
+										<div class="row">
+											<div class="col-xs-6">
+												<div class="review-alt-pay-logo demo-apple">
+													<img src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" id="afterpayLogoReview" alt="Afterpay Logo">
+												</div>
+											</div>
+											<div class="col-xs-6 panel-action">
+												
+											</div>
+										</div>
+									<!-- Afterpay Changes End -->
+								    <iselse>
+										<div class="row">
+											<div class="col-xs-6">
+												<h4>${Resource.msg('minishipments.shipping','checkout',null)}</h4>
+											</div>
+											<div class="col-xs-6 panel-action">
+												<a href="${URLUtils.url('COShipping-Start')}" class="btn btn-xs btn-default checkout-review-edit">${Resource.msg('global.edit','locale',null)}</a>
+											</div>
+										</div>	
+									 </isif>
+									 <div class="row">
+										<isif condition="${showAdWarning}" >
+											<div class="col-xs-12 review-ad-warning-container">
+												<isinclude template="checkout/components/autodeliveryinternationalshippingwarning" />
+											</div>
+										</isif>
+									</div>
+									<div class="panel-section-indent">
+									  	<div class="row">
+									  		<div class="col-sm-6">
+									  			<h5>${Resource.msg('minishipments.shippingaddress','checkout',null)}</h5>
+									  			<div class="checkout-summary-data">
+									  			<isif condition="${pdict.CurrentHttpParameterMap.fromCart != 'true'}">
+											  		<isprint value="${shippingAddress.firstName + ' ' + shippingAddress.lastName}"><br>
+											  		<isprint value="${shippingAddress.address1}"><br>
+													<isif condition="${!empty(shippingAddress.address2)}"><isprint value="${shippingAddress.address2}"><br></isif>
+													<isprint value="${shippingAddress.city + ', ' + shippingAddress.stateCode + ' ' + shippingAddress.postalCode}"><br>
+													<isprint value="${shippingAddress.countryCode}"><br>
+													<isprint value="${shippingAddress.phone}"><br>
+											  	 </isif>	
+											  	 <isif condition="${pdict.CurrentHttpParameterMap.fromCart == 'true'}">
+											  	 	<isscript>
+											  	 	var PaypalShippingaddress = pdict.CurrentHttpParameterMap.braintreePaypalShippingAddress;
+											  	 	var paypalshippingAddress = !empty(PaypalShippingaddress.value) ? JSON.parse(PaypalShippingaddress) : {};
+											  	 	</isscript>
+											  	 		<isprint value="${paypalshippingAddress.recipientName}"><br>
+											  	 		<isprint value="${paypalshippingAddress.streetAddress}"><br>
+														<isif condition="${!empty(paypalshippingAddress.extendedAddress)}">
+															<isprint value="${paypalshippingAddress.extendedAddress}"><br>
+														</isif>
+														<isprint value="${paypalshippingAddress.locality + ', ' + paypalshippingAddress.region + ' ' + paypalshippingAddress.postalCode}"><br>
+														<isprint value="${paypalshippingAddress.countryCodeAlpha2}"><br>
+												</isif>
+											  	
+											  	</div>
+									  		</div>
+									  		<div class="col-sm-6">
+									  			<h5>${Resource.msg('minishipments.shippingoptions','checkout',null)}</h5>
+									  			<div class="checkout-summary-data">
+											  		<isprint value="${shippingMethod.displayName}" />: 
+											  		<isif condition="${(pdict.Basket.shippingTotalPrice.available)}">
+														<isif condition="${(pdict.Basket.shippingTotalPrice.value != 0) && (pdict.Basket.adjustedShippingTotalPrice.value != 0)}">
+															<isprint value="${pdict.Basket.shippingTotalPrice}"/>
+															<isif condition="${(pdict.Basket.shippingTotalPrice.value != pdict.Basket.adjustedShippingTotalPrice.value)}">
+																(<isprint value="${pdict.Basket.adjustedShippingTotalPrice}"/>)
+															</isif>
+														<iselse/>
+															${Resource.msg('order.ordersummary.ordershippingfree','order',null)}
+														</isif>
+													<iselse/>
+														${Resource.msg('order.ordersummary.ordershippingtbd','order',null)}
+													</isif><br>
+											        <isif condition="${dw.system.Site.getCurrent().preferences.custom.showShippingEstimate}">
+											  			Estimated Arrival <isprint value="${estimatedDate}" formatter="MM/dd" timezone="utc"/>
+											        </isif>													
+											  	</div>
+											  	<isif condition="${hasGiftWrap || giftMessage}">
+												  	<h5>${Resource.msg('minishipments.giftoptions','checkout',null)}</h5>
+												  	<div class="checkout-summary-data">
+												  		<isif condition="${hasGiftWrap}" >
+												  			${Resource.msg('checkout.giftbox','checkout',null)} <isprint value="${giftprice}"/><br>
+												  		</isif>
+												  		<isif condition="${giftMessage}">
+												  			<small><em><isprint value="${giftMessage}" /></em></small>
+												  		</isif>
+												  	</div>
+										  		</isif>
+									  		</div>
+									  	</div>
+								  	</div>
+								</div>
+							</isif>
+							<isif condition="${((paymentInstruments.length > 0) && (paymentInstruments[0].paymentMethod != 'PayPal') && (paymentInstruments[0].paymentMethod != 'ApplePay') && (paymentInstruments[0].paymentMethod != 'AFTERPAY_PBI')) || paymentInstruments.length > 1}">
+							<div class="panel-section checkout-review">
+								<div class="row">
+									<div class="col-xs-6">
+										<h4 id="standardHeaderReview">${Resource.msg('minibillinginfo.paymentmethod','checkout',null)}</h4>
+									</div>
+									<div class="col-xs-6 panel-action">
+										<a href="${URLUtils.url('COBilling-Start')}" class="btn btn-xs btn-default checkout-review-edit">${Resource.msg('global.edit','locale',null)}</a>
+									</div>
+								</div>
+								<div class="panel-section-indent">
+								  	<div class="row">
+								  		<div class="col-sm-6">
+								  			<isloop items="${paymentInstruments}" alias="paymentInstrument">
+									  			<isif condition="${paymentInstrument.paymentMethod == 'CREDIT_CARD' && paymentInstrument.paymentTransaction.amount.value > 0}">
+										  			<h5>Credit Card</h5>
+										  			<div class="checkout-summary-data">
+												  		<span class="card-icon">
+															<isif condition="${('Master' == paymentInstrument.creditCardType)}">
+																<i class="fab fa-cc-mastercard fa-lg" aria-hidden="true"></i>
+															</isif>
+															<isif condition="${('JCB' == paymentInstrument.creditCardType)}">
+																<i class="fab fa-cc-jcb fa-lg" aria-hidden="true"></i>
+															</isif>
+															<isif condition="${('Visa' == paymentInstrument.creditCardType)}">
+																<i class="fab fa-cc-visa fa-lg" aria-hidden="true"></i>
+															</isif>
+															<isif condition="${('Amex' == paymentInstrument.creditCardType)}">
+																<i class="fab fa-cc-amex fa-lg" aria-hidden="true"></i>
+															</isif>
+															<isif condition="${('Discover' == paymentInstrument.creditCardType)}">
+																<i class="fab fa-cc-diners-club fa-lg" aria-hidden="true"></i>
+													        </isif>
+												  		</span> ending in ${paymentInstrument.creditCardNumberLastDigits}<br>
+												  	</div>
+												</isif>
+												<isif condition="${paymentInstrument.paymentMethod == 'PayPal' && paymentInstrument.paymentTransaction.amount.value > 0}">
+													<h5>Paypal</h5>
+												</isif>
+												<isif condition="${paymentInstrument.paymentMethod == 'ApplePay' && paymentInstrument.paymentTransaction.amount.value > 0}">
+													<h5>ApplePay</h5>
+												</isif>
+												
+											</isloop>
+										  	<h5>${Resource.msg('minibillinginfo.billingaddress','checkout',null)}</h5>
+								  			<div class="checkout-summary-data">
+										  		<isif condition="${pdict.CurrentForms.billing.billingAddress.sameasshipping.value == true}">
+										  			${Resource.msg('checkout.sameasshipping','checkout',null)}
+									  			<iselse/>
+										  			<isif condition="${pdict.CurrentHttpParameterMap.fromCart != 'true'}">
+										  				<isprint value="${billingAddress.firstName + ' ' + billingAddress.lastName}"><br>
+												  		<isprint value="${billingAddress.address1}"><br>
+														<isif condition="${!empty(billingAddress.address2)}"><isprint value="${billingAddress.address2}"><br></isif>
+														<isprint value="${billingAddress.city + ', ' + billingAddress.stateCode + ' ' + billingAddress.postalCode}"><br>
+														<isprint value="${billingAddress.countryCode.value}"><br>
+														<isprint value="${billingAddress.phone}"><br>
+													</isif>
+													<isif condition="${pdict.CurrentHttpParameterMap.fromCart == 'true'}">
+												  	 	<isscript>
+												  	 	var PaypalBillingaddress = pdict.CurrentHttpParameterMap.braintreePaypalBillingAddress;
+												  	 	var paypalbillingAddress = JSON.parse(PaypalBillingaddress);
+												  	 	</isscript>
+											  	 		<isprint value="${paypalbillingAddress.recipientName}"><br>
+											  	 		<isprint value="${paypalbillingAddress.streetAddress}"><br>
+														<isif condition="${!empty(paypalbillingAddress.extendedAddress)}">
+															<isprint value="${paypalbillingAddress.extendedAddress}"><br>
+														</isif>
+														<isprint value="${paypalbillingAddress.locality + ', ' + paypalbillingAddress.region + ' ' + paypalbillingAddress.postalCode}"><br>
+														<isprint value="${paypalbillingAddress.countryCodeAlpha2}"><br>
+													</isif>
+										  		</isif>
+										  	</div>
+								  		</div>
+								  		<div class="col-sm-6">
+								  			<isloop items="${paymentInstruments}" alias="paymentInstrument">
+									  			<isif condition="${paymentInstrument.paymentMethod == 'GIFT_CERTIFICATE'}">
+										  			<h5>${Resource.msg('checkout.summary.giftcard','checkout',null)}</h5>
+										  			<div class="checkout-summary-data">
+												  		<isprint value="${paymentInstrument.paymentTransaction.amount}"> ${Resource.msg('checkout.summary.giftcardapplied','checkout',null)}<br>
+												  	</div>
+										  		</isif>
+									  		</isloop>
+								  		</div>
+								  	</div>
+							  	</div>
+							</div>
+						 </isif>	
+						</div>
+						<div class="panel-footer text-right hidden-xs hidden-sm">
+						  <isscript>
+							var legalCopyContent = dw.content.ContentMgr.getContent('legal-copy');
+						  </isscript>
+						  <p class="text-left" style="margin-bottom: 12px;line-height: 1.2; font-size: 14px;">
+						  	<isif condition="${!empty(legalCopyContent)}">
+						  		<isprint value="${legalCopyContent.custom.body}" encoding="off" />
+						  	</isif>
+						  </p>
+						  <isif condition="${hasAutoDeliveryProduct}" > 
+						  		<isscript>
+									var adTermsContent = dw.content.ContentMgr.getContent('auto-delivery-terms');
+								</isscript>
+						  		<div class="auto-delivery-terms">
+									<h5 class="text-left" style="margin-bottom: 0;"><isprint value="${adTermsContent.custom.title}" encoding="off" /></h5>
+									<p class="text-left" style="line-height: 1.2; font-size: 14px;"><isprint value="${adTermsContent.custom.body}" encoding="off" /></p>
+								</div>
+						  </isif>
+						  	
+						  <isif condition="${(!empty(shippingAddress.countryCode.value) && shippingAddress.countryCode.value.toUpperCase() !== 'US' && !hasOnlyGiftCertificate) || showAdWarning}">
+								<button class="btn btn-lg btn-primary btn-checkout-continue place-order" disabled="true" type="submit" name="submit" value="${Resource.msg('global.submitorder','locale',null)}">
+										${Resource.msg('global.submitorder','locale',null)}
+								</button>
+							<iselse>
+							  	<button class="btn btn-lg btn-primary btn-checkout-continue place-order"  type="submit" name="submit" value="${Resource.msg('global.submitorder','locale',null)}">
+									${Resource.msg('global.submitorder','locale',null)}
+								</button>
+						  </isif>	
+						</div>
+					</div>
+					<isscript>
+						var BraintreeHelper = require('int_braintree/cartridge/scripts/braintree/braintreeHelper');
+    					var prefs = BraintreeHelper.getPrefs();
+					    var isEnable3dSecure = empty(pdict.isenable3dsecure) ? prefs.BRAINTREE_3DSecure_Enabled : pdict.isenable3dsecure;;
+					    var ownerName = '';
+					    var amount = BraintreeHelper.getAmount(pdict.Basket).getValue();
+					</isscript>
+					<div class="js_braintree_devicedataContent" style="display: none">
+						<isinclude template="braintree/util/deviceData"/>
+					</div>					
+				</form>
+			</div>
+			<div class="col-md-5">
+				<div id="checkout-summary"><isinclude template="checkout/minisummary"/></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+</isdecorate>

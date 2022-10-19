@@ -1,0 +1,14 @@
+<!--- TEMPLATENAME: header-promo.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isif condition="${!empty(session.custom.headerPromo)}">
+	<div class="tatcha-mini-bar" style="text-transform: none !important">
+		<div class="container" style="border-bottom: 1px solid #fff;">
+	    	<div class="row">
+	      		<div class="col-md-12" style="text-align: center;font-size: 18px;font-weight: 600;">
+					Promocode : <isprint value="${session.custom.headerPromo}" />
+		      	</div>
+	   		</div>
+	  	</div>
+	</div>
+</isif>

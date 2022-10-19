@@ -1,0 +1,11 @@
+<iscache type="relative" hour="24"/>
+<div class="container">
+	<div class="row justify-content-center carousel-bottom-link ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}" style="margin-top: 16px;">
+		<div class="col-md-6">
+			<a href="${pdict.linkurl1}" class="btn btn-link" style="margin-top: 16px;">${pdict.linktext1}</a>
+		</div>
+		<div class="col-md-6">
+			<a href="${pdict.linkurl2}" class="btn btn-link" style="margin-top: 16px;">${pdict.linktext2}</a>
+		</div>
+	</div>
+</div>

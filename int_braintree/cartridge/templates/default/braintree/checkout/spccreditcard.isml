@@ -1,0 +1,171 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+    var customerCreditCardPaymentInstruments = BraintreeHelper.getCustomerCrditCardPaymentInstruments();
+
+    var isAllowedAddCard = prefs.BRAINTREE_Vault_Mode != 'not';
+    
+    var singlePageCheckoutUtils = require('int_singlepagecheckout/cartridge/scripts/util/SinglePageCheckoutUtils');
+	var basket = singlePageCheckoutUtils.getCurrentBasket();
+</isscript>
+
+<div class="js_braintree_creditCardContent js_braintree_paymentContent" data-braintree-method="CREDIT_CARD">
+	<isif condition="${customer.authenticated && !empty(customerCreditCardPaymentInstruments)}">	
+			<isscript>
+				
+	        	var cardSelected = '';
+	        	var paymentInstrument;
+	        	if (!empty(basket.paymentInstruments) && basket.paymentInstruments.length > 0) {
+   					 for(var i=0; i < basket.paymentInstruments.length; i++) {
+    					paymentInstrument = basket.paymentInstruments[i];
+    					if(paymentInstrument.paymentMethod == dw.order.PaymentInstrument.METHOD_CREDIT_CARD) {
+	    					if(paymentInstrument && paymentInstrument.custom.braintreePaymentMethodToken) {
+								cardSelected = paymentInstrument.custom.braintreePaymentMethodToken;
+							}
+    				    }
+    			     }
+    			}
+	            var newCardSelected = true;
+	            for each (var creditCardInst in customerCreditCardPaymentInstruments) {
+	                if(creditCardInst.custom.braintreeDefaultCard) {
+	                	cardSelected = creditCardInst.custom.braintreePaymentMethodToken;
+	                    newCardSelected = false;
+	                    break;
+	                }
+	            }
+	            
+	            if(empty(cardSelected)) {
+					cardSelected = 'first';
+				}
+	        </isscript>
+	        
+	        <isloop items="${customerCreditCardPaymentInstruments}" var="creditCardInstr" status="status">
+				<isif condition="${!creditCardInstr.custom.braintreeDefaultCard}"><iscontinue/></isif>
+				<div class="radio checkout-radio-block radio-payment braintree-radio-box ${(cardSelected == creditCardInstr.custom.braintreePaymentMethodToken || (cardSelected == 'first' && status.first == true)) ? 'selected' : ''}">
+					<input type="radio" class="d-none saved-credit-card-list-item"
+						value="${creditCardInstr.UUID}" 
+						id="${creditCardInstr.UUID}"
+						<isprint value="${(cardSelected == creditCardInstr.custom.braintreePaymentMethodToken || (cardSelected == 'first' && status.first == true)) ? 'checked=true' : ''}" encoding="off" />>
+					<label class="braintreeradios checkout-radio p-2 d-flex" for="${creditCardInstr.UUID}" data-val="${creditCardInstr.UUID}">
+						<div class="radio-text-block d-inline-block">
+							<span class="card-icon">
+								<isif condition="${('Master' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-mastercard fa-lg"></i>
+								</isif>
+								<isif condition="${('JCB' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-jcb fa-lg"></i>
+								</isif>
+								<isif condition="${('Visa' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-visa fa-lg"></i>
+								</isif>
+								<isif condition="${('Amex' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-amex fa-lg"></i>
+								</isif>
+								<isif condition="${('Discover' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-diners-club fa-lg"></i>
+						        </isif>
+							</span>
+							${Resource.msgf('braintree.cardlist.option', 'locale', null, creditCardInstr.maskedCreditCardNumber, creditCardInstr.creditCardType, StringUtils.formatNumber(creditCardInstr.creditCardExpirationMonth, '00'), StringUtils.formatNumber(creditCardInstr.creditCardExpirationYear, '0000'), creditCardInstr.creditCardHolder)}
+						</div>
+						<span class="selected-icon float-right">
+	                        <i class="fal fa-check-circle"></i>
+	                    </span>
+					</label>
+				</div>
+			</isloop>
+			
+			<isloop items="${customerCreditCardPaymentInstruments}" var="creditCardInstr" status="status">
+				<isif condition="${creditCardInstr.custom.braintreeDefaultCard}"><iscontinue/></isif>
+				<div class="radio checkout-radio-block radio-payment braintree-radio-box ${(cardSelected == creditCardInstr.custom.braintreePaymentMethodToken || (cardSelected == 'first' && status.first == true)) ? 'selected' : ''}">
+					<input type="radio" class="d-none saved-credit-card-list-item"
+						value="${creditCardInstr.UUID}" 
+						id="${creditCardInstr.UUID}"
+						<isprint value="${(cardSelected == creditCardInstr.custom.braintreePaymentMethodToken || (cardSelected == 'first' && status.first == true)) ? 'checked=true' : ''}" encoding="off" />>
+					<label class="braintreeradios checkout-radio p-2 d-flex" for="${creditCardInstr.UUID}" data-val="${creditCardInstr.UUID}">
+						<div class="radio-text-block d-inline-block">
+							<span class="card-icon">
+								<isif condition="${('Master' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-mastercard fa-lg"></i>
+								</isif>
+								<isif condition="${('JCB' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-jcb fa-lg"></i>
+								</isif>
+								<isif condition="${('Visa' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-visa fa-lg"></i>
+								</isif>
+								<isif condition="${('Amex' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-amex fa-lg"></i>
+								</isif>
+								<isif condition="${('Discover' == creditCardInstr.creditCardType)}">
+									<i class="fab fa-cc-diners-club fa-lg"></i>
+						        </isif>
+							</span>
+							${Resource.msgf('braintree.cardlist.option', 'locale', null, creditCardInstr.maskedCreditCardNumber, creditCardInstr.creditCardType, StringUtils.formatNumber(creditCardInstr.creditCardExpirationMonth, '00'), StringUtils.formatNumber(creditCardInstr.creditCardExpirationYear, '0000'), creditCardInstr.creditCardHolder)}
+						</div>
+						<span class="selected-icon float-right">
+	                        <i class="fal fa-check-circle"></i>
+	                    </span>
+					</label>
+				</div>
+			</isloop>
+			
+			<isif condition="${(customerCreditCardPaymentInstruments.length > 0)}">
+				<button class="btn btn-outline-secondary mb-2 braintree-addcard" data-toggle="modal">Add a card</button>
+			</isif>
+			
+			<div class="braintree-select-wrap" style="display: none">		        
+		        <select name="${pdict.CurrentForms.billing.paymentMethods.creditCardList.htmlName}" id="braintreeCreditCardList" class="input-select" data-get-payment-nonce-url="${URLUtils.url('Braintree-GetPaymentMethodNonceByUUID').toString()}">
+		            <option value="newcard" <isif condition="${newCardSelected}">selected="selected"</isif>>${Resource.msg('braintree.cardlist.newcard','locale',null)}</option>
+		            <isloop items="${customerCreditCardPaymentInstruments}" var="creditCardInstr">		                
+		                <option value="${creditCardInstr.UUID}"
+		                    <isprint value="${(cardSelected == creditCardInstr.custom.braintreePaymentMethodToken || (cardSelected == 'first' && status.first == true)) ? 'selected' : ''}" encoding="off" />
+		                    data-type="${creditCardInstr.creditCardType}"
+		                    data-number="${creditCardInstr.maskedCreditCardNumber}"
+		                    data-owner="${creditCardInstr.creditCardHolder}"
+		                    data-expiration="${Resource.msgf('braintree.cardlist.expirationdate', 'locale', null, StringUtils.formatNumber(creditCardInstr.creditCardExpirationMonth, '00'), StringUtils.formatNumber(creditCardInstr.creditCardExpirationYear, '0000'))}"
+		                    data-default="${creditCardInstr.custom.braintreeDefaultCard}"
+		                    data-id="${creditCardInstr.UUID}">
+		                        ${Resource.msgf('braintree.cardlist.option', 'locale', null, creditCardInstr.maskedCreditCardNumber, creditCardInstr.creditCardType, StringUtils.formatNumber(creditCardInstr.creditCardExpirationMonth, '00'), StringUtils.formatNumber(creditCardInstr.creditCardExpirationYear, '0000'), creditCardInstr.creditCardHolder)}
+		                </option>
+		            </isloop>
+		        </select>
+		    </div>
+	</isif>
+	
+	<isscript>
+	    var isEnable3dSecure = empty(pdict.isenable3dsecure) ? prefs.BRAINTREE_3DSecure_Enabled : pdict.isenable3dsecure;;
+	    var ownerName = '';
+	    var amount = BraintreeHelper.getAmount(basket).getValue();
+	</isscript>
+	<div <isif condition="${customer.authenticated && !empty(customerCreditCardPaymentInstruments)}"> style="display: none" </isif>>
+		
+		<isinclude template="braintree/util/spcCreditCardFields"/>
+	
+		<isif condition="${customer.authenticated && isAllowedAddCard}">
+			<isscript>
+			var saveCard = false;
+			var makeDefault = false;
+			if(empty(customerCreditCardPaymentInstruments)) {
+				var saveCard = true;
+				var makeDefault = true;
+			}
+			</isscript>
+			<div style="display: none">
+			    <div id="braintreeSaveCardAndDefaultContainer">
+			        <div id="braintreeSaveCardContainer" class="form-row label-inline form-indent">
+			            <div class="field-wrapper">
+			                <input name="braintreeSaveCreditCard" id="braintreeSaveCreditCard" type="checkbox" <isif condition="${saveCard == true}">checked="true"</isif> value="true" />
+			            </div>
+			            <label for="braintreeSaveCreditCard"><span>${Resource.msg('braintree.creditcard.savecard', 'locale', null)}</span></label>
+			        </div>
+			        <div class="form-row label-inline form-indent">
+			            <div class="field-wrapper">
+			                <input name="braintreeCreditCardMakeDefault" id="braintreeCreditCardMakeDefault" type="checkbox" <isif condition="${makeDefault == true}">checked="true"</isif> value="true" />
+			            </div>
+			            <label for="braintreeCreditCardMakeDefault"><span>${Resource.msg('braintree.creditcard.makedefault', 'locale', null)}</span></label>
+			        </div>
+			    </div>
+		   	</div>
+		</isif>
+	</div>
+</div>

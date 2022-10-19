@@ -1,0 +1,21 @@
+<isscript>
+   var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+   var prefs = BraintreeHelper.getPrefs();
+   var paypalPaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.paypalMethodName);
+   var minicartButtonEnabled = BraintreeHelper.isPaypalButtonEnabled('minicart');
+   var isApplePayEnabledOnMiniCart = dw.system.Site.getCurrent().getCustomPreferenceValue('BRAINTREE_APPLEPAY_Visibility_Button_On_MiniCart');
+</isscript>
+
+<isif condition="${!request.custom.braintreeClientToken}">
+    <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+</isif>
+<isif condition="${prefs.BRAINTREE_PAYPAL_Visibility_Express_Button_On_MiniCart}">
+    <input type="hidden" id="isPaypalOnlyVisible" value="${HasRefillProducts || afterPayEligible !== true || hasOnlyGiftCertificate}" />
+    <isset name="paypalConfig" value="${prefs.BRAINTREE_PAYPAL_MiniCart_Button_Config}" scope="page" />
+    <div class="braintree-minicart-paypal-buttons-wrap <isif condition="${HasRefillProducts || afterPayEligible !== true || hasOnlyGiftCertificate}">minibag-w-100 </isif>">
+        <div class="braintree-paypal-buttons-wrap braintree-cart-paypal-buttons-wrap">
+	    	<isinclude template="braintree/cart/minicartPaypalButton"/>
+	    </div>
+    </div>
+</isif>
+

@@ -1,0 +1,33 @@
+{
+  "name": "Grid Component Layout",
+  "description": "A 3 by 2 grid of components with a title",
+  "group": "layouts",
+  "attribute_definition_groups": [
+    {
+      "id": "heading",
+      "attribute_definitions": [
+        {
+          "id": "text_headline",
+          "name": "Heading",
+          "type": "string",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "region_definitions": [
+      {
+        "id":"components",
+        "name":"Components",
+        "max_components":6,
+        "component_type_exclusions": [
+          { "type_id": "layouts.1column" },
+          { "type_id": "layouts.2column" },
+          { "type_id": "layouts.3column" },
+          { "type_id": "layouts.4column" },
+          { "type_id": "layouts.gridcomponentlayout" },
+          { "type_id": "einstein.noanchorgrid" }
+        ]
+      }
+  ]
+}

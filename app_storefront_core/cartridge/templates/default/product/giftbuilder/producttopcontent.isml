@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>In the product pipeline, if a product was not found for the selected attributes, we need to refresh the ProductVariationModel using the default selected variant</iscomment>
+
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+
+<isinclude template="product/components/marketingflags"/>
+<isinclude template="product/components/productname"/>
+
+<div class="col-md-6 product-image-container">
+	<iscomment> Mobile Section </iscomment>
+	<div class="product-summary-mobile">
+		<isprint value="${marketingFlags}" encoding="off"/>
+		<isprint value="${productNameSlot}" encoding="off"/>
+	</div>
+	<isinclude template="product/components/productimages"/>
+</div>
+<div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-0 product-detail">
+	<div id="product-content">
+		<isinclude template="product/giftbuilder/productcontent"/>
+	</div>
+</div>

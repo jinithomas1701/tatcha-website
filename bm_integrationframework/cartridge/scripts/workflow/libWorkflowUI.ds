@@ -1,0 +1,794 @@
+/**
+ * Library for creating dynamic object for ext-js.
+ */
+
+// TODO @aree: Set the values as shown with notificationStatuses. Respect the httpParameter map otherwise values are lost if the form is invalid!
+
+importPackage(dw.system);
+importPackage(dw.web);
+importPackage(dw.util);
+importPackage(dw.object);
+
+function LibWorkflowUI() {}
+
+/**
+ * Creates the object for the dynamic data of the workflow defintion overview.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Object} The created object.
+ */
+LibWorkflowUI.prototype.createWorkflowScheduleDefinitionOverviewObject = function(pdict : PipelineDictionary) : Object {
+	var result : Object = {
+		formAction: URLUtils.continueURL().toString(),
+		myData: new Array(),
+		enableButtonHtmlName: pdict.CurrentForms.workflow.enableWorkflows.htmlName,
+		disableButtonHtmlName: pdict.CurrentForms.workflow.disableWorkflows.htmlName,
+		runButtonHtmlName: pdict.CurrentForms.workflow.runWorkflows.htmlName,
+		deleteButtonHtmlName: pdict.CurrentForms.workflow.removeWorkflows.htmlName,
+		newButtonHtmlName: pdict.CurrentForms.workflow.newWorkflow.htmlName,
+		resources: {
+			title: Resource.msg('overview.title', 'workflow', null),
+			descriptionText: Resource.msg('overview.descriptionText', 'workflow', null),
+			workflowName: Resource.msg('overview.workflowName', 'workflow', null),
+			description: Resource.msg('overview.description', 'workflow', null),
+			actions: Resource.msg('overview.actions', 'workflow', null),
+			sites: Resource.msg('overview.sites', 'workflow', null),
+			enabled: Resource.msg('overview.enabled', 'workflow', null),
+			enable: Resource.msg('overview.enable', 'workflow', null),
+			disable: Resource.msg('overview.disable', 'workflow', null),
+			fileLogLevel: Resource.msg('overview.fileLogLevel', 'workflow', null),
+			componentLogLevel: Resource.msg('overview.componentLogLevel', 'workflow', null),
+			run: Resource.msg('overview.run', 'workflow', null),
+			tooltip: Resource.msg('overview.run.tooltip', 'workflow', null),
+			"delete": Resource.msg('overview.delete', 'workflow', null),
+			"new": Resource.msg('overview.new', 'workflow', null),
+			deleteQuestionTitle: Resource.msg('configs.resources.deleteQuestionTitle', 'workflow', null),
+			deleteQuestion: Resource.msg('overview.deleteQuestion', 'workflow', null),
+			emptyWorkflowsHint: Resource.msg('overview.emptyWorkflowsHint', 'workflow', null)
+		}
+	};
+	
+	for each (var workflowFormListItem in pdict.CurrentForms.workflow.workflows) {
+		var item : Array = new Array(
+			workflowFormListItem.object.custom.ID,
+			workflowFormListItem.object.custom.name,
+			workflowFormListItem.object.custom.description,
+			workflowFormListItem.object.custom.enabled,
+			!empty(pdict.CurrentHttpParameterMap.workflowId.stringValues) && pdict.CurrentHttpParameterMap.workflowId.stringValues.contains(workflowFormListItem.object.custom.ID)
+		);
+		
+		var siteIds : Array = new Array();
+		for each (var siteId : String in workflowFormListItem.object.custom.siteIds) {
+			siteIds.push(new Array(siteId));
+		}
+		item.push(siteIds);
+		
+		item.push(workflowFormListItem.editWorkflow.htmlName);
+		
+		result.myData.push(item);
+	}
+	
+	return result;
+};
+
+/**
+ * Creates the object for the dynamic data of the workflow defintion form.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Object} The created object.
+ */
+LibWorkflowUI.prototype.createWorkflowScheduleDefinitionFormObject = function(pdict : PipelineDictionary) : Object {
+	var selectedTypeOption : FormFieldOption = pdict.CurrentForms.workflow.workflow.type.selectedOption;
+	if (empty(selectedTypeOption)) {
+		selectedTypeOption = pdict.CurrentForms.workflow.workflow.type.options[0];
+	}
+	
+	var result : Object = {
+		form: {
+			id: {
+				htmlName: pdict.CurrentForms.workflow.workflow.id.htmlName,
+				label: Resource.msg(pdict.CurrentForms.workflow.workflow.id.label, 'workflow', pdict.CurrentForms.workflow.workflow.id.label),
+				value: pdict.CurrentForms.workflow.workflow.id.htmlValue
+			},
+			enabled: {
+				htmlName: pdict.CurrentForms.workflow.workflow.enabled.htmlName,
+				label: Resource.msg(pdict.CurrentForms.workflow.workflow.enabled.label, 'workflow', pdict.CurrentForms.workflow.workflow.enabled.label),
+				checked: pdict.CurrentForms.workflow.workflow.enabled.checked
+			},
+			name: {
+				htmlName: pdict.CurrentForms.workflow.workflow.name.htmlName,
+				label: Resource.msg(pdict.CurrentForms.workflow.workflow.name.label, 'workflow', pdict.CurrentForms.workflow.workflow.name.label),
+				value: pdict.CurrentForms.workflow.workflow.name.htmlValue
+			},
+			description: {
+				htmlName: pdict.CurrentForms.workflow.workflow.description.htmlName,
+				label: Resource.msg(pdict.CurrentForms.workflow.workflow.description.label, 'workflow', pdict.CurrentForms.workflow.workflow.description.label),
+				value: pdict.CurrentForms.workflow.workflow.description.htmlValue
+			},
+			fileLogLevel: {
+				htmlName: pdict.CurrentForms.workflow.workflow.fileLogLevel.htmlName,
+				label: Resource.msg(pdict.CurrentForms.workflow.workflow.fileLogLevel.label, 'workflow', pdict.CurrentForms.workflow.workflow.fileLogLevel.label),
+				value: pdict.CurrentForms.workflow.workflow.fileLogLevel.htmlValue
+			},
+			componentLogLevel: {
+				htmlName: pdict.CurrentForms.workflow.workflow.componentLogLevel.htmlName,
+				label: Resource.msg(pdict.CurrentForms.workflow.workflow.componentLogLevel.label, 'workflow', pdict.CurrentForms.workflow.workflow.fileLogLevel.label),
+				value: pdict.CurrentForms.workflow.workflow.componentLogLevel.htmlValue
+			},
+			type: {
+				htmlName: pdict.CurrentForms.workflow.workflow.type.htmlName,
+				options: {
+					SINGLE: {
+						value: pdict.CurrentForms.workflow.workflow.type.options.SINGLE.htmlValue,
+						label: pdict.CurrentForms.workflow.workflow.type.options.SINGLE.label,
+						checked: pdict.CurrentForms.workflow.workflow.type.options.SINGLE.optionId == selectedTypeOption.optionId
+					},
+					RECURRING: {
+						value: pdict.CurrentForms.workflow.workflow.type.options.RECURRING.htmlValue,
+						label: pdict.CurrentForms.workflow.workflow.type.options.RECURRING.label,
+						checked: pdict.CurrentForms.workflow.workflow.type.options.RECURRING.optionId == selectedTypeOption.optionId
+					}
+				}
+			},
+			SINGLE: {
+				executionTime: {
+					htmlName: pdict.CurrentForms.workflow.workflow.SINGLE.executionTime.htmlName,
+					label: Resource.msg(pdict.CurrentForms.workflow.workflow.SINGLE.executionTime.label, 'workflow', pdict.CurrentForms.workflow.workflow.SINGLE.executionTime.label),
+					value: pdict.CurrentForms.workflow.workflow.SINGLE.executionTime.htmlValue
+				}
+			},
+			RECURRING: {
+				executionActiveFrom: {
+					htmlName: pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveFrom.htmlName,
+					label: Resource.msg(pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveFrom.label, 'workflow', pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveFrom.label),
+					value: pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveFrom.htmlValue
+				},
+				executionActiveTo: {
+					htmlName: pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveTo.htmlName,
+					label: Resource.msg(pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveTo.label, 'workflow', pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveTo.label),
+					value: pdict.CurrentForms.workflow.workflow.RECURRING.executionActiveTo.htmlValue
+				},
+				executionTime: {
+					htmlName: pdict.CurrentForms.workflow.workflow.RECURRING.executionTime.htmlName,
+					label: Resource.msg(pdict.CurrentForms.workflow.workflow.RECURRING.executionTime.label, 'workflow', pdict.CurrentForms.workflow.workflow.RECURRING.executionTime.label),
+					value: pdict.CurrentForms.workflow.workflow.RECURRING.executionTime.htmlValue
+				},
+				executionInterval: {
+					htmlName: pdict.CurrentForms.workflow.workflow.RECURRING.executionInterval.htmlName,
+					label: Resource.msg(pdict.CurrentForms.workflow.workflow.RECURRING.executionInterval.label, 'workflow', pdict.CurrentForms.workflow.workflow.RECURRING.executionInterval.label),
+					value: pdict.CurrentForms.workflow.workflow.RECURRING.executionInterval.htmlValue
+				},
+				executionIntervalType: {
+					htmlName: pdict.CurrentForms.workflow.workflow.RECURRING.executionIntervalType.htmlName,
+					label: Resource.msg(pdict.CurrentForms.workflow.workflow.RECURRING.executionIntervalType.label, 'workflow', pdict.CurrentForms.workflow.workflow.RECURRING.executionIntervalType.label),
+					value: pdict.CurrentForms.workflow.workflow.RECURRING.executionIntervalType.htmlValue,
+					intervals: new Array()
+				},
+				executionWeekdays: new Array()
+			}
+		},
+		isNewForm: empty(pdict.CurrentForms.workflow.workflow.object),
+		components: new Array(),
+		newComponentURL: URLUtils.url('WorkflowUI-GetDynamicComponentData').toString(),
+		applyButtonHtmlName: pdict.CurrentForms.workflow.workflow.applyWorkflow.htmlName,
+		runButtonHtmlName: pdict.CurrentForms.workflow.workflow.runWorkflow.htmlName,
+		formAction: URLUtils.continueURL().toString(),
+		backToListURL: URLUtils.url('WorkflowUI-Overview').toString(),
+		resources: {
+			formTitle          : Resource.msg('workflow.formTitle', 'workflow', null),
+			descriptionText    : Resource.msg('workflow.descriptionText', 'workflow', null),
+			siteIds            : Resource.msg('workflow.siteIds', 'workflow', null),
+			notificationEmails : Resource.msg('workflow.notificationEmails', 'workflow', null),
+			notificationMode   : Resource.msg('workflow.notificationMode', 'workflow', null),
+			at                 : Resource.msg('workflow.at', 'workflow', null),
+			onTheseDays        : Resource.msg('workflow.onTheseDays', 'workflow', null),
+			apply              : Resource.msg('workflow.apply', 'workflow', null),
+			run                : Resource.msg('overview.run', 'workflow', null),
+			tooltip            : Resource.msg('overview.run.tooltip', 'workflow', null),
+			back               : Resource.msg('workflow.back', 'workflow', null),
+			componentsTitle    : Resource.msg('workflow.components.title', 'workflow', null),
+			componentsNew      : Resource.msg('workflow.components.new', 'workflow', null),
+			enableNotifications: Resource.msg('workflow.enableNotifications', 'workflow', null),
+			statuses           : Resource.msg('workflow.statuses', 'workflow', null),
+			idInUse            : Resource.msg('form.error.workflow.idValueError', 'workflow', ''),
+			noSiteIdsFound     : Resource.msg('form.error.workflow.noSiteIdsFound', 'workflow', '')
+		}
+	};
+	
+	result.allWorkflowComponentIds = {};
+	var tempIterator : SeekableIterator = CustomObjectMgr.getAllCustomObjects('WorkflowScheduleDefinition');
+	for each (var workflowScheduleDefintion : CustomObject in tempIterator) {
+		result.allWorkflowComponentIds[workflowScheduleDefintion.custom.ID] = true;
+	}
+	tempIterator.close();
+
+	result.siteIds = new Array();
+	var availableSiteIds : Array = ['Sites-Site'];
+	
+	for each (var site : Site in Site.allSites) {
+		var siteId : String = site.ID;
+		availableSiteIds.push(siteId);
+	}
+	
+	
+	if (!empty(availableSiteIds)) {
+		for each (var siteId : String in availableSiteIds) {
+			var checked : Boolean = !empty(pdict.CurrentForms.workflow.workflow.object) && !empty(pdict.CurrentForms.workflow.workflow.object.custom.siteIds) && pdict.CurrentForms.workflow.workflow.object.custom.siteIds.indexOf(siteId) >= 0;
+			
+			result.siteIds.push({
+				checked: checked,
+				inputValue: siteId,
+				boxLabel: siteId
+			});
+		}
+	}
+	
+	result.notificationStatuses = new Array();
+	result.notificationStatuses.push({
+		label: "OK",
+		value: "FINISHED_OK",
+		checked: 	(!empty(pdict.CurrentForms.workflow.workflow.object) && pdict.CurrentForms.workflow.workflow.object.custom.notificationStatuses.indexOf("FINISHED_OK") >= 0)
+					|| (!empty(pdict.CurrentHttpParameterMap.notificationStatuses.stringValues) && pdict.CurrentHttpParameterMap.notificationStatuses.stringValues.contains("FINISHED_OK"))
+	});
+	result.notificationStatuses.push({
+		label: "WARN",
+		value: "FINISHED_WARN",
+		checked: 	(!empty(pdict.CurrentForms.workflow.workflow.object) && pdict.CurrentForms.workflow.workflow.object.custom.notificationStatuses.indexOf("FINISHED_WARN") >= 0)
+					|| (!empty(pdict.CurrentHttpParameterMap.notificationStatuses.stringValues) && pdict.CurrentHttpParameterMap.notificationStatuses.stringValues.contains("FINISHED_WARN"))
+	});
+	result.notificationStatuses.push({
+		label: "SKIPPED",
+		value: "FINISHED_SKIPPED",
+		checked: 	(!empty(pdict.CurrentForms.workflow.workflow.object) && pdict.CurrentForms.workflow.workflow.object.custom.notificationStatuses.indexOf("FINISHED_SKIPPED") >= 0)
+					|| (!empty(pdict.CurrentHttpParameterMap.notificationStatuses.stringValues) && pdict.CurrentHttpParameterMap.notificationStatuses.stringValues.contains("FINISHED_SKIPPED"))
+	});
+	result.notificationStatuses.push({
+		label: "ERROR",
+		value: "FINISHED_ERROR",
+		checked: 	(!empty(pdict.CurrentForms.workflow.workflow.object) && pdict.CurrentForms.workflow.workflow.object.custom.notificationStatuses.indexOf("FINISHED_ERROR") >= 0)
+					|| (!empty(pdict.CurrentHttpParameterMap.notificationStatuses.stringValues) && pdict.CurrentHttpParameterMap.notificationStatuses.stringValues.contains("FINISHED_ERROR"))
+	});
+	
+	
+	result.notificationEmails = new Array();
+	if (empty(pdict.CurrentForms.workflow.workflow.object) || empty(pdict.CurrentForms.workflow.workflow.object.custom.notificationEmails)) {
+		// With this dummy string an empty row is created.
+		result.notificationEmails.push('');
+	} else {
+		for each (var notificationEmail : String in pdict.CurrentForms.workflow.workflow.object.custom.notificationEmails) {
+			result.notificationEmails.push(notificationEmail);
+		}
+	}
+	
+	result.form.notificationMode = {
+		htmlName: pdict.CurrentForms.workflow.workflow.notificationMode.htmlName,
+		label: Resource.msg(pdict.CurrentForms.workflow.workflow.notificationMode.label, 'workflow', pdict.CurrentForms.workflow.workflow.notificationMode.label),
+		value: !empty(pdict.CurrentForms.workflow.workflow.notificationMode.htmlValue) ? pdict.CurrentForms.workflow.workflow.notificationMode.htmlValue : pdict.CurrentForms.workflow.workflow.notificationMode.options[0].htmlValue,
+		modes: new Array()
+	};
+	
+	for each (var notificationMode : FormFieldOption in pdict.CurrentForms.workflow.workflow.notificationMode.options) {
+		result.form.notificationMode.modes.push(new Array(notificationMode.optionId, notificationMode.label));
+	}	
+	
+	for each (var executionIntervalType : FormFieldOption in pdict.CurrentForms.workflow.workflow.RECURRING.executionIntervalType.options) {
+		result.form.RECURRING.executionIntervalType.intervals.push(new Array(executionIntervalType.optionId, executionIntervalType.label));
+	}
+	
+	var calendar : Calendar = new dw.util.Calendar();
+	calendar.set(dw.util.Calendar.DAY_OF_WEEK, dw.util.Calendar.MONDAY);
+	for (var i=1; i<=7; i++) {
+		var checked;
+		// In case of a new workflow all checkboxes will be checked.
+		if (empty(pdict.CurrentForms.workflow.workflow.RECURRING.object)
+			|| (
+				!empty(pdict.CurrentForms.workflow.workflow.RECURRING.object.custom.executionWeekdays)
+				&& pdict.CurrentForms.workflow.workflow.RECURRING.object.custom.executionWeekdays.indexOf(calendar.get(dw.util.Calendar.DAY_OF_WEEK).toString()) >= 0
+			)) {
+			checked = true;
+		} else {
+			checked = false;
+		}
+		
+		result.form.RECURRING.executionWeekdays.push({
+			checked: checked,
+			inputValue: calendar.get(dw.util.Calendar.DAY_OF_WEEK),
+			boxLabel: StringUtils.formatCalendar(calendar, 'EEEE')
+		});
+		
+		calendar.add(dw.util.Calendar.DAY_OF_WEEK, 1);
+	}
+	
+	var i=1;
+	for each (var workflowScheduleDefinitionWorkflowComponentDefinitionRelation : CustomObject in pdict.WorkflowScheduleDefinitionWorkflowComponentDefinitionRelations) {
+		var workflowComponentDefinition : CustomObject = CustomObjectMgr.getCustomObject('WorkflowComponentDefinition', workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.workflowComponentDefinitionName);
+		result.components.push(this.createWorkflowComponentDefintionObject(workflowComponentDefinition, workflowScheduleDefinitionWorkflowComponentDefinitionRelation, i, pdict.WorkflowComponentDefinitions));
+		i++;
+	}
+	
+	return result;
+}
+
+/**
+ * Creates the object for the dynamic data of a component row.
+ * 
+ * @param {dw.object.CustomObject} workflowComponentDefinition The WorkflowComponentDefinition object for the row.
+ * @param {dw.object.CustomObject} workflowScheduleDefinitionWorkflowComponentDefinitionRelation The relation object between the workflow and component.
+ * @param {Number} index The current index in the row. Used for generating unique ids in the form.
+ * @param {dw.util.Collection} workflowComponentDefinitions All available component defintions.
+ * 
+ * @return {Object} The created object.
+ */
+LibWorkflowUI.prototype.createWorkflowComponentDefintionObject = function(workflowComponentDefinition : CustomObject, workflowScheduleDefinitionWorkflowComponentDefinitionRelation : CustomObject, index : Number, workflowComponentDefinitions : Collection) : Object {
+	if (empty(workflowComponentDefinition) && !empty(workflowComponentDefinitions)) {
+		workflowComponentDefinition = workflowComponentDefinitions[0];
+	}
+	
+	var parameterDefinitions;
+	if (!empty(workflowComponentDefinition.custom.parameters)) {
+		parameterDefinitions = JSON.parse(workflowComponentDefinition.custom.parameters);
+	} else {
+		parameterDefinitions = [];
+	}
+	
+	// true if at least 1 component in the form is invalid.
+	var formInvalid = false;
+	// true if this component fieldset is invalid.
+	var componentInvalid = false;
+	var parameterValues = {};
+	var disabledChecked = false;
+	var asynchronChecked = false;
+	var fileLogLevel = 'inherit';
+	var componentLogLevel = 'inherit';
+	var displayName = '';
+	if (!empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelation)) {
+		if (!empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.parameters)) {
+			parameterValues = JSON.parse(workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.parameters);
+		}
+		
+		// The fake objects will only be created if the WorkflowComponentDefinition could not be saved, because one of
+		// the components form was invalid.
+		if ('fakeRelation' in workflowScheduleDefinitionWorkflowComponentDefinitionRelation
+			&& workflowScheduleDefinitionWorkflowComponentDefinitionRelation.fakeRelation == true) {
+			formInvalid = true;
+			
+			if (!empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelation.formErrors)) {
+				componentInvalid = true;
+			}
+		}
+		
+		if (workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.disabled == true) {
+			disabledChecked = true;
+		}
+		if (workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.asynchron == true) {
+			asynchronChecked = true;
+		}
+		if ( !empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.fileLogLevel) ) {
+			fileLogLevel = workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.fileLogLevel.value;
+		}
+		if ( !empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.componentLogLevel) ) {
+			componentLogLevel = workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.componentLogLevel.value;
+		}
+		if ('displayName' in workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom &&
+			!empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.displayName) ) {
+				displayName = workflowScheduleDefinitionWorkflowComponentDefinitionRelation.custom.displayName; 
+		}
+	}
+	
+	var result : Object = {
+		index: index,
+		name: workflowComponentDefinition.custom.name,
+		displayName: displayName,
+		description: workflowComponentDefinition.custom.description,
+		action: workflowComponentDefinition.custom.action,
+		disabledChecked: disabledChecked,
+		asynchronChecked: asynchronChecked,
+		fileLogLevel: fileLogLevel,
+		componentLogLevel: componentLogLevel,
+		workflowComponentDefinitions: new Array(),
+		newComponentURL: URLUtils.url('WorkflowUI-GetDynamicComponentData').toString(),
+		parameterDefinitions: new Array(),
+		componentInvalid: componentInvalid,
+		formErrors: new Object(),
+		resources: {
+			title: Resource.msgf('workflow.components.title2', 'workflow', null, workflowComponentDefinition.custom.name + (!empty(displayName) ? " - " + displayName : "")),
+			displayName: Resource.msg('workflow.components.displayName', 'workflow', null),
+			type: Resource.msg('workflow.components.type', 'workflow', null),
+			description: Resource.msg('workflow.components.description', 'workflow', null),
+			action: Resource.msg('workflow.components.action', 'workflow', null),
+			asynchron: Resource.msg('workflow.components.asynchron', 'workflow', null),
+			disabled: Resource.msg('workflow.components.disabled', 'workflow', null),
+			fileLogLevel : Resource.msg('workflow.fileLogLevel', 'workflow', null),
+			componentLogLevel : Resource.msg('workflow.componentLogLevel', 'workflow', null),
+			"delete": Resource.msg('workflow.components.delete', 'workflow', null)
+		}
+	}
+
+				
+				
+	
+	for each (var workflowComponentDefinition : CustomObject in workflowComponentDefinitions) {
+		result.workflowComponentDefinitions.push(workflowComponentDefinition.custom.name);
+	}
+	
+	if (!empty(parameterDefinitions)) {
+		for each (var parameterDefinition : Object in parameterDefinitions) {
+			var type = 'textfield';
+			if (parameterDefinition.type == 'boolean') {
+				type = 'checkbox';
+			} else if (parameterDefinition.type == 'date') {
+				type = 'datefield';
+			} else if (parameterDefinition.type == 'time') {
+				type = 'timefield';
+			} else if (parameterDefinition.type == 'datetime') {
+				// in this case we add first a date field and then later a time field and a hidden text input field where the value will be calculated
+				type = 'datefield';
+			} else if (parameterDefinition.type == 'double') {
+				type = 'textfield';
+			} else if (parameterDefinition.type == 'int') {
+				type = 'textfield';
+			} else if (parameterDefinition.type == 'string') {
+				type = 'textfield';
+			} else if (parameterDefinition.type == 'password') {
+				type = 'textfield';
+			} else if (parameterDefinition.type == 'enum' && !empty(parameterDefinition.enumValues)) {
+				type = 'enum';
+			}
+			
+			var value = '';
+			var checked = false;
+			if (formInvalid == true) {
+				value = workflowScheduleDefinitionWorkflowComponentDefinitionRelation.enteredValues[parameterDefinition.id];
+				// Important: The value here is a string! This is because the entered values are the 'value' attribute of the parameter map.
+				if (parameterDefinition.type == 'boolean' && value == 'true') {
+					checked = true;
+				}
+			} else {
+				if (parameterDefinition.type == 'boolean') {
+					value = 'true';
+					if (parameterValues[parameterDefinition.id] == true) {
+						checked = true;
+					}
+				} else if (parameterDefinition.type == 'date'
+					|| parameterDefinition.type == 'time'
+					|| parameterDefinition.type == 'datetime') {
+					value = parameterValues[parameterDefinition.id];
+					if (!empty(value)) {
+						var calendar = new dw.util.Calendar();
+						calendar.setTimeZone(dw.system.System.getInstanceTimeZone());
+						calendar.setTime(new Date(value));
+						if (parameterDefinition.type == 'date') {
+							value = dw.util.StringUtils.formatCalendar(calendar, request.locale, dw.util.Calendar.INPUT_DATE_PATTERN);
+						} else if (parameterDefinition.type == 'time') {
+							value = dw.util.StringUtils.formatCalendar(calendar, request.locale, dw.util.Calendar.INPUT_TIME_PATTERN);
+						} else {
+							value = dw.util.StringUtils.formatCalendar(calendar, request.locale, dw.util.Calendar.INPUT_DATE_TIME_PATTERN);
+						}
+					}
+				} else if (parameterDefinition.type == 'double') {
+					if (!empty(parameterValues[parameterDefinition.id])) {
+						value = dw.util.StringUtils.formatNumber(parameterValues[parameterDefinition.id]);
+					}
+				} else if (parameterDefinition.type == 'int') {
+					value = parameterValues[parameterDefinition.id];
+				} else if (parameterDefinition.type == 'string') {
+					value = parameterValues[parameterDefinition.id];
+				} else if (parameterDefinition.type == 'password') {
+					value = parameterValues[parameterDefinition.id];
+				} else if (parameterDefinition.type == 'enum' && !empty(parameterDefinition.enumValues)) {
+					value = parameterValues[parameterDefinition.id];
+				}
+				
+				if (empty(value)) {
+					value = '';
+				}
+			}
+			
+			result.parameterDefinitions.push({
+				type: type,
+				parameterDefinitionType: parameterDefinition.type,
+				name: parameterDefinition.name,
+				id: parameterDefinition.id,
+				value: value,
+				checked: checked,
+				enumValues: parameterDefinition.enumValues,
+				mandatory : parameterDefinition.mandatory
+			});
+			
+			if (formInvalid && !empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelation.formErrors) && workflowScheduleDefinitionWorkflowComponentDefinitionRelation.formErrors.get(parameterDefinition.id)) {
+				result.formErrors[parameterDefinition.id] = workflowScheduleDefinitionWorkflowComponentDefinitionRelation.formErrors.get(parameterDefinition.id);
+			}
+		}
+	}
+	
+	return result;
+};
+
+/**
+ * Creates the object for the dynamic data of the workflow plan.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Object} The created object.
+ */
+LibWorkflowUI.prototype.createWorkflowPlanObject = function(pdict : PipelineDictionary) : Object {
+	var result : Object = {
+		currentWorkflowNames: new Array(),
+		jsonStoreUrl: URLUtils.url('WorkflowUI-WorkflowJSON').toString(),
+		jsonDetailsUrl: URLUtils.url('WorkflowUI-WorkflowDetailsJSON').toString(),
+		dateFromValue: pdict.CurrentHttpParameterMap.dateFrom.empty ? (!empty(pdict.TimeFrom) ? StringUtils.formatCalendar(pdict.TimeFrom, request.locale, Calendar.INPUT_DATE_PATTERN) : '') : pdict.CurrentHttpParameterMap.dateFrom.stringValue,
+		workflowPlanEntries: new Array(),
+		workflowPlanURL: URLUtils.url('WorkflowUI-WorkflowPlan').toString(),
+		showAllRunningInstances: pdict.CurrentHttpParameterMap.showAllRunningInstances.submitted,
+		statuses: [
+			{name: "NOT_STARTED"},
+			{name: "SKIPPED"},
+			{name: "WAITING"},
+			{name: "RUNNING"},
+			{name: "FINISHED_OK"},
+			{name: "FINISHED_SKIPPED"},
+			{name: "FINISHED_WARN"},
+			{name: "FINISHED_ERROR"}],
+		resources: {
+			dateFrom: Resource.msg('workflowplan.dateFromLabel', 'workflow', null),
+			siteIds: Resource.msg('workflowplan.siteIdLabel', 'workflow', null),
+			logFiles: Resource.msg('workflowplan.siteIdLabel', 'workflow', null),
+			workflowsToShow: Resource.msg('workflowplan.workflowsToShow', 'workflow', null),
+			workflowPlan: Resource.msg('workflowplan.workflowPlan', 'workflow', null),
+			runningInstances: Resource.msg('workflowplan.runningInstances', 'workflow', null),
+			configureQueryParameters: Resource.msg('workflowplan.configureQueryParameters', 'workflow', null),
+			update: Resource.msg('workflowplan.update', 'workflow', null),
+			workflowName: Resource.msg('workflowplan.workflowName', 'workflow', null),
+			workflowPlannedStartLabel: Resource.msg('workflowplan.workflowPlannedStartLabel', 'workflow', null),
+			workflowStatusLabel: Resource.msg('workflowplan.workflowStatusLabel', 'workflow', null),
+			workflowStartTimeLabel: Resource.msg('workflowplan.workflowStartTimeLabel', 'workflow', null),
+			workflowEndTimeLabel: Resource.msg('workflowplan.workflowEndTimeLabel', 'workflow', null),
+			workflowRuntimeLabel: Resource.msg('workflowplan.workflowRuntimeLabel', 'workflow', null),
+			noWorkflows: Resource.msg('workflowplan.noWorkflows', 'workflow', null),
+			componentName: Resource.msg('workflowplan.componentName', 'workflow', null),
+			componentStatus: Resource.msg('workflowplan.componentStatus', 'workflow', null),
+			componentStartTimeLabel: Resource.msg('workflowplan.componentStartTimeLabel', 'workflow', null),
+			componentEndTimeLabel: Resource.msg('workflowplan.componentEndTimeLabel', 'workflow', null),
+			componentRuntimeLabel: Resource.msg('workflowplan.componentRuntimeLabel', 'workflow', null),
+			time: Resource.msg('workflowplan.time', 'workflow', null),
+			logMessage: Resource.msg('workflowplan.logMessage', 'workflow', null),
+			statuses: Resource.msg('workflowplan.statuses', 'workflow', null),
+			logFiles: Resource.msg('workflowplan.logFiles', 'workflow', null),
+			getLog: Resource.msg('workflowplan.getLog', 'workflow', null)
+		}
+	};
+	
+	result.siteIds = new Array();
+	var availableSiteIds : Array = ['Sites-Site'];
+	
+	for each (var site : Site in Site.allSites)
+	{
+		availableSiteIds.push(site.ID);
+	}
+	
+	
+	if (!empty(availableSiteIds)) {
+		for each (var siteId : String in availableSiteIds) {
+			result.siteIds.push(siteId);
+		}
+	}
+	
+	for each (var status : Object in result.statuses) {
+		if (pdict.CurrentHttpParameterMap.filter.submitted
+			&& !empty(pdict.CurrentHttpParameterMap.statuses.stringValues)) {
+			var found : Boolean = false;
+			for each (var submittedStatus : String in pdict.CurrentHttpParameterMap.statuses.stringValues) {
+				if (submittedStatus == status.name) {
+					found = true;
+					
+					break;
+				}
+			}
+			
+			status.selected = found;
+		} else {
+			// Skipped should not be selected by default.
+			status.selected = status.name != 'SKIPPED';
+		}
+	}
+	
+	return result;
+};
+
+/**
+ * Creates the the source data for the workflow grid.
+ * 
+ * @param {Object} workflowPlan
+ * 
+ * @return {Object} The created object.
+ */
+LibWorkflowUI.prototype.getWorkflows = function(workflowPlan) : Object {
+	var workflows : Array = [];
+	
+	for each (var workflowPlanEntry : Object in workflowPlan) {
+		workflows.push(this.getWorkflow(workflowPlanEntry));
+	}
+	
+	return { 'data' : workflows };
+};
+
+/**
+ * Creates the the source data for one Workflow.
+ * 
+  * @param {Object} workflowPlanEntry
+ * 
+ * @return {Object} The created object.
+ */
+LibWorkflowUI.prototype.getWorkflow = function(workflowPlanEntry) : Object {
+	var workflowScheduleDefintion = workflowPlanEntry.workflowScheduleDefintion;
+	var workflowScheduleInstance = workflowPlanEntry.workflowScheduleInstance;
+	var status = workflowPlanEntry.status;
+	var workflowComponentInstances = workflowPlanEntry.workflowComponentInstances;
+	
+	var startTimeString;
+	if(!empty(workflowScheduleInstance) && !empty(workflowScheduleInstance.custom.startTime)) {
+		var startTime = new dw.util.Calendar();
+		startTime.setTimeZone(dw.system.System.getInstanceTimeZone());
+		startTime.setTime(workflowScheduleInstance.custom.startTime);
+		startTimeString = dw.util.StringUtils.formatCalendar(startTime,'MM/dd/yyyy HH:mm');
+	} else {
+		startTimeString = "";
+	}
+
+	var endTimeString;
+	if (!empty(workflowScheduleInstance) && !empty(workflowScheduleInstance.custom.endTime)) {
+		var endTime = new dw.util.Calendar();
+		endTime.setTimeZone(dw.system.System.getInstanceTimeZone());
+		endTime.setTime(workflowScheduleInstance.custom.endTime);
+		endTimeString = dw.util.StringUtils.formatCalendar(endTime,'MM/dd/yyyy HH:mm');
+	} else {
+		endTimeString = "";
+	}
+
+	var runtime;
+	if (!empty(workflowScheduleInstance) && !empty(workflowScheduleInstance.custom.startTime) && !empty(workflowScheduleInstance.custom.endTime)) {
+		runtime = workflowScheduleInstance.getRuntime();
+	} else {
+		runtime = "";
+	}
+	
+	var logFileURL = null;
+	if ( !empty(workflowScheduleInstance) && 'fileLogLevel' in workflowScheduleInstance.custom && workflowScheduleInstance.custom.fileLogLevel != 'none' ) {
+		var logFileName : String = workflowScheduleInstance.ID; 
+		logFileName = logFileName.toLowerCase().replace(/[^a-z0-9]/g, '');
+		logFileURL = URLUtils.url('DownloadCustomLogFile-Start', 'filename', logFileName + '.log' );
+	}
+	
+	var gridRow : Object = {
+		'workflowid':workflowScheduleDefintion.custom.ID,
+		'workflowname':workflowScheduleDefintion.custom.name,
+		'plannedstart':dw.util.StringUtils.formatCalendar(workflowPlanEntry.calendar,'MM/dd/yyyy HH:mm:ss'),
+		'status':status,
+		'starttime':startTimeString,
+		'endtime':endTimeString,
+		'runtime':runtime,
+		'is_leaf': false,//empty(workflowComponentInstances),
+		'siteId':workflowPlanEntry.siteId,
+		'components':[],
+		'logFileURL':logFileURL ? logFileURL.toString() : null
+	};
+
+	if (!empty(workflowComponentInstances)) {
+		var instancesGridRow : Array = new Array();
+		
+		for each (var workflowComponentInstance : Object in workflowComponentInstances) {
+			var instanceRow = new Array();
+			
+			if(!empty(workflowComponentInstance) && !empty(workflowComponentInstance.custom.startTime)) {
+				var startTime = new dw.util.Calendar();
+				startTime.setTimeZone(dw.system.System.getInstanceTimeZone());
+				startTime.setTime(workflowComponentInstance.custom.startTime);
+				var startTimeString = dw.util.StringUtils.formatCalendar(startTime,'MM/dd/yyyy HH:mm');
+			}
+			else {
+				var startTimeString = "";
+			}
+
+			if(!empty(workflowComponentInstance) && !empty(workflowComponentInstance.custom.endTime)) {
+				var endTime = new dw.util.Calendar();
+				endTime.setTimeZone(dw.system.System.getInstanceTimeZone());
+				endTime.setTime(workflowComponentInstance.custom.endTime);
+				var endTimeString = dw.util.StringUtils.formatCalendar(endTime,'MM/dd/yyyy HH:mm');
+			}
+			else {
+				var endTimeString = "";
+			}
+
+			if(!empty(workflowComponentInstance) && !empty(workflowComponentInstance.custom.startTime) && !empty(workflowComponentInstance.custom.endTime)) {
+				var runtime = workflowComponentInstance.getRuntime();
+			}
+			else {
+				var runtime = "";
+			}
+			
+			var displayName = !empty(workflowComponentInstance.custom.displayName) ? (' - ' + workflowComponentInstance.custom.displayName) : '';
+			instanceRow.push(workflowComponentInstance.custom.workflowComponentDefinitionName + displayName);
+			instanceRow.push(workflowComponentInstance.custom.status.value);
+			instanceRow.push(startTimeString);
+			instanceRow.push(endTimeString);
+			instanceRow.push(runtime);
+			instanceRow.push(empty(workflowComponentInstance.custom.statusMessages));
+			
+			if (!empty(workflowComponentInstance.custom.statusMessages)) {
+				var statusMessagesGridRow : Array = new Array();
+				
+				for each (var logContent : String in workflowComponentInstance.custom.statusMessages) {
+					var messageRow : Array = new Array();
+					
+					var date = '-';
+					var logMsg : String = logContent;
+					var endPos = logContent.indexOf(']');
+					var fileURLs : Array = new Array();
+					if (endPos!=-1) {
+						date = logContent.substring(0,endPos+1);
+						logMsg = logContent.substring(endPos+1);
+						
+						var splittedMessage : Array = logMsg.split('|||');
+						logMsg = splittedMessage[0];
+						if (splittedMessage.length > 1) {
+							for (var i=1; i<splittedMessage.length; i++) {
+								if(splittedMessage[i].indexOf('url:') == 0){
+									fileURLs.push(splittedMessage[i].substring(4));
+								}else if(splittedMessage[i].indexOf('file:') == 0){
+									fileURLs.push('https://' + System.instanceHostname + '/on/demandware.servlet/webdav/Sites/' + splittedMessage[i].substring(5) + '?download=true');
+								}else{
+									// default is file
+									fileURLs.push('https://' + System.instanceHostname + '/on/demandware.servlet/webdav/Sites/' + splittedMessage[i] + '?download=true');
+								}
+							}
+						}
+					}
+					
+					messageRow.push(date);
+					messageRow.push(logMsg);
+					messageRow.push(fileURLs);
+					
+					statusMessagesGridRow.push(messageRow);
+				}
+				
+				instanceRow.push(statusMessagesGridRow);
+			}
+			
+			instancesGridRow.push(instanceRow);
+		}
+		
+		gridRow.components = instancesGridRow;
+	}
+	return gridRow;
+};
+
+/**
+ * Get the workflow source data for the first WorkflowScheduleDefinition
+ * 
+ * @param {Object} libWorkflow
+ * @param {String} siteId
+ * @param {Object} workflowDefinitionId
+ * @param {Calendar} plannedStart
+ * 
+ * @return {Object} The created object.
+ */
+LibWorkflowUI.prototype.getSingleWorkflow = function(libWorkflow, siteId, workflowDefinitionId, plannedStart) : Object {
+	//We need to get exactly same value of date wich show in BM, 
+	//so we pass it from client as string
+	var cal : Calendar = new Calendar();
+	cal.setTimeZone(System.getInstanceTimeZone());
+	var actualDate : String = plannedStart + StringUtils.formatCalendar(cal,' z');
+	cal.parseByFormat(actualDate, 'MM/dd/yyyy HH:mm:ss z');
+	
+	var psd = CustomObjectMgr.getCustomObject('WorkflowScheduleDefinition', workflowDefinitionId);
+	var workflowPlanEntry = {
+		"calendar"                  : cal,
+		"workflowScheduleDefinition" : psd
+	};
+	var arr = new ArrayList();
+	arr.add(workflowPlanEntry);
+	var workflow : ArrayList = libWorkflow.prepareWorkflowPlanOverview(libWorkflow, siteId, arr, new ArrayList(), true);
+	return this.getWorkflow(workflow.get(0));
+};

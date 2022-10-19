@@ -1,0 +1,71 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<script src="${URLUtils.staticURL('lib/jquery/jquery-3.6.0.min.js')}"></script>
+<!-- FontAwesome -->
+<script defer src="${URLUtils.staticURL('lib/fontawesome/solid.min.js')}"></script>
+<script defer src="${URLUtils.staticURL('lib/fontawesome/brands.min.js')}"></script>
+<script defer src="${URLUtils.staticURL('lib/fontawesome/light.min.js')}"></script>
+<script defer src="${URLUtils.staticURL('lib/fontawesome/fontawesome.min.js')}"></script>
+
+<script defer src="${URLUtils.staticURL('/lib/jquery/jquery.validate.min-1.19.3.js')}" type="text/javascript"></script>
+<script defer src="${dw.web.URLUtils.staticURL('/lib/bootstrap-4.6.1/popper.min.js')}"></script>
+<script defer src="${dw.web.URLUtils.staticURL('/lib/bootstrap-4.6.1/bootstrap.min.js')}"></script>
+<script defer src="${dw.web.URLUtils.staticURL('/lib/flickity/flickity.pkgd.min.js')}" ></script>
+<script type="text/javascript"><isinclude template="resources/appresourcesSFRA"/></script>
+<script defer src="${dw.web.URLUtils.staticURL('/js/app-sfra.js')}" type="text/javascript"></script>
+<script defer src="${dw.web.URLUtils.staticURL('/lib/headerSFRA.js')}" type="text/javascript"></script>
+
+<iscomment> One Trust </iscomment>
+<iscontentasset aid="tatcha-onetrust-banner"/>
+
+<isscript>
+    var geoLocation = require('app_storefront_core/cartridge/scripts/cart/GetCustomerIp');
+    var countryCode = geoLocation.getCountryCode();
+</isscript>
+
+<iscomment> Yotpo Includes </iscomment>
+<isinclude template="include/yotpoheader" />
+<isinclude template="util/yotpomodules.isml" />
+
+<isif condition="${!empty(countryCode) && (countryCode == 'US' || countryCode == 'CA')}">
+    <script type="text/javascript">
+        $(document).on('focus click tap','input, textarea',function(){
+            $(this).attr("autocomplete",'disabled');
+        });
+    </script>
+</isif>
+
+<isif condition="${!('pageContext' in this) || empty(pageContext)}">
+    <isscript>pageContext = new Object();</isscript>
+</isif>
+<script>pageContext = <isprint value="${JSON.stringify(pageContext)}" encoding="off"/>;</script>
+<script>
+    var meta = "${pdict.CurrentPageMetaData.description}";
+    var keywords = "${pdict.CurrentPageMetaData.keywords}";
+</script>
+
+<iscomment> mParticle JS includes </iscomment>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('mParticleEnabled')}">
+    <isinclude template="mParticle/mParticle_footer"/>
+</isif>
+
+<iscomment>RDMP-3458 change </iscomment>
+<iscomment> Afterpay Express Includes </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled')}">
+    <isinclude template="afterpay/afterpayExpressIncludes" />
+</isif>
+
+<iscomment>GTM includes</iscomment>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('enableGTM')}">
+    <isinclude template="googletagmanager/googletagmanager"/>
+</isif>
+
+<iscomment>Linc Web chat</iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LincWebchatEnable')}">
+    <isinclude template="components/lincwebchatwidget"/>
+</isif>
+
+<!-- Braintree js for minicart-->
+<iscomment>
+<isinclude template="braintree/minicartClientSideJs"/>
+</iscomment>

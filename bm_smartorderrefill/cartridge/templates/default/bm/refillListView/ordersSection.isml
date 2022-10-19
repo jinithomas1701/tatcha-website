@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="order-section subscription-section visualy-hidden">
+    <isset name="isLast" value="${pdict.ordersList.length <= 1 ? true : pdict.ordersList.length}" scope="page" />
+    <ul class="orders">
+        <isloop items="${pdict.ordersList}" var="order">
+            <li class="sor-table-order" data-link="${URLUtils.https('SmartOrderRefillReport-ShowOrder', 'client', order.customerNo, 'oid', order.ID, 'action', 'view')}">
+                <span class="orders-date">
+                    ${order.createdAt.toLocaleDateString("en-US")}
+                    <isif condition="${order.status === order.constructor.STATUS_PAUSED}">
+                        <span>${Resource.msg('smartorderrefill.ordersview.pause', 'smartorderrefill', null)}</span>
+                    </isif>
+                </span>
+            </li> 
+        </isloop>
+    </ul> 
+</div>

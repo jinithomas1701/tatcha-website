@@ -1,0 +1,79 @@
+{
+  "name": "Full width video",
+  "description": "Full width video section",
+  "group": "assets",
+  "attribute_definition_groups": [
+  	{
+  		"id": "videoinputs",
+      	"name": "Video inputs",
+      	"description": "Set 1 copntent",
+      	"attribute_definitions": [
+	        {
+      	  	  "id": "anchorid",
+              "name": "Anchor Id",
+              "type": "string",
+              "required": false
+      		},
+	        {
+	          "id": "videoplayer",
+	          "name": "Video Player",
+	          "type": "enum",
+	          "values": [
+	             "youtube",
+	             "vimeo"
+	           ],
+	          "required": false,
+	          "default_value": "youtube"
+	        },
+	        {
+	          "id": "videourl",
+	          "name": "Video URL",
+	          "type": "text",
+	          "required": true
+	        },
+	        {
+	          "id": "videotitle",
+	          "name": "Video Title",
+	          "type": "text",
+	          "required": true
+	        }
+       ]
+  	},
+  	{
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margins for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+ }

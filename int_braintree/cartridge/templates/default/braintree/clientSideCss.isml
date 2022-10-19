@@ -1,0 +1,5 @@
+<isif condition="${!request.custom.braintreeClientCssFilesLoaded}">
+    <isset name="braintreeClientCssFilesLoaded" value="true" scope="request" />
+
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/braintree.css')}" />
+</isif>

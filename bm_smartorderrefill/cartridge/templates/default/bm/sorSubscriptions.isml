@@ -1,0 +1,149 @@
+<isinclude template="components/header" />
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isset name="dateFormat" value="${Resource.msg('club.subscription.dateFormat', 'sor_smartorderrefill', null)}" scope="page" />
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<div class="sor-module">
+        <h2 class="sor-module__name-title">${pdict.refillCustomer.customer.profile.firstName + ' ' + pdict.refillCustomer.customer.profile.lastName}</h2>
+        <h4 class="sor-module__name-email">${pdict.refillCustomer.customer.profile.email}</h4>
+
+        <isset name="subscriptionsList" value="${pdict.refillCustomer.getActiveSubscriptions()}" scope="page" />
+
+        <div class="line"></div>
+
+        <isset name="auto_renewal" value="${pdict.refillCustomer.preferences.SorAutomaticRenewalEnabled}" scope="page" />
+        <div>
+            <div class="sor-table">
+            <isif condition="${!empty(subscriptionsList) && subscriptionsList.length >= 1}" >
+                <div class="subscription-info">
+                    <isloop items="${subscriptionsList}" var="subscription">
+                        <div class="sor-table__subscriptions">
+                            <isloop items="${subscription.products}" var="prod">
+                                <div class="subscriptionSection-img">
+                                    <isset name="product" value="${dw.catalog.ProductMgr.getProduct(prod.ID)}" scope="page"/>
+                                    <isif condition="${product != null && product.getImage('large',0) != null}">
+										<isset name="imageUrl" value="${getImageUrl(product,'medium')}" scope="page"/>
+										<isset name="imageAlt" value="${getImageAlt(product)}" scope="page"/>
+										<isset name="imageTitle" value="${getImageTitle(product)}" scope="page"/>
+									<iselse/>									
+										<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagesmall.png')}" scope="page"/>										
+									</isif>
+                                    <img itemprop="image" class="primary-image" src="${imageUrl}" alt="${product.name}" title="${product.name}" />
+                                    <div class="img-info">
+                                        <div class="product-name">
+                                            x${prod.quantity} &nbsp; <strong>
+                                                ${product.name}</strong>
+                                        </div>
+                                        <div class="refill-interval">${Resource.msg('smartorderrefill.vieworder.refillinterval', 'smartorderrefill', null)}:&nbsp;
+                                            <strong>${prod.interval} ${Resource.msg('smartorderrefill.periodicity.' + prod.periodicity, 'smartorderrefill', null)}<br /></strong>
+                                        </div>
+                                        <div class="refill-interval">
+                                            <isif condition="${!empty(prod.commitmentDone) && !empty(prod.commitment)}" >
+                                                ${Resource.msg('smartorderrefill.subscription.commitment', 'smartorderrefill', null)}&nbsp;
+                                                <strong>${prod.commitmentDone}/${prod.commitment}</strong>
+                                            </isif>
+                                        </div>
+                                    </div>
+                                </div>
+                            </isloop>
+                            <div class="line"></div>
+                            <div class="sor-module__subscription-status">
+                                <span>${Resource.msg('smartorderrefill.subscription.status', 'smartorderrefill', null)}:</span>
+                                <strong>${subscription.status}</strong>
+                            </div>
+                            <div class="sor-module__subscription-date">
+                                ${Resource.msg('smartorderrefill.subscription.subscriptiondate', 'smartorderrefill', null)}:
+                                <strong>
+                                    ${subscription.createdAt.toLocaleDateString("en-US")}
+                                </strong>
+                            </div>
+                            <isif condition="${subscription.status != subscription.constructor.STATUS_CANCELED && subscription.status != subscription.constructor.STATUS_EPIRED}">
+                                <isif condition="${auto_renewal}">
+                                    <div class="exp-date">
+                                            <p>${Resource.msg('smartorderrefill.subscription.subscriptionexpdate', 'smartorderrefill', null)}:</p>&nbsp;
+                                            <strong>
+                                                <isprint value="${subscription.validUntil.toLocaleDateString("en-US")}" />
+                                            </strong>
+                                        </div>
+                                    <br>
+                                    <p class="renewal-button">
+                                        <isif condition="${!subscription.renewal}">
+                                            <a class="button reactivate renewal blue" id="reactRenewal" data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', subscription.ID, 'client', pdict.refillCustomer.customer.profile.customerNo, 'status', true, 'action', 'updateRenewal')}">
+                                                <isprint value="${Resource.msg('smartorderrefill.subscription.reactiverenewal', 'smartorderrefill', null)}" />
+                                            </a>
+                                            <iselse>
+                                                <a class="button cancel renewal orange" id="cancelRenewal" data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', subscription.ID, 'client', pdict.refillCustomer.customer.profile.customerNo, 'status', false, 'action', 'updateRenewal')}">
+                                                    <isprint value="${Resource.msg('smartorderrefill.subscription.cancelrenew', 'smartorderrefill', null)}" />
+                                                </a>
+                                        </isif>
+                                    </p>
+                                <iselse>
+                                    <div class="exp-date">
+                                        <p>${Resource.msg('smartorderrefill.subscription.subscriptionexpdate', 'smartorderrefill', null)}:</p>&nbsp;
+                                        <strong>
+                                            <isprint value="${subscription.validUntil.toLocaleDateString("en-US")}" />
+                                        </strong>
+                                    </div>
+                                </isif>
+                            <iselse/>
+                                <div class=canceled-in>
+                                    <p>${Resource.msg('smartorderrefill.subscription.canceledin', 'smartorderrefill', null)}</p>
+                                    <strong>
+                                        <isprint value="${subscription.lastUpdate.toLocaleDateString("en-US")}" />
+                                    </strong>
+                                </div>
+                            </isif>
+                            
+                            <p class="cancel-button">
+                                <a class="button cancel subscription orange" id="cancelSubscription"  
+                                    data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', subscription.ID, 'client', pdict.refillCustomer.customer.profile.customerNo, 'action', subscription.constructor.STATUS_CANCELED)}">
+                                    <isprint value="${Resource.msg('smartorderrefill.subscription.cancelsubs', 'smartorderrefill', null)}" />
+                                </a>
+                            </p>
+
+                            <isif condition="${pdict.refillCustomer.preferences.SorPauseSubscription}" >
+                                <isif condition="${subscription.status == subscription.constructor.STATUS_PAUSED}">
+                                    <p class="reactivate-button">
+                                        <a class="button reactivate subscription blue" id="pauseSubscription"  
+                                            data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', subscription.ID, 'client', pdict.refillCustomer.customer.profile.customerNo, 'action','reactivate')}">
+                                            <isprint value="${Resource.msg('smartorderrefill.subscription.reactivate', 'smartorderrefill', null)}" />
+                                        </a>
+                                    </p>
+                                <iselse/>
+                                    <p class="pause-button">
+                                        <a class="button pause subscription orange" id="pauseSubscription"  
+                                            data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', subscription.ID, 'client', pdict.refillCustomer.customer.profile.customerNo, 'action', subscription.constructor.STATUS_PAUSED)}">
+                                            <isprint value="${Resource.msg('smartorderrefill.subscription.pause', 'smartorderrefill', null)}" />
+                                        </a>
+                                    </p>
+                                </isif>
+                            </isif>
+                            
+                            <p class="detail-button">
+                                <a class="button details blue" href="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', subscription.ID, 'client', pdict.refillCustomer.customer.profile.customerNo, 'action', 'view')}">
+                                <isprint value="${Resource.msg('smartorderrefill.subscription.details', 'smartorderrefill', null)}" />
+                                </a>
+                            </p>
+                            <p class="cancelMessage"></p>
+                        </div>
+                    </isloop>
+                </div>
+            <iselse/>
+                <p class="no-subscriptions">
+                    ${Resource.msg('smartorderrefill.subscription.empty','smartorderrefill', null)}
+                </p> 
+            </isif>
+                
+            </div>
+        </div>
+        
+        <p class="close-button" id="close-button">
+                <span class="button closeSubscription orange-invert "> Close
+                </span>
+        </p>
+</div>
+<isinclude template="components/footer" />

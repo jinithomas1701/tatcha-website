@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isset name="DecoratorTemplate" value="account/pt_account" scope="page"/>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.ajax.stringValue == 'true' }">
+    <isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+<div class="braintree-account-addVenmoAccount-content">
+    <h1>${Resource.msg('braintree.venmo.addaccount.title', 'locale', null)}</h1>
+
+    <form class="js_braintree_addVenmoAccountForm" action="${URLUtils.url('Braintree-AccountAddVenmoAccountHandleForm')}" class="form-horizontal" method="post">
+        <fieldset>     
+            <isscript>
+                var config = require('~/cartridge/scripts/braintree/braintreeHelper').createAccountVenmoButtonConfig();
+            </isscript>
+            
+            <div class="form-row">
+                <div class="error" id="braintreeFormErrorContainer">${empty(pdict.BraintreeError) ? '' : pdict.BraintreeError}</div>
+                <i id="braintreeVenmoLoader" class="braintree-loader"></i>
+                <div class="js_braintree_accountVenmoButton" data-braintree-config="${JSON.stringify(config)}">
+                    <div class="braintree_accountVenmoButton"></div>
+                </div>
+            </div>
+            <i id="venmoUsername"></i>
+            <input id="braintreeVenmoNonce" type="hidden" name="${pdict.CurrentForms.braintreevenmoaccount.nonce.htmlName}" value=""/>
+
+            <div class="form-row label-inline">
+                <div class="field-wrapper">
+                    <input name="${pdict.CurrentForms.braintreevenmoaccount.default.htmlName}" id="${pdict.CurrentForms.braintreevenmoaccount.default.htmlName}" type="checkbox" checked="checked" value="true" disabled/>
+                </div>
+                <label for="${pdict.CurrentForms.braintreevenmoaccount.default.htmlName}"><span>${Resource.msg('braintree.venmo.addaccount.makedefault', 'locale', null)}</span></label>
+            </div>
+
+            <input type="hidden" name="${pdict.CurrentForms.braintreevenmoaccount.secureKeyHtmlName}" value="${pdict.CurrentForms.braintreevenmoaccount.secureKeyValue}"/>
+            <input type="hidden" name="${pdict.CurrentForms.braintreevenmoaccount.add.htmlName}" value="true" />
+            
+            <div class="form-row form-row-button">
+                <button type="submit" name="save" disabled>${Resource.msg('braintree.venmo.addaccount.button.add', 'locale', null)}</button>
+                <a class="cancel cancel-button js_brainree_cancelBtn" href="${URLUtils.url('PaymentInstruments-List')}">${Resource.msg('braintree.addcreditcard.button.cancel', 'locale', null)}</a>
+            </div>
+
+        </fieldset>
+    </form>
+</div>
+</isdecorate>

@@ -1,0 +1,34 @@
+<!--- TEMPLATENAME: footer-subscribe.isml --->
+footer-subscribe 
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('klaviyo_subscription_sync_enabled')}">
+	<isset name="formURL" value="KlaviyoSfra-Subscribe" scope="page" />
+<iselse/>
+	<isset name="formURL" value="Account-EditSubscribtion" scope="page" />
+</isif>
+<isif condition="${!request.httpCookies['dw_cookies_nwsltr_subcribed']}">
+	<div class="content-asset" style="margin: auto 0;"">
+	<div class="row">
+		<form class= "form-block col-sm-12 col-md-12 col-lg-12 mailing-list ajaxsubscribeForm" action="${URLUtils.url(formURL)}" method="post" name="SubscribeForm" id="SubscribeForm">
+			<label for="inlineFormCustomSelectPref">Join Our Mailing List</label>
+				<div class="input-group">
+					<input type="email" id="inlineFormCustomSelectPref" class="form-control required email footer-form-control" name = "emailsignup" aria-label="emaillabel">
+			      	<span class="input-group-btn">
+			      		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+			      		<input type="hidden" name="${pdict.CurrentForms.subscribe.subscribe.htmlName}" value="subscribe"/>
+			      		<input type="hidden" name="source" value="footer"/>
+				       	<button type="submit" class="btn btn-primary button-primary-block" value="SIGN UP">sign up</button>
+			      	</span>
+			    </div>	 
+		</form>
+	</div>
+	</div>
+<iselse>
+	
+	<div class="pb-2 pb-lg-4 pt-lg-0 refer-a-friend-subscritpion col-xs-12 col-sm-5 col-md-12 col-lg-12">
+		<div class="refer-a-friend-wrap">
+			<i class="fal fa-gift mr-2"></i>
+			<div id="extole_zone_footer_subscription" class="refer-a-friend-link"></div>
+			<i class="fal fa-arrow-right mr-2 mt-1 float-right"></i>
+		</div>
+	 </div>
+</isif>

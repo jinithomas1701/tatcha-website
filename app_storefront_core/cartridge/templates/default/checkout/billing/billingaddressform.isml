@@ -1,0 +1,71 @@
+<!--- TEMPLATENAME: billingaddressform.isml --->
+<h3>Billing Address</h3>
+<div class="checkbox">
+	<label <isif condition="${pdict.Basket.productLineItems.size() == 0}"> style="display: none"</isif>>
+		<isscript>
+			try {
+				var billingaddr = {
+					'firstName': pdict.Basket.defaultShipment.shippingAddress.firstName,
+					'lastName': pdict.Basket.defaultShipment.shippingAddress.lastName,
+					'countryCode': pdict.Basket.defaultShipment.shippingAddress.countryCode.value.toUpperCase(),
+					'address1': pdict.Basket.defaultShipment.shippingAddress.address1,
+					'address2': pdict.Basket.defaultShipment.shippingAddress.address2,
+					'postal': pdict.Basket.defaultShipment.shippingAddress.postalCode,
+					'stateCode': pdict.Basket.defaultShipment.shippingAddress.stateCode,
+					'city': pdict.Basket.defaultShipment.shippingAddress.city,
+					'phone': pdict.Basket.defaultShipment.shippingAddress.phone
+				};
+				billingaddr = JSON.stringify(billingaddr);
+				billingaddr = billingaddr.replace(/'/g, "\\'");
+				billingaddr = billingaddr.replace(/"/g, '\\"');
+				var checked = !empty(session.custom.sameasshipping) ? session.custom.sameasshipping : true;
+				if(pdict.Basket.productLineItems.size() == 0) {
+					checked = false;
+				}
+				
+				var billingAddress = {};
+				if(pdict.Basket.billingAddress !== null) {
+					billingAddress = {
+						'firstName': pdict.Basket.billingAddress.firstName,
+						'lastName': pdict.Basket.billingAddress.lastName,
+						'countryCode': pdict.Basket.billingAddress.countryCode.value.toUpperCase(),
+						'address1': pdict.Basket.billingAddress.address1,
+						'address2': pdict.Basket.billingAddress.address2,
+						'postal': pdict.Basket.billingAddress.postalCode,
+						'stateCode': pdict.Basket.billingAddress.stateCode,
+						'city': pdict.Basket.billingAddress.city,
+						'phone': pdict.Basket.billingAddress.phone
+					};
+				} else {
+					billingAddress = false;
+				}
+				billingAddress = JSON.stringify(billingAddress);
+				billingAddress = billingAddress.replace(/'/g, "\\'");
+				billingAddress = billingAddress.replace(/"/g, '\\"');
+			}catch(e) {}		
+			
+		</isscript>
+		<input class="same-as-shipping" value="true" name="${pdict.CurrentForms.billing.billingAddress.sameasshipping.htmlName}" 
+			type="checkbox" <isif condition="${checked}">checked=""</isif> data-address="${billingaddr}">
+			 Same as shipping address.
+	</label>
+	<input type="hidden" data-baddr="${billingAddress}" id="saved-billing-addr"/>
+</div>
+
+<div class="checkout-billing-address" ${(checked == true) ? "style='display:none'" : ''}>
+	<div class="panel-section panel-section-indent panel-section-short">
+		<isscript>
+            var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+        </isscript>
+        <isdynamicform formobject="${pdict.CurrentForms.billing.billingAddress.addressFields}" formdata="${currentCountry.dynamicForms.addressDetails}"/>								
+        
+        <div style="display: none">
+        	<isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.email.emailAddress}" type="input"/>
+            <iscomment>provide option to add address to address book if customer is authenticated</iscomment>
+	        <isif condition="${pdict.CurrentCustomer.authenticated}">
+	            <isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addToAddressBook}" type="checkbox"/>
+	        </isif>
+	        <isinputfield formfield="${pdict.CurrentForms.billing.billingAddress.addToEmailList}" type="checkbox"/>
+       	</div>
+	</div>
+</div>

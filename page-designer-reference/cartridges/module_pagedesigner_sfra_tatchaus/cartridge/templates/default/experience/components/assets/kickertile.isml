@@ -1,0 +1,17 @@
+<iscache type="relative" hour="24"/>
+
+<a href="${pdict.buttonLink}" class="anchor-style-reset">
+	<img data-src="${pdict.image.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" width="768" height="512" class="w-100 lazyImage" alt="${pdict.imageAlt}" data-url="${pdict.buttonLink}"/>
+
+	<div class="card-details-container">
+		<div class="card-details">
+			<isif condition="${pdict.header}">
+				<div class="card-name" role="heading" aria-level="3"><isprint value="${pdict.header}" encoding="off" /></div>
+			</isif>
+			<p class="card-content"><isprint value="${pdict.description}" encoding="off" /></p>
+		</div>
+		<isif condition="${pdict.buttonText}">
+			<button class="btn btn-link card-btn outline-global" aria-label="${pdict.buttonAriaLabel}">${pdict.buttonText}</button>
+		</isif>
+	</div>
+</a>

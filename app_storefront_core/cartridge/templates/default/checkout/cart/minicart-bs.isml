@@ -1,0 +1,49 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>This includes global utilities into the pages</iscomment>
+<isinclude template="util/modules"/>
+<iscomment>
+	This creates reporting data for the cart. The application assumes that
+	the minicartcontent template will be embeeded into every page, so that the information about
+	an open cart can be report as soon as it is available or changed.
+	Additionally this page must not be cached to allow the correct reporting any time.
+
+	This include also takes care of reporting source codes.
+</iscomment>
+<isinclude template="util/reporting/ReportBasket.isml"/>
+
+<iscomment> the mini cart total which is always visible</iscomment>
+<div class="mini-cart-total">
+	<isif condition="${(pdict.Basket != null) && (pdict.Basket.productLineItems.size() + pdict.Basket.giftCertificateLineItems.size() > 0 )}">
+		<isscript>
+			// calculate the total number of items in the cart by adding quantities together
+			// do not count bonus line items
+			var cartQty : Number = 0;
+			var pliIt : dw.util.Iterator = pdict.Basket.productLineItems.iterator();
+			
+			while (pliIt.hasNext()) {
+				var pli : dw.order.ProductLineItem = pliIt.next();
+				cartQty += pli.quantity;
+			}
+	
+			// add the gift certificates to cart quantity
+			cartQty += pdict.Basket.giftCertificateLineItems.size();
+		</isscript>
+		<a class="bag-icon" role="button"  aria-label="bag icon" href="${URLUtils.https('Cart-Show')}" >
+			<i class="fal fa-shopping-bag"></i>
+			<div class="bag-count">
+				<span class="bag-number">
+					<isprint value="${cartQty}" formatter="##" />
+				</span>
+			</div>
+		</a>
+	<iselse/>
+		<a class="bag-icon" role="button"  tabindex="0" aria-label="your bag is empty" href="${URLUtils.https('Cart-Show')}">
+			<i class="fal fa-shopping-bag"></i>
+		</a>
+	</isif> 
+	<isbonusdiscountlineitem p_alert_text="${Resource.msg('product.bonusproductalert','product',null)}" p_discount_line_item="${pdict.BonusDiscountLineItem}"/>
+</div>
+<input type="hidden" name="afterpayExpressProcessOrderUrl" id="afterpayExpressProcessOrderUrl" value="${URLUtils.url('Afterpay-AfterpayExpressFromCart')}" />
+<input type="hidden" name="afterpayExpressSummaryUrl" id="afterpayExpressSummaryUrl" value="${URLUtils.url('AfterpayHandleResponse-SummaryRedirect')}" />
+<input type="hidden" name="getAfterpayExpressShippingMethodsUrl" id="getAfterpayExpressShippingMethodsUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetShippingMethods')}" />
+<input type="hidden" name="getAfterpayExpressTokenUrl" id="getAfterpayExpressTokenUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetToken')}" />

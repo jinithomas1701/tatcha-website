@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="common/layout/page">
+
+    <isscript>
+        var pageContext = {
+            title: 'General Error',
+            type: 'error',
+            ns: 'error'
+        };
+    </isscript>
+
+    <div class="content-basic">
+        <iscache type="relative" hour="24"/>
+        <isinclude template="components/modules"/>
+        <iscontentAsset aid="404-page"/>
+    </div>
+</isdecorate>

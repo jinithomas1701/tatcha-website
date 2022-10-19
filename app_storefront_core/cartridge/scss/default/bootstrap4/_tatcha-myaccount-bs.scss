@@ -1,0 +1,107 @@
+
+.my-account-bs {
+	
+	padding-bottom: 24px;
+    min-height: 480px;
+
+	.account-heading {
+		font-weight: $font-weight-light;
+		margin: 24px 0;
+		font-size: 36px;
+		@include media-breakpoint-up(xl) {
+			font-size: 44px;
+			margin: 40px 0;
+	      }
+	}
+	
+	.account-nav {
+		.icon-default {
+			color: #ccd4d9;
+		}
+		
+		.myaccount-navtext{
+			p{
+				margin: 0;
+			}
+		}
+		
+		.myaccount-navlink{
+			padding: 5px 0px;
+		}
+		
+		li {
+			display: table;
+		  	padding: 8px;
+		  	width: 100%;
+		  	border: 1px solid #CCD4D9;
+		  	background-color: #FFFFFF;
+		  	box-shadow: 2px 2px 2px 0px rgba(153, 153, 153, 0.15);
+	
+			a {
+  				color: #212629;
+				display: table-row;
+				text-decoration: none; 
+				h4 {
+				    font-weight: 600;
+				    margin: 0; 
+				    padding-bottom: 0.5rem;
+				}
+			}
+			a:hover, a:active {
+    			background-color: #FFFFFF; 
+			}
+			
+			a:hover .nav-icon, a:hover .nav-icon-lead, a:active .nav-icon, a:active .nav-icon-lead {
+				color: #4D186E;
+			}
+		}
+		
+		li + li {
+  			margin-top: 8px; 
+		}
+
+		li:hover , li:active {
+			border-color: #4D186E;
+		}
+		li:hover h4, li:hover p, li:active h4, li:active p {
+      		color: #4D186E; 
+		}
+		
+		.nav-icon-lead {
+		  width: 15%;
+		  text-align: center;
+		  padding: 8px;
+		}
+		
+		.nav-text {
+		  width: 75%;
+		  padding: 8px;
+		  line-height: 1.2; 
+    	  
+		}
+		.nav-icon {
+		  width: 10%;
+		  text-align: right;
+		  padding: 8px;
+		}
+
+	} 
+	.phone-tooltip{
+		position: absolute;
+    	right: 25px;
+    	padding-top: 13px;
+    	color: #495257 !important;
+    	font-size: 13px;
+	}
+	
+	.tatcha-default-address{
+		span{
+			line-height:1.2;
+			@media(max-width:333px){
+				font-size:15px;
+			}
+		}
+			
+	}
+}
+

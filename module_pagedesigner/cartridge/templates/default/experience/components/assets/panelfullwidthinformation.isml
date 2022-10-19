@@ -1,0 +1,27 @@
+<iscache type="relative" hour="24"/>
+<div class="panel-fullwidth-info container-fluid container-fluid-max container-flush">
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> style="background-color: ${pdict.bgColor}" class="${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''} panel-fullwidth-info row no-gutters <isif condition="${pdict.desktopLayout === 'Text Left - Image Right'}">flex-row-reverse</isif>">
+	<div class="col-12 col-md-6 panel-image">
+		<img data-src="${pdict.desktopImage.src.desktop}" class="img-fluid lazyImage" alt="" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}"/>
+	</div>
+	<div class="col-12 col-md-6">
+		<div class="text-container">
+			<isif condition="${!empty(pdict.mainHeading)}">
+				<h2 class="heading">
+					<isprint value="${pdict.mainHeading}" />
+				</h2>
+			</isif>
+			
+			<isif condition="${!empty(pdict.body)}">
+				<p>
+					<isprint value="${pdict.body}" />
+				</p>
+			</isif>
+			
+			<isif condition="${!empty(pdict.buttonText)}">
+				<a class="btn btn-link p-0" href="${pdict.url}">${pdict.buttonText}</a>
+			</isif>
+		</div>
+	</div>
+</div>
+</div>

@@ -1,0 +1,100 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+  Renders any HTML content asset. This template is supposed to be included by another
+  template. The enclosing template would define caching attributes.
+  Currently content assets are static, thus caching of content assets is possible.
+</iscomment>
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/tatcha-content-page.css');
+    importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<isset name="roomToReadDays" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('roomToReadDays')}" scope="page">
+<isset name="roomToReadDate" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('roomToReadDate')}" scope="page">
+
+<isset name="contentClass" value="content-basic" scope="page"/>
+<iscomment>make sure we have an asset at all</iscomment>
+<isif condition="${pdict.content != null}">
+	<isif condition="${!empty(pdict.content.custom.indexImage) && !empty(pdict.content.folders)
+		&& !empty(pdict.content.custom.title) && !empty(pdict.content.custom.indexDescription)}">
+		<div class="container-fluid breadcrumb-container">
+			<ol class="breadcrumb container">
+		  		<li>
+			  		<a href="${URLUtils.url('Page-Show','cid', pdict.content.folders[0].ID)}">
+			  			<i class="fal fa-angle-double-left"></i> ${Resource.msg('global.goback','locale',null)}
+			  		</a>
+		  		</li>
+			</ol>
+		</div>
+	</isif>
+	<div class="container ourstory-container content content-basic ">
+		<div class="content-header text-center">
+			<isif condition="${'sectionAnchor' in pdict.content.custom && !empty(pdict.content.custom.sectionAnchor) && (pdict.content.custom.sectionAnchor !== 'Our Story')}">
+				<h2 class="section-anchor"><isprint value="${pdict.content.custom.sectionAnchor}" /></h2>
+			</isif>
+			<isif condition="${'title' in pdict.content.custom && !empty(pdict.content.custom.title)}">
+				<h1><isprint value="${pdict.content.custom.title}" /></h1>
+			</isif>
+			<isif condition="${'image' in pdict.content.custom && !empty(pdict.content.custom.image)}">
+                <isset name="imageUrl" value="${getBlogMediaUrl(pdict.content.custom.image,'pdp')}" scope="page"/>
+				<div class="content-hero-img-container">
+					<img class="content-hero-img img-fluid content-hero-img-spec" src="${imageUrl}" alt="${pdict.content.custom.title ? pdict.content.custom.title : pdict.content.custom.sectionAnchor}" aria-hidden="true"/>
+				</div>
+			</isif>
+		</div>
+		<isif condition="${'giving-back' == pdict.content.ID}">
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<div class="center-block m-btm-lg" style="background-image: url('/on/demandware.static/-/Sites-tatcha-Library/default/images/content/content-watercolor.png');background-repeat: no-repeat; width: 460px; height: 395px;">
+						<div class="center-block text-center" style="color: #FFF;padding-top: 72px;">
+							<div class="display-1" style="margin: 0;font-weight: normal;"><isprint value="${roomToReadDays}"/></div>
+							<div class="h1" style="margin: 0 0 16px 0;text-transform: uppercase;">Days of School</div>
+							<p>as of <isprint value="${roomToReadDate}"/>, provided for<br><strong style="text-transform: uppercase; font-size: 20px;">Room to Read</strong><br>with your purchases</p>
+						</div>
+					</div>
+					<blockquote>
+						<p>
+							<isprint value="${pdict.content.custom.textQuote}" encoding="off"/>
+						</p>
+						<footer>
+							<isprint value="${pdict.content.custom.quoteAuthor}" encoding="off"/>
+						</footer>
+					</blockquote>
+				</div>
+			</div>
+		</isif>
+		<isif condition="${'body' in pdict.content.custom && pdict.content.custom.body != null}">
+			<iscomment>don't remove or rename DIV and Marker, necessary for mark and editing, no css attributes defined</iscomment>
+			<div class="row my-5"><!-- dwMarker="content" dwContentID="${pdict.content.UUID}" -->
+				<div class="col-lg-8 offset-lg-2">
+					<div class="content-editor-container">
+						<isprint value="${pdict.content.custom.body}" encoding="off"/>
+					</div>
+				</div>
+			</div> <!-- End content-asset -->
+		<iselse/>
+			${Resource.msg('global.nocontent','locale',null)}
+		</isif>
+	</div>
+
+
+	<iscomment>Carousel</iscomment>
+	<isscript>
+		var Site = require('dw/system/Site');
+		var giftBuilderSku = Site.getCurrent().getCustomPreferenceValue('giftBuilderSKU');
+		var productList : dw.util.ArrayList = [];
+		if (!empty(pdict.content.custom.featuredProducts)) {
+			pdict.content.custom.featuredProducts.forEach(function (productId) {
+			productList.push(dw.catalog.ProductMgr.getProduct(productId));
+			});
+		}
+	</isscript>
+	<isif condition="${!empty(productList)}">
+		<!-- Product Carousel -->
+		<div class="container product-merchandise-cross-sell">
+			<isinclude template="content/content_carousel"/>
+		</div>
+	</isif>
+</isif>
+

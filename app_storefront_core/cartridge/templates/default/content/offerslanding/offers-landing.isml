@@ -1,0 +1,34 @@
+<!--- TEMPLATENAME: offer-landing.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type = "relative" hour = "24">
+<isscript>
+var Site = require('dw/system/Site');
+var contentHeaderImage = (!empty(pdict.Content.custom.image)) ? pdict.Content.custom.image : Site.getCurrent().getCustomPreferenceValue('defaultCatHeaderImage');
+</isscript>
+<isdecorate template="content/content/pt_content">
+	<isinclude template="util/modules"/>
+	<div class="content offers-landing-page">
+		<div class="header-background" style="background-image: url(${contentHeaderImage.getURL()})">
+			<div class="container">
+				<h1 class="text-center" style="color: #FFFFFF"><isprint value="${pdict.Content.name}"/></h1>
+			</div>
+		</div>
+		<section id="limitedTime">
+			<div class="container">
+				<h2 class="olp-h2"><isprint value="${pdict.Content.custom.title}"/></h2>
+				<div class="row">
+					<div class="col-xs-12">				
+						<isslot id="offers-landing-1" description="Offers Landing Section 1" context="global" />
+						<isslot id="offers-landing-2" description="Offers Landing Section 2" context="global" />
+						<isslot id="offers-landing-3" description="Offers Landing Section 3" context="global" />
+					</div>
+				</div>
+			</div>
+		</section>
+		<iscontentasset aid="offers-newsletter"/>
+		<iscontentasset aid="every-day"/>
+		<iscontentasset aid="special-occasions"/>
+		<iscontentasset aid="offers-bottom-content"/>
+		<iscontentasset aid="offer-terms"/>
+	</div>
+</isdecorate>

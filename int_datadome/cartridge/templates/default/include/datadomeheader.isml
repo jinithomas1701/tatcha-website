@@ -1,0 +1,25 @@
+<iscomment>
+    This template should be included in the main header of the site. This loads the javascript
+    from data dome which is mandatory for the data dome functionality to work
+</iscomment>
+<isset name="currentSitePreferences" value="${dw.system.Site.getCurrent().preferences.custom}" scope="page"/>
+<isif condition="${currentSitePreferences.ddCartridgeEnabled}">
+
+    <script type="text/javascript">
+        var ddJSKey = "${currentSitePreferences.ddJSKey}";
+        var options = { sfcc: true };
+
+        const ddJSTagEndpoint = "${currentSitePreferences.ddJSTagEndpoint}";
+        if (ddJSTagEndpoint.length != 0 && ddJSTagEndpoint != "null") {
+            options.endpoint = ddJSTagEndpoint;
+        }
+
+        !function(a, b, c, d, e, f) {
+            a.ddjskey = e;
+            a.ddoptions = f || null;
+            var m = b.createElement(c), n = b.getElementsByTagName(c)[0];
+            m.async = 1, m.src = d, n.parentNode.insertBefore(m, n)
+        } (window, document, "script", "${currentSitePreferences.ddJSTagUrl}", ddJSKey, options);
+    </script>
+
+</isif>

@@ -1,0 +1,5 @@
+<ismodule template = "braintreebm/util/pagination"
+    name="braintreepagination"
+    attribute="pageurl"
+    attribute="pagingmodel"
+/>

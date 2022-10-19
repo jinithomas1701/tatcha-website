@@ -1,0 +1,49 @@
+<isdecorate template="braintreebm/util/pt_transactions">
+
+<isinclude template="inc/Modules">
+
+<isscript>
+    var httpParameterMap = pdict.httpParameterMap;
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/bmBraintreeHelper');
+    var order = dw.order.OrderMgr.getOrder(httpParameterMap.orderNo.stringValue, httpParameterMap.orderToken.stringValue);
+    var paymentInstrument = BraintreeHelper.getBraintreePaymentInstrument(order);
+    var paymentTransaction = paymentInstrument.getPaymentTransaction();
+</isscript>
+
+<div id="braintreeCreateTransaction">
+    <form class="braintree_action_form braintree_content" action="${URLUtils.url('BraintreeAdmin-Action')}">
+
+        <input type="hidden" name="orderNo" value="${order.orderNo}" />
+        <input type="hidden" name="orderToken" value="${order.orderToken}" />
+        <input type="hidden" name="orderId" value="${order.orderNo}" />
+        <input type="hidden" name="token" value="${paymentInstrument.creditCardToken || ''}" />
+        <input type="hidden" name="method" value="createIntentOrderTransaction" />
+        <input type="hidden" name="currencyCode" value="${order.getCurrencyCode()}" />
+
+        <h2>${Resource.msgf('transaction.create.header', 'braintreebm', null, order.orderNo)}</h2>
+
+        <div class="braintree_error_msg_box braintree_error_msg_box_amt_required"><p>${Resource.msg('forms.error.amt.required', 'braintreebm', null)}</p></div>
+
+        <table class="braintree_table">
+            <tr class="braintree_table_row_even">
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.create.amount', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value"><isprint value="${paymentTransaction.getAmount()}"/></td>
+            </tr>
+            <tr>
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.create.amounttosettle', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value"><input type="text" name="amount" class="braintree_input_amount" data-validation="required" value="${paymentTransaction.getAmount().getValue()}" /></td>
+            </tr>
+            <tr class="braintree_table_row_even">
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.create.issettle', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value">
+                    <select name="isSubmitForSettlement">
+                        <option value="true" selected="selected">${Resource.msg('transaction.create.issettleyestitle', 'braintreebm', null)}</option>
+                        <option value="false">${Resource.msg('transaction.create.issettlenotitle', 'braintreebm', null)}</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+</isdecorate>

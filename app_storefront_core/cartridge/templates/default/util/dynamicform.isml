@@ -1,0 +1,197 @@
+<isscript>
+var dynamicForm = require('~/cartridge/scripts/common/dynamicForm');
+var fields = dynamicForm.getFields(pdict.formobject, pdict.formdata);
+var Site = require('dw/system/Site');
+var countriesList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('CountriesList'));
+var provinceList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('provinceList'));
+</isscript>
+
+<isloop items="${fields}" var="field">
+	<isif condition="${(field.formfield.htmlName == 'dwfrm_singleshipping_shippingAddress_addressFields_address2' || field.formfield.htmlName == 'dwfrm_profile_address_address2')}">
+		<div class="showShippingAddressFields" tabindex="0">Enter address manually</div>
+		<div class="shippingAddressWrap" id="shipping_address_wrap" style="display: none;">
+	</isif>	
+	<isif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_country' || field.formfield.htmlName == 'dwfrm_billing_billingAddress_addressFields_country' || field.formfield.htmlName == 'dwfrm_singleshipping_shippingAddress_addressFields_country')}">
+		<isscript>
+	        var countryValue = !empty(field.formfield.htmlValue) ? field.formfield.htmlValue : 'US';
+     	</isscript>
+		<div class="form-row form-group">
+				<select placeholder=" " class="form-control form-control-lg country floating__input" name="${field.formfield.htmlName}" id="${field.formfield.htmlName}">
+					<isloop items="${countriesList}" alias="country">
+						<option value="${country.value}" <isif condition="${(countryValue == country.value)}">selected</isif>>
+							<isprint value="${country.label}" />
+						 </option>
+					</isloop>
+				</select>
+			
+			<label class="control-label float-label" data-content="${Resource.msg(field.formfield.label,'forms',null)}" for="${field.formfield.htmlName}"></label>
+		</div>
+		<input type="hidden" value="${JSON.stringify(provinceList)}" id="provinceListNonUS">
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_postal')}" >
+ 		<isscript>
+	   		var postcodeAttrs = field.attributes;
+	   		postcodeAttrs['data-rule-validatepostal'] = true;
+	   		var type = field.type;
+	   		if(countryValue == 'US'){
+	   			postcodeAttrs['inputmode'] = 'decimal';
+	   			postcodeAttrs['pattern'] = '[0-9]*';
+	   		}
+	   		
+	   		postcodeAttrs['data-msg-required'] = StringUtils.format(Resource.msg('customeraddress.postal.missing-error', 'forms', null));
+   			postcodeAttrs['data-msg-minlength'] = StringUtils.format(Resource.msg('customeraddress.postal.missing-error', 'forms', null));
+   		
+   		</isscript>
+   		<div class = "row">
+   			<div class="col-sm-6">
+				<div class="form-group">
+   					<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${postcodeAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}" pattern = "\d{3}-?\d{2}-?\d{4}"/>
+
+				</div>
+			</div>
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_states_state')}" >
+		<isscript>
+			var stateAttrs = field.attributes;
+			stateAttrs['data-selectedValue'] = field.formfield.htmlValue;
+			stateAttrs['autocorrect'] = 'off';
+			stateAttrs['data-msg-required'] = StringUtils.format(Resource.msg('customeraddress.state.missing-error', 'forms', null));
+		</isscript>
+		   <div class="col-sm-6">
+				<div class="form-group">
+					<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${stateAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+				</div>
+		 	</div></div>
+    <iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_phone')}" >
+		<isscript>
+			var phoneAttrs = field.attributes;
+			phoneAttrs['inputmode'] = 'tel';
+			phoneAttrs['autocorrect'] = 'off';
+			phoneAttrs['autocomplete'] = 'tel';
+			phoneAttrs['data-msg-required'] = StringUtils.format(Resource.msg('customeraddress.phone.missing-error', 'forms', null));
+		</isscript>
+		<div class="form-group">
+			<a class="phone-tooltip" title data-toggle="tooltip" data-placement="top" data-original-title="A phone number is required in case our shipping carrier needs to contact you with updates."> <i class="fa fa-question-circle"></i> </a>	        
+			<isinputfield placeholder=" " formfield="${field.formfield}" type="tel" dynamicname="${field.dynamicname}" attributes="${phoneAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}" pattern = "\d{3}-?\d{2}-?\d{4}"/>
+		</div>
+		
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_firstname') || (field.formfield.htmlName == 'dwfrm_profile_address_lastname')}" >
+		<isscript>
+			var nameAttrs = field.attributes;
+			nameAttrs['autocorrect'] = 'off';
+		</isscript>
+		<div class="form-group">
+			<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${nameAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+		</div>
+		
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_address1') || (field.formfield.htmlName == 'dwfrm_profile_address_address2')}" >
+		<isscript>
+			var addrAttrs = field.attributes;
+			addrAttrs['autocorrect'] = 'off';
+			addrAttrs['data-msg-required'] = StringUtils.format(Resource.msg('customeraddress.address1.missing-error', 'forms', null));
+		</isscript>
+		<div class="form-group">
+			<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${addrAttrs}" help="${field.help}" rowclass="${field.rowclass}"/>
+		</div>
+		
+		<iselseif condition="${(field.formfield.htmlName == 'dwfrm_billing_billingAddress_addressFields_address1')}" >
+		<isscript>
+			var addrAttrs = field.attributes;
+			addrAttrs['data-msg-required'] = StringUtils.format(Resource.msg('customeraddress.address1.missing-error', 'forms', null));
+		</isscript>
+		<div class="form-group">
+			<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${addrAttrs}" help="${field.help}" rowclass="${field.rowclass}"/>
+		</div>
+		
+ 	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_singleshipping_shippingAddress_addressFields_phone')}" >
+		<isscript>
+			var phoneAttrs = field.attributes;
+			phoneAttrs.label ={
+				'data-toggle': 'tooltip',
+				'title': 'We highly value your privacy. Your phone number will only be used if there are issues regarding your order or delivery.',
+				'data-placement': 'right',
+				'icon': ' <button class="shippingPage-tooltip-button"> <i class="fal fa-question-circle label-icon"></i> </button>'
+			};
+			phoneAttrs['data-rule-required'] = true;
+		</isscript>
+		<div class="form-group">
+			<isinputfield placeholder=" " formfield="${field.formfield}" type="tel" dynamicname="${field.dynamicname}" attributes="${phoneAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}" pattern = "\d{3}-?\d{2}-?\d{4}"/>
+		</div>
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_billing_billingAddress_addressFields_phone')}" >
+		<isscript>
+			var phoneAttrs = field.attributes;
+			phoneAttrs['style'] = 'display:none';
+		</isscript>
+		<div class="form-group" style="display:none">
+			<isinputfield placeholder=" " formfield="${field.formfield}" type="tel" dynamicname="${field.dynamicname}" attributes="${phoneAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}" pattern = "\d{3}-?\d{2}-?\d{4}"/>
+		</div>
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_billing_billingAddress_addressFields_firstName' || field.formfield.htmlName == 'dwfrm_billing_billingAddress_addressFields_lastName')}" >
+		<isscript>
+			var billingAttrs = field.attributes;
+			billingAttrs.label = {
+				'style': 'display: none'
+			};
+		</isscript>
+		<div class="form-group form-row d-none">
+			<isinputfield formfield="${field.formfield}" type="hidden" dynamicname="${field.dynamicname}" value="NA" attributes="${billingAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+		</div>
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_singleshipping_shippingAddress_addressFields_postal' || field.formfield.htmlName == 'dwfrm_billing_billingAddress_addressFields_postal')}" >
+		<div class = "row">
+			<div class="col-sm-6">
+				<isscript>
+					var postalAttrs = field.attributes;
+					postalAttrs['data-rule-validatepostal'] = true;
+					if(countryValue == 'US'){
+						postalAttrs['inputmode'] = 'decimal';
+						postalAttrs['pattern'] = '[0-9]*';
+					}
+					postalAttrs['data-msg-required'] = StringUtils.format(Resource.msg('customeraddress.postal.missing-error', 'forms', null));
+					postalAttrs['data-msg-minlength'] = StringUtils.format(Resource.msg('customeraddress.postal.missing-error', 'forms', null));
+				</isscript>
+				<div class="form-group">
+					<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${postalAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}" pattern = "\d{3}-?\d{2}-?\d{4}"/>
+				</div>
+			</div>
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_singleshipping_shippingAddress_addressFields_states_state' || field.formfield.htmlName == 'dwfrm_billing_billingAddress_addressFields_states_state')}" >
+   		<isscript>
+			var stateAttrs = field.attributes;
+			stateAttrs['data-selectedValue'] = field.formfield.htmlValue;
+			stateAttrs['data-msg-required'] = StringUtils.format(Resource.msg('customeraddress.state.missing-error', 'forms', null));
+		</isscript>
+		
+     	<div class="col-sm-6">
+			<div class="form-group">
+				<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${stateAttrs}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+			</div>
+		</div>
+   		</div>
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_addressid')}" >
+		<div style="display: none">
+			<isinputfield formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${field.attributes}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+		</div>
+  	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_addressdefault')}" >
+		<div class= "checkbox tatcha-default-address">  
+		    <isif condition="${(pdict.CurrentSession.custom.editDefaultAddress == true)}">
+		    	<div style="display: none">
+		        	<label><isinputfield formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${field.attributes}" help="${field.help}"  rowclass="${field.rowclass}" required="${field.required}" checked="true"/></label>
+		     	</div>
+		 		<span>This is your default shipping address</span>
+		  	<iselse>
+	   			<label>
+	   				<isscript>var checked = (pdict.CurrentCustomer.profile.addressBook.addresses.length == 0) ? true : false;</isscript>
+	    			<isinputfield formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${field.attributes}" help="${field.help}"  rowclass="${field.rowclass}" required="${field.required}" checked="${checked}"/>
+	   			</label>
+	  		</isif>
+		</div>
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_profile_address_address2')}" >
+ 		<isinputfield placeholder=" " formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${field.attributes}"  rowclass="${field.rowclass}" required="${field.required}"/>
+	
+	<iselseif condition="${(field.formfield.htmlName == 'dwfrm_giftcert_purchase_amount')}" >
+		<isinputfield formfield="${field.formfield}" type="${field.type}" dynamicname="${field.dynamicname}" attributes="${field.attributes}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+	
+	
+	<iselse>
+		<isinputfield formfield="${field.formfield}" placeholder=" " type="${field.type}" dynamicname="${field.dynamicname}" attributes="${field.attributes}" help="${field.help}" rowclass="${field.rowclass}" required="${field.required}"/>
+	</isif>
+	<isif condition="${(field.formfield.htmlName == 'dwfrm_singleshipping_shippingAddress_addressFields_city'|| field.formfield.htmlName == 'dwfrm_profile_address_city')}">
+		</div>
+	</isif>
+</isloop>

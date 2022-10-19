@@ -1,0 +1,3 @@
+query ($legacyId: ID!, $type: LegacyIdType!) {
+  idFromLegacyId(legacyId: $legacyId, type: $type)
+}

@@ -1,0 +1,13 @@
+<!--- TEMPLATENAME: returntoaccounthome.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> it renders an element, onclick which will take us to account page </iscomment>
+<div class="container-fluid breadcrumb-container">
+	<ol id="myaccount-breadcrumb" class="breadcrumb container myaccount-return">
+  		<li>
+  			<a href="${URLUtils.https('Account-Show')}" title="${Resource.msg('account.orderdetails.returnorder','account',null)}">
+				<i class="fal fa-angle-double-left"></i>
+				${Resource.msg('account.orderdetails.returnorder','account',null)}
+			</a>
+  		</li>
+	</ol>
+</div>

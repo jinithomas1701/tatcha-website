@@ -1,0 +1,81 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isset name="DecoratorTemplate" value="account/pt_account" scope="page"/>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.ajax.stringValue == 'true' }">
+    <isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+<div class="braintree-account-addPaypalAccount-content">
+    <h1>${Resource.msg('braintree.paypal.addaccount.title', 'locale', null)}</h1>
+
+    <form class="js_braintree_addPaypalAccountForm" action="${URLUtils.url('Braintree-AccountAddPaypalAccountHandleForm')}" class="form-horizontal" method="post">
+        <fieldset>
+        
+            <isscript>
+                var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+                var prefs = BraintreeHelper.getPrefs();
+            </isscript>
+            <isscript>
+                var braintreePaypalBillingConfig = {
+                    paymentMethodName: prefs.paypalMethodName,
+                    clientToken: BraintreeHelper.getClientToken(),
+                    options: {
+                        flow: 'vault',
+                        displayName: empty(prefs.BRAINTREE_PAYPAL_Display_Name) ? '' : prefs.BRAINTREE_PAYPAL_Display_Name,
+                        billingAgreementDescription: empty(prefs.BRAINTREE_PAYPAL_Billing_Agreement_Description) ? '' : prefs.BRAINTREE_PAYPAL_Billing_Agreement_Description
+                    },
+                    messages: {
+                        CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+                        CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+                        CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+                        CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null),
+                        PAYPAL_ACCOUNT_TOKENIZATION_FAILED: Resource.msg('braintree.error.PAYPAL_ACCOUNT_TOKENIZATION_FAILED', 'locale', null),
+                        PAYPAL_INVALID_PAYMENT_OPTION: Resource.msg('braintree.error.PAYPAL_INVALID_PAYMENT_OPTION', 'locale', null),
+                        PAYPAL_FLOW_FAILED: Resource.msg('braintree.error.PAYPAL_FLOW_FAILED', 'locale', null),
+                        PAYPAL_BROWSER_NOT_SUPPORTED: Resource.msg('braintree.error.PAYPAL_BROWSER_NOT_SUPPORTED', 'locale', null)
+                    },
+                    paypalConfig: {
+                        style: {
+                            layout: 'horizontal',
+                            label: 'paypal',
+                            maxbuttons: 1,
+                            fundingicons: false,
+                            shape: 'rect',
+                            size: 'medium',
+                            tagline: false
+                        }
+                    }
+                };
+            </isscript>
+            <div class="form-row">
+                <div class="error" id="braintreeFormErrorContainer"><isprint value="${empty(pdict.BraintreeError) ? '' : pdict.BraintreeError}" /></div>
+                <i id="braintreePaypalLoader" class="braintree-loader"></i>
+                <div class="js_braintree_accountPaypalButton" data-braintree-config="${JSON.stringify(braintreePaypalBillingConfig)}"></div>
+            </div>
+            <div class="paypal-account-email"></div>
+            <input id="braintreePaypalNonce" type="hidden" name="${pdict.CurrentForms.braintreepaypalaccount.nonce.htmlName}" value=""/>
+            <input id="braintreePaypalEmail" type="hidden" name="${pdict.CurrentForms.braintreepaypalaccount.email.htmlName}" value=""/>
+            <input id="braintreePaypalBillingAddress" type="hidden" name="${pdict.CurrentForms.braintreepaypalaccount.addresses.htmlName}" value=""/>
+
+            <div class="form-row label-inline">
+                <div class="field-wrapper">
+                    <input name="${pdict.CurrentForms.braintreepaypalaccount.default.htmlName}" id="${pdict.CurrentForms.braintreepaypalaccount.default.htmlName}" type="checkbox" checked="checked" value="true" />
+                </div>
+                <label for="${pdict.CurrentForms.braintreepaypalaccount.default.htmlName}"><span>${Resource.msg('braintree.paypal.addaccount.makedefault', 'locale', null)}</span></label>
+            </div>
+
+            <input type="hidden" name="${pdict.CurrentForms.braintreepaypalaccount.secureKeyHtmlName}" value="${pdict.CurrentForms.braintreepaypalaccount.secureKeyValue}"/>
+            <input type="hidden" name="${pdict.CurrentForms.braintreepaypalaccount.add.htmlName}" value="true" />
+            
+            <div class="form-row form-row-button">
+                <button type="submit">${Resource.msg('braintree.paypal.addaccount.button.add', 'locale', null)}</button>
+                <a class="cancel cancel-button js_brainree_cancelBtn" href="${URLUtils.url('PaymentInstruments-List')}">${Resource.msg('braintree.addcreditcard.button.cancel', 'locale', null)}</a>
+            </div>
+
+        </fieldset>
+    </form>
+</div>
+</isdecorate>

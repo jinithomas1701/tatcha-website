@@ -1,0 +1,5 @@
+cartridges/app_custom_tatcha/cartridge/static/
+coverage/
+doc/
+bin/
+codecept.conf.js

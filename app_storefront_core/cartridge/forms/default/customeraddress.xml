@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="addressid" label="customeraddress.addressid.label" type="string" mandatory="true" binding="ID" max-length="100"
+		missing-error="customeraddress.addressid.missing-error"
+		value-error="customeraddress.addressid.value-error"/>
+	<field formid="firstname" label="profile.firstname" type="string" regexp="^[\x20-\x7E]*" mandatory="true" binding="firstName" max-length="50"
+		missing-error="customeraddress.firstname.missing-error"/>
+	<field formid="lastname" label="profile.lastname" type="string" regexp="^[\x20-\x7E]*" mandatory="true" binding="lastName" max-length="50"
+		missing-error="customeraddress.lastname.missing-error"/>
+		<field formid="country" label="resource.country" type="string" mandatory="true" binding="countryCode"
+		missing-error="customeraddress.country.missing-error">
+		<options>
+			<option optionid="us" label="country.unitedstates" value="us"/>
+		</options>
+	</field>
+	<field formid="address1" label="resource.address1" type="string" regexp="^[\x20-\x7E]*" mandatory="true" binding="address1" max-length="50"
+			missing-error="resource.addresserror" />
+	<field formid="address2" label="resource.address2" type="string" regexp="^[\x20-\x7E]*" mandatory="false" binding="address2" max-length="50"/>
+	<!--  postal code -->
+	<!--  (^\d{5}(-\d{4})?$)|(^[abceghjklmnprstvxyABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Za-z]{1} *\d{1}[A-Za-z]{1}\d{1}$) -->
+
+	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="3" max-length="15" binding="postalCode"
+		missing-error="resource.errorzip"/>
+
+ 	<!-- use global state list -->
+	<include formid="states" name="states2"/>
+	
+	<field formid="city" label="resource.city" type="string" regexp="^[\x20-\x7E]*" mandatory="true" binding="city" min-length="3" max-length="50"
+		missing-error="customeraddress.city.missing-error"/>
+
+	
+
+	
+	<field formid="phone" label="profile.phone" type="string" mandatory="true" binding="phone" max-length="20"/>
+	<!-- all possible actions performed on an address -->
+	<action formid="cancel" valid-form="false"/>
+	<action formid="remove" valid-form="false"/>
+	<action formid="edit" valid-form="true"/>
+	<action formid="confirm" valid-form="true"/>
+	<action formid="create" valid-form="true"/>
+	<field formid="addressdefault" label="profile.addressdefault" type="boolean" binding="addressdefault" />
+	
+</form>

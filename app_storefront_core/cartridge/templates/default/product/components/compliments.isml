@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<section id="benefits" class="product-section">
+	<div class="product-compliments">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-8 offset-md-2">
+					<div class="product-compliments-text">
+						<isinclude url="${URLUtils.url('Page-Include', 'cid', 'tatcha-with-our-compliments')}"/>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

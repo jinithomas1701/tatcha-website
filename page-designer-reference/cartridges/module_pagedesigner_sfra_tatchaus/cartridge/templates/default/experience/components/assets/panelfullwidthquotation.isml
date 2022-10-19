@@ -1,0 +1,25 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<div class="panel-fullwidth-quote container-fluid container-fluid-max container-flush">
+<div style="background-color: ${pdict.bgColor}" class="${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''} panel-fullwidth-quotation row no-gutters <isif condition="${pdict.desktopLayout === 'Text Left - Image Right'}">flex-row-reverse</isif>">
+	
+	<div class="col-12 col-md-6 panel-image">
+		<img src="${pdict.desktopImage.src.desktop}" height="960" width="720" class="img-fluid" alt="${pdict.imageAlt}"/>
+	</div>
+	<div class="col-12 col-md-6">
+		<div class="text-container">
+			<isif condition="${!empty(pdict.mainHeading)}">
+				<div class="quotation">
+					“<isprint value="${pdict.mainHeading}" />”
+				</div>
+			</isif>
+			<isif condition="${!empty(pdict.body)}">
+				<div class="author">
+					<span>—</span>
+					<span class="quote-body"><isprint value="${pdict.body}" /></span>
+				</div>
+			</isif>
+		</div>
+	</div>
+</div>
+</div>

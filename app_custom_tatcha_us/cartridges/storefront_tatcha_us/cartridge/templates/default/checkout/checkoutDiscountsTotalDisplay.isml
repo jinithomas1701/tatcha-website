@@ -1,0 +1,15 @@
+<isif condition="${pdict.order.totals.orderLevelDiscountTotal && pdict.order.totals.orderLevelDiscountTotal.value !== 0}">
+  	<div class="d-flex justify-content-between mt-2 pb-2 success-text">
+  		<isloop items="${pdict.order.totals.discounts}" var="discount">
+			<isif condition="${discount.type === 'coupon' && discount.applied == true}">
+	   			<div class="order-property">Discount: <isprint value="${discount.couponCode}" /></div>
+	   			<isbreak/>
+	   		</isif>
+	   	</isloop>
+   		<div class="order-value"> - <isprint value="${pdict.order.totals.orderLevelDiscountTotal.formatted}"/></div>
+   	</div>
+   	<div class="d-flex justify-content-between mt-2">
+		<div class="order-property">Sub Total</div>
+   		<div class="order-value"><isprint value="${pdict.order.totals.subTotalIncludingOrderDiscount}"/></div>
+	</div>
+</isif>

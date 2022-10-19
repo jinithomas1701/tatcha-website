@@ -1,0 +1,35 @@
+<!--- TEMPLATENAME: header-banner.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24" />
+<iscomment>
+  Renders any HTML content asset. This template is supposed to be included by another
+  template. The enclosing template would define caching attributes.
+  Currently content assets are static, thus caching of content assets is possible.
+</iscomment>
+
+<iscomment>make sure we have an asset at all</iscomment>
+<isif condition="${pdict.Content != null && pdict.CurrentSession.custom.closeBanner != true}">
+	<isif condition="${'body' in pdict.Content.custom && pdict.Content.custom.body != null}">
+		<!-- dwMarker="content" dwContentID="${pdict.Content.UUID}" -->
+		<div class="container">
+			<div class="content-asset alert tatcha-promo-banner">
+				<button type="button" class="close close-promo-banner" aria-label="Close">
+					<span aria-hidden="true"><i class="fal fa-times"></i></span>
+				</button>			
+				<div class="content-asset-body hidden-xs hidden-sm">
+					<isprint value="${pdict.Content.custom.body}" encoding="off"/>
+				</div>
+				<div class="content-asset-mobile-body hidden-md hidden-lg hidden-xl">
+					<isif condition="${pdict.Content.custom.mobileBody != null}">
+						<isprint value="${pdict.Content.custom.mobileBody}" encoding="off"/>
+					<iselse>
+						<isprint value="${pdict.Content.custom.body}" encoding="off"/>
+					</isif>
+				</div>			
+			</div>
+		</div>
+		<!-- End content-asset -->
+	<iselse/>
+		${Resource.msg('global.nocontent','locale',null)}
+	</isif>
+</isif>

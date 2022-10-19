@@ -1,0 +1,3 @@
+<isif condition="${product.custom.OsfSmartOrderRefill}">
+	<div class="label-block refill-flag"><button type="button" class="btn btn-secondary">Auto-Delivery Available</button></div>
+</isif>

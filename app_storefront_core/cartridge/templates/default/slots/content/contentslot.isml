@@ -1,0 +1,16 @@
+<!--- TEMPLATENAME: contentslot.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<iscomment>
+	This template renders the slot content of a content asset
+	using only the body of the content.
+	Note, only one content asset body is rendered.
+</iscomment>
+
+<iscomment>make sure we have content at all</iscomment>
+<isif condition="${slotcontent != null}">
+	<isloop items="${slotcontent.content}" var="contentAsset">
+		<isinclude url="${URLUtils.url('Page-Include', 'cid', contentAsset.ID)}"/>
+	</isloop>
+</isif>

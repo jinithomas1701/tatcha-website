@@ -1,0 +1,17 @@
+<iscomment>The logged in customer tracking for Yotpo Swell Loyalty </iscomment>
+<isif condition="${pdict.customerDetails.customerExists}">
+    <div style="display:none;"
+        id="swell-customer-identification"
+        data-authenticated="true"
+        data-email="${pdict.customerDetails.customerEmail}"
+        data-id="${pdict.customerDetails.customerNo}"
+        data-tags="${pdict.customerDetails.customerGroups}" >
+    </div>
+    <isif condition="${pdict.basketDetails.basketExists}">
+        <div style="display:none;"
+            id="swell-cart-identification"
+            data-cart-id="${pdict.basketDetails.basketID}"
+            data-cart-token="${pdict.basketDetails.basketTokken}" >
+        </div>
+    </isif>
+</isif>

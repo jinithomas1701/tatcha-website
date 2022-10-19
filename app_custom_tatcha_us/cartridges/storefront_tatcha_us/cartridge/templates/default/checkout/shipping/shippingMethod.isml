@@ -1,0 +1,69 @@
+<isset name="shippingAddress" value="${pdict.forms.shippingForm.shippingAddress}" scope="page"/>
+<isset name="adjustedShippingCost" value="${pdict.order.totals.getShippingPrices.adjustedShippingTotalPriceFormatted}" scope="page" />
+<div class="shipping-method-list row no-gutters" data-select-shipping-method-url="${URLUtils.https('CheckoutShippingServices-SelectShippingMethod')}" data-action-url="${URLUtils.https('CheckoutShippingServices-UpdateShippingMethodsList')}">
+    <input name="shipmentUUID" type="hidden" value="${shippingModel.UUID}" />
+        <ul class="col-12 shipping-method-wrap">
+            <isloop items="${shippingModel.applicableShippingMethods}" var="shippingMethod">
+                    <isscript>
+                        var ariaChecked= false;
+                        if (shippingModel.selectedShippingMethod && shippingMethod.ID === shippingModel.selectedShippingMethod.ID){
+                            ariaChecked= true;
+                        }
+                    </isscript>
+                    <li class="d-flex delivery-type" tabindex="0" role="radio" aria-checked="${ariaChecked}">
+                        <isinclude template="checkout/shipping/selectedShippingMethod"/>
+                        <label class="shipping-method-option shipping-selector" aria-checked="${ariaChecked}" for="shippingMethod-${shippingMethod.ID}-${shippingModel.UUID}">
+                            <i class="fa fa-check-circle selector-radio"></i>
+                            <i class="fal fa-circle selector-radio"></i>
+                        </label>
+                        <div class="w-100 align-items-center">
+                            <div>
+                                <div class="d-flex justify-content-between">
+                                    <div class="type">
+                                        <isprint value="${shippingMethod.displayName}"/>
+                                    </div>
+                                    <div class="shipping-price">
+                                        <isif condition="${shippingMethod.ID === shippingModel.selectedShippingMethod.ID}">
+                                            <isprint value="${adjustedShippingCost}"/>
+                                        <iselse>
+                                            <isprint value="${shippingMethod.shippingCost}">
+                                        </isif>
+                                    </div>
+                                </div>
+                            </div>
+                            <isif condition="${dw.system.Site.getCurrent().preferences.custom.showShippingEstimate}">
+                                <div class="estimate-date">Estimated Arrival: <isprint value="${shippingMethod.estimatedDate}" formatter="MM/dd" timezone="utc"/></div>
+                            </isif>
+                        </div>
+                    </li>
+            </isloop>
+        </ul>
+</div>
+
+<!---------------------------------------------------------------------------------->
+<!-- Template used by client to redraw shipping methods                           -->
+<!---------------------------------------------------------------------------------->
+<div id="shipping-method-template" style="display:none;" >
+   <div class="col-12  delivery-type">
+            <div class="d-flex align-items-center" tabindex="0" role="radio">
+                <input id="shippingMethodRadioButton" type="radio" class="form-check-input d-none">
+                <label class="shipping-method-option shipping-selector" for="shippingMethodRadioButton">
+                    <i class="fa fa-check-circle selector-radio"></i>
+                    <i class="fal fa-circle selector-radio"></i>
+                </label>
+                <div class="w-100">
+                    <div>
+                        <div class="d-flex justify-content-between">
+                            <div class="type">
+                            </div>
+                            <div class="shipping-price">
+                            </div>
+                        </div>
+                    </div>
+                    <isif condition="${dw.system.Site.getCurrent().preferences.custom.showShippingEstimate}">
+                    	<div class="estimate-date" style="display:none"></div>
+                    </isif>
+                </div>
+            </div>
+        </div>
+</div>

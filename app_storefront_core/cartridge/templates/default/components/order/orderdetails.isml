@@ -1,0 +1,340 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<iscomment>
+	Displays order details, such as order number, creation date, payment information,
+	order totals and information for each contained shipment.
+	This template module can be used in order confirmation pages as well as in the
+	order history to render the details of a given order. Depending on the context
+	being used in, one might omit rendering certain information.
+
+	Parameters:
+
+	order		: the order whose details to render
+	orderstatus	: if set to true, the order status will be rendered
+				  if set to false or not existing, the order status will not be rendered
+</iscomment>
+
+<isscript>
+	var Site = require('dw/system/Site');
+	var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	var samplePromoID = Site.getCurrent().getCustomPreferenceValue('samplePromotionID');
+</isscript>	
+
+<isset name="Order" value="${pdict.order}" scope="page"/>
+
+<div class="card panel-default data-group order-group">
+	<div class="card-body">
+		<div class="row">
+			<div class="col-md-6">
+				<dl class="dl-horizontal order-info order-detail">
+					<dt class="data-label">
+						${Resource.msg('order.orderdetails.orderplaced','order',null)}
+					</dt>
+					<dd class="data-value"><isprint value="${Order.creationDate}" style="DATE_SHORT"/></dd>
+					<dt class="data-label">Payment</dt>
+					<isloop items="${Order.paymentInstruments}" var="paymentInstrument">
+						<dd class="data-value">
+							<isif condition="${paymentInstrument.paymentMethod != 'CREDIT_CARD'}">
+								<isif condition="${(paymentInstrument.paymentMethod == 'GIFT_CERTIFICATE') }">
+									Gift Certificate<br/>
+								</isif> 							
+								<isif condition="${(paymentInstrument.paymentMethod == 'PayPal') }">
+									<img style="height: 50px" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/pp-acceptance-large.png')}"  alt="PayPal Acceptance"></br>
+								</isif> 
+								<isif condition="${paymentInstrument.paymentMethod == 'ApplePay'}">
+									<img style="height: 50px;" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/applePayPaymentMark.png')}" alt="Apple Pay Logo"></br>
+								</isif>
+							</isif>
+							<isif condition="${paymentInstrument.creditCardType}">
+								<isprint value="${paymentInstrument.creditCardType}"/></br>
+							</isif>
+							<isif condition="${paymentInstrument.maskedCreditCardNumber}">
+								<isprint value="${paymentInstrument.maskedCreditCardNumber}"/> </br>
+							</isif>
+							<isprint value="${paymentInstrument.paymentTransaction.amount}"/> </br>
+						</dd>
+					</isloop>
+					<dt class="data-label">${Resource.msg('order.orderdetails.billingaddress','order',null)}</dt>
+					<dd class="data-value">
+						<isminiaddress p_address="${Order.billingAddress}"/>
+					</dd>
+				</dl>
+			</div>
+			<div class="col-md-6">
+				<isif condition="${Order.shipments.length > 1}">
+					<isordertotals p_lineitemctnr="${Order}" p_showshipmentinfo="${true}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('global.ordertotal','locale',null)}" p_shippinglabel="${Resource.msg('order.ordersummary.ordershipping','order',null)}" p_taxlabel="${Resource.msg('order.ordersummary.ordertax','order',null)}"/>
+				<iselse/>
+					<isordertotals p_lineitemctnr="${Order}" p_showshipmentinfo="${false}" p_shipmenteditable="${false}" p_totallabel="${Resource.msg('global.ordertotal','locale',null)}" p_shippinglabel="${Resource.msg('order.ordersummary.ordershipping','order',null)}" p_taxlabel="${Resource.msg('order.ordersummary.ordertax','order',null)}"/>
+				</isif>
+			</div>
+		</div>
+		<div class="order-shipment">
+			<iscomment>render a box for each shipment</iscomment>
+			<isloop items="${Order.shipments}" var="shipment" status="shipmentloopstate">
+			<div class="row">
+				<div class="col-12">
+					<h5>${Resource.msgf('multishippingshipments.shipment','checkout',null)}</h5>
+				</div>
+			</div>
+			<isif condition="${shipment.productLineItems.size() > 0}">
+				<iscomment>Shipment Items</iscomment>
+				<div class="row">
+					<div class="col-md-6">
+						<dl class="dl-horizontal order-info order-detail">
+							<dt class="data-label">
+								<isif condition="${!empty(shipment.custom.shipmentType) && shipment.custom.shipmentType == 'instore'}">
+									${Resource.msg('cart.store.instorepickup','checkout',null)}
+								<iselse/>
+									${Resource.msg('order.orderdetails.shippingto','order',null)}
+								</isif>
+							</dt>
+							<dd class="data-value">
+								<isminishippingaddress p_shipment="${shipment}" p_editable="${false}" p_showmethod="${false}" p_showpromos="${false}"/>
+							</dd>
+						</dl>
+					</div>
+					<div class="col-md-6">
+						<dl class="dl-horizontal order-info order-detail">
+							<isif condition="${shipment.custom.shipmentType != 'instore'}">
+								<dt class="data-label">
+									${Resource.msg('order.orderdetails.shippingstatus','order',null)}
+								</dt>
+								<isif condition="${shipment.shippingStatus==dw.order.Shipment.SHIPPING_STATUS_NOTSHIPPED}">
+									<dd class="data-value">${Resource.msg('order.orderdetails.notshipped','order',null)}</dd>
+								<iselseif condition="${shipment.shippingStatus==dw.order.Shipment.SHIPPING_STATUS_SHIPPED}">
+									<dd class="data-value">${Resource.msg('order.orderdetails.shipped','order',null)}</dd>
+								<iselse/>
+									<dd class="data-value">${Resource.msg('order.orderdetails.notknown','order',null)}</dd>
+								</isif>
+							</isif>
+							<dt class="data-label">${Resource.msg('order.orderdetails.shipvia','order',null)}</dt>
+							<dd class="data-value">
+								<isscript>
+								
+								var shippingCarrier = shipment.shippingMethod.custom.shippingMethodCarrier;
+								if(Site.getCurrent().getCustomPreferenceValue('enableUSPSCheck')) {
+									if(!empty(shipment.trackingNumber)){
+										var isUSPS = require('app_storefront_core/cartridge/scripts/util/Tatcha').isUSPSTrackNumber(shipment.trackingNumber);
+										if(isUSPS) {
+											shippingCarrier = 'USPS';
+										}
+									}
+								}								
+								</isscript>
+								
+								<isprint value="${shippingCarrier}" /><br />
+								<isif condition="${shipment.shippingStatus==dw.order.Shipment.SHIPPING_STATUS_SHIPPED}">
+									<isif condition="${shippingCarrier=='USPS'}">
+									<a href="${Resource.msgf('tracking.USPS','order',null, shipment.trackingNumber)}" class="btn btn-default btn-xs" target="blank">${Resource.msg('tracking.trackingpackage','order',null)}</a>
+									<iselseif condition="${shippingCarrier=='UPS'}">
+										<a href="${Resource.msgf('tracking.UPS','order',null, shipment.trackingNumber)}" class="btn btn-default btn-xs" target="blank">${Resource.msg('tracking.trackingpackage','order',null)}</a>
+									<iselseif condition="${shipment.trackingNumber}" >
+										<a href="${Resource.msgf('tracking.UPS','order',null, shipment.trackingNumber)}" class="btn btn-default btn-xs" target="blank">${Resource.msg('tracking.trackingpackage','order',null)}</a>										
+									</isif>
+								</isif>
+							</dd>
+						</dl>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<h6>${Resource.msg('order.orderdetails.shipmentitems','order',null)}</h6>
+					</div>
+				</div>
+				<isloop items="${shipment.productLineItems}" var="productLineItem" status="pliloopstate">
+				   <isif condition="${!empty(productLineItem)}">
+							<div class="order-items-detail product-list-col" data-index="${pliloopstate.count}" >
+								<div class="row">
+									<div class="col-3 col-md-2">
+										<isdisplayproductimage p_productli="${productLineItem}" p_size="small" p_isimageclickable="${true}"/>
+									</div>
+									<div class="col-9 col-md-5 col-lg-5 col-xl-6">
+										<iscomment>Display product line and product using module</iscomment>
+										<isdisplayliproductbs p_productli="${productLineItem}" p_editable="${false}"/>
+									</div>
+									<div class="col-9 offset-3 col-md-3 offset-md-0 col-lg-3 col-xl-2 px-md-0">
+										<dl class="dl-horizontal order-qty-price">
+											<dt class="data-label pt-0">${Resource.msg('global.qty','locale',null)}</dt>
+											<dd class="data-value"><isprint value="${productLineItem.quantity}"/></dd>
+											<dt class="data-label pt-0">
+												${Resource.msg('global.price','locale',null)}
+											</dt>
+											<dd class="data-value">
+											<iscomment>Render quantity. If it is a bonus product render word 'Bonus'</iscomment>
+											<isif condition="${productLineItem.bonusProductLineItem}">
+												<div class="bonus-item">
+													<isset name="bonusProductPrice" value="${productLineItem.getAdjustedPrice()}" scope="page"/>
+													<isinclude template="checkout/components/displaybonusproductprice" />
+													<isif condition="${productLineItem.bonusProductLineItem && 
+														(empty(productLineItem.bonusDiscountLineItem) || productLineItem.bonusDiscountLineItem.promotionID != samplePromoID)}">
+														${Resource.msg('cart.complimentary','checkout',null)}
+													<iselse/>
+														${Resource.msg('global.sample','locale',null)}
+													</isif>
+												</div>
+											<iselse/>
+												<isprint value="${productLineItem.adjustedPrice}"/>
+												<isif condition="${productLineItem.optionProductLineItems.size() > 0}">
+													<isloop items="${productLineItem.optionProductLineItems}" var="optionLI">
+														<div class="product-option-price">+ <isprint value="${optionLI.adjustedPrice}"/></div>
+													</isloop>
+												</isif>
+											</isif>
+											</dd>
+										</dl>
+									</div>
+									<div class="col-9 offset-3 col-md-2 offset-md-0 order-action pl-md-0">
+										<isscript>
+											var lineProductId = productLineItem.productID;
+											var stockStatus = productLineItem.product.getAvailabilityModel().isInStock();
+											var isTravelSize = productLineItem.product.custom.isTravelSize;
+											var isSample = false;
+											isSample = ProductUtils.isSampleProduct(productLineItem.product);
+											var productPrice = productLineItem.product.getPriceModel().getPrice();
+											
+											var relatedFullSizeProductID = productLineItem.product.custom.relatedFullSizeProduct;
+											var relatedFullSizeProductStockStatus = false;
+											if(isSample || isTravelSize){
+												var relatedFullSizeProduct = ProductUtils.getFullSizeProduct(productLineItem.product);
+												if(relatedFullSizeProduct) {
+													relatedFullSizeProductStockStatus = relatedFullSizeProduct.getAvailabilityModel().isInStock();
+												}
+											}
+											var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+											
+											// Added for mParticle and other analytics 
+											var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+											var productInfo = mParticleUtil.getProductInfo(productLineItem.product);
+											
+									 	</isscript>
+										<iscomment> This condition has to be updated once we have the sample products in catalog </iscomment>
+										<isif condition="${giftWrapId != lineProductId}">
+											<isif condition="${(productLineItem.product.custom.oosProductStatus.value == 'comingsoon')}">
+												<label>${Resource.msg('global.comingsoon.button', 'locale', null)}</label>
+											<iselse/>
+												<isif condition="${(isSample || isTravelSize) && relatedFullSizeProductID != null && relatedFullSizeProductStockStatus}">
+													<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+														<input type="hidden" class="input-text" name="Quantity" id="Quantity" size="2" maxlength="3" value="1"/>
+														<input type="hidden" name="cartAction" id="cartAction" value="add" />
+														<input type="hidden" name="uuid" id="uuid" value="" />
+														<input type="hidden" name="pid" id="pid" value="${relatedFullSizeProductID}" />
+														<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+														<button class="btn btn-outline-secondary w-100 buy-again history-add-to-cart" data-product-info="${JSON.stringify(productInfo)}" data-pid="${relatedFullSizeProductID}" data-source="order-history-buyfullsize" type="button">${Resource.msg('order.orderdetails.buyfullsize','order',null)}</button>
+														<iscomment>Reviews </iscomment>
+														<isif condition="${(productLineItem.product.custom.enableReviewsRatings == true)}">												
+															<a class="btn btn-link btn-md write-review-link" href="${URLUtils.http('Product-Show','pid', productLineItem.product.ID,'reviews','true')}">${Resource.msg('global.writeareview','locale',null)}</a>												
+														</isif>
+													</form>
+												<iselseif condition="${!isSample && stockStatus && productPrice.value > 0}" >
+													<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+														<input type="hidden" class="input-text" name="Quantity" id="Quantity" size="2" maxlength="3" value="1"/>
+														<input type="hidden" name="cartAction" id="cartAction" value="add" />
+														<input type="hidden" name="uuid" id="uuid" value="" />
+														<input type="hidden" name="pid" id="pid" value="${productLineItem.productID}" />
+														<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+														<button class="btn btn-outline-secondary w-100 buy-again history-add-to-cart" data-product-info="${JSON.stringify(productInfo)}" data-pid="${productLineItem.productID}" data-source="order-history-buyagain" type="button">${Resource.msg('order.orderdetails.buyagain','order',null)}</button>
+														<iscomment>Reviews </iscomment>
+														<isif condition="${(productLineItem.product.custom.enableReviewsRatings == true)}">												
+															<a class="btn btn-link btn-md write-review-link" href="${URLUtils.http('Product-Show','pid', productLineItem.product.ID,'reviews','true')}">${Resource.msg('global.writeareview','locale',null)}</a>												
+														</isif>
+													</form>
+												<iselseif condition="${!isSample && !isTravelSize && !stockStatus}">
+													<label>Out of Stock</label>
+												</isif>
+											</isif>
+										</isif>
+									</div>
+								</div>
+							</div>
+					</isif>
+				</isloop>
+			</isif>
+			
+			<!-- Gift certificates -->
+
+			<isif condition="${shipment.giftCertificateLineItems.size() > 0}">
+				<div class="row">
+					<isloop items="${shipment.giftCertificateLineItems}" var="giftCertificateLineItem" status="gcliloopstate">
+						<div class="col-md-6">
+							<dl class="dl-horizontal order-info order-detail">
+								<dt class="data-label">
+									${Resource.msg('order.orderdetails.giftcertto','order',null)}
+								</dt>
+								<dd class="data-value">
+									${Resource.msg('order.orderdetails.giftcerttoemail','order',null)}
+								</dd>
+							</dl>
+						</div>
+						<div class="col-md-6">
+							<dl class="dl-horizontal order-info order-detail">
+								<dt class="data-label">
+									${Resource.msg('order.orderdetails.giftcertshipstatus','order',null)}
+								</dt>
+								<dd class="data-value">
+									${Resource.msg('order.orderdetails.giftcertshipstatussent','order',null)}
+								</dd>
+								<dt class="data-label">
+									${Resource.msg('order.orderdetails.giftcardshippingmethod','order',null)}
+								</dt>
+								<dd class="data-value">
+									<div class="value">${Resource.msg('order.orderdetails.giftcertshipping','order',null)}</div>
+								</dd>
+							</dl>
+						</div>
+						<isset name="egiftName" value="${giftCertificateLineItem.recipientName}" scope="page" />
+						<isset name="egiftEmail" value="${giftCertificateLineItem.recipientEmail}" scope="page" />
+						<isset name="egiftPrice" value="${giftCertificateLineItem.price}" scope="page" />
+						<isset name="egiftImage" value="${giftCertificateLineItem.custom.giftCertificateImage}" scope="page" />
+					</isloop>
+				</div>
+				<div class="row">
+					<div class="col-12">
+						<h6>${Resource.msg('order.orderdetails.shipmentitems','order',null)}</h6>
+					</div>
+				</div>
+				<isscript>
+						var giftproductId = Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID');
+						var giftproduct = dw.catalog.ProductMgr.getProduct(giftproductId);
+				</isscript>
+				<div class="order-items-detail">
+					<div class="row">
+						<div class="col-3 col-md-2">
+							<isif condition="${!empty(egiftImage)}">
+								<img alt="" class="img-fluid product-img" src="${egiftImage}" />
+							<iselseif condition="${giftproduct != null && giftproduct.getImage('large',0) != null}"/>
+								<isset name="imageUrl" value="${getImageUrl(giftproduct,'large')}" scope="page"/>
+								<isset name="imageAlt" value="${GiftCertificate.object.lineItemText}" scope="page"/>
+								<img class="img-responsive product-img" src="${imageUrl}" alt="${imageAlt}" />
+							<iselse/>
+								<img src="${URLUtils.staticURL('/images/gift_cert.gif')}" />
+							</isif>
+						</div>
+						<div class="col-9 col-md-5 col-lg-6">
+							<h5 class="product-name">
+								<a href="#">E-Gift Card</a>
+								<span class="product-subtitle"></span>
+							</h5>
+							<div>
+								<span class="product-variant">To: <isprint value="${egiftName}"/> | <isprint value="${egiftEmail}"/></span>
+							</div>
+						</div>
+						<div class="col-9 offset-3 col-md-3 offset-md-0 col-lg-2 px-md-0">
+							<dl class="dl-horizontal order-qty-price">
+								<dt class="data-label pt-0">${Resource.msg('global.qty','locale',null)}</dt>
+								<dd class="data-value">1</dd>
+								<dt class="data-label pt-0">
+									${Resource.msg('global.price','locale',null)}
+								</dt>
+								<dd class="data-value">
+									<isprint value="${egiftPrice}"/>
+								</dd>
+							</dl>
+						</div>
+					</div>
+				</div>
+			</isif>
+		</isloop>
+	</div>
+</div>

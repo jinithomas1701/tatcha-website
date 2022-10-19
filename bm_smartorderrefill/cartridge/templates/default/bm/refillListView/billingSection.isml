@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="order-section billing-section visualy-hidden">
+    <div class="content-section">
+    <isset name="addressObject" value="${pdict.ProductList.billingAddress}" scope="page"  />
+        <table class='sor-module__subscription_table'>
+            <isinclude template="bm/refillListView/addressTable"  />
+        </table>
+    </div>
+    <isinclude template="bm/refillListView/changeAddressButton"  />                
+</div>

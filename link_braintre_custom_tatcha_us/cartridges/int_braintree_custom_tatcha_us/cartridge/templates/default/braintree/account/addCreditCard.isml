@@ -1,0 +1,307 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isset name="DecoratorTemplate" value="account/pt_account_bs" scope="page"/>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.ajax.stringValue == 'true' }">
+    <isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+<isset name="provinceList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('provinceList'))}" scope="page"/>
+<isdecorate template="${DecoratorTemplate}">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('/js/paymentInstruments.js');
+        assets.addCss('/css/braintree.css');
+
+        if (pdict.braintree.isGooglePaySavingAllowed) {
+            assets.addJs(pdict.braintree.prefs.googlePaySdkUrl);
+            assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+            assets.addJs(pdict.braintree.prefs.braintreeGooglePaySdkUrl);
+        }
+        if (pdict.braintree.isCreditCardSavingAllowed) {
+            assets.addJs(pdict.braintree.prefs.clientSdk3HostedFieldsUrl);
+            assets.addJs(pdict.braintree.prefs.clientSdk3ThreeDSecureUrl);
+            assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+            assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+        }
+        if (pdict.braintree.isSrcSavingAllowed) {
+            assets.addJs(pdict.braintree.prefs.srcSdkUrl);
+            assets.addJs(pdict.braintree.prefs.braintreeSrcSdkUrl);
+        }
+    </isscript>
+
+    <div class="my-account my-account-payment">
+        <div class="container edit-container add-credit-container">
+            <div class="row">
+                <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+                    <!-- New Address -->
+                    <div class="card edit-group edit-state add-state-card">
+                        <div class="card-header panel-split d-flex justify-content-between">
+                            <h4 class="card-header-inner">${Resource.msg('account.paymentinstrumentlist.addcard', 'account', null)}</h4>
+                            <a href="${URLUtils.url('BraintreePayments-List')}" class="panel-action edit-cancel icon-default">
+                                <i class="fal fa-lg fa-times"></i>
+                            </a>
+                        </div>
+                        <div class="card-body">
+                            <isif condition="${!empty(pdict.BraintreeError)}">
+                                <div class="alert alert-danger d-none">
+                                    ${Resource.msg('braintree.creditcard.paymenterror', 'locale', null)}
+                                </div>
+                            </isif>
+                            <div class="braintree-account-add-credit-card-content">
+                                <div class="braintreeAddNewCardBlock">
+                                    <isif condition="${pdict.braintree.isCreditCardSavingAllowed}">
+                                        <div class="container">
+                                            <div class="braintree-account-add-credit-card-content">
+                                                <form id="addCreditCardFormAccount" action="${URLUtils.url('BraintreePayments-AccountAddCreditCardHandle')}"
+                                                      class="account-add-credit-card js_braintree_addCreditCardForm" method="POST">
+
+                                                    <isinclude template="braintree/util/creditCardFields" />
+                                                    <isif condition="${!empty(dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput'))}">
+                                                        <isset name="countryArrayList" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput')}" scope="page" />
+                                                        <iselse/>
+                                                        <isset name="countryArrayList" value="${'AU|BR|ET|DE|IN|MX|FM|MM|NG|PW|SD'}" scope="page" />
+                                                    </isif>
+                                                    <input type="hidden" id="countryWithState" value="${countryArrayList}"/>
+
+                                                    <div class="make-default-payment" style="display:none">
+                                                        <div class="form-group custom-control custom-checkbox">
+                                                            <input type="checkbox" class="custom-control-input" id="makeDefaultPayment"
+                                                                   name="makeDefaultPayment" checked="checked">
+                                                            <label class="custom-control-label" for="makeDefaultPayment">
+                                                                ${Resource.msg('label.payment.checkbox.makedefault', 'payment', null)}
+                                                            </label>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-row label-inline form-indent mb-4">
+                                                        <div class="form-group col-12">
+                                                            <label for="braintreeCreditCardMakeDefault">
+                                                                <input name="braintreeCreditCardMakeDefault" checked="checked" id="braintreeCreditCardMakeDefault" type="checkbox" value="true" />
+                                                                <span>${Resource.msg('label.payment.checkbox.makedefault', 'payment', null)}</span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <isscript>
+                                                        var currentCountry = require('*/cartridge/scripts/util/Countries').getCurrent(pdict);
+                                                    </isscript>
+                                                    <isset name="stateUsStyle" value="style='display:none'" scope="page" />
+                                                    <isset name="stateCaStyle" value="style='display:none'" scope="page" />
+                                                    <isset name="stateTextStyle" value="style='display:none'" scope="page" />
+                                                    <isset name="countriesList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('CountriesList'))}" scope="page"/>
+                                                    <isif condition="${currentCountry.countryCode === 'US'}">
+                                                        <isset name="stateUsStyle" value="required" scope="page" />
+                                                        <iselseif condition="${currentCountry.countryCode === 'CA'}">
+                                                            <isset name="stateCaStyle" value="required" scope="page" />
+                                                            <iselse>
+                                                                <isif condition="${countriesList.indexOf(currentCountry.countryCode) > -1}">
+                                                                    <isset name="stateTextStyle" value="required" scope="page" />
+                                                                    <iselse>
+                                                                        <isset name="stateTextStyle" value="style='display:none'" scope="page" />
+                                                                </isif>
+                                                    </isif>
+                                                    <div class="row">
+                                                        <!-- Country  -->
+                                                        <div class="col-12">
+                                                            <div class="form-group">
+                                                                <select class="form-control form-control-lg floating__input" placeholder=" " id="country"
+                                                                <isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.country.attributes}" encoding="off" />
+                                                                autocomplete="country">
+                                                                <isloop items="${countriesList}" alias="country">
+                                                                    <isif condition="${country.value == currentCountry.countryCode}">
+                                                                        <option id="${country.value}" value="${country.value}" selected><isprint value="${country.label}" /></option>
+                                                                        <iselse>
+                                                                            <option id="${country.value}" value="${country.value}"><isprint value="${country.label}" /></option>
+                                                                    </isif>
+                                                                </isloop>
+                                                                </select>
+                                                                <label class="float-label" data-content="<isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.country.label}" encoding="htmlcontent" />*" for="country">
+
+                                                                </label>
+                                                                <div class="invalid-feedback"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <!-- Address 1 -->
+                                                    <div class="form-group
+				        ${pdict.braintree.creditcardPaymentForm.addressFields.address1.mandatory === true ? 'required' : ''}">
+
+                                                        <input type="text" class="form-control form-control-lg floating__input" id="address1" placeholder=" "
+                                                        <isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.address1.attributes}" encoding="off" />
+                                                        autocomplete="address-line1">
+                                                        <label class="float-label" data-content="<isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.address1.label}" encoding="htmlcontent" />*" for="address1">
+
+                                                        </label>
+                                                        <div class="invalid-feedback"></div>
+                                                    </div>
+
+                                                    <!-- Address 2 -->
+                                                    <div class="form-group
+				        ${pdict.braintree.creditcardPaymentForm.addressFields.address2.mandatory === true ? 'required' : ''}">
+
+                                                        <input type="text" class="form-control form-control-lg floating__input" placeholder=" " id="address2"
+                                                        <isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.address2.attributes}" encoding="off" />
+                                                        autocomplete="billing address-line2">
+                                                        <label class="float-label" for="address2" data-content="<isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.address2.label}" encoding="htmlcontent" /> (Optional)">
+
+                                                        </label>
+                                                        <div class="invalid-feedback"></div>
+                                                    </div>
+
+                                                    <!-- Zipcode and State drop downs -->
+                                                    <div class="row">
+                                                        <!-- ZIP Code -->
+                                                        <div class="col-6 pr-1">
+                                                            <div class="form-group ${pdict.braintree.creditcardPaymentForm.addressFields.postalCode.mandatory === true ? 'required' : ''}">
+
+                                                                <input type="text" class="form-control form-control-lg floating__input" placeholder=" " <isif condition="${currentCountry.countryCode === 'CA'}">pattern="^[ABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Z]{1} *(?:\d{1}[A-Z]{1}\d{1})?$"<iselseif condition="${currentCountry.countryCode === 'US'}">pattern="^\d{5}(?:[-\s]\d{4})?$"</isif> data-missing-error="${Resource.msg('error.message.parse.postalCode','forms',null)}" data-pattern-mismatch="${Resource.msg('error.message.parse.postalCode','forms',null)}"  id="zipCode"
+                                                                <isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.postalCode.attributes}" encoding="off" />
+                                                                autocomplete="postal-code">
+                                                                <label class="float-label" data-content=" <isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.postalCode.label}" encoding="htmlcontent" />*" for="zipCode">
+
+                                                                </label>
+                                                                <div class="invalid-feedback"></div>
+                                                            </div>
+                                                        </div>
+                                                        <!-- State  -->
+                                                        <div class="col-6 pl-1">
+                                                            <div class="form-group ${pdict.braintree.creditcardPaymentForm.addressFields.states.stateCode.mandatory === true ? 'required' : ''}">
+                                                                <input type="text" ${stateTextStyle} data-missing-error="Please select a state." value=""  class="form-control floating__input form-control-lg" id="stateText" name="stateText" aria-label="Enter province" placeholder="State*">
+                                                                <select id="stateUS" ${stateUsStyle} data-missing-error="Please select a state." aria-describedby="state" autocomplete="shipping address-level1" class="form-control floating__input  form-control-lg pl-3 shippingState">
+                                                                    <isloop items="${pdict.braintree.creditcardPaymentForm.addressFields.states.stateCode.options}" var="states" status="status">
+                                                                        <isif condition="${typeof selectedState !== "undefined" && (selectedState == states.id || (selectedState == 'null' && status.first))}">
+                                                                            <option class="select-option" id="${states.id}" label="${Resource.msg(states.label,'forms',null)}" selected value="${states.htmlValue || ''}">${Resource.msg(states.label,'forms',null)}</option>
+                                                                            <iselse>
+                                                                                <option class="select-option" id="${states.id}" label="${Resource.msg(states.label,'forms',null)}" value="${states.htmlValue || ''}">${Resource.msg(states.label,'forms',null)}</option>
+                                                                        </isif>
+                                                                    </isloop>
+                                                                </select>
+                                                                <select id="stateNonUS" ${stateCaStyle} data-missing-error="Please select a state." class="form-control floating__input  form-control-lg pl-3">
+                                                                    <isloop items="${provinceList}" alias="province">
+                                                                        <isif condition="${province.country == 'CA'}">
+                                                                            <isloop items="${province.states}" alias="pstate">
+                                                                                <isif condition="${typeof selectedState !== "undefined" && selectedState == pstate.value}">
+                                                                                    <option class="select-option" id="${pstate.value}" label="${pstate.label}" selected value="${pstate.value}">${pstate.label}</option>
+                                                                                    <iselse>
+                                                                                        <option class="select-option" id="${pstate.value}" label="${pstate.label}"  value="${pstate.value}">${pstate.label}</option>
+                                                                                </isif>
+                                                                            </isloop>
+                                                                        </isif>
+                                                                    </isloop>
+                                                                </select>
+                                                                <label class="float-label" data-content="<isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.states.stateCode.label}" encoding="htmlcontent" />" for="state">
+
+                                                                </label>
+                                                                <div class="invalid-feedback"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- City and ZIP -->
+                                                    <div class="row">
+                                                        <div class="col-12">
+                                                            <!-- City  -->
+                                                            <div class="form-group
+				                ${pdict.braintree.creditcardPaymentForm.addressFields.city.mandatory === true ? 'required' : ''}">
+
+                                                                <input type="text" class="form-control form-control-lg floating__input" placeholder=" "  id="city"
+                                                                <isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.city.attributes}" encoding="off" />
+                                                                autocomplete="address-level2">
+                                                                <label class="float-label" data-content="<isprint value="${pdict.braintree.creditcardPaymentForm.addressFields.city.label}" encoding="htmlcontent" />*" for="city">
+
+                                                                </label>
+                                                                <div class="invalid-feedback"></div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+
+                                                    <!-- Save Button -->
+                                                    <div class="text-right">
+                                                        <a href="${URLUtils.url('BraintreePayments-List')}" name="cancel"
+                                                           class="btn btn-outline-dark  btn-lg">${Resource.msg('button.cancel', 'account', null)}</a>
+
+                                                        <button type="submit" name="save"
+                                                                class="mt-2 braintreeCreditCardBtn btn btn-save btn-primary btn-lg">${Resource.msg('button.save', 'account', null)}</button>
+
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </isif>
+                                </div>
+                            </div>
+                            <div class="container">
+                                <div class="braintree-account-add-credit-card-content">
+                                    <isif condition="${pdict.braintree.isCreditCardSavingAllowed && (pdict.braintree.isSrcSavingAllowed || pdict.braintree.isGooglePaySavingAllowed)}">
+                                        <p class="text-center">${Resource.msg('braintree.account.googlepayaccounts.alternativemethods', 'locale', null)}</p>
+                                    </isif>
+                                    <isif condition="${pdict.braintree.isGooglePaySavingAllowed}">
+                                        <form action="${URLUtils.url('Braintree-AccountAddGooglePayHandle')}"
+                                              class="js_braintree_addGooglePayAccountForm" method="POST">
+                                            <div class="js_braintree_googlepayButtonsWrap">
+                                                <div class="js_braintree_accountgooglepay_button"
+                                                     data-braintree-config="${JSON.stringify(pdict.braintree.accountGooglePayButtonConfig)}">
+                                                    <div class="google-pay-button-with-text google-pay-button-black-with-text"><span
+                                                            class="text"></span><span class="logo"></span></div>
+                                                </div>
+                                                <div class="braintreeGooglepayLoader braintree-loader-container">
+                                                    <i class="braintree-loader"></i>
+                                                </div>
+                                            </div>
+                                            <div class="error" id="braintreeFormErrorContainer" style="display:none">
+                                                ${empty(pdict.BraintreeError) ? '' : pdict.BraintreeError}</div>
+
+                                            <input id="braintreeGooglePayNonce" type="hidden"
+                                                   name="${pdict.braintree.googlepayPaymentForm.nonce.htmlName}" value="" />
+
+                                            <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+
+                                            <!-- GooglePay Save Button -->
+                                            <div class="row" style="display:none">
+                                                <div class="col">
+                                                    <button type="submit" name="save"
+                                                            class="braintreeGooglePayBtn btn btn-save btn-block btn-primary">${Resource.msg('button.save', 'account', null)}</button>
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                    </isif>
+                                    <isif condition="${pdict.braintree.isSrcSavingAllowed}">
+                                        <form action="${URLUtils.url('Braintree-AccountAddSrcHandle')}" class="js_braintree_addSrcAccountForm"
+                                              method="POST">
+                                            <div class="js_braintree_srcButtonsWrap">
+                                                <div class="js_braintree_src_account_button"
+                                                     data-braintree-config="${JSON.stringify(pdict.braintree.accountSrcButtonConfig)}">
+                                                    <img src="${pdict.braintree.accountSrcButtonConfig.SRCImageUrl}" alt="Visa Checkout"
+                                                         class="v-button" role="button" />
+                                                </div>
+                                                <div class="braintreeSrcLoader braintree-loader-container">
+                                                    <i class="braintree-loader"></i>
+                                                </div>
+                                            </div>
+                                            <div class="error" id="braintreeSrcFormErrorContainer" style="display:none">
+                                                ${empty(pdict.BraintreeError) ? '' : pdict.BraintreeError}</div>
+
+                                            <input id="braintreeSrcNonce" type="hidden" name="${pdict.braintree.srcPaymentForm.nonce.htmlName}"
+                                                   value="" />
+                                            <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+
+                                            <!-- SRC Save Button -->
+                                            <div class="row" style="display:none">
+                                                <div class="col">
+                                                    <button type="submit" name="save"
+                                                            class="braintreeSrcBtn btn btn-save btn-block btn-primary">${Resource.msg('button.save', 'account', null)}</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </isif>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</isdecorate>
+

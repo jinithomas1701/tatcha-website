@@ -1,0 +1,51 @@
+/*
+* Helper script for working with SFCC Services and the Service Framework
+*/
+
+importPackage( dw.net );
+importPackage( dw.svc );
+importPackage( dw.system );
+
+if (!!module) {
+	if (!module.exports) {
+		module.exports = {};
+	}
+	
+	module.exports.MakeServiceCall = function (service: Service, request: Object, mockCall, retryCountIfFailure) {
+		return ServiceHelper.MakeServiceCall(service, request, mockCall, retryCountIfFailure);
+	};
+}
+
+function ServiceHelper() {}
+
+// Constants
+ServiceHelper.AuthenticationNone = 'NONE';
+ServiceHelper.AuthenticationBasic = 'BASIC';
+
+/* 	
+ *	This function encapsulates making a call on a web sevice, possibly retrying if null is returned
+ *	and mocking the call is specified. 
+ *	This function is meant to be used by another script that is doing the initial setup for a specific web service.
+ */
+ServiceHelper.MakeServiceCall = function makeServiceCall(service: Service, request: Object, mockCall, retryCountIfFailure){
+	if (retryCountIfFailure == null){
+		 retryCountIfFailure = 1;
+	}
+	
+	var result = null;
+	while (retryCountIfFailure != 0 && result == null){
+		if (mockCall) {	
+			result = service.setMock().call(request);
+		} else {		 
+			if (request != null){
+				// The "call" method is part of the SFCC Service Framework. 
+				// After calling it, whatever "execute" callback is hooked up in the "ServiceInit" script that registered the service, will be delegated to.
+				result = service.call(request);
+			}
+		}
+
+		retryCountIfFailure--;
+	}
+      
+	return result;
+}

@@ -1,0 +1,235 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isscript>
+	importScript("cart/CartUtils.ds");
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	
+	var selectedGiftCertImage = session.custom.selectedGiftimage ? session.custom.selectedGiftimage : '';
+	var giftSendername = session.custom.senderName ? session.custom.senderName : '';
+	var giftRecepientname = session.custom.recepientName ? session.custom.recepientName : '';
+	var giftCertAmount = session.custom.giftAmount ? session.custom.giftAmount: 0;
+	
+</isscript>
+<input type="hidden" id="isPage3Step3Viewed" value="${session.custom.ispage3Viewed}"/>
+<div class="row deliver-tab-contents">
+	<div class="col-xs-12 col-md-8 col-md-offset-2">
+		<ul class="nav nav-progress nav-pills nav-justified">
+			<div class="col-xs-4">
+				<li role="presentation">
+					<a class="gift-card-tab gift-design-tab" data-tab="design-tab">
+						<span class="progress-step-num">1</span>
+						<span class="progress-step-description">Design</span>
+					</a>
+				</li>
+			</div>
+			<div class="col-xs-4">
+				<li role="presentation">
+					<a class="gift-card-tab gift-recommend-tab" data-tab="recommend-tab">
+						<span class="progress-step-num">2</span>
+						<span class="progress-step-description">Recommend</span>
+					</a>
+				</li>
+			</div>
+			<div class="col-xs-4">
+				<li role="presentation" class="active">
+					<a class="gift-card-tab gift-deliver-tab" data-tab="deliver-tab">
+						<span class="progress-step-num">3</span>
+						<span class="progress-step-description">Deliver</span>
+					</a>
+				</li>
+			</div>
+		</ul>
+	</div>
+</div>
+<div class="row deliver-tab-contents" style="margin-top: 16px;">
+	<div class="col-sm-8 col-sm-offset-2 col-md-5 col-md-offset-1">
+		<div class="row no-gutter">
+			<div class="col-xs-6 col-md-12">
+				<div class="product-img-main">
+					<img class="img-responsive" src="${selectedGiftCertImage}" alt="Giftcard Image">
+				</div>
+			</div>
+			<div class="col-xs-6 col-md-12">
+				<div class="gift-card-details">
+					$<isprint value="${giftCertAmount}" /> <br>
+					To: <isprint value="${giftRecepientname}" /><br>
+					From: <isprint value="${giftSendername}" />
+				</div>
+			</div>
+		</div>
+		<div class="gift-card-recommended-selections" style="margin: 16px 0;">
+			<div class="selection-block">
+				<isif condition="${!empty(pdict.CurrentSession.custom.recommendedItems)}"> 
+				<h2 class="gift-card-h2" style="margin-bottom: 0;">Recommended Items for <isprint value="${giftRecepientname}" /></h2>
+					<isscript>
+					 var recommendedItemsArr = pdict.CurrentSession.custom.recommendedItems.split(',');
+					</isscript>
+						<isloop items="${recommendedItemsArr}" var="rec" status="pStatus">
+							<isscript>
+								let product = dw.catalog.ProductMgr.getProduct(rec);
+							</isscript>
+							<isset name="selectedGiftProduct" value="${product}" scope="pdict"/>
+							<isinclude template="checkout/giftcert/selecteditemfinal"/>
+							<isscript>
+								gCounter++;
+							</isscript>
+						</isloop>
+						<isset name="limit" value="3" scope="pdict" />
+						<isif condition="${gCounter < pdict.limit}">
+							<isscript>
+								var emptySlots = [];
+								for(var i = 0; i < (pdict.limit-gCounter); i++) { 
+									emptySlots.push(i);
+								}
+							</isscript>
+							<isloop items="${emptySlots}" var="slot" status="slotStatus">
+								<div class="selection-item-cell">
+									<a href="#recommendList" class="vertical-middle anchor-link">
+										<i class="fal fa-plus fa-2x select-icon"></i>
+									</a>
+								</div>
+							</isloop>
+						</isif>
+				</isif>
+			</div>
+		</div>
+	</div>
+	<div class="col-sm-8 col-sm-offset-2 col-md-5 col-md-offset-0">
+		<form action="${URLUtils.url('GiftCert-SaveGiftPurchaseData')}"  method="POST">
+			<input type="hidden" id="selectedFont" name="selectedFont" value="font-sans" />
+			<div style="margin: 16px 0;">
+				<h2 class="gift-card-h2" style="margin-bottom: 0;">Delivery Info</h2>
+				<div style="margin-top: 16px;">
+					<div class="form-group">
+						<label for="recipientEmail" class="control-label control-label-lg">
+							<isprint value="${giftRecepientname}" />’s Email
+						</label>
+						<input id="recipientEmail" name="recipientEmail" class="form-control input-lg">
+						<span class="help-block" style="display: none;">Please enter a valid email.</span>
+					</div>
+					<div class="form-group">
+						<label for="senderEmail" class="control-label control-label-lg">
+							<isprint value="${giftSendername}" />’s Email
+						</label>
+						<input id="senderEmail" name="senderEmail" class="form-control input-lg">
+						<span class="help-block" style="display: none;">Please enter a valid email.</span>
+					</div>
+					<div class="form-group">
+						<label for="giftcardMessage" class="control-label control-label-lg">Add A Personal Message</label>
+						<textarea id="giftcardMessage" maxlength="210" name="giftcardMessage" class="form-control font-sans" rows="5"></textarea>
+						<span class="help-block" style="display: none;">Inline message.</span>
+					</div>
+	
+					<div class="form-group">
+						<label for="giftcardFont" class="control-label control-label-lg">Message Font</label>
+						<div class="radio-box-options-block">		
+							<div class="radio radio-box-option font-radio-option font-sans selected" data-font="font-sans">
+							  <label for="fontSans">
+							    <input type="radio" name="fontOption" value="fontSans" id="fontSans">
+						    	<div class="radio-text-block">
+						    		<div class="radio-text-header font-option">
+						    			<span class="unchecked"><i class="fal fa-circle"></i></span>
+						    			<span class="checked"><i class="fal fa-check-circle"></i></span>
+						    			Congratulations
+						    		</div>
+						    	</div>
+							  </label>
+							</div>
+						
+							<div class="radio radio-box-option font-radio-option font-serif" data-font="font-serif">
+							  <label for="fontSerif">
+							    <input type="radio" name="fontOption" value="fontSerif" id="fontSerif">
+						    	<div class="radio-text-block">
+						    		<div class="radio-text-header font-option">
+						    			<span class="unchecked"><i class="fal fa-circle"></i></span>
+						    			<span class="checked"><i class="fal fa-check-circle"></i></span>
+						    			Congratulations
+						    		</div>
+						    	</div>
+							  </label>
+							</div>
+					
+							<div class="radio radio-box-option font-radio-option font-script" data-font="font-script">
+							  <label for="fontScript">
+							    <input type="radio" name="fontOption" value="fontScript" id="fontScript">
+						    	<div class="radio-text-block">
+						    		<div class="radio-text-header font-option">
+						    			<span class="unchecked"><i class="fal fa-circle"></i></span>
+						    			<span class="checked"><i class="fal fa-check-circle"></i></span>
+						    			Congratulations
+						    		</div>
+						    	</div>
+							  </label>
+							</div>
+	
+							<div class="radio radio-box-option font-radio-option font-hand" data-font="font-hand">
+							  <label for="option3">
+							    <input type="radio" name="fontOption" value="fontHand" id="fontHand">
+						    	<div class="radio-text-block">
+						    		<div class="radio-text-header font-option">
+						    			<span class="unchecked"><i class="fal fa-circle"></i></span>
+						    			<span class="checked"><i class="fal fa-check-circle"></i></span>
+						    			Congratulations
+						    		</div>
+						    	</div>
+							  </label>
+							</div>
+						</div>
+	
+					</div>
+					<div class="row">
+						<div class="col-sm-4 col-md-6 col-lg-4">
+							<div class="form-group">
+								<label for="giftcardSendDAte" class="control-label control-label-lg">Select Date</label>
+								<input type="text" name="giftcardSendDate" class="form-control datepicker input-lg giftcert-datepicker datepicker-common" readonly="true" value="">
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-xs-12">
+							<p style="margin-top: 12px;"><a href="#" class="anchor-link" data-toggle="modal" data-target="#giftTerms">${Resource.msg('gift.terms','giftcertificate',null)}</a></p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row no-gutter">
+				<div class="col-xs-6" style="padding-left: 8px;padding-right: 2px;">
+					<button type="button" id="giftCertStep3BackBtn" data-tab="recommend-tab" data-previous="true" data-url="${URLUtils.url('GiftCert-SetActiveStep')}" data-step="2" class="btn btn-lg btn-default btn-block">Previous</button>
+				</div>
+				<div class="col-xs-6" style="padding-left: 2px;padding-right: 8px;">
+					<button type="submit" id="saveGiftCertData" class="btn btn-lg btn-primary btn-block">Add to Bag</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script>
+	$(function(){
+		$(this).scrollTop(0);
+	   var maxDate = new Date();
+	   $('.giftcert-datepicker').datepicker({
+		 dateFormat: 'mm/dd/y',
+	     inline: true,
+	     showOtherMonths: true,
+	     minDate: 0,
+	     maxDate: new Date(maxDate.setDate(maxDate.getDate() + 60)),
+	     dayNamesMin: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+	   }).val(getFormattedDate());
+	 
+	   function getFormattedDate() {
+		    var todayTime = new Date();
+		    var month = (todayTime .getMonth() + 1);
+		    var day = (todayTime .getDate());
+		    var year = (todayTime .getFullYear().toString().substr(-2));
+		    return month + "/" + day + "/" + year;
+		}
+	   
+	$('.radio-box-option label').click(function () {
+	   $('.radio-box-option label').parent().removeClass('selected');
+	   $(this).parent(this).addClass('selected');
+	 });
+   });
+	 
+</script>

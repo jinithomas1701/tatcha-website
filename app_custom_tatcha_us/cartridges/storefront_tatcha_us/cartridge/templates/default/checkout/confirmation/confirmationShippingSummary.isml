@@ -1,0 +1,39 @@
+<!--- Shipping Address --->
+<isloop var="shippingModel" items="${pdict.order.shipping}" status="shippingLoop">
+    <isif condition="${shippingLoop.first}">
+
+        <div class="shipping-container">
+                <isif condition="${shippingModel.shippingAddress !== null}">
+                    <isset name="address" value="${shippingModel.shippingAddress}" scope="page"/>
+                    <iselse>
+                        <isset name="address" value="${{}}" scope="page"/>
+                </isif>
+                <div class="title">Shipping Info</div>
+                <isif condition="${address && address.firstName}">${address.firstName}</isif>
+                <isif condition="${address && address.lastName}">${address.lastName}</isif>  <br>
+                <isif condition="${address && address.address1}">${address.address1}</isif>,
+                <isif condition="${address && address.address2}">${address.address2}</isif>
+                <br> <isif condition="${address && address.city}">${address.city},</isif>
+                <isif condition="${address && address.stateCode && !empty(address.stateCode.trim())}">${address.stateCode},</isif>
+                <isif condition="${address && address.postalCode}">${address.postalCode}</isif><br>
+                <isif condition="${address && address.countryCode && address.countryCode.value}"><span>${address.countryCode.value}</span></isif><br>
+                <isif condition="${address && address.phone}"><span class='${(address.countryCode && address.countryCode.value === 'US') ? 'confirm-phone' : ''}'>${address.phone}</span></isif>
+            </div>
+            <div class="delivery-container">
+                <div class="title">Delivery and Gift</div>
+                <isif condition="${pdict.order.totals.getShippingPrices && pdict.order.totals.getShippingPrices.shippingTotalPrice != 0 && pdict.order.totals.getShippingPrices.adjustedShippingTotalPrice != 0}">
+                    ${shippingModel.selectedShippingMethod.displayName} - <isprint value="${pdict.order.totals.getShippingPrices.shippingTotalPriceFormatted}"/>
+                    <isif condition="${pdict.order.totals.getShippingPrices.shippingTotalPrice != pdict.order.totals.getShippingPrices.adjustedShippingTotalPrice}">
+                        (<isprint value="${pdict.order.totals.getShippingPrices.adjustedShippingTotalPriceFormatted}"/>)
+                    </isif>
+                <iselse/>
+                    ${shippingModel.selectedShippingMethod.displayName} - Free
+                </isif>
+                <isif condition="${dw.system.Site.getCurrent().preferences.custom.showShippingEstimate && shippingModel.selectedShippingMethod.estimatedDate}">
+                	<br>
+	                Arrival: <isprint value="${shippingModel.selectedShippingMethod.estimatedDate}" formatter="MM/dd" timezone="utc"/>
+                </isif>
+
+            </div>
+    </isif>
+</isloop>

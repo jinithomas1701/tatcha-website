@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account_bs">
+<isinclude template="util/modules"/>
+<div class="my-account my-account-login row mt-4">
+	<div class="col-10 col-md-10 col-lg-4 mx-auto mt-4">
+
+		<isinclude template="account/login/logininclude"/>
+
+	</div><!-- END: page column -->
+
+	<div class="col-10 col-md-10 col-lg-4 mx-auto mt-4">
+
+		<div class="register-column">
+
+			<h1><isprint value="${Resource.msg('globalaccount.createheader','locale',null)}" /></h1>
+
+			<div class="login-box-content clearfix" id="register-box-content">
+				<p><isprint value="${Resource.msg('globalaccount.createmessage','locale',null)}" /></p>
+				<form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.login.htmlName}_register">
+					<div class="form-group col-12 col-lg-10 col-xl-8 col-xxl-6 pl-lg-0">
+						<button type="submit" class="btn btn-primary btn-lg btn-block" value="${Resource.msg('global.createbutton','locale',null)}" name="${pdict.CurrentForms.login.register.htmlName}">
+							<isprint value="${Resource.msg('global.createnowbutton','locale',null)}" />
+						</button>
+					</div>
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					<hr>
+					<isscript> 
+					var Site = require('dw/system/Site');
+					var showFBLogin = Site.getCurrent().getCustomPreferenceValue('enableFacebookLogin');
+					</isscript>
+			
+					<isif condition="${showFBLogin === true}">
+						<div class="cta-container col-12 col-lg-10 col-xl-8 col-xxl-6 pl-lg-0">
+						<a href="javascript:void(0);" data-container="register-box-content" class="btn btn-outline-secondary btn-facebook btn-block fb-loginbtn">
+							<i class="fab fa-lg fa-facebook"></i> Sign Up with Facebook
+						</a>
+						</div>
+					</isif>
+				</form>				
+			</div>
+		</div>
+	</div>		
+</div><!-- END: page column -->
+	
+</isdecorate>

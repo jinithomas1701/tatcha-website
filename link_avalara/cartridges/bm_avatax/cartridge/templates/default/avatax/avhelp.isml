@@ -1,0 +1,81 @@
+<!--- TEMPLATENAME: test.isml --->
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Avalara | AvaTax Help</title>
+</head>
+
+<isdecorate template="application/MenuFrame">
+    <iscontent type="text/html" charset="UTF-8" />
+    <isinclude template="inc/Modules" />
+
+    <isset name="TOP_URL"
+        value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', pdict.CurrentMenuItemId)}"
+        scope="page" />
+    <isbreadcrumb name1="${pdict.mainmenuname}" url1="${TOP_URL}" name2="${pdict.menuname}" />
+
+
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+            <td width="100%" class="w e s table_title">AvaTax Help</td>
+        </tr>
+
+        <tr>
+            <td class="w e s">
+                <img src="/on/demandware.static/Sites-Site/-/default/vbb6ced9dcf76be8340a5f0be590d1bfce47e377f/images/space.gif"
+                    width="1" height="2" alt="" border="0" />
+            </td>
+        </tr>
+
+        <tr>
+            <td valign="top" class="table_title_description w e s">
+                <p>If you want to know more about Avalara or AvaTax, click the links below.</p>
+                <p>Each link contains descriptive information about Avalara and AvaTax.</p>
+            </td>
+        </tr>
+
+
+    </table>
+
+    <div id="main-pane" class="main-pane" data-ajax="false" data-img="${URLUtils.staticURL('/icons/spinner.gif')}">
+        <isloop items="${pdict.items}" var="item">
+
+            <table border="0" cellspacing="0" cellpadding="0" class="overview_item prod-cat" width="100%">
+                <tbody>
+                    <tr>
+
+                        <td class="overview_arrow" title="${item.title ? item.title : item.name}">
+                            <a href="${item.href}" target="_blank">
+                                <img src="${URLUtils.staticURL('icons/avalara.png')}" width="32" height="32" alt=""
+                                    border="0">
+                            </a>
+                        </td>
+                        <td class="overview_subtitle" nowrap="nowrap" width="100%"
+                            title="${item.title ? item.title : item.name}">
+                            <br />
+                            <a href="${item.href}" class="overview_subtitle" target="_blank">${item.name}</a>
+                        </td>
+
+                    </tr>
+                    <tr>
+
+                        <td colspan="2" class="overview_title_description" valign="top">
+
+                            ${item.description ? item.description : ''}
+
+                            <br />&nbsp;</td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+        </isloop>
+    </div>
+
+
+    <div id="dummy-div" style="display: none;">
+        <!-- Placeholder -->
+    </div>
+
+
+</isdecorate>

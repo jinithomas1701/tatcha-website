@@ -1,0 +1,276 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/intlTelInput.css')}">
+<style type="text/css">
+	.iti{ display: block; }
+</style>
+<isdecorate template="account/pt_account_bs">
+   <isinclude template="util/modules"/>
+   <iscomment>Builds a registration page for the user. It provides all input fields for names and address</iscomment>
+   <isscript>
+      var attributes = {
+      disabled: 'disabled'
+      };
+      var autocomplete_attributes = {
+      autocomplete: "off"
+      };
+      var password_attributes = {
+      autocomplete: "off",
+      'data-msg-required': Resource.msgf('validate.password.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength),
+      'aria-label' : 'Password'
+      };
+      var passconfirm = {
+      autocomplete: "off",
+      'data-rule-equalTo': '#'+pdict.CurrentForms.profile.login.password.htmlName,
+      'data-msg-required': Resource.msgf('validate.password.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength),
+      'data-msg-equalTo': Resource.msg('validate.passwordconfirm', 'forms', null),
+      'aria-label' : 'Confirm Password'
+      };
+      
+      var isinvalidpwd = false;
+   </isscript>
+   <isif condition="${customer.authenticated && customer.registered}">
+      <div class="my-account">
+         <div class="container view-state">
+            <div class="row">
+               <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                  <isinclude template="account/user/profile" />
+                  <isinclude template="account/user/profile-edit" />
+               </div>
+            </div>
+         </div>
+      </div>
+      <iselse/>
+      <div class="container create-account-container mt-4">
+      <h1 class="text-center registration-header">${Resource.msg('account.user.registration.createnew','account',null)}</h1>
+      <isscript> 
+         var Site = require('dw/system/Site');
+         var showFBLogin = Site.getCurrent().getCustomPreferenceValue('enableFacebookLogin');
+      </isscript>
+      <isif condition="${showFBLogin === true}">
+         <div class="row">
+            <div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+               <div class="cta-container">
+                  <a href="#" class="fb-loginbtn btn btn-outline-secondary btn-facebook btn-block" tabindex="0">
+                  <i class="fab fa-lg fa-facebook"></i>
+                  Sign Up with Facebook
+                  </a>
+               </div>
+            </div>
+         </div>
+      </isif>
+      <form action="${URLUtils.httpsContinue()}" method="post" id="RegistrationForm">
+         <div class="row">
+            <div class="col-md-10 offset-md-1 col-lg-4 offset-lg-4">
+               <hr>
+               <isif condition="${(!pdict.CurrentForms.profile.valid && (!pdict.isInvalidPassword || pdict.isInvalidPassword === null))}">
+                  <div class="alert alert-danger" role="alert">
+                     ${Resource.msg('account.user.registration.registererror1','account',null)}
+                     <a href="${URLUtils.https('Login-Show')}">
+                     ${Resource.msg('account.user.registration.registererror2','account',null)}
+                     </a>
+                     ${Resource.msg('account.user.registration.registererror3','account',null)}
+                  </div>
+               </isif>
+               <isif condition="${pdict.isInvalidPassword}" >
+               		<div class="alert alert-danger" role="alert">
+	                     ${Resource.msg('account.user.registration.invalidpassword','account',null)}
+                  	</div>
+                  	<isscript>
+                  		isinvalidpwd = true;
+                  	</isscript>
+               </isif>
+               <isscript>
+                  var isRegistered = !pdict.CurrentForms.profile.valid ? 'has-error' : '';
+               </isscript>
+
+               <fieldset>
+                  <div class="form-group">
+                     <isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+                        <isscript>
+                           var attributes = {
+                           'data-msg-required': Resource.msg('validate.register.firstname', 'forms', null),
+                           'aria-label' : 'First name'
+                           }
+                        </isscript>
+                        <isinputfield placeholder=" " bsversion="true" formfield="${pdict.CurrentForms.profile.customer.firstname}" type="text" attributes="${attributes}"/>
+                        <isscript>
+                           var attributes = {
+                           'data-msg-required': Resource.msg('validate.register.lastname', 'forms', null),
+                           'aria-label' : 'Last name'
+                           }
+                        </isscript>
+                        <isinputfield placeholder=" " bsversion="true" formfield="${pdict.CurrentForms.profile.customer.lastname}" type="text" attributes="${attributes}"/>
+                        <iselse/>
+                        <isinputfield placeholder=" " bsversion="true" formfield="${pdict.CurrentForms.profile.customer.firstname}" type="text" attributes="${attributes}"/>
+                        <isinputfield placeholder=" " bsversion="true" formfield="${pdict.CurrentForms.profile.customer.lastname}" type="text" attributes="${attributes}"/>
+                     </isif>
+                  </div>
+               </fieldset>
+               <fieldset>
+                  <div class="form-group">
+                     <isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+                        <isscript>
+                           var attributes = {
+                           'data-msg-required': Resource.msg('validate.email', 'forms', null),
+                           'aria-label' : 'Email'
+                           };
+                        </isscript>
+                        <isinputfield placeholder=" " bsversion="true" formfield="${pdict.CurrentForms.profile.customer.email}" type="email" attributes="${attributes}"/>
+                        <iselse/>
+                        <isinputfield placeholder=" " bsversion="true" formfield="${pdict.CurrentForms.profile.customer.email}" type="email" attributes="${attributes}"/>
+                     </isif>
+                  </div>
+                  <div class="form-group <isif condition="${isinvalidpwd}">has-error</isif>">
+                     <isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+                        <isscript>
+                           var attributes = {
+                           'data-msg-required': Resource.msg('validate.register.password', 'forms', null)
+                           };
+                           
+                           var rowClass = pdict.registerError ? '' : 'updated-validation-msg updated-validation-msg-register';
+                        </isscript>
+                        <isinputfield placeholder=" " bsversion="true" rowclass="${rowClass}" formfield="${pdict.CurrentForms.profile.login.password}" type="password" attributes="${password_attributes}"/>
+                        <isif condition="${!(customer.authenticated && customer.registered)}">
+                           <isinputfield placeholder=" " bsversion="true" rowclass="${rowClass}" formfield="${pdict.CurrentForms.profile.login.passwordconfirm}" type="password" attributes="${passconfirm}"/>
+                        </isif>
+                     </isif>
+                  </div>
+                  <div class="checkbox tatcha-registration-email-list tatcha-registration-join">
+                     <label>
+                        <isinputfield bsversion="true" formfield="${pdict.CurrentForms.profile.customer.addtoemaillist}" type="checkbox"/>
+                     </label>
+                  </div>
+            </div>
+         </div>
+         <h4 class="text-center" style="margin-top: 32px;">PHONE OPTIONS</h4>
+         <div class="row">
+         <div class="col-md-6 offset-md-3">
+         <p class="text-center" style="line-height: 1.2; font-size: 14px;">This phone number will be used for securely resetting your password. <strong>We will text a verification code after you click Register.</strong></p>
+         </div>
+         </div>
+         <div class="row">
+	         <div class="col-sm-10 offset-sm-1 col-md-4 offset-md-4">
+		         <div class="form-group">
+			         <label for="phone" class="control-label">Phone (Optional)</label>
+			         <isscript>
+			            var attributes = {
+			            'fieldclass': 'ignore',
+			            'aria-label': 'Phone Number'
+			            };
+			         </isscript>
+					 <isinputfield  bsversion="true" formfield="${pdict.CurrentForms.profile.customer.phoneMobile}" type="tel" attributes="${attributes}"/>
+					 <div style="display:none;">
+					 	<isinputfield bsversion="true" formfield="${pdict.CurrentForms.profile.customer.countryCode}" type="tel"  />
+			         </div>
+		         </div>
+	         </div>
+         </div>
+
+         <div class="row">
+            <div class="col-md-8 offset-md-2">
+               <isscript>
+               var legalCopyContent = dw.content.ContentMgr.getContent('legal-copy');
+               </isscript>
+               <p class="text-center privacy-policy" style="margin-top: 32px;line-height: 1.2; font-size: 14px;"><isprint value="${legalCopyContent.custom.body}" encoding="off" /></p>
+               <div class="row">
+                  <div class="col-md-6 offset-md-3">
+                     <div class="cta-container">
+                     	   <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('skip_email_gate')}">
+                     	   		<input type="hidden" id="skip_email_gate" name="skip_email_gate" value="">
+                     	   </isif>
+                           <button type="submit" id="registerBtn" class="btn btn-primary btn-lg btn-block button-primary-block" value="${Resource.msg('global.register','locale',null)}" name="${pdict.CurrentForms.profile.confirm.htmlName}">
+                           ${Resource.msg('global.register','locale',null)}
+                           </button>				
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+
+         <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+         </fieldset>
+
+      </form>
+      <div class="container text-center" style="margin-top: 64px;"></div>
+      </div>
+   </isif>
+</isdecorate>
+
+<div class="modal fade modal-primary modal-display" id="recoveryPhone" tabindex="-1" role="dialog" aria-labelledby="modalrecoveryPhone">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content phone-verify">
+			<div class="modal-header">
+				<button type="button" class="close btn-phone-cancel-verify" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">Verify Your Phone</h4>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-success text-center alert-resend" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+							<i class="fal fa-redo fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-success">Thank you! Your code was resent.<br>Please try again below.</div>
+				</div>
+				<div class="alert alert-danger alert-incorrect-code" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+							<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-danger">The number entered is incorrect. Please try again.</div>
+				</div>
+				<p class="text-center" style="line-height: 1.2;">We sent a verification code to <strong id="modalphone"></strong>. To complete this process, please enter it below.</p>
+				<div class="row">
+					<div class="col-xl-6 offset-xl-3">
+						<form class="text-center">
+							<div class="form-group register-otp-verification-wrap">
+		    					<div class="input-group">
+		    						<div class="input-group-append">
+		    							<span class="input-group-text">
+			    							<i class="fa fa-lg fa-mobile-alt"></i>
+			    							<i class="fal fa-arrow-right"></i>
+			    						</span>
+		    						</div>
+		    						<input id="verification" class="form-control form-control-lg" style="height: 42px;">
+		    					</div>
+		    					<span class="help-block help-block-register-verification" style="display: none;">This field is required.</span>
+							</div>
+						</form>
+						<p class="text-center"><a href="#" class="btn-phone-resend" data-type="sms">Text me again</a> or <a href="#" class="btn-phone-resend" data-type="call">call me</a>.</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-xs-6 col-sm-6">
+						<a class="btn btn-outline-secondary btn-block btn-phone-cancel-verify" href="#" data-dismiss="modal" aria-label="Close">Cancel</a>
+					</div>
+					<div class="col-xs-6 col-sm-6">
+						<a class="btn btn-primary btn-block btn-phone-verify" href="#">Verify</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-content phone-confirm" style="display: none;">
+			<div class="modal-header">
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">Thank You</h4>
+			</div>
+			<div class="modal-body">
+				<p class="text-center">Your phone number has been verified.</p>
+			</div>
+			<div class="modal-footer">
+				<div class="text-center">
+					<a class="btn btn-primary verify-register" href="#" data-dismiss="modal" aria-label="Close">OK</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<input type="hidden" id="sendVerificationCodeUrl" value="${URLUtils.url('Twilio-SendVerificationCode')}"/>
+<input type="hidden" id="verifyCodeUrl" value="${URLUtils.url('Twilio-VerifyPasswordResetCode')}"/>
+<input type="hidden" id="skipPhoneValidation" value="0"/>

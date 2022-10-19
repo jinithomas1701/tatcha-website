@@ -1,0 +1,32 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="order-section shipping-section visualy-hidden">
+    <div class="content-section">
+        <isset name="addressObject" value="${pdict.ProductList.shippingAddress}" scope="page"  />
+        <table class='sor-module__subscription_table'>
+            <div class="order-section">
+                <div class="content-section">
+                    <td>
+                        ${Resource.msg('smartorderrefill.listview.shippingmet', 'smartorderrefill', null)}
+                    </td>
+                    <td class="label-col">
+                        ${pdict.ShippingMethodName}
+                    </td>
+                </div>
+            </div>
+            <tr class="sor-module__titles-row">
+                <td>
+                    ${Resource.msg('smartorderrefill.listview.shippingcost', 'smartorderrefill', null)}:
+                </td>
+                <td class="label-col">
+                    <isprint value="${new dw.value.Money(pdict.ShippingCost, pdict.currencyCode)}" />
+                </td>
+            </tr>
+            <isinclude template="bm/refillListView/addressTable"  />
+        </table>
+    </div>
+    <isinclude template="bm/refillListView/changeAddressButton"  />
+</div>

@@ -1,0 +1,207 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="LineItemCtnr" value="${pdict.p_lineitemctnr}" scope="page"/>
+<isset name="Coupons" value="${pdict.p_coupons}" scope="page"/>
+<isscript>
+	var merchTotalExclOrderDiscounts : dw.value.Money = LineItemCtnr.getAdjustedMerchandizeTotalPrice(false);
+	var merchTotalInclOrderDiscounts : dw.value.Money = LineItemCtnr.getAdjustedMerchandizeTotalPrice(true);
+	var orderDiscount : dw.value.Money = merchTotalExclOrderDiscounts.subtract( merchTotalInclOrderDiscounts );
+	var merchandiseTotal = merchTotalExclOrderDiscounts.add(LineItemCtnr.giftCertificateTotalPrice);
+	
+	if(dw.order.TaxMgr.getTaxationPolicy() == dw.order.TaxMgr.TAX_POLICY_NET) {
+		if(LineItemCtnr.totalTax.available) {
+			var calculatedTax = LineItemCtnr.totalTax;
+		} else {
+			var calculatedTax = new dw.value.Money(0, session.getCurrency().getCurrencyCode());
+		} 
+	}
+	
+	if(LineItemCtnr.shippingTotalPrice.available) {
+		if((LineItemCtnr.shippingTotalPrice.value != 0) && (LineItemCtnr.adjustedShippingTotalPrice.value != 0)) {
+			if(LineItemCtnr.shippingTotalPrice.value != LineItemCtnr.adjustedShippingTotalPrice.value) {
+				var shippingTotal = LineItemCtnr.adjustedShippingTotalPrice;
+			}
+		} else {
+			var shippingTotal = 0;
+		}
+	} else {
+		var shippingTotal = 0;
+	}
+	
+	if(LineItemCtnr.totalNetPrice.available) {
+		var orderTotalValue = LineItemCtnr.totalNetPrice.add(calculatedTax);
+	} else {
+		var orderTotalValue = LineItemCtnr.getAdjustedMerchandizeTotalPrice(true)+(LineItemCtnr.giftCertificateTotalPrice)+(shippingTotal)+(calculatedTax);
+	}
+</isscript>
+
+<div class="d-flex justify-content-between">
+	<h2 class="checkout-summary-heading d-none d-lg-block">Order Summary</h2>
+	<button role="button" class="checkout-summary-heading py-4 m-0 d-lg-none checkout-summary-heading-button" data-toggle="collapse" data-target="#orderCollapse" aria-expanded="false" aria-controls="summaryHeadingCollapse">
+     	<b class="ordersummary" id="ordersummary">VIEW ORDER SUMMARY <i class="fal fa-lg fa-angle-down"></i>
+         </b>
+     </button>
+	<div class="order-count d-none d-lg-block"><isprint value="${!empty(checkoutObj)?checkoutObj.basketSize:''}" formatter="##" /><isif condition="${!empty(checkoutObj) && checkoutObj.basketSize != null && checkoutObj.basketSize == 1}"> ITEM<iselse>  ITEMS </isif></div>
+    <div class="order-count d-lg-none py-4 m-0"><isprint value="${orderTotalValue}"/></div>
+</div>
+
+<isif condition="${pdict.p_isdesktopsummary}">
+<div id="desktoporderContainer" class="orderCollapseWrap orderCollapse" aria-label="Order Collapse">
+<iselse>
+<div id="orderCollapse" class="collapse orderCollapseWrap orderCollapse" aria-label="Order Collapse">
+</isif>
+
+
+	<isif condition="${!empty(LineItemCtnr)}">
+	
+		<div class="product-list-items">
+			<isspminilineitems p_lineitemctnr="${checkoutObj.basket}"/>
+		</div>
+  		
+		<iscomment>Promocode </iscomment>
+		<isif condition="${!empty(checkoutObj.checkoutState) && checkoutObj.checkoutState != 'review' && !pdict.p_hide_promo_section}">
+		<div class="promocode-container promocontainer" <isif condition="${!empty(checkoutObj.paymentInfo.paymentInstruments) && (checkoutObj.paymentInfo.paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI') && checkoutObj.checkoutState=='review' }">style=display:none;</isif>>		
+			<isif condition="${!empty(Coupons) && !empty(Coupons[0].couponCode)}">
+				<div class="promocode-applied">
+					<form action="${URLUtils.url('Cart-RemoveCoupon')}" method="get">
+						<input type="hidden" name="scope" value="shipping"/>
+						<input type="hidden" name="lineItem" value="${Coupons[0].UUID}">
+						<input type="hidden" name="format" value="spcheckout">
+						<input type="hidden" name="selectAddressID" value="">
+		            	<div class="form-row">
+		                	<div class="form-group col-12">
+								<div class="input-group">
+	                            	<input type="text" class="form-control floating__input form-control-lg d-inline-block" name="couponCode" aria-labelledby="enter promo code" placeholder="Promo code" disabled="" value="${Coupons[0].couponCode}">
+	                            	<label class="float-label" for="zipcode" data-content="Promo code"></label>
+	                                
+	                            </div>	                         
+		                    </div>
+		                </div>
+	                </form>
+	                <span class="promo-close" tabindex="0" aria-label="Remove promocode '${Coupons[0].couponCode}'"><i class="fas fa-times-circle"></i></span>
+	                <div class="coupon-status" style="display:none;" tabindex="0" aria-label="'${Coupons[0].couponCode}' has been applied">
+	                	<i class="fal fa-check-circle"></i><isprint value="${Coupons[0].couponCode}" /> has been applied 	                	
+	                </div>
+           			<isloop items="${LineItemCtnr.bonusDiscountLineItems}" var="bonusDiscountLineItem" status="loopstate">
+                		<isif condition="${bonusDiscountLineItem.getPromotion().ID == samplesPromoID}"><iscontinue/></isif>
+                		<isif condition="${!empty(bonusDiscountLineItem.getPromotion().ID)}">
+                    		<isif condition="${bonusDiscountLineItem.getBonusProductLineItems().size() > 0}">
+                    				<a data-href="${URLUtils.url('Product-GetBonusProducts','bonusDiscountLineItemUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false, 'pageSize',10, 'pageStart', 0, 'bpTotal', -1, 'format', 'spcheckout')}" href="#" class="edit-coupon" data-toggle="modal" aria-label="Edit your promo">Edit your promo</a>
+                    			<iselse>
+                    				<a  data-href="${URLUtils.url('Product-GetBonusProducts','bonusDiscountLineItemUUID', bonusDiscountLineItem.UUID, 'lazyLoad', false, 'pageSize',10, 'pageStart', 0, 'bpTotal', -1, 'format', 'spcheckout')}" href="#" class="edit-coupon add-bonus-items" data-toggle="modal" aria-label="Add your promo">Add your promo</a>
+                    		</isif>
+                	</isif>
+            		</isloop>	                
+	            </div>						
+			<iselse>
+				<button style="border: unset;background: unset;" class="text-primary promocode-link" aria-expanded="false"  aria-label="Promo code">+ Promo code</button>	
+				<form action="${URLUtils.url('Cart-AddCouponJson')}" method="get">
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+			        <input type="hidden" name="format" value="spcheckout"/>
+			        <input type="hidden" name="scope" value="shipping"/>
+					<input type="hidden" name="selectAddressID" value="">
+					<div class="form-row promocode-form" style="display:none;">
+	                <div class="form-group col-12 mb-0">
+	                	<div class="input-group">
+
+	                    		<input type="text"  class="form-control floating__input form-control-lg d-inline-block promocode mr-1" name="couponCode" aria-label="Add promo code" placeholder="Promo code">
+	                    		
+								<span class="promo-label">
+									<span tabindex="0" aria-label="Promocode field" class="control-label" data-toggle="tooltip" data-placement="right" title="" data-original-title="Only one code per order. Some products may be excluded."><span style="cursor:pointer;"><i class="fas fa-question-circle label-icon"></i></span></span>
+								</span>
+	                            <span class="input-group-btn input-group-append">
+	                            	<button disabled class="btn btn-input-group btn-dark promo-button input-group-text" type="button" value="${Resource.msg('global.apply','locale',null)}"><span>${Resource.msg('global.apply','locale',null)}</span></button>	                            
+	                        	</span>
+	                        	<label class="float-label" data-content="Promo code" for="zipcode"></label>
+	                    	
+	                    </div>
+	                </div>
+	           		</div>
+           		</form>
+           		<isset name = "Coupon" value = "null" scope = "session">
+           		<div class="alert-text promocode-error" tabindex="0"><i class="fal fa-exclamation-circle mr-2"></i><span class="error-text"></span></div>
+			</isif>         
+		</div>		
+		</isif>
+		
+		
+		
+		<div class="order-totals">
+		<div class="merc-disc">
+			<iscomment> Total </iscomment>
+        	<div class="d-flex justify-content-between mt-2">
+            	<div class="order-property">Merchandise Total</div>
+                <div class="order-value"><isprint value="${merchandiseTotal}"/></div>
+            </div>
+            <iscomment> Discount</iscomment>
+            <isif condition="${!empty(orderDiscount) && orderDiscount.value > 0.0}">
+	            <div class="d-flex justify-content-between mt-2 pb-2 success-text">	 
+	            	<div class="order-property">Discount: <isprint value="${Coupons[0].couponCode}" /></div>
+	            	<div class="order-value"><isprint value="${orderDiscount}"/></div>
+	            </div>
+	            <div class="d-flex justify-content-between mt-2">	 
+	        		<div class="order-property">Sub Total</div>
+	            	<div class="order-value"><isprint value="${LineItemCtnr.getAdjustedMerchandizeTotalPrice(true).add(LineItemCtnr.giftCertificateTotalPrice)}"/></div>
+	        	</div>
+	         </isif>
+          </div>
+            
+            <iscomment> Shipping </iscomment>
+            <div class="d-flex justify-content-between mt-2">
+            	<div class="order-property">
+            		<isif condition="${LineItemCtnr.shippingTotalPrice.available && checkoutObj.checkoutState != 'shipping'}">
+            			Shipping
+            		<iselse/>
+            			Estimated Shipping
+            		</isif>
+            	</div>
+            	<div class="order-value">
+                <isif condition="${(LineItemCtnr.shippingTotalPrice.available)}">
+					<isif condition="${(LineItemCtnr.shippingTotalPrice.value != 0) && (LineItemCtnr.adjustedShippingTotalPrice.value != 0)}">
+							<isprint value="${LineItemCtnr.shippingTotalPrice}"/>
+							<isif condition="${(LineItemCtnr.shippingTotalPrice.value != LineItemCtnr.adjustedShippingTotalPrice.value)}">
+								(<isprint value="${LineItemCtnr.adjustedShippingTotalPrice}"/>)
+							</isif>
+						<iselse/>
+							${Resource.msg('order.ordersummary.ordershippingfree','order',null)}
+						</isif>
+					<iselse/>
+						${Resource.msg('order.ordersummary.ordershippingtbd','order',null)}
+				</isif>            	
+                </div>                
+            </div>
+                        
+            <iscomment> Tax </iscomment>            
+            <isif condition="${dw.order.TaxMgr.getTaxationPolicy() == dw.order.TaxMgr.TAX_POLICY_NET}">
+	            <div class="d-flex justify-content-between mt-2">
+	            	<div class="order-property">
+	            		<isif condition="${LineItemCtnr.totalTax.available && checkoutObj.checkoutState != 'shipping'}">
+	            			Tax
+	            		<iselse/>
+	            			Estimated Tax
+	            		</isif>
+	            	</div>
+	            	<div class="order-value">
+	            	<isif condition="${LineItemCtnr.totalTax.available && checkoutObj.checkoutState != 'shipping'}">
+						<isprint value="${LineItemCtnr.totalTax}"/>
+					<iselse/>
+						${Resource.msg('order.ordersummary.ordertaxempty','order',null)}
+					</isif>            	
+	            	</div>
+	            </div>        
+            </isif>                  		
+        </div>
+        <hr class="seperator">
+        <iscomment> Total </iscomment>
+        <div class="d-flex justify-content-between estimated-total pb-3">
+        	<div class="property">
+        		<isif condition="${checkoutObj.checkoutState != 'shipping'}">
+        			Total
+        		<iselse/>
+        			Estimated Total
+        		</isif>
+        	</div>
+            <div class="value"><isprint value="${orderTotalValue}"/></div>
+        </div>
+			                   
+	</isif>
+</div>

@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<div class="modal fade checkout-add-card-modal" id="addCardModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-measure">
+                <h5 class="modal-title modal-title-measure" id="exampleModalLabel">ADD CARD</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">
+                        <i class="fal fa-times close-spec"></i></span></button>
+            </div>
+            <div class="modal-body modal-body-measure">
+            	<form id="addCreditCardForm" action="${URLUtils.url('Braintree-AccountAddCreditCardHandle')}" class="account-add-credit-card js_braintree_addCreditCardForm" method="post">
+	                <isscript>
+		                var isEnable3dSecure = false;
+		                var ownerName = !empty(pdict.CardFields) && !empty(pdict.CardFields.owner) ? pdict.CardFields.owner : '';
+		                var amount = 0;
+		            </isscript>	
+		            <isset name="isAddCardModal" value="true" scope="page" />	            
+	           		<isinclude template="braintree/util/spcCreditCardFields"/>
+	           		<div class="form-row label-inline form-indent">
+	           			<div class="form-group col-12">
+	           				<label for="braintreeCreditCardMakeDefault">
+								<input name="braintreeCreditCardMakeDefault" id="braintreeCreditCardMakeDefault" type="checkbox" value="true" />
+								<span>${Resource.msg('braintree.creditcard.makedefault', 'locale', null)}</span>
+							</label>
+	           			</div>
+					</div>
+					
+					<isspcbillingform p_billingaddr="${pdict.p_checkoutobj}" p_billingaddrmodal="true"/>
+					
+					 <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="true" />
+				     <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}" value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}" />
+				     <input type="hidden" name="scope" value="billing">
+				     
+	                <div class="d-flex justify-content-around btn-measure">
+	                    <button type="button" class="btn btn-outline-dark btn-single-measure" data-dismiss="modal">Cancel</button>
+		          		<button type="button" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="true" class="btn btn-primary btn-single-measure edit-save credit-card-save">${Resource.msg('braintree.addcreditcard.button.apply', 'locale', null)}</button>
+	                </div>
+				</form>
+            </div>
+        </div>
+    </div>
+</div>

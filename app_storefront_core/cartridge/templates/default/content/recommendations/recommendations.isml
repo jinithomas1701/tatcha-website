@@ -1,0 +1,487 @@
+<iscache type="relative" hour="24" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="content/content/pt_content" scope="page"/>
+<isset name="contentClass" value="content-basic recommendation-content" scope="page"/>
+<isinclude template="util/modules"/>
+
+<style>
+
+
+/* Style the tab */
+.tab {
+  overflow: hidden;
+  border: 1px solid #ccc;
+  background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+.tab button {
+  background-color: inherit;
+  float: left;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+  transition: 0.3s;
+  font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+.tab button:hover {
+  background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+.tab button.active {
+  background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+  display: none;
+  padding: 6px 12px;
+  -webkit-animation: fadeEffect 1s;
+  animation: fadeEffect 1s;
+}
+
+/* Fade in tabs */
+@-webkit-keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+
+@keyframes fadeEffect {
+  from {opacity: 0;}
+  to {opacity: 1;}
+}
+</style>
+
+
+
+
+<isscript>
+	var Tatcha = require('app_storefront_core/cartridge/scripts/util/Tatcha');
+	var recommendations = Tatcha.getPrdRecommendations();
+	
+</isscript>
+<isdecorate template="${DecoratorTemplate}">
+	<div class="container">
+		<div class="content-header">
+			<h2 class="section-anchor">Recommendation Engine</h2>
+		</div>
+		<div class="product-list-view-options">
+		<div class="view-option-group-row">
+			<div class="view-option-group view-filters">
+			<div class="dropdown customerType">
+				<button class="btn view-option-btn dropdown-toggle outline-global" tabindex="0" type="button" id="recfilterPersona" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<div class="view-option">
+					<span class="view-option-value">
+					<select style="width:170px;margin-left: 30px;padding-left:10px;" id="rpPersona">
+						<option  selected value="">Select Persona</option>
+						<option  value="minimalist">Minimalist</option>
+						<option  value="ritualist">Ritualist</option>
+						<option  value="enthusiast">Enthusiast</option>
+					</select>
+				</button>
+			</div>
+			<div class="dropdown rprefinement">
+				<button class="btn view-option-btn dropdown-toggle outline-global" tabindex="0" type="button" id="recfilterskinType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<div class="view-option">
+					<span class="view-option-value">
+					<select style="width:170px;margin-left: 30px;padding-left:10px;" id="rpskinType">
+						<option  selected value="">Select Skin Type</option>
+						<option  value="dry">Dry</option>
+						<option  value="normal_to_dry">Normal to Dry</option>
+						<option  value="normal_to_oily">Normal to Oily</option>
+						<option  value="oily">Oily</option>
+						<option  value="sensitive">Sensitive</option>
+					</select>
+				</button>
+			</div>
+			
+			
+			<div class="dropdown rprefinement">
+				<button class="btn view-option-btn dropdown-toggle outline-global" tabindex="0" type="button" id="rpFilterskinConcerns" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+					<div class="view-option">
+						<span class="view-option-value">
+						Select Solution(s)						
+						<i class="fal fa-angle-down dropdown-icon"></i> 
+					</div>
+				</button>
+				<ul class="dropdown-menu dropdown-menu-multi-col dropdown-menu-3-col" id="rpSolutions" aria-labelledby="rpFilterskinConcerns">
+					<li>
+
+						<ul class="list-unstyled col-sm-4">
+							<li style="background-color: #E8E8E8">
+								<a href="" data-value="" tabindex="-1">
+								<div class="view-option-hdr">FACE</div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="acne" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="acne">Acne</label></div>
+								</a>
+							</li>					
+							<li>
+								<a href="" data-value="acne_scars" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="acne_scars">Acne Scars</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="dark_spots" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="dark_spots">Dark Spots</label></div>
+								</a>
+							</li>							
+							<li>
+								<a href="" data-value="brightening" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="brightening">Brightening</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="even_tone" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="even_tone">Even Tone</label></div>
+								</a>
+							</li>	
+							<li>
+								<a href="" data-value="dullness" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="dullness">Dullness</label></div>
+								</a>
+							</li>													
+							<li>
+								<a href="" data-value="dryness" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="dryness">Dryness</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="eczema" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="eczema">Eczema</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Redness" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Redness">Redness</label></div>
+								</a>
+							</li>
+							
+						</ul>
+						<ul class="list-unstyled col-sm-4">
+							<li style="background-color: #E8E8E8">
+								<a href="" data-value="" tabindex="-1">
+								<div class="view-option-hdr">&nbsp;</div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Elasticity" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Elasticity">Elasticity</label></div>
+								</a>
+							</li>	
+							<li>
+								<a href="" data-value="Firmness" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Firmness">Firmness</label></div>
+								</a>
+							</li>													
+							<li>
+								<a href="" data-value="Even Texture" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Even Texture">Even Texture</label></div>
+								</a>
+							</li>							
+							<li>
+								<a href="" data-value="Fine Lines & Wrinkles" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Fine Lines & Wrinkles">Fine Lines & Wrinkles</label></div>
+								</a>
+							</li>					
+							<li>
+								<a href="" data-value="Plumping" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Plumping">Plumping</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Pores" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Pores">Pores</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Sun Care" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Sun Care">Sun Care</label></div>
+								</a>
+							</li>
+						</ul>
+						<ul class="list-unstyled col-sm-4" style="border-left: 1px solid #E9EDF0">
+							<li style="background-color: #E8E8E8">
+								<a href="" data-value="" tabindex="-1">
+								<div class="view-option-hdr">EYES</div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Fine lines" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Fine lines">Fine lines</label></div>
+								</a>
+							</li>					
+							<li>
+								<a href="" data-value="Dark Circles" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Dark Circles">Dark Circles</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Dryness" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Dryness Eyes">Dryness</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Puffiness" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" data-filter-code="Puffiness">Puffiness</label></div>
+								</a>
+							</li>
+						</ul>												
+					</li>	
+					</ul>
+			</div>
+			
+			<div class="dropdown rprefinement">
+				&nbsp;<input type="text" id="prSelectedPrds" value="" /> <input class="btn-small" type="button" id="prShowResults" style="background-color: #E8E8E8" value="Show Results" />				
+			</div>			
+			</div>
+			
+
+			
+		</div>
+		</div>
+
+			<div class="results-filter sort-by view-option-group view-sort" style="display:none;">
+					<ul class="list-unstyled col-sm-4" style="border-left: 1px solid #E9EDF0">
+							<li>
+								<a href="" data-value="Mask" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Mask">Mask</label></div>
+								</a>
+							</li>					
+							<li>
+								<a href="" data-value="Face Serum + Treatment" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Serum">Serum</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Cleanser" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Cleanser">Cleanser</label></div>
+								</a>
+							</li>	
+							<li>
+								<a href="" data-value="Plump" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Plump">Plump</label></div>
+								</a>
+							</li>
+							<li>
+								<a href="" data-value="Eyecare" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Eyecare">Eyecare</label></div>
+								</a>
+							</li>																					
+						</ul>	
+						<ul class="list-unstyled col-sm-4" style="border-left: 1px solid #E9EDF0">
+
+							<li>
+								<a href="" data-value="Moisturizer" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Moisturizer">Moisturizer</label></div>
+								</a>
+							</li>													
+							<li>
+								<a href="" data-value="Exfoliator" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Exfoliator">Exfoliator</label></div>
+								</a>
+							</li>						
+							<li>
+								<a href="" data-value="Suncare" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Suncare">Suncare</label></div>
+								</a>
+							</li>						
+							<li>
+								<a href="" data-value="Make-up Essentials" tabindex="-1">
+								<div class="checkbox"><label><input type="checkbox" class="optional-filter" data-filter-code="Make-up Essentials">Make-up Essentials</label></div>
+								</a>
+							</li>					
+						</ul>	
+				
+			</div>
+		<div class="row">
+		<br/><br/>
+		</div>
+		<div class="row">
+		<div class="container">
+				<p>
+
+					
+						  <table id="coreProducts" class="table table-hover">
+						  </table>
+
+					
+
+				</p>	
+		</div>
+		</div>	
+	</div>
+</isdecorate>
+<input type="hidden" id="getProductRecommendationUrl" value="${URLUtils.url('ProductRecommendation-ShowRecommendationsPOC')}"/>
+
+<script type="text/javascript">
+
+$(document).ready(function(){
+	
+	$("#showOptional").click(function(){
+		var isVisible = $(".optional").is(':visible');
+		 debugger;
+		if (isVisible === true) {
+			$('#showOptional').html("Show optional");
+			$(".optional").hide();
+		} else {
+			$('#showOptional').html("Hide optional");
+			$(".optional").show(1000);
+		}
+		
+		
+	});
+	
+	$(".optional-filter").click(function(){
+		var category = $(this).attr('data-filter-code') ;		
+		if($(this).is(':checked')){
+			if(category == 'showall') {
+				$("tr[data-category]").show(1000);
+			} else {
+				$("tr[data-category='"+category+"']").show(1000);
+			}
+			
+		} else {
+			if(category == 'showall') {
+				$("tr[data-category]").hide();
+			} else {
+				$("tr[data-category='"+category+"']").hide();
+			}
+		}
+		
+	});	
+	
+	$("#prShowResults").click(function(){
+		$("#coreProducts").hide(100);
+		$("#optionalProducts").hide(1000);
+		
+		var skinConcerns  = [];		  
+		$('#rpSolutions').find('input').each(function(index,checkbox){
+			if(checkbox.checked){
+			 	skinConcerns.push($(checkbox).attr('data-filter-code'));
+			}
+		});
+			
+		
+		$('.optional-filter').each(function() {
+			this.checked = false;			
+		});
+		
+		$('.results-filter').hide();
+		
+		var skinType = $('#rpskinType').val();
+		var prds = $('#prSelectedPrds').val().toUpperCase();
+		var persona = $('#rpPersona').val();
+		
+		$.post($('#getProductRecommendationUrl').val(),
+		{
+			skinType: skinType,
+			skinConcerns: skinConcerns.join('|'),
+			prds: prds,
+			persona:persona
+		},
+		
+		function(data, status){
+		   
+		   $('#coreProducts > tr').remove();
+		   var c = [];
+		   var response = data.response.recommendations;
+	    	 c.push("<tr><th>Category</th>");
+	         c.push("<th>Product</th>");
+	         c.push("<th>&nbsp;</th>");
+			 c.push("<th>&nbsp;</th>");
+	         c.push("<th>Usage Time</th></tr>"); 
+	         debugger;
+		   $.each(response, function(i, data) { 
+				 var usageTime = 'Morning';
+				 if(data.usageTime == 'PM'){
+					 usageTime = 'Evening';
+				 }
+				 
+				 
+				 
+		    	 if(data.type == 'core'){
+		    		 
+		    		 if(data.display){
+		    			 $('input[type="checkbox"][data-filter-code="'+data.filterName+'"]').prop('checked', true);
+		    			 c.push("<tr data-category='" + data.filterName + "'><td style='background-color:#F7F9FA'>"+ data.name + "</td>");		    			 
+		    		 } else {
+		    			 c.push("<tr style='display:none;' data-category='" + data.filterName + "'><td style='background-color:#F7F9FA'>" + data.name + "</td>");
+		    		 }
+
+
+		    		 if(data.label.length>0) {
+		    			 c.push("<td title='Skintype:"+data.scoreSkinType+", Score:"+data.score+"'>" + data.productDetails.name +"<small><i>("+data.ID+") &nbsp;<font color=#4f788c>["+data.label.join(',')+"]</font></i></small></td>");
+		    		 } else {
+		    			 c.push("<td title='Skintype:"+data.scoreSkinType+", Score:"+data.score+"'>" + data.productDetails.name +" <small><i>("+data.ID+")</i></small></td>");
+		    		 }
+			         
+			         c.push("<td>&nbsp;</td>");
+			         if(data.selected){
+			         	c.push("<td>&nbsp; <small><i>(Purchased)</i></small></td>");
+			         } else {
+			        	 c.push("<td>&nbsp; </td>");
+			         }
+			         
+			         if(usageTime == 'Morning') {
+			        	 c.push("<td style='background-color:#E4F3F3;'>" + usageTime + "</td></tr>"); 
+			         } else {
+			        	 c.push("<td style='background-color:#98AEAE;'>" + usageTime + "</td></tr>");  
+			         }
+			            
+		    	 } else {
+		    		 if(data.display){
+		    			 $('input[type="checkbox"][data-filter-code="'+data.filterName+'"]').prop('checked', true);
+				    	 c.push("<tr data-category='"+ data.filterName +"' class='optional'><td style='background-color:#E8E8E8;color:GREY'>" + data.name + "</td>");		    			 
+		    		 } else {
+				    	 c.push("<tr data-category='"+ data.filterName +"' class='optional' style='display:none;'><td style='background-color:#E8E8E8;color:GREY'>" + data.name + "</td>");
+		    		 }
+		    		 
+		    		 
+		    		 
+		    		 if(data.label.length>0) {
+			         	c.push("<td title='Skintype:"+data.scoreSkinType+", Score:"+data.score+"'>" + data.productDetails.name+" <small><i>("+data.ID+") &nbsp;<font color=#4f788c>["+data.label.join(',')+"]</font></i></small></td>");
+		    		 } else {
+		    			c.push("<td title='Skintype:"+data.scoreSkinType+", Score:"+data.score+"'>" + data.productDetails.name+" <small><i>("+data.ID+")</i></small></td>");
+		    		 }
+			         
+			         
+			         
+			         c.push("<td>&nbsp; </td>");
+			         if(data.selected){
+				         	c.push("<td>&nbsp; <small><i>(Purchased)</i></small></td>");
+				         } else {
+				        	 c.push("<td>&nbsp; </td>");
+				         }			         
+			                
+			         if(usageTime == 'Morning') {
+			        	 c.push("<td style='background-color:#E4F3F3;'>" + usageTime + "</td></tr>"); 
+			         } else {
+			        	 c.push("<td style='background-color:#98AEAE;'>" + usageTime + "</td></tr>");  
+			         }			         
+			         
+		    	 }
+
+		     });
+
+		     $('#coreProducts').html(c.join(""));
+			 $("#coreProducts").show(1000);
+			 $('.results-filter').show(1000);
+		   
+		});
+	});
+	//$("#prShowResults").click(function(){});
+	});
+	
+
+
+
+</script>
+

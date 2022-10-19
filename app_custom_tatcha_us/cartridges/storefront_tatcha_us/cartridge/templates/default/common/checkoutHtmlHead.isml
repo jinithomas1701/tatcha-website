@@ -1,0 +1,87 @@
+<meta charset=UTF-8>
+
+<meta http-equiv="x-ua-compatible" content="ie=edge">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<iscomment>The page meta data will be replaced by rule based content if it's available</iscomment>
+<isif condition="${pdict.CurrentPageMetaData && pdict.CurrentPageMetaData.title && pdict.CurrentPageMetaData.title != Resource.msgf('title.default','title', null)}">
+    <title><isprint value="${pdict.CurrentPageMetaData.title}" encoding="off" /> | <isprint value="${Resource.msg('title.tatcha','title', '')}" encoding="off" /></title>
+    <iselse/>
+    <title><isprint value="${Resource.msg('title.'+pdict.action,'title', '')}" encoding="off" /> | <isprint value="${Resource.msg('title.tatcha','title', '')}" encoding="off" /></title>
+</isif>
+
+<!-- Hotjar Tracking Code for https://www.tatcha.com -->
+<script>
+    (function(h,o,t,j,a,r){
+        h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+        h._hjSettings={hjid:815809,hjsv:6};
+        a=o.getElementsByTagName('head')[0];
+        r=o.createElement('script');r.async=1;
+        r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+        a.appendChild(r);
+    })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+</script>
+
+<meta name="description" content="${pdict.CurrentPageMetaData.description ? pdict.CurrentPageMetaData.description : Resource.msg('global.storename','common',null)}"/>
+<meta name="keywords" content="${pdict.CurrentPageMetaData.keywords ? pdict.CurrentPageMetaData.keywords : Resource.msg('global.storename','common',null)}"/>
+
+<iscomment>Additional Rule based page meta tags</iscomment>
+<isloop items="${pdict.CurrentPageMetaData.pageMetaTags}" var="pageMetaTag">
+    <isif condition="${pageMetaTag.name}">
+        <meta name="<isprint value="${pageMetaTag.ID}">" content="<isprint value="${pageMetaTag.content}">">
+        <iselseif condition="${pageMetaTag.property}">
+            <meta property="<isprint value="${pageMetaTag.ID}">" content="<isprint value="${pageMetaTag.content}">">
+    </isif>
+</isloop>
+
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-196x196.png')}" sizes="196x196" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-96x96.png')}" sizes="96x96" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-32x32.png')}" sizes="32x32" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-16x16.png')}" sizes="16x16" />
+<link rel="icon" type="image/png" href="${URLUtils.staticURL('/images/favicons/favicon-128.png')}" sizes="128x128" />
+
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/tatcha-checkout.css')}" />
+<isloop items="${ require('*/cartridge/scripts/assets.js').styles }" var="style">
+    <link rel="stylesheet" href="${style.src}" <isif condition="${style.integrity != null}">integrity="${style.integrity}" crossorigin="anonymous"</isif> />
+</isloop>
+
+<isif condition="${'loqateAccountEnabled' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.loqateAccountEnabled}">
+    <link rel="stylesheet" type="text/css" href="https://services.postcodeanywhere.co.uk/css/address-3.91.css" />
+    <script type="text/javascript" src="https://services.postcodeanywhere.co.uk/js/address-3.91.js"></script>
+</isif>
+
+<isif condition="${'GoogleVerificationTag' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.GoogleVerificationTag!=''}">
+    <meta name="google-site-verification" content="<isprint value="${dw.system.Site.current.preferences.custom.GoogleVerificationTag}"/>" />
+</isif>
+
+<iscomment>Extole Library</iscomment>
+<isinclude template="extole/core"/>
+<isinclude template="include/datadomeheader"/>
+
+<iscomment> mParticle Includes for SDK </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('mParticleEnabled')}">
+    <isinclude template="mParticle/mParticle_includes"/>
+</isif>
+
+<iscomment> rsc Includes for SDK </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_includes"/>
+</isif>
+
+<iscomment>
+    hook for Marketing Cloud connector & other integration which need to inject
+    logic or markup into the page header
+    IMPORTANT: Note that this hook will be called to cached as well as uncached pages
+    Refrain from calling processing intensive logic in here
+    do not include shopper specific information.
+</iscomment>
+${dw.system.HookMgr.callHook('app.template.htmlHead', 'htmlHead', pdict) || ''}
+<iscomment>
+    Module to overlay skinning css
+    IMPORTANT: Note that this module will be called to cached as well as uncached pages
+    Refrain from calling processing intensive logic in here
+    do not include shopper specific information.
+    This hook will be executed with encoding disabled. Please sanitize output in the hook.
+</iscomment>
+

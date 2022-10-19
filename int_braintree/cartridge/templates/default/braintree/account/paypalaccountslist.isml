@@ -1,0 +1,49 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var paypalMethod = dw.order.PaymentMgr.getPaymentMethod(BraintreeHelper.prefs.paypalMethodName);
+</isscript>
+<isif condition="${paypalMethod && paypalMethod.getPaymentProcessor().getID() == 'BRAINTREE_PAYPAL'}">
+
+    <isscript>
+        var isAllowedAddAccount = BraintreeHelper.getPrefs().BRAINTREE_PAYPAL_Vault_Mode != 'not';
+        var customerPaypalInstruments = BraintreeHelper.getCustomerPaypalPaymentInstruments();
+    </isscript>
+
+    <isif condition="${isAllowedAddAccount || customerPaypalInstruments.size() > 0}">
+        <h1>${Resource.msg('braintree.paypal.accountslist.title','locale',null)}</h1>
+    </isif>
+
+    <isif condition="${isAllowedAddAccount}">
+        <a class="section-header-note button js_braintree_addPaypalAccountBtn" href="${URLUtils.url('Braintree-AccountAddPaypalAccount')}" title="${Resource.msg('braintree.account.addpaypalaccount','locale',null)}">
+            ${Resource.msg('braintree.paypal.accountslist.addnew','locale',null)}
+        </a>
+    </isif>
+
+    <isif condition="${customerPaypalInstruments.size() > 0}">
+        <ul class="payment-list">
+            <isloop items="${customerPaypalInstruments}" var="instrument" status="loopstate">
+            <li>
+                <div class="email">
+                    <span><isprint value="${instrument.custom.braintreePaypalAccountEmail}" /></span>
+                    <isif condition="${instrument.custom.braintreeDefaultCard}"><b>${Resource.msg('braintree.paypal.accountslist.default','locale',null)}</b></isif>
+                </div>
+                <form action="${URLUtils.url('Braintree-AccountPaypalAccountActionHandle')}" method="post" id="paypalaccount_${loopstate.count}">
+                    <fieldset>
+                        <input type="hidden" name="${pdict.CurrentForms.braintreepaypalaccount.secureKeyHtmlName}" value="${pdict.CurrentForms.braintreepaypalaccount.secureKeyValue}" />
+                        <input type="hidden" name="${pdict.CurrentForms.braintreepaypalaccount.uuid.htmlName}" value="${instrument.getUUID()}" />
+                        <isif condition="${!instrument.custom.braintreeDefaultCard}">
+                            <button type="submit" class="button-text" value="true" name="${pdict.CurrentForms.braintreepaypalaccount.makedefault.htmlName}">
+                                ${Resource.msg('braintree.paypal.accountslist.button.makedefault','locale',null)}
+                            </button>
+                        </isif>
+                        <button type="submit" class="button-text js_braintree_paypal_delete_account" value="true" name="${pdict.CurrentForms.braintreepaypalaccount.deletepayment.htmlName}" data-confirm-message="${Resource.msgf('braintree.paypal.accountslist.button.delete.confirm.message','locale',null,instrument.custom.braintreePaypalAccountEmail)}">
+                            ${Resource.msg('braintree.paypal.accountslist.button.delete','locale',null)}
+                        </button>
+                    </fieldset>
+                </form>
+            </li>
+            </isloop>
+        </ul>
+    </isif>
+
+</isif>

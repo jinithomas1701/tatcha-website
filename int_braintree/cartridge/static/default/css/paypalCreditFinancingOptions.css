@@ -1,0 +1,629 @@
+.paypal-fo-plp-label {
+	text-align: center;
+	background: #139ae1;
+	background: -moz-linear-gradient(left, #139ae1 0%, #032e8a 100%);
+	background: -webkit-linear-gradient(left, #139ae1 0%, #032e8a 100%);
+	background: linear-gradient(to right, #139ae1 0%, #032e8a 100%);
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#139ae1', endColorstr='#032e8a', GradientType=1);
+	color: #fff;
+	padding: 0.438em 0.313em;
+	margin-bottom: 0.313em;
+}
+
+.paypal-fo-banner {
+	border: 1px solid #e1e1e1;
+	color: #0a57a7;
+	background: #fff;
+	position: relative;
+	text-align: left;
+}
+.paypal-fo-banner * {
+	padding: 0;
+	margin: 0;
+}
+.paypal-fo-banner-content {
+	position: relative;
+	font-size: 1em;
+	line-height: 1.125em;
+	padding: 0;
+}
+.paypal-fo-banner-logo {
+	width: 30%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+.paypal-fo-banner-logo-ins {
+	display: table;
+	width: 100%;
+	height: 100%;
+}
+.paypal-fo-banner-logo-ins2 {
+	display: table-cell;
+	vertical-align: middle;
+	min-height: 100%;
+	padding: 0 0.625em;
+}
+.paypal-fo-banner-logo img {
+	width: 100%;
+}
+.paypal-fo-banner-text {
+	padding: 0.625em 0.625em 0.625em 30%;
+}
+.paypal-fo-banner-text span {
+	font-weight: bold;
+	text-decoration: underline;
+	cursor: pointer;
+}
+.paypal-fo-banner-text span:hover {
+	text-decoration: none;
+}
+
+.paypal-fo-all-options-banner {
+	color: #000;
+	background: #fff;
+	text-align: left;
+}
+.paypal-fo-all-options-banner * {
+	padding: 0;
+	margin: 0;
+}
+.paypal-fo-all-options-banner ul {
+	list-style: none;
+}
+.paypal-fo-all-options-banner a {
+	color: #337ab7;
+}
+.paypal-fo-all-options-banner a:hover {
+	text-decoration: underline;
+}
+.paypal-fo-all-options-banner-without-wrap {
+	border: 1px solid #e1e1e1;
+	color: #0a57a7;
+	background: #fff;
+	position: relative;
+	text-align: left;
+}
+.paypal-fo-all-options-banner-logo {
+	padding: 0.625em;
+	text-align: center;
+}
+.paypal-fo-all-options-banner-logo img {
+	width: 100%;
+}
+.paypal-fo-all-options-banner-title {
+	color: #009cde;
+	text-align: center;
+	font-size: 1.25em;
+	line-height: 1.375em;
+	padding: 0 1.25em 0.75em 1.25em;
+}
+.paypal-fo-all-options-banner-months-menu {
+	background: #eee;
+	border-top: 1px solid #e1e1e1;
+	border-bottom: 1px solid #e1e1e1;
+}
+.paypal-fo-all-options-banner-months-menu ul {
+	display: table;
+	width: 100%;
+}
+.paypal-fo-all-options-banner-months-menu li {
+	display: table-cell;
+	text-align: center;
+	font-size: 0.75em;
+	line-height: 0.875em;
+	padding: 0.438em 0;
+	position: relative;
+}
+.paypal-fo-all-options-banner-months-menu li:before {
+	position: absolute;
+	left: 0;
+	top: -1px;
+	height: 1px;
+	width: 100%;
+	content: '';
+}
+.paypal-fo-all-options-banner-months-menu li:after {
+	position: absolute;
+	left: 0;
+	bottom: -1px;
+	height: 1px;
+	width: 100%;
+	content: '';
+}
+.paypal-fo-all-options-banner-months-menu li:hover {
+	cursor: pointer;
+	background: #092f8c;
+	color: #fff;
+}
+.paypal-fo-all-options-banner-months-menu li:hover:before {
+	background: #092f8c;
+}
+.paypal-fo-all-options-banner-months-menu li:hover:after {
+	background: #092f8c;
+}
+.paypal-fo-all-options-banner-months-menu li.js_paypal_active {
+	background: #092f8c;
+	color: #fff;
+	cursor: default;
+}
+.paypal-fo-all-options-banner-months-menu li.js_paypal_active:before {
+	background: #092f8c;
+}
+.paypal-fo-all-options-banner-months-menu li.js_paypal_active:after {
+	background: #092f8c;
+}
+.paypal-fo-all-options-banner-month-detail {
+	padding: 0.75em 0.625em 0.625em;
+	display: none;
+}
+.paypal-fo-all-options-banner .js_paypal_fo_allOptionsBanner_tab_content {
+	display: none;
+}
+.paypal-fo-all-options-banner .js_paypal_fo_allOptionsBanner_tab_content.js_paypal_active {
+	display: block;
+}
+.paypal-fo-all-options-banner-month-detail table {
+	font-size: 0.75em;
+	color: #000;
+	margin-bottom: 0.625em;
+	width: 100%;
+}
+.paypal-fo-all-options-banner-month-detail table td {
+	padding: 0 0 0.313em 0;
+	vertical-align: middle;
+}
+.paypal-fo-all-options-banner-month-detail table tr.paypal-fo-all-options-banner-monthly-payment td {
+	padding: 0 0 1.125em;
+}
+.paypal-fo-all-options-banner-month-detail table tr.paypal-fo-all-options-banner-monthly-payment td.paypal-value {
+	font-size: 1em;
+}
+.paypal-fo-all-options-banner-moreinformation {
+}
+.paypal-fo-all-options-banner-right-part {
+	background: #eee;
+	border-top: 1px solid #e1e1e1;
+	color: #000;
+	line-height: 1.063em;
+	font-size: 0.75em;
+}
+.paypal-fo-all-options-banner-right-part-ins {
+	padding: 0.625em;
+}
+.paypal-fo-all-options-banner-right-part-head-text {
+	color: #727272;
+	padding-bottom: 0.938em;
+}
+.paypal-fo-all-options-banner-example {
+	padding-bottom: 0.625em;
+}
+.paypal-fo-all-options-banner-example div {
+	padding-bottom: 0.313em;
+}
+.paypal-fo-all-options-banner-example .paypal-fo-all-options-banner-representative-example {
+	padding-bottom: 0.438em;
+}
+.paypal-fo-all-options-banner-assumed-foot {
+	color: #727272;
+}
+.paypal-fo-all-options-banner-assumed-foot-text1 {
+	padding-bottom: 0.938em;
+}
+.paypal-fo-all-options-banner-assumed-foot-text2 b {
+	display: inline-block;
+	padding: 0em 0.25em;
+	border-radius: 3px;
+	background: #727272;
+	color: #fff;
+	font-weight: normal;
+}
+
+.paypal-fo-banner .js_paypal_fo_allOptionsBanner_hide {
+	display: none;
+}
+
+@media screen and (min-width: 340px) {
+	.paypal-fo-all-options-banner-logo {
+		padding: 0.625em 0.75em;
+	}
+	.paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.75em 0.625em;
+	}
+	.paypal-fo-all-options-banner-month-detail table {
+		font-size: 0.875em;
+	}
+	.paypal-fo-all-options-banner-right-part-ins {
+		padding: 0.625em 0.75em;
+	}
+	.paypal-fo-all-options-banner-example {
+		font-size: 0.875em;
+	}
+}
+@media screen and (min-width: 390px) {
+	.paypal-fo-all-options-banner-logo {
+		padding: 0.625em 1em 0.875em;
+	}
+	.paypal-fo-all-options-banner-title {
+		padding: 0 1.25em 1em 1.25em;
+	}
+	.paypal-fo-all-options-banner-months-menu li {
+		padding: 0.75em 0;
+	}
+	.paypal-fo-all-options-banner-month-detail table {
+		width: 21.375em;
+	}
+	.paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.75em 0.938em 0.75em;
+	}
+	.paypal-fo-all-options-banner-right-part {
+		line-height: 1.188em;
+	}
+	.paypal-fo-all-options-banner-example .paypal-fo-all-options-banner-representative-example {
+		padding-bottom: 0.625em;
+	}
+}
+@media screen and (min-width: 440px) {
+	.paypal-fo-all-options-banner-logo img {
+		width: 24em;
+	}
+	.paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.938em 0.625em;
+	}
+	.paypal-fo-all-options-banner-right-part-ins {
+		padding: 0.625em 0.938em;
+	}
+}
+@media screen and (min-width: 470px) {
+	.paypal-fo-banner-content {
+		padding: 0.438em 0;
+		line-height: 1.25em;
+	}
+	.paypal-fo-banner-logo-ins2 {
+		padding: 0 0.938em;
+	}
+}
+@media screen and (min-width: 570px) {
+	.paypal-fo-banner-content {
+		padding: 0.438em 0;
+		line-height: 1.375em;
+		font-size: 1.25em;
+	}
+	.paypal-fo-banner-logo-ins2 {
+		padding: 0 1.25em 0 0.938em;
+	}
+
+	.paypal-fo-all-options-banner-ins {
+		width: 100%;
+		overflow: auto;
+	}
+	.paypal-fo-all-options-banner-left-part {
+		float: left;
+		width: 50%;
+	}
+	.paypal-fo-all-options-banner-logo {
+		padding: 0.625em 0.75em;
+	}
+	.paypal-fo-all-options-banner-logo img {
+		width: 100%;
+	}
+	.paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.625em 0.625em;
+	}
+	.paypal-fo-all-options-banner-month-detail table {
+		width: 100%;
+	}
+	.paypal-fo-all-options-banner-right-part {
+		float: left;
+		width: 50%;
+		border-top: 0;
+	}
+	.paypal-fo-all-options-banner-right-part-ins {
+		border-left: 1px solid #e1e1e1;
+		min-height: 21.875em;
+		padding: 0.625em 0.625em;
+	}
+}
+@media screen and (min-width: 700px) {
+	.paypal-fo-banner-content {
+		padding: 0.625em 0;
+		line-height: 1.5em;
+		font-size: 1.5em;
+	}
+	.paypal-fo-banner-logo-ins2 {
+		padding: 0 1.563em 0 0.938em;
+	}
+	.paypal-fo-banner-logo img {
+		width: 10em;
+	}
+	.paypal-fo-banner-text {
+		padding: 0.625em 0.625em 0.625em 12.188em;
+	}
+
+	.paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.938em 0.625em;
+	}
+	.paypal-fo-all-options-banner-right-part-ins {
+		padding: 0.625em 0.938em;
+	}
+	.paypal-fo-all-options-banner-logo {
+		padding: 0.625em 1em 0.875em;
+	}
+}
+@media screen and (min-width: 780px) {
+	.paypal-fo-banner-content {
+		padding: 1.063em 0;
+		line-height: 1.5em;
+		font-size: 1.5em;
+	}
+	.paypal-fo-banner-logo-ins2 {
+		padding: 0 1.563em 0 0.938em;
+	}
+}
+@media screen and (min-width: 53.5em) {
+	.paypal-fo-all-options-banner-month-detail table {
+		width: 21.375em;
+	}
+	.paypal-fo-all-options-banner-logo img {
+		width: 24em;
+	}
+}
+
+.cart-actions .paypal-fo-banner {
+	margin-bottom: 1.563em;
+}
+.cart-actions .paypal-fo-all-options-banner {
+	margin-bottom: 1.563em;
+}
+.cart-actions .paypal-fo-banner .paypal-fo-all-options-banner {
+	margin-bottom: 0;
+}
+@media screen and (min-width: 856px) {
+	.cart-actions .paypal-fo-all-options-banner-month-detail table {
+		width: 100%;
+	}
+	.cart-actions .paypal-fo-all-options-banner-logo img {
+		width: 100%;
+	}
+}
+@media screen and (min-width: 960px) {
+	.cart-actions .paypal-fo-all-options-banner-month-detail table {
+		width: 21.375em;
+	}
+	.cart-actions .paypal-fo-all-options-banner-logo img {
+		width: 24em;
+	}
+}
+
+/* SG */
+#pdpMain .paypal-fo-banner {
+	clear: both;
+}
+#pdpMain .paypal-fo-all-options-banner {
+	clear: both;
+}
+@media screen and (min-width: 856px) {
+	#pdpMain .paypal-fo-all-options-banner-month-detail table {
+		width: 100%;
+	}
+	#pdpMain .paypal-fo-all-options-banner-logo img {
+		width: 100%;
+	}
+}
+@media screen and (min-width: 960px) {
+	#pdpMain .paypal-fo-all-options-banner-month-detail table {
+		width: 21.375em;
+	}
+	#pdpMain .paypal-fo-all-options-banner-logo img {
+		width: 24em;
+	}
+}
+
+.home-bottom-slots #vertical-carousel .paypal-fo-plp-label {
+	display: none;
+}
+
+.search-result-content.wide-tiles .paypal-fo-plp-label {
+	float: right;
+	width: 65%;
+	box-sizing: border-box;
+}
+@media screen and (min-width: 767px) {
+	.search-result-content.wide-tiles .paypal-fo-plp-label {
+		float: left;
+	}
+}
+
+/* MFRA */
+.cart-page .paypal-fo-banner {
+	margin-bottom: 0.625em;
+}
+.cart-page .paypal-fo-all-options-banner {
+	margin-bottom: 0.625em;
+}
+.cart-page .paypal-fo-banner .paypal-fo-all-options-banner {
+	margin-bottom: 0;
+}
+@media screen and (min-width: 544px) {
+	.cart-page .paypal-fo-all-options-banner-logo img {
+		width: 100%;
+	}
+	.cart-page .paypal-fo-all-options-banner-month-detail table {
+		width: 100%;
+	}
+}
+@media screen and (min-width: 570px) {
+	.cart-page .paypal-fo-banner-content {
+		line-height: 1.125em;
+		font-size: 1em;
+	}
+	.cart-page .paypal-fo-banner-logo-ins2 {
+		padding: 0 15px;
+	}
+	.cart-page .paypal-fo-all-options-banner-left-part {
+		float: none;
+		width: auto;
+	}
+	.cart-page .paypal-fo-all-options-banner-logo {
+		padding: 0.625em 1em 0.875em;
+	}
+	.cart-page .paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.938em 0.625em;
+	}
+	.cart-page .paypal-fo-all-options-banner-right-part {
+		border-top: 1px solid #e1e1e1;
+		float: none;
+		width: auto;
+	}
+	.cart-page .paypal-fo-all-options-banner-right-part-ins {
+		border-left: 0;
+		min-height: auto;
+	}
+}
+@media screen and (min-width: 730px) {
+	.cart-page .paypal-fo-all-options-banner-logo {
+		padding: 0.625em 1em 0.875em;
+	}
+	.cart-page .paypal-fo-all-options-banner-logo img {
+		width: 22.5em;
+	}
+	.cart-page .paypal-fo-all-options-banner-title {
+		padding: 0 1.25em 1em 1.25em;
+	}
+	.cart-page .paypal-fo-all-options-banner-months-menu li {
+		padding: 0.75em 0;
+	}
+	.cart-page .paypal-fo-all-options-banner-month-detail table {
+		width: 21.375em;
+	}
+	.cart-page .paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.75em 0.938em 0.75em;
+	}
+	.cart-page .paypal-fo-all-options-banner-right-part {
+		line-height: 1.188em;
+	}
+	.cart-page .paypal-fo-all-options-banner-example .paypal-fo-all-options-banner-representative-example {
+		padding-bottom: 0.625em;
+	}
+}
+@media screen and (min-width: 992px) {
+	.cart-page .paypal-fo-banner-content {
+		padding: 0.438em 0;
+		line-height: 1.375em;
+		font-size: 1.25em;
+	}
+	.cart-page .paypal-fo-banner-logo-ins2 {
+		padding: 0 1.25em 0 0.938em;
+	}
+
+	.cart-page .paypal-fo-all-options-banner-ins {
+		width: 100%;
+		overflow: auto;
+	}
+	.cart-page .paypal-fo-all-options-banner-left-part {
+		float: left;
+		width: 50%;
+	}
+	.cart-page .paypal-fo-all-options-banner-logo {
+		padding: 0.625em 0.75em;
+	}
+	.cart-page .paypal-fo-all-options-banner-logo img {
+		width: 100%;
+	}
+	.cart-page .paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.625em 0.625em;
+	}
+	.cart-page .paypal-fo-all-options-banner-month-detail table {
+		width: 100%;
+	}
+	.cart-page .paypal-fo-all-options-banner-right-part {
+		float: left;
+		width: 50%;
+		border-top: 0;
+	}
+	.cart-page .paypal-fo-all-options-banner-right-part-ins {
+		border-left: 1px solid #e1e1e1;
+		min-height: 21.875em;
+		padding: 0.625em 0.625em;
+	}
+}
+@media screen and (min-width: 1200px) {
+	.cart-page .paypal-fo-banner-content {
+		padding: 0.625em 0;
+		line-height: 1.5em;
+		font-size: 1.5em;
+	}
+	.cart-page .paypal-fo-banner-logo-ins2 {
+		padding: 0 1.563em 0 0.938em;
+	}
+	.cart-page .paypal-fo-banner-logo img {
+		width: 10em;
+	}
+	.cart-page .paypal-fo-banner-text {
+		padding: 0.625em 0.625em 0.625em 12.188em;
+	}
+
+	.cart-page .paypal-fo-all-options-banner-month-detail {
+		padding: 0.75em 0.938em 0.625em;
+	}
+	.cart-page .paypal-fo-all-options-banner-right-part-ins {
+		padding: 0.625em 0.938em;
+	}
+	.cart-page .paypal-fo-all-options-banner-logo {
+		padding: 0.625em 1em 0.875em;
+	}
+}
+
+.product-detail .paypal-fo-banner {
+	margin-top: -0.938em;
+	margin-bottom: 0.625em;
+}
+.product-detail .paypal-fo-all-options-banner {
+	margin-top: -0.938em;
+	margin-bottom: 0.625em;
+}
+.product-detail .paypal-fo-banner .paypal-fo-all-options-banner {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+@media screen and (min-width: 544px) {
+	.product-detail .paypal-fo-banner {
+		margin-top: 0em;
+		margin-bottom: 1.563em;
+	}
+	.product-detail .paypal-fo-all-options-banner {
+		margin-top: 0em;
+		margin-bottom: 1.563em;
+	}
+	.product-detail .paypal-fo-banner .paypal-fo-all-options-banner {
+		margin-top: 0;
+		margin-bottom: 0;
+	}
+}
+@media screen and (min-width: 856px) {
+	.product-detail .paypal-fo-all-options-banner-month-detail table {
+		width: 100%;
+	}
+	.product-detail .paypal-fo-all-options-banner-logo img {
+		width: 100%;
+	}
+}
+@media screen and (min-width: 960px) {
+	.product-detail .paypal-fo-all-options-banner-month-detail table {
+		width: 21.375em;
+	}
+	.product-detail .paypal-fo-all-options-banner-logo img {
+		width: 24em;
+	}
+}
+
+.product-set-detail .paypal-fo-banner {
+	margin-top: 0.938em;
+}
+.product-set-detail .paypal-fo-all-options-banner {
+	margin-top: 0.938em;
+}
+.product-set-detail .paypal-fo-banner .paypal-fo-all-options-banner {
+	margin-top: 0;
+}

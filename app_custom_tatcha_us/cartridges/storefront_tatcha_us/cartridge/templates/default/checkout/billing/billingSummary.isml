@@ -1,0 +1,51 @@
+
+<isif condition="${pdict.order.billing.billingAddress.address !== null}">
+    <isset name="address" value="${pdict.order.billing.billingAddress.address}" scope="page"/>
+    <iselse>
+    <isset name="address" value="{}" scope="page"/>
+</isif>
+
+<div class="payment-info-submitted billing">
+    <div class="row no-gutters my-3 billing-wrap">
+        <div class="col-md-6 mt-3 mt-md-0 card-payment-summary">
+            <isinclude template="checkout/billing/paymentOptions/paymentOptionsSummary" />
+        </div>
+        <div class="col-md-6 mt-3 mt-md-0 billing-summary ${pdict.order.billing && pdict.order.billing.payment.selectedPaymentInstruments.length && (pdict.order.billing.payment.selectedPaymentInstruments[0].paymentMethod === 'AFTERPAY_PBI' || pdict.order.billing.payment.selectedPaymentInstruments[0].paymentMethod === 'PayPal')? 'd-none' : ''}">
+            <div class="billing-title">
+                Billing address
+            </div>
+            <div class="fs-16-normal payment-address-wrap ${!(pdict.forms.billingForm.shippingAddressUseAsBillingAddress.value && pdict.orderType !='giftcard')?'d-none':''}">Same as shipping</div>
+         	<div class="billing-address-summary ${(pdict.forms.billingForm.shippingAddressUseAsBillingAddress.value && pdict.orderType !='giftcard')?'d-none':''}">
+                <isinclude template="checkout/addressSummary" />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<iscomment>To set credit card summary details</iscomment>
+<div class="Visa-img d-none">
+    <i class="fab fa-cc-visa"></i>
+</div>
+<div class="Mastercard-img d-none">
+    <i class="fab fa-cc-mastercard"></i>
+</div>
+<div class="American-express-img d-none">
+    <i class="fab fa-cc-amex"></i>
+</div>
+<div class="Discover-img d-none">
+    <i class="fab fa-cc-discover"></i>
+</div>
+<div class="Jcb-img d-none">
+    <i class="fab fa-cc-jcb"></i>
+</div>
+
+<div class="payment-summary-sec d-none">
+    <div class="payment-type-title">
+        Credit Card
+    </div>
+    <div class="fs-16-normal billing-address-wrapped">
+        <span class="img-sec"><img src="" class="img-fluid"/></span>
+        <span class="ending-in"></span>
+    </div>
+</div>

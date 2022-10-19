@@ -1,0 +1,14 @@
+mutation ReverseTransaction($input: ReverseTransactionInput!) {
+  reverseTransaction(input: $input) {
+    clientMutationId
+    reversal {
+        __typename
+        ... on Refund {
+            ...refundFields
+        }
+        ... on Transaction {
+            ...transactionFields
+        }
+    }
+  }
+}

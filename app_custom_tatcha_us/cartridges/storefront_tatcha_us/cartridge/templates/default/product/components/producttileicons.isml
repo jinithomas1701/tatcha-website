@@ -1,0 +1,31 @@
+<isset name="Product" value="${pdict.product}" scope="page"/>
+<isset name="ProductID" value="${pdict.pid}" scope="page"/>
+
+<isif condition="${Product && Product.price && Product.price.sales && Product.price.sales.value != 0}">
+	<isif condition="${session.customer.authenticated}">
+		<div class="wishlist-block wishlist-btn-container">
+			<a role="button" aria-label="${'add product ' +Product.productName+ ' to wishlist'}" tabindex="0" <isif condition="${Product.isWishlistItem}">style="display: none"</isif> data-url="${pdict.urls.addToWL}" class="outline-global wishlist-additem no-scroll btn btn-link btn-wishlist wishlist-off" data-toggle="tooltip" data-pid=${ProductID} data-placement="top" title="Add to Wishlist">
+				<span class="fa-layers fa-fw fa-sm">
+					<i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+					<i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+				</span>
+			</a>
+			<a role="button" aria-label="${'remove product ' +Product.productName+ ' from wishlist '}" tabindex="0" <isif condition="${!Product.isWishlistItem}">style="display: none"</isif> data-url="${pdict.urls.removeFromWL}" class="outline-global wishlist-removeitem no-scroll btn btn-link btn-wishlist wishlist-on wishlist-active" data-toggle="tooltip" data-pid=${ProductID} data-placement="top" title="Remove from Wishlist">
+				<span class="fa-layers fa-fw fa-sm">
+					<i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+					<i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+				</span>
+			</a>
+			<div class="sr-only" id="wishlist-action-sr-${ProductID}" aria-live="assertive" aria-atomic="true"></div>
+		</div>
+	<iselse/>
+		<div class="wishlist-block wishlist-btn-container">
+			<a role="button" aria-label="${Product.productName + ' add to wishlist'}" tabindex="0" data-pid="${ProductID}" class="wishlist-login-btn no-scroll btn btn-link btn-wishlist wishlist-off outline-global" data-cat-page="true" data-toggle="modal" data-target="#loginModal" title="Add to Wishlist">
+				<span class="fa-layers fa-fw fa-sm">
+					<i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+					<i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+				</span>
+			</a>
+		</div>
+	</isif>
+</isif>

@@ -1,0 +1,169 @@
+{
+    "step-types": {
+        "script-module-step": [{
+                "@type-id": "custom.ChargeCancelationFee",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "true",
+                "description": "The Smart Order Refill step responsible for charging cancelation fee.",
+                "module": "int_smartorderrefill/cartridge/controllers/SmartOrderRefillJobs.js",
+                "function": "ChargeCancelationFee",
+                "transactional": "false",
+                "timeout-in-seconds": "900",
+                "parameters": {
+                    "parameter": [{
+                            "@name": "subsList",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "Subscription list data"
+                        },
+                        {
+                            "@name": "note",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "Order note"
+                        },
+                        {
+                            "@name": "cancelationInfo",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "Cancelation trigger information"
+                        },
+                        {
+                            "@name": "customerNo",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "Customer Number"
+                        },
+                        {
+                            "@name": "cancelationFee",
+                            "@type": "string",
+                            "@required": "false",
+                            "description": "Amount of cancelation fee"
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [{
+                            "@code": "ERROR",
+                            "description": "The canceletion has failed."
+                        },
+                        {
+                            "@code": "FINISHED",
+                            "description": "The canceletion is successful."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.CreateOrders",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "true",
+                "description": "The Smart Order Refill step responsible for processing subscriptions and placing refill orders.",
+                "module": "int_smartorderrefill/cartridge/controllers/SmartOrderRefillJobs.js",
+                "function": "CreateOrders",
+                "transactional": "false",
+                "timeout-in-seconds": "3600",
+                "parameters": {
+                    "parameter": [{
+                            "@name": "DateOverride",
+                            "@type": "date-string",
+                            "@required": "false",
+                            "@target-type": "date",
+                            "description": "Overide current date (for testing)"
+                        },
+                        {
+                            "@name": "StartAtProfile",
+                            "@type": "long",
+                            "@required": "true",
+                            "default-value": "0",
+                            "description": "Customer profile batch starting point"
+                        },
+                        {
+                            "@name": "NumberOfProfiles",
+                            "@type": "long",
+                            "@required": "true",
+                            "default-value": "1000",
+                            "description": "Customer profile batch size to process"
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [{
+                            "@code": "ERROR",
+                            "description": "The canceletion has failed."
+                        },
+                        {
+                            "@code": "FINISHED",
+                            "description": "The canceletion is successful."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.CleanUp",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "true",
+                "description": "The Smart Order Refill step responsible for cleaning up orders and subscriptions.",
+                "module": "int_smartorderrefill/cartridge/controllers/SmartOrderRefillJobs.js",
+                "function": "CleanUp",
+                "transactional": "false",
+                "timeout-in-seconds": "3600",
+                "parameters": {
+                    "parameter": [
+                        {
+                            "@name": "StartAtProfile",
+                            "@type": "long",
+                            "@required": "true",
+                            "default-value": "0",
+                            "description": "Customer profile batch starting point"
+                        },
+                        {
+                            "@name": "NumberOfProfiles",
+                            "@type": "long",
+                            "@required": "true",
+                            "default-value": "1000",
+                            "description": "Customer profile batch size to process"
+                        }
+                    ]
+                },
+                "status-codes": {
+                    "status": [{
+                            "@code": "ERROR",
+                            "description": "The clean up has failed."
+                        },
+                        {
+                            "@code": "FINISHED",
+                            "description": "The clean up is successful."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.GenerateUserList",
+                "@supports-parallel-execution": "false",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Generate file with list of users to process",
+                "module": "int_smartorderrefill/cartridge/controllers/SmartOrderRefillJobs.js",
+                "function": "GenerateUserList",
+                "transactional": "false",
+                "timeout-in-seconds": "900",
+                "status-codes": {
+                    "status": [{
+                            "@code": "ERROR",
+                            "description": "Job error"
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "List created successfully"
+                        }
+                    ]
+                }
+            }
+        ]
+
+    }
+}

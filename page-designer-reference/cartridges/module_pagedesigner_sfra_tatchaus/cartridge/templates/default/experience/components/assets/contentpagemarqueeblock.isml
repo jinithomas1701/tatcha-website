@@ -1,0 +1,30 @@
+<iscache type="relative" hour="24"/>
+<div class="container-fluid container-fluid-max container-flush">
+<a href="${pdict.url}" class="anchor-style-reset">
+	<section class="col-xs-12 position-relative hero-container hero-variant ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}" id="${pdict.anchorId}">
+		<isif condition="${!pdict.isVideoEnabled}" >
+			<div class="hero-image">
+				<img data-src="${pdict.desktopImage.src.desktop}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="hero-image w-100 d-none d-md-block lazyImage" alt="${pdict.imageAlt}" aria-hidden="true"/> 
+				<img data-src="${pdict.mobileImage.src.mobile}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="hero-image w-100 d-sm-block d-md-none lazyImage" alt="${pdict.imageAlt}" aria-hidden="true"/>
+			</div>
+		<iselse>
+			<video class="page-designer-video d-none d-md-block" data-src="${pdict.video}" data-poster = "${pdict.desktopImage.src.desktop}" data-mobile-img="${pdict.mobileImage.src.mobile}" data-mobile-src="${pdict.mobileVideo}" poster="${pdict.desktopImage.src.desktop}" autoplay="true" loop="true" muted="" playsinline="" style="width: 100%;height: auto;margin: 0 auto;display:block;">
+				<source>
+				<img src="${pdict.desktopImage.src.desktop}" class="hero-image w-100 lazyImage" alt="${pdict.imageAlt}"/>
+			</video>
+		</isif>
+		<div class="hero-content ${pdict.blockPositionHorizontal} ${pdict.blockPositionVertical} col-md-6 h-auto" style="color: ${pdict.textColor};">
+			<h1 class="hero-heading outline-global" role="heading" aria-level="2" tabindex="0">
+				<div class="pre-header"><isprint value="${pdict.overline}" encoding="off" /></div>
+				<isprint value="${pdict.mainHeading}" encoding="off" />
+			</h1>
+			<isif condition="${pdict.body}" >
+				<p><isprint value="${pdict.body}" encoding="off" /></p>
+			</isif>
+			<isif condition="${pdict.btnStyle}" >
+				<div tabindex="0" class="outline-global ${pdict.btnStyle} ${(pdict.btnStyle != 'btn btn-link')?((pdict.textColor == 'black') ? 'btn-outline-dark' : 'btn-outline-light'):((pdict.textColor == 'black') ? 'btn-link-black' : 'btn-link-white')}">${pdict.buttonText}</div>	
+			</isif>
+		</div>
+	</section>
+</a>
+</div>

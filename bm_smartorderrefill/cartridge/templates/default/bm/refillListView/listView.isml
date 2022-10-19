@@ -1,0 +1,54 @@
+<isdecorate template="application/MenuFrame">
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+    <isinclude template="bm/util/sorModules" />
+    <isinclude template="components/header" />
+
+    <isif condition="${pdict.isSubscription}">
+        <isset name="returnURL" value="${URLUtils.url('SmartOrderRefillReport-ManageSOR')}" scope="page" />
+    <iselse>
+        <isset name="returnURL" value="${URLUtils.url('SmartOrderRefillReport-ManageRefillList', 'client', pdict.ProductList.customerNo, 'sid', pdict.ProductList.subscriptionID, 'section', 'subscription', 'action', 'view')}" scope="page" />
+    </isif>
+
+    <a class="button button--right" href="${returnURL}">
+        &laquo; ${Resource.msg('smartorderrefill.listview.backTo.' + pdict.ProductList.refillType, 'smartorderrefill', null)}
+    </a>
+
+    <div id="subscription-details-nav">
+        <span class="general-section selected">${Resource.msg('smartorderrefill.tabnav.general', 'smartorderrefill', null)}</span>
+        <span class="shipping-section">${Resource.msg('smartorderrefill.tabnav.shipping', 'smartorderrefill', null)}</span>
+        <span class="billing-section">${Resource.msg('smartorderrefill.tabnav.billing', 'smartorderrefill', null)}</span>
+        <!-- 
+        <isif condition="${pdict.isSubscription}">
+            <span class="payment-section">${Resource.msg('smartorderrefill.tabnav.payment', 'smartorderrefill', null)}</span>
+        </isif>
+        -->
+        <span class="products-section">${Resource.msg('smartorderrefill.tabnav.product', 'smartorderrefill', null)}</span>
+        <isif condition="${pdict.isSubscription}">
+            <span class="subscription-section">${Resource.msg('smartorderrefill.tabnav.suborders', 'smartorderrefill', null)}</span>
+        </isif>
+    </div>
+    <div class="subscription-details-header">
+        <h3>
+            <strong>${Resource.msg('smartorderrefill.listview.details.' + pdict.ProductList.refillType, 'smartorderrefill', null)}: ${pdict.ProductList.ID}</strong>
+        </h3>
+    </div>
+    <div id="subscription-details">
+        <div class="sor-module sor-module__subscription-details">
+            <isinclude template="bm/refillListView/generalSection"  />
+            <isinclude template="bm/refillListView/shippingSection"  />
+            <isinclude template="bm/refillListView/billingSection"  />           
+            <isinclude template="bm/refillListView/productsSection"  /> 
+            <!--  
+            <isif condition="${!empty(pdict.currentCreditCard)}">
+                <isinclude template="bm/refillListView/paymentSection"  /> 
+            </isif>
+            -->
+        </div>
+        <isinclude template="bm/refillListView/ordersSection"  /> 
+        <isinclude template="bm/refillListView/totalsSection"  /> 
+    </div>
+</isdecorate>
+<isinclude template="components/footer" />

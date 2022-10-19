@@ -1,0 +1,33 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<script type="text/javascript">
+	$( document ).ready(function() {
+
+	    var clientID = document.getElementById('clientID').value;
+	    
+	    var url = "https://automat-matchbox.s3.ca-central-1.amazonaws.com";
+	    var options = {
+	      minScoreForBar: 0.999,
+	      minScoreForTags: 0.7,
+	      notifyAgainAfter: "1D" // 1 day
+	    };
+
+	    (function (a, u, t, o, m, at, ai) {
+	      var id = "automat-matchbox";
+	      var script = u.getElementById(id);
+	      if (script) return;
+	      script = u.createElement("script");
+	      script.id = id;
+	      script.src = t + "/matchbox.js";
+	      script.async = true;
+
+	      script.onload = function onload() {
+	        var id = a.AutomatMatchbox.getId();
+	        a.AutomatMatchbox.init(a, u, t, o, m, at, ai);
+	      };
+
+	      var fs = u.getElementsByTagName("script")[0];
+	      fs.parentNode.append(script);
+	    })(window, document, url, "v1", clientID, options);
+ 
+  	});
+</script>

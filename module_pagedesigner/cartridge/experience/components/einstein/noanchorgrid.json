@@ -1,0 +1,32 @@
+
+
+{
+  "name": "Grid global defined product recommendations",
+  "description": "Shows recommendations grid on a recommender and no specific anchor either as single tile or carousel ",
+  "group": "einstein",
+  "attribute_definition_groups": [
+    {
+      "id": "data",
+      "name": "Recommendation Rules",
+      "description": "The recommender and recommendation tile work against",
+      "attribute_definitions": [
+        {
+          "id": "text_headline",
+          "name": "Heading",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "recommender",
+          "name": "Einstein Recommender",
+          "type": "custom",
+          "required": true,
+          "editor_definition": {
+            "type": "einstein.globalrecommenderselector"
+          }
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

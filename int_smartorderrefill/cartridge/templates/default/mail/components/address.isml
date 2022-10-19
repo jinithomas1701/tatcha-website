@@ -1,0 +1,63 @@
+<iscontent type="text/html " charset="UTF-8"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isif condition="${!empty(pdict.address)}" >
+<tr>
+    <td>
+        <table style="width:500px; border: 2px solid #c3dbc5; margin: 20px auto; padding: 20px; font-family: 'Open Sans', sans-serif; font-size: 20px; color: #0d1b1e">
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.firstname.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.firstName}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.lastname.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.lastName}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.address.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.address1} ${pdict.address.address2 ? pdict.address.address2 : ''}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.city.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.city}</span>
+                </td>
+            </tr>
+            <isif condition="${!empty(pdict.address.stateCode)}" >
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.state.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.stateCode}</span>
+                </td>
+            </tr>
+            </isif>
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.postalcode.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.postalCode}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.country.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.countryCode.value}</span>
+                </td>
+            </tr>
+            <tr>
+                <td style="display: flex;">
+                    <span style="flex: 1; text-align: right; margin-right: 20px;">${Resource.msg('address.phone.label', 'forms', null)}:</span>
+                    <span style="flex: 1; text-align: left;">${pdict.address.phone}</span>
+                </td>
+            </tr>
+        </table>
+    </td>
+</tr>
+</isif>

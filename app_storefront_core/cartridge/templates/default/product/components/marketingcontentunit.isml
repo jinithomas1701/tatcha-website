@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Prints marketing content unit.
+</iscomment>
+<isscript>
+importScript("int_tatcha_dis:common/GetImageUrl.ds");
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+var isSkinTypeVariant = ProductUtils.isSkinTypeVariant(pdict.Product);
+var marketingContent = ProductUtils.getMarketingContentUnit(pdict.Product,true);
+</isscript>
+
+<isif condition="${!empty(marketingContent.marketingContentUnit)}">
+	<isprint value="${marketingContent.marketingContentUnit}" encoding="off" />
+</isif>

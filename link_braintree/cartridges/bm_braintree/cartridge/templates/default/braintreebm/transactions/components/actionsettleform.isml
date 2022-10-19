@@ -1,0 +1,81 @@
+<div id="braintree_capture_form" class="js_braintree_hide">
+    <form class="braintree_action_form braintree_content" action="${URLUtils.url('BraintreeAdmin-Action')}">
+
+        <input type="hidden" name="transactionId" value="${transaction.legacyId}" />
+
+        <input type="hidden" name="leftToSettle"
+            value="${!empty(leftToSettle) && leftToSettle.getValue() > 0 ? leftToSettle.getValue() : initialOrderTransactionAmount.getValue()}" />
+
+        <input type="hidden" name="orderNo" value="${order.orderNo}" />
+
+        <input type="hidden" name="orderToken" value="${order.orderToken}" />
+
+        <input type="hidden" name="method" value="submitForSettlement" />
+
+        <h2>${Resource.msgf('transaction.settle.header', 'braintreebm', null, transaction.legacyId)}</h2>
+
+        <div class="braintree_error_msg_box braintree_error_msg_box_amount_required">
+            <p>${Resource.msg('forms.error.amt.required', 'braintreebm', null)}</p>
+        </div>
+        <div class="braintree_error_msg_box braintree_error_msg_box_amount_greaterzero">
+            <p>${Resource.msg('forms.error.amt.greaterzero', 'braintreebm', null)}</p>
+        </div>
+        <div class="braintree_error_msg_box braintree_error_msg_box_amount_float">
+            <p>${Resource.msg('forms.error.amt.float', 'braintreebm', null)}</p>
+        </div>
+        <div class="braintree_error_msg_box braintree_error_msg_box_amount_limit">
+            <p>${Resource.msgf('forms.error.settle.amt', 'braintreebm', null, leftToSettle.getValue())}</p>
+        </div>
+
+        <table class="braintree_table">
+            <isif condition="${transaction.customer && (!empty(transaction.customer.firstName || transaction.customer.lastName))}">
+                <tr class="braintree_table_row_even">
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customername', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.customerformat', 'braintreebm', null, transaction.customer.firstName, transaction
+                                                       .customer.lastName)}</td>
+                </tr>
+            </isif>
+            <isif condition="${transaction.customer && !empty(transaction.customer.email)}">
+                <tr>
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customeremail', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">${transaction.customer.email}</td>
+                </tr>
+            </isif>
+            <tr class="braintree_table_row_even">
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.settle.authorizedamount', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, initialOrderTransactionAmount.getValue(),
+                                                       initialOrderTransactionAmount.getCurrencyCode())}</td>
+            </tr>
+            <isif condition="${!empty(settledAmount) && settledAmount.getValue() > 0}">
+                <tr class="braintree_table_row_even">
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.settle.settledamount', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, settledAmount.getValue(), settledAmount
+                                                           .getCurrencyCode())}</td>
+                </tr>
+            </isif>
+            <tr>
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.settle.amounttosettle', 'braintreebm', null)}</td>
+                <isif condition="${transaction.isPaypal}">
+                    <td class="braintree_table_cell_value"><input class="braintree_input_amount" type="text"
+                            name="amount" data-max='${leftToSettle.getValue()}' data-validation="greaterzero"
+                            value="${initialOrderTransactionAmount.getValue() === leftToSettle.getValue() ? initialOrderTransactionAmount.getValue() : ''}" />
+                        ${initialOrderTransactionAmount.getCurrencyCode()}</td>
+                    <iselse>
+                        <td class="braintree_table_cell_value"><input class="braintree_input_amount" type="text"
+                                name="amount" data-max='${leftToSettle.getValue()}' data-validation="greaterzero, limit"
+                                value="${initialOrderTransactionAmount.getValue() === leftToSettle.getValue() ? initialOrderTransactionAmount.getValue() : ''}" />
+                            ${initialOrderTransactionAmount.getCurrencyCode()}</td>
+                </isif>
+            </tr>
+            <isif condition="${(transaction.paymentMethod && !empty(transaction.paymentMethod.legacyId)) || transaction.isPaypal}">
+                <tr class="braintree_table_row_note">
+                    <td colspan="2">${Resource.msg('transaction.settle.notetomerchant', 'braintreebm', null)}</td>
+                </tr>
+            <iselse/>
+                <tr class="braintree_table_row_note">
+                    <td colspan="2">${Resource.msg('transaction.settle.fullnotetomerchant', 'braintreebm', null)}</td>
+                </tr>
+            </isif>
+        </table>
+    </form>
+</div>

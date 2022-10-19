@@ -1,0 +1,117 @@
+#checkout-container {
+	#braintreeCreditCardErrorContainer:empty {
+		display: none !important;
+	}
+	
+	.gift-cert-error {
+		margin-bottom: .5rem;
+	}
+	
+	.ad-bag-link{
+ 		color:#FFF;
+ 	}
+}
+
+#braintreeCreditCardErrorContainer:empty, #braintreeFormErrorContainer:empty {
+	border: none;
+	padding: 0;
+	margin: 0;
+}
+
+#addressSuggestionModal {
+	.suggested-address {
+		.entered-address-container {
+			label {
+				margin-right: 1rem !important;
+			}
+			.alert-text {
+				svg {
+					margin-right: 5px;
+				}
+			}
+		}
+		.suggested-address-container {
+			label {
+				margin-right: 1rem !important;
+			}
+			.alert-text {
+				svg {
+					margin-right: 5px;
+				}
+			}
+		}
+	}
+}
+.internationalProvincetext {
+	padding-top: 27px;
+}
+#billingStateSelect {
+	padding-top: 18px;
+}
+
+.payment-method {
+	.js_braintree_creditCardContent {
+		.btn-outline-secondary {
+    		color: #495257;
+			&:hover {
+				color: #ffffff;
+			}
+		}
+	}
+}
+
+.desktopSummary {
+	@media (max-width: 1024px) {
+    	display: block !important;
+    }
+}
+
+.braintree-hosted-fields-invalid {
+	border-color: #dc3545;
+}
+
+.braintreefields {
+	border-color: #CCD4D9 !important;
+}
+
+#braintreeCreditCardFieldsContainer {
+	#card-image {
+		position: absolute;
+	    top: 9px;
+	    right: 1em;
+	    width: 44px;
+	    height: 28px;
+	    background-image: url(../images/payment_cards.png);
+	    background-size: 86px 458px;
+	    border-radius: 4px;
+	    background-position: -100px 0;
+	    background-repeat: no-repeat;
+	    margin-bottom: 1em;
+	    &.visa {
+			background-position: 0 -398px;
+	  	}
+	  	&.master-card {
+	    	background-position: 0 -281px;
+	  	}
+	  	&.american-express {
+	    	background-position: 0 -370px;
+	  	}
+	  	&.discover {
+	    	background-position: 0 -163px;
+	  	}
+	  	&.maestro {
+	    	background-position: 0 -251px;
+	  	}
+	  	&.jcb {
+	    	background-position: 0 -221px;
+	  	}
+	  	&.diners-club {
+	    	background-position: 0 -133px;
+	  	}
+	}
+}
+.login-modal-container{
+	.form-group{
+		margin-bottom:1.5rem;
+	}
+}

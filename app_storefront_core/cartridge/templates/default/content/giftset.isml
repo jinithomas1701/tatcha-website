@@ -1,0 +1,185 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type = "relative" hour = "24">
+<isscript>
+    importScript("int_tatcha_dis:common/GetImageUrl.ds");
+    var giftset = require('app_storefront_core/cartridge/scripts/util/giftset');
+    var ProductUtils = require('app_storefront_core/cartridge/scripts/product/ProductUtils.js');
+    
+    var giftSetItemSku = pdict.Content.custom.SetBonusProductID;
+    var eligibilityCount = pdict.Content.custom.SetEligibilityCount;
+    var giftSetProduct = dw.catalog.ProductMgr.getProduct(giftSetItemSku);
+    var recommedations = ProductUtils.giftBuilderProductList(giftSetProduct,false);
+    var currencyCode = session.getCurrency().getCurrencyCode();
+
+    var maxQuantityStatus = ProductUtils.checkMaximumQuatity(giftSetProduct.ID);
+    var isProductAvailable = giftSetProduct.getAvailabilityModel().availability > 0;
+</isscript>
+<isdecorate template="content/home/pt_storefront">
+    <isinclude template="util/modules"/>
+		<section class="col-xs-12 position-relative m-bottom mx-auto pl-0 pr-0">
+			<div class="hero-image d-none d-md-block">
+				<img src="${pdict.Content.custom.SetBannerImage.getURL()}" class="hero-image w-100" />
+			</div>
+			<div class="hero-image d-md-none">
+				<img src="${pdict.Content.custom.SetBannerMobileImage.getURL()}" class="hero-image w-100" />
+			</div>
+		<div class="hero-front-image col-sm-5 col-md-6 col-lg-5 col-xxl-4">
+			<img src="${pdict.Content.custom.SetImage.getURL()}" class="hero-image w-100">
+		</div>
+		<div class="set-hero-content middle left col-md-6 offset-xxl-1">
+			<h1>
+				<div class="pre-header">${pdict.Content.custom.SetLabel}</div>
+				${pdict.Content.custom.SetName}
+			</h1>
+			<p>${pdict.Content.custom.SetDescription}</p>
+		</div>
+</section>
+
+<div class="container-fluid p-0">
+<div class="col-xl-12 col-xxl-10 offset-xxl-1 p-0 mt-5 mt-md-0">		
+<div class="create-set-heading"> Choose ${eligibilityCount} minis</div>
+
+    <div class="row m-0 create-set-row">
+	    <div class="col-md-8 col-lg-8 col-xl-9 row m-0 pl-0 pr-0">
+            <isloop items="${recommedations.offerProducts}" var="optionProduct">                
+                <isset name="Product" value="${optionProduct}" scope="pdict"/>
+                <isif condition="${optionProduct.master && optionProduct.getVariationModel()}">
+                    <isset name="imageProduct" value="${optionProduct.variationModel.defaultVariant}" scope="page"/>
+                <iselseif condition="${optionProduct.variant && !empty(optionProduct.getVariationModel())}">
+                    <isset name="imageProduct" value="${optionProduct.getVariationModel()}" scope="page"/>
+                <iselse>
+                    <isset name="imageProduct" value="${optionProduct}" scope="page"/>
+                </isif>
+                <isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+                    <isset name="imageUrl" value="${getImageUrl(imageProduct,'medium')}" scope="page"/>
+                <iselse/>
+                    <isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+                </isif>
+
+                <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 product-cell">
+                    <div class="product-unit">
+                        <div class="product-img-block text-center mr-0 ml-0">
+                            <a href="${URLUtils.url('Product-Show', 'pid', optionProduct.ID)}" style="display: block;">
+                                <img class="img-responsive set-img product-img img-fluid lazyImage" data-src="${imageUrl}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+                            </a>
+                        </div>
+                        <h5 class="product-name pr-2 pl-2">
+                            <a href="${URLUtils.url('Product-Show', 'pid', optionProduct.ID)}" style="display: block;" class="m-1">
+                                ${optionProduct.name}
+                                <isif condition="${!empty(optionProduct.custom.secondaryName)}">
+                                    <span class="product-subtitle">${optionProduct.custom.secondaryName} </span>
+                                </isif>
+                            </a>
+                        </h5>
+                        <div class="product-price">
+                        	<label class="m-0" for="myCheckbox6-${optionProduct.ID}">
+                            	<isset name="showSpecialPrice" value="false" scope="page" />
+						    	<isinclude template="product/components/pricing.isml"/>
+						    </label>
+                        </div>
+                        <div class="text-center mt-1">
+					        <input type="checkbox" id="myCheckbox6-${optionProduct.ID}" class="ml-auto mr-auto gift-set-checkbox" 
+                                data-pid="${optionProduct.ID}" 
+                                data-name="${optionProduct.name}" 
+                                data-price="${dw.util.StringUtils.formatMoney(optionProduct.getPriceModel().getPrice())}"
+                                data-priceValue="${optionProduct.getPriceModel().getPrice().value}"
+                                data-imgurl="${getImageUrl(optionProduct,'large')}" />					
+        					<label class="label-checkbox" for="myCheckbox6-${optionProduct.ID}">
+                                <i class="fal fa-circle"></i>
+                                <i class="fas fa-check-circle"></i>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </isloop>
+	    </div>
+
+        <div class="col-md-4 col-lg-4 col-xl-3 d-sm-none d-md-block">
+		    <div class="p-2 review-selection">
+                <div class="heading">Review Selection</div>
+                <div class="review-products">
+                    <div id="review-products">
+                        <isscript> var array = new Array(parseInt(eligibilityCount)); </isscript>
+                        <isloop iterator="${array}" alias = "no">
+                            <div class="product-review deactivate mt-2 row m-0"></div>
+                        </isloop>
+                    </div>
+                    <div class="product-review deactivate mt-2 complimentary-item">
+                        <div class="prodict-image">
+                            <img src="${getImageUrl(giftSetProduct,'medium')}">
+                        </div>                        
+                        <div class="product-name">
+                            ${giftSetProduct.name} 
+                            <div class="product-price">Complimentary</div>
+                        </div>
+                        <div class="d-inline"><!-- <i class="fal fa-times"></i> --></div>
+                    </div>
+                </div>
+                <div>
+		  			<div>
+		  				<div class="slide-up-review text-center">
+				  			<img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/giftset/icon.png')}" class="mr-auto ml-auto">
+				  		</div>
+				  		<div class="progress selection-progress">
+				  			<div class="progress-bar" role="progressbar" id="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+						</div>				
+						<div class="selection-progress-text">
+							<span id="selectedcount">0</span> / 
+							<span id="maxitems" data-value="${eligibilityCount}">${eligibilityCount}</span> selected 
+						</div>
+					</div>
+					<div class="price-label mt-2">
+				  		Total: <span class="price" id="total-price">$0</span>
+				  	</div>
+
+				  	<div class="text-center mt-2">
+                        <isif condition="${isProductAvailable}">
+                            <isif condition="${maxQuantityStatus}"> 
+                                <div class="alert alert-danger add-to-bag-alert" role="alert">  
+                                    ${Resource.msg('giftbuilder.maximumqty','product',null)}
+                                </div>
+                            <iselse/>
+                                <form method="post" action="${URLUtils.url('GiftSet-AddItemsToCart')}">
+                                    <div style="display:none">
+                                        <input type="text" id="mainProductId" name="mainProductId" value="${giftSetProduct.ID}">
+                                        <textarea id="selectedItems" name="selectedItems"></textarea>
+                                    </div>
+                                    <button type="submit" id="add-giftset-to-cart" disabled class="btn btn-primary add-more-btn btn-block">Add more items</button>
+                                </form>
+                            </isif>
+                        <iselse/>
+                            <div class="product-not-available">
+					            <isif condition="${(giftSetProduct.custom.oosProductStatus.value == 'comingsoon')}">
+                                    <h2>${Resource.msg('global.comingsoon', 'locale', null)}</h2>
+                                <iselse/>
+                                    <h2>${Resource.msg('global.outofstock', 'locale', null)}</h2>
+                                </isif>
+                            </div>
+                        </isif>
+				  	</div>
+
+				  	<div class="shipping-text mt-2">
+				  		FREE SHIPPING &amp; RETURNS	COMPLIMENTARY SAMPLES
+				  	</div>
+		  		</div>
+		    </div>
+        </div>
+        </div>
+        </div>
+
+        <div class="pouch-container row container-fluid">
+            <div class="pouch-carousel col-md-5 col-lg-4 col-xl-3 offset-lg-1 offset-xl-2">
+				<div class="main-carousel hero-carousel p-4" data-flickity='{ "cellAlign": "center", "contain": true,"pageDots": false, "arrowShape": { "x0": 10, "x1": 60, "y1": 50, "x2": 65, "y2": 45, "x3": 20 } }'>
+                    <isloop items="${giftSetProduct.getImages('large')}" var="img" status="imgSmStatus">
+                        <img class="carousel-image w-100" src="${getImageUrl(giftSetProduct, 'category',imgSmStatus.index.toFixed(0))}">
+                    </isloop>
+                </div>
+            </div>
+            <div class="pouch-content col-md-7 col-lg-6 col-xl-5">
+                <isprint value="${pdict.Content.custom.SetSecondaryDescription}" encoding="off" />
+            </div> 
+        </div>
+                    
+    </div>
+    
+</isdecorate>

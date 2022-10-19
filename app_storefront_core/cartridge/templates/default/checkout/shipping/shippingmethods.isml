@@ -1,0 +1,113 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment>
+	This template renders the shipping methods that a customer may choose from.
+	It renders a form for the shipping method selection.  This template is
+	dynamically loaded using AJAX and may get reloaded as the customer enters
+	shipping address information depending on the configured shipping method
+	address exclusions.
+</iscomment>
+
+<isscript>
+	var shipment : dw.order.Shipment = pdict.Basket.defaultShipment;
+	var shippingModel : dw.order.ShipmentShippingModel = dw.order.ShippingMgr.getShipmentShippingModel( shipment );
+</isscript>
+
+<isset name="DiscountPlan" value="${dw.campaign.PromotionMgr.getDiscounts(pdict.Basket)}" scope="page" />
+
+<p class="checkout-paragraph"><em><iscontentasset aid="checkout-shipping-note"/></em></p>
+	
+<div class="checkout-shipping-options-block panel-section-indent">			
+	<iscomment>render list of applicable shipping methods</iscomment>
+	<isif condition="${pdict.ApplicableShippingMethods.size() > 0}">
+		<isscript>
+    	var selectedMethodID = pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.value;
+    	if(empty(selectedMethodID)) {
+    		selectedMethodID = dw.order.ShippingMgr.getDefaultShippingMethod().ID;
+    	}
+    	</isscript>
+		<isloop items="${pdict.ApplicableShippingMethods}" var="shippingMethod" status="loopstate">
+			<isscript>
+			var max_value = shippingMethod.custom.orderValue;
+			var min_value = shippingMethod.custom.minOrderValue;
+			var basketitem = pdict.Basket;
+			var order_total = basketitem.getAdjustedMerchandizeTotalPrice(true);
+			</isscript>
+			<isif condition="${!empty(min_value) && (order_total < min_value)}">
+				<iscontinue>
+			<iselseif condition="${!empty(max_value) && (order_total > max_value)}">
+				<iscontinue>
+			</isif>
+			<iscomment>exclude the shipming method '005', instore shipming method</iscomment>
+			<isif condition="${shippingMethod.custom.storePickupEnabled}">
+				<iscontinue>
+			</isif>
+			<iscomment> SmartOrderRefill modification</iscomment>
+			<isset name="freeShippingEnabled" value="${dw.system.Site.current.preferences.custom.OsfSorEnableFreeShipping}" scope="page" />
+			<isif condition="${(shippingMethod.getID() == 'OR_Shipping_method')}" >
+		 		<isif condition="${!session.custom.HasSORProducts || !freeShippingEnabled}">
+		 			<iscontinue>
+		 		</isif>
+			</isif>
+				
+			<isset name="shippingCost" value="${pdict.ShippingCosts.get(shippingMethod.ID)}" scope="page"/>
+       	<iscomment>Check Value from FedEx API and show</iscomment>
+     		
+     		<isif condition="${shippingMethod.custom.isFedex == true && (!shippingCost.baseShipping || shippingCost.baseShipping.value <= 0) && session.custom.allowZeroFedex != true}">
+     			<iscontinue>
+     		</isif>
+       		<div class="radio checkout-radio-block radio-ship-option <isif condition="${(selectedMethodID == shippingMethod.ID)}">selected</isif>">	
+				<label class="checkout-radio" for="shipping-method-${shippingMethod.ID}">
+	           		<input class="input-radio" type="radio" name="${pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.htmlName}" id="shipping-method-${shippingMethod.ID}" value="${shippingMethod.ID}" <isif condition="${(selectedMethodID == shippingMethod.ID)}">checked="checked"</isif> />
+	           		<div class="radio-text-block">
+						<div class="ship-type"><isprint value="${shippingMethod.displayName}"/></div>
+						<span class="selected-icon">
+							 <i class="fal fa-check-circle"></i> 
+						</span>
+						<isscript>
+						var Calendar = require('dw/util/Calendar');
+						var StringUtils = require('dw/util/StringUtils');
+						var stringHelper = require('~/cartridge/scripts/util/StringHelpers');
+						pstCal = new Calendar();
+						pstCal.setTimeZone('PST');
+						var estimated_days = shippingMethod.custom.estimatedDays;
+						var order_cutoffTime = shippingMethod.custom.order_cutoffTime;						
+						var currentdate = StringUtils.formatCalendar(pstCal, "MM/dd/yyyy HH:mm:ss"); 
+						var estimatedDate = stringHelper.GetEstimatedDate(currentdate, estimated_days);
+						var datetime =  StringUtils.formatCalendar(pstCal, "HH");
+						
+						if(datetime > order_cutoffTime) {
+							estimated_days = estimated_days + 1;
+							var estimatedDate = stringHelper.GetEstimatedDate(currentdate, estimated_days);
+						}
+			 			</isscript>
+			 			
+			        <isif condition="${dw.system.Site.getCurrent().preferences.custom.showShippingEstimate}">
+			        	<div class="ship-date">Estimated Arrival: <isprint value="${estimatedDate}" formatter="MM/dd" timezone="utc"/>	</div>       				        
+			        </isif>
+
+						<div class="ship-price">
+							<isif condition="${shippingCost.shippingPriceAdjustmentsTotal != 0}">
+								<span class="standard-shipping" style="display: none"><isprint value="${shippingCost.baseShipping}"/></span>
+								<span class="discount-shipping"><isprint value="${shippingCost.baseShippingAdjusted}"/></span>
+							<iselse/>
+								<span><isprint value="${shippingCost.baseShipping}"></span>
+							</isif>
+						</div>
+					</div>
+						
+	           		<isif condition="${shippingCost.surchargeAdjusted > 0}">
+						<span class="shippingsurcharge"> + <isprint value="${shippingCost.surchargeAdjusted}"/> ${Resource.msg('singleshipping.surcharge','checkout',null)}</span>
+					</isif>
+				</label>
+				
+
+				<!-- END: shippingmethod -->
+			</div>
+		</isloop>
+	<iselse/>
+		<div class="no-shipping-methods">${Resource.msg('singleshipping.noshippingmethods','checkout',null)}</div><!-- END: noshippingmethods -->
+	</isif>
+</div>
+		

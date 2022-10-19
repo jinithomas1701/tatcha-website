@@ -1,0 +1,69 @@
+<div class="js_braintree_creditCardFields payment-method-braintree" data-braintree-config="${JSON.stringify(pdict.braintree.hostedFieldsConfig)}">
+
+    <div id="braintreeCreditCardFieldsContainer">
+
+        <div class="form-group required">
+            <label class="form-control-label" for="braintreeCardOwner">
+                <span>${Resource.msg('braintree.creditcard.owner', 'locale', null)}</span>
+            </label>
+            <div class="braintree-field-wrap">
+                <div class="braintree-text-input">
+                    <input id="braintreeCardOwner" class="form-control" type="text" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.ownerHtmlName}" maxlength="40" data-new-cart-value="" data-init-value="${pdict.braintree.hostedFieldsConfig.fieldsConfig.initOwnerValue}" />
+                </div>
+                <div id="braintreeCardOwnerPh" class="braintree-hosted-fields-ph"></div>
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label class="form-control-label" for="braintreeCardNumber">
+                <span>${Resource.msg('braintree.creditcard.cardnumber', 'locale', null)}</span>
+            </label>
+            <div class="braintree-field-wrap">
+                <div id="braintreeCardNumber" class="braintree-hosted-fields-iframe-container"></div>
+                <div id="braintreeCardNumberPh" class="braintree-hosted-fields-ph"></div>
+            </div>
+            <span class="form-caption">${Resource.msg('braintree.creditcard.cardnumber.caption', 'locale', null)}</span>
+        </div>
+
+        <div class="form-group required">
+            <label class="form-control-label" for="braintreeCvv">
+                <span>${Resource.msg('braintree.creditcard.cvv', 'locale', null)}</span>
+            </label>
+            <div class="braintree-field-wrap">
+                <div id="braintreeCvv" class="braintree-hosted-fields-iframe-container"></div>
+                <div id="braintreeCvvPh" class="braintree-hosted-fields-ph"></div>
+            </div>
+        </div>
+
+        <div class="form-group required">
+            <label class="form-control-label" for="braintreeExpirationDate">
+                <span>${Resource.msg('braintree.creditcard.expirationdate', 'locale', null)}</span>
+            </label>
+            <div class="braintree-field-wrap">
+                <div id="braintreeExpirationDate" class="braintree-hosted-fields-iframe-container"></div>
+                <div id="braintreeExpirationPh" class="braintree-hosted-fields-ph"></div>
+            </div>
+            <span class="form-caption">${Resource.msg('braintree.creditcard.expirationdate.caption', 'locale', null)}</span>
+        </div>
+
+    </div>
+
+    <div id="braintree3DSecureContainer">
+        <div id="braintree3DSecureIframe"></div>
+    </div>
+
+    <input id="braintreeCardType" type="hidden" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.typeHtmlName}" value="Visa" />
+    <input id="cardNumber" type="text" class="cardNumber" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.numberHtmlName}" value="" />
+    <input id="braintreeCardMaskNumber" type="hidden" name="braintreeCardMaskNumber" value="" />
+    <input id="braintreeCardExpirationYear" type="hidden" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.expirationYear}" value="" />
+    <input id="braintreeCardExpirationMonth" type="hidden" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.expirationMonth}" value="" />
+
+    <input id="braintreeCreditCardNonce" type="hidden" name="braintreePaymentMethodNonce" />
+    <input id="braintreeIs3dSecureRequired" type="hidden" name="braintreeIs3dSecureRequired" value="false" />
+    <input id="braintreeDeviceData" type="hidden" name="braintreeDeviceData" value="" />
+
+    <div id="braintreeCreditCardErrorContainer" class="error"></div>
+    <div id="braintreeCreditCardLoader" class="braintree-loader-container">
+        <i class="braintree-loader"></i>
+    </div>
+</div>

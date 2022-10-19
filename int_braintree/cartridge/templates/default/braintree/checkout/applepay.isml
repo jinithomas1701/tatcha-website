@@ -1,0 +1,55 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+    var applePaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.applePayMethodName);
+    var amount = BraintreeHelper.getAmount(pdict.Basket);
+    var locale = dw.system.Site.getCurrent().getDefaultLocale();
+    var isShipped = !!pdict.Basket.getProductLineItems().size();
+    
+</isscript>
+<isscript>
+	//session.custom.NoCall = false;
+	var app = require('app_storefront_controllers/cartridge/scripts/app');
+	var cartModel = app.getModel('Cart').get();
+	var balanceAmount = cartModel.getNonGiftCertificateAmount();
+</isscript>
+
+<isif condition="${applePaymentMethod && applePaymentMethod.getPaymentProcessor().getID() == 'BRAINTREE_APPLEPAY'}" >
+<div class="js_braintree_applepayContent js_braintree_paymentContent" data-braintree-method="ApplePay" data-paypal-is-hide-continue-button="${true}">
+    <isscript>
+        var applepayButtonConfig = {
+                    paymentMethodName: prefs.applePayMethodName,
+                    clientToken: request.custom.braintreeClientToken,
+                    messages: {
+                        CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+                        CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+                        CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+                        CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null)
+                    },
+                    returnUrl: URLUtils.url('Braintree-AppleCheckoutFromCart', 'fromCart', 'true').toString(),
+                    options: {
+                        amount: parseFloat(balanceAmount.getValue()),
+                        currency: balanceAmount.getCurrencyCode(),
+                        displayName: prefs.BRAINTREE_APPLEPAY_Display_Name
+                    }
+                }
+    </isscript>
+
+    <isif condition="${!request.custom.braintreeClientToken}">
+        <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+    </isif>
+
+    <div class="form-row form-indent">
+        <div class="braintree-billingpage-apple-buttons-wrap js_braintree_applepayButtonsWrap">
+            <div class="braintree-billingpage-apple-button-wrap">
+                <div class="braintree-billingpage-apple-button js_braintree_applepay_button" data-braintree-config="<isprint value='${JSON.stringify(applepayButtonConfig)}' />">
+                    <div class="apple-pay-button-with-text apple-pay-button-black-with-text"><span class="text"></span><span class="logo"></span></div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="braintreeApplePayNonce" name="braintreeApplePayNonce" value=""/>
+        <input type="hidden" id="braintreeApplePayCustomFields" name="braintreeApplePayCustomFields" value=""/>
+    </div>
+    
+</div>
+ </isif>

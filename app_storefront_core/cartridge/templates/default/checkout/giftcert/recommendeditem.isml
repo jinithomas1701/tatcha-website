@@ -1,0 +1,20 @@
+<isscript>
+importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<div class="col-sm-4 product-list-col">
+	<div class="vertical-middle">
+		<isif condition="${pdict.selectedGiftProduct.master && pdict.selectedGiftProduct.getVariationModel()}">
+			<isset name="imageProduct" value="${pdict.selectedGiftProduct.variationModel.defaultVariant}" scope="page"/>
+		<iselseif condition="${pdict.selectedGiftProduct.variant && !empty(pdict.selectedGiftProduct.getVariationModel())}">
+			<isset name="imageProduct" value="${pdict.selectedGiftProduct.getVariationModel()}" scope="page"/>
+		<iselse>
+			<isset name="imageProduct" value="${pdict.selectedGiftProduct}" scope="page"/>
+		</isif>
+		<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+			<isset name="imageUrl" value="${getImageUrl(imageProduct,'medium')}" scope="page"/>
+		<iselse>
+			<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+		</isif>	
+		<img class="img-responsive" src="${imageUrl}">
+	</div>
+</div>

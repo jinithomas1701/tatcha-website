@@ -1,0 +1,91 @@
+<isif condition="${customer.authenticated  && customer.addressBook.addresses && customer.addressBook.addresses.length > 0}">
+    <isif condition="${session.custom.selectedShippingAddress}">
+        <isset name="selectedAddr" value="${session.custom.selectedShippingAddress}" scope="page" />
+    <iselse>
+        <isset name="selectedAddr" value="${customer.addressBook.preferredAddress.ID}" scope="page" />
+    </isif>
+    <div class="saved-shipping-details radio-selector mb-4 ${pdict.hasPayPalPI? 'd-none': ''}">
+        <div class="saved-shipping-details-inner">
+            <isloop items="${customer.addressBook.addresses}" var="address">
+                <isscript>
+	                var addId = address.ID ? address.ID : null;
+                    addId = addId.replace(/([-,.€~!@#$%^&*()_+=`{}\[\]\|\\:;'<>\s])+/g, '');
+                </isscript>
+                <span class="outer-section address" tabindex="0" id="${'outer-address-id-'+address.ID}" data-id="${addId}">
+                    <div class="address-line-item outer-section-inner" tabindex="-1">
+                        <div class="selector">
+                            <isif condition="${selectedAddr != address.ID}">
+                                <input type="radio" id="${address.ID}" data-id="uuid-${address.UUID}" name="AddrSelector" class="AddrSelector" aria-label="Select for first shipping address">   
+                            <iselse>
+                                <input type="radio" id="${address.ID}" data-id="uuid-${address.UUID}" name="AddrSelector" value="${address.ID}" class="AddrSelector checked" aria-label="Select for first shipping address" checked>
+                            </isif>
+                            <label class="address-select" id="${'label-id-'+address.ID}" for="${address.ID}">
+                                <i class="fal fa-circle mr-4"></i>
+                                <i class="fa fa-check-circle mr-4"></i>
+                            </label>
+                        </div>
+                        <div class="address-details">
+                            <div>${address.firstName||''} ${address.lastName || ''} </div>
+                            <div>${address.address1 || ''} ,${(address.address2) ? address.address2 + ',' : ''} ${address.city || ''}, ${(address && address.stateCode && !empty(address.stateCode.trim()))? address.stateCode + ',' : ''} ${address.postalCode|| ''}, ${address.countryCode.displayValue || ''} </div>
+                            <span class='${address.countryCode.value === 'US' ? 'confirm-phone' : ''}'>${address.phone}</span>
+                        </div>
+                        <div class="address-actions text-primary">
+                            <isset name="tempAddr" value="${customer.addressBook.getAddress(address.ID)}" scope="page" />
+                            <span class="outer-section">
+                                <span class="outer-section-inner remove" tabindex="-1"><a  data-address-id="${address.ID}" data-removeurl="${URLUtils.url('AddressSFRA-DeleteAddressModal')}" class="remove-shipping-address <isif condition="${selectedAddr == address.ID}"> d-none </isif>" href="#">Remove</a></span>
+                            </span>
+                            <div class="px-2 edit-separator <isif condition="${selectedAddr != address.ID}"> d-inline-block  <iselse> d-none </isif>"> | </div>
+                            <span class="outer-section">
+                                <span class="outer-section-inner" tabindex="-1">
+                                    <a  data-address-id="${address.ID}"  data-first-name="${tempAddr.firstName||''}" data-last-name="${tempAddr.lastName||''}"
+                                        data-address1="${tempAddr.address1||''}" data-address2="${tempAddr.address2||''}"
+                                        data-city="${tempAddr.city||''}" data-state-code="${tempAddr.stateCode||''}"
+                                        data-country-code="${tempAddr.countryCode.value ||''}" data-postal-code="${tempAddr.postalCode||''}"
+                                        data-phone="${tempAddr.phone||''}" href="#addressModal" data-toggle="modal" class="edit-shipping-address <isif condition="${selectedAddr == address.ID}"> preferred </isif>">Edit</a>
+                                </span>
+                            </span>
+                        </div>
+                    </div>
+                </span>
+            </isloop>
+         </div>
+        <a href="#addressModal" class="text-primary add-address-link" aria-label="Add new address" data-toggle="modal">
+        <i class="fal fa-plus-circle mr-2 mt-3"></i>
+        <span class="ml-2">Add new address</span></a>
+    </div>
+</isif>
+
+<iscomment> section to re-write address drop-down </iscomment>
+<div id="duplicate-obj" class="d-none">
+    <span class="outer-section address" tabindex="0">
+        <div class="address-line-item outer-section-inner" tabindex="-1">
+            <div class="selector">
+                <input  type="radio" id="" aria-label="Select for first shipping address" name="AddrSelector" class="AddrSelector">
+                <label class="address-select" for="" id="">
+                    <i class="fal fa-circle mr-4"></i>
+                    <i class="fa fa-check-circle mr-4"></i>
+                </label>
+            </div>
+            <div class="address-details">
+                <div class="modal-name"></div>
+                <div class="modal-address"></div>
+                <div class="modal-phone"></div>
+            </div>
+            <div class="address-actions text-primary">
+                <span class="outer-section" tabindex="0">
+                    <span class="outer-section-inner remove" tabindex="-1"><a  data-address-id="" class="remove-shipping-address" data-removeurl="${URLUtils.url('AddressSFRA-DeleteAddressModal')}" href="#">Remove</a></span>
+                </span>
+                <div class="d-inline-block px-2 edit-separator"> | </div>
+                <span class="outer-section" tabindex="0">
+                    <span class="outer-section-inner" tabindex="-1">
+                        <a  data-address-id=""  data-first-name="" data-last-name=""
+                            data-address1="" data-address2=""
+                            data-city="" data-state-code=""
+                            data-country-code="" data-postal-code=""
+                            data-phone="" href="#addressModal" data-toggle="modal" class="edit-shipping-address">Edit</a>
+                    </span>
+                </span>
+            </div>
+        </div>
+    </span>
+</div>

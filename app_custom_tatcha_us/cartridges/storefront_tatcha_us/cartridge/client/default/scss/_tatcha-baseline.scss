@@ -1,0 +1,496 @@
+// BASELINE Styles for Tatcha: Salesforce Commerce Cloud
+
+
+@import "tatcha-custom";
+// NOTE: Classes created for Tatcha are prefixed tatcha- to prevent accidental ovverides.
+
+//UTILITY
+// Tatcha Grayscale
+// 10-12-2017 showing all for now, these will be reduced once the designs are complete
+//@each $gray, $value in $grays {
+//   @include bg-variant('.bg-#{$gray}', $value);
+//}
+
+@mixin placeholder {
+ ::-webkit-input-placeholder {@content}
+ :-moz-placeholder           {@content}
+ ::-moz-placeholder          {@content}
+ :-ms-input-placeholder      {@content}
+}
+@function rem-calc($size) {
+	$remSize: $size / 16;
+	@return #{$remSize}rem;
+}
+body{
+	line-height: 1.5;
+}
+
+// BASE TYPOGRAPHY
+h1, .h1 { font-weight: $font-weight-bold; text-transform: uppercase; }
+h2, .h2 { font-weight: $font-weight-bold; text-transform: uppercase; }
+h3, .h3 { font-weight: $font-weight-bold; }
+h4, .h4 { font-weight: $font-weight-normal; text-transform: uppercase; }
+h5, .h5 { font-weight: $font-weight-bold; }
+h6, .h6 { font-weight: $font-weight-normal; text-decoration: underline; }
+
+// Responsiveness: resize for LG and XL
+@include media-breakpoint-up(lg) {
+   h1, .h1 { font-size: 2.375rem; }
+   h2, .h2 { font-size: 1.5rem; }
+   h3, .h3 { font-size: 1.5rem; }
+   h4, .h4 { font-size: 1.125rem; }
+   h5, .h5 { font-size: 1rem; }
+   h6, .h6 { font-size: 1rem; }
+   .display-1 { font-size: 6rem; }
+   .display-2 { font-size: 5rem; }
+   .display-3 { font-size: 4rem; }
+   .display-4 { font-size: 3rem; }
+}
+
+
+
+// Animated Link
+a.tatcha-animation {
+   position: relative;
+   display: inline-block;
+   outline: none;
+   color: $tatcha-link;
+   vertical-align: bottom;
+   text-decoration: none;
+   white-space: nowrap;
+   overflow: hidden;
+   &:before, &:after {
+	   pointer-events: none;
+	   -webkit-backface-visibility: hidden;
+	   backface-visibility: hidden;
+	   -webkit-font-smoothing: antialiased;
+	   font-smoothing: antialiased;
+   }
+   &:before {
+	   position: absolute;
+	   top: 0;
+	   left: 0;
+	   z-index: -1;
+	   width: 100%;
+	   height: 100%;
+	   background-color: $gray-200;
+	   content: '';
+	   -webkit-transition: -webkit-transform 0.2s;
+	   transition: transform 0.2s;
+	   -webkit-transform: translateY(93%);
+	   transform: translateY(93%);
+   }
+   &:hover:before, &:focus:before {
+	   -webkit-transform: translateY(0);
+	   transform: translateY(0);
+   }
+}
+
+// BADGES
+.badge {
+   border-radius: 0.25rem;
+}
+
+.badge-pill {
+   border-radius: 3rem;
+}
+
+// BUTTONS
+button { cursor: pointer; }
+.btn {
+   text-transform: uppercase; cursor:pointer;
+   letter-spacing: 1px;
+   &.btn-lg {
+	   letter-spacing: 1.5px;
+   }
+}
+
+// Override disabled buttons. Disabled comes first so active can properly restyle
+button, .btn {
+ &.disabled,
+ &:disabled {
+   opacity: .25;
+   @include box-shadow(none);
+   cursor: default;
+ }
+
+ &:active,
+ &.active {
+   background-image: none;
+   @include box-shadow($btn-focus-box-shadow, $btn-active-box-shadow);
+ }
+
+ &.btn-link {
+	 text-decoration: underline;
+	 padding-left: 0;
+	 padding-right: 0;
+	 color: #000;
+	 font-weight: 600;
+ }
+}
+
+.input-group {
+   .input-group-btn .btn {
+	   border-radius: 0;
+   }
+}
+
+
+// FORMS
+// This allows for no radius on select dropdown and fixes the arrow issue for no radius.
+select:not([multiple]) {
+   border-radius: 0;
+   appearance: none;
+   -webkit-appearance: none;
+   background-position: right 50%;
+   background-repeat: no-repeat;
+   background-image: url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%20%3C%21DOCTYPE%20svg%20PUBLIC%20%22-//W3C//DTD%20SVG%201.1//EN%22%20%22http%3A//www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd%22%3E%20%3Csvg%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%20x%3D%220px%22%20y%3D%220px%22%20width%3D%2214px%22%20height%3D%2212px%22%20viewBox%3D%220%200%2014%2012%22%20enable-background%3D%22new%200%200%2014%2012%22%20xml%3Aspace%3D%22preserve%22%3E%20%3Cpolygon%20points%3D%223.862%2C7.931%200%2C4.069%207.725%2C4.069%20%22/%3E%3C/svg%3E);
+   padding: .5em;
+   padding-right: 1.5em
+}
+
+input, textarea, select {
+   &:disabled, &:disabled::placeholder, &.disabled {
+	   color: $text-muted;
+	   background-image: none;
+   }
+}
+
+
+@include placeholder {
+   font-style:italic;
+   font-weight: $font-weight-light;
+   font-size: 0.75rem;
+}
+
+@mixin section-anchor {
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+@mixin section-anchor-after {
+	content: '';
+    display: block;
+    height: 4px;
+    width: 2 * $g-unit;
+    margin: $g-unit auto (1.5 * $g-unit);
+    background-color: $primary;
+}
+
+h2.section-anchor {
+	@include section-anchor;
+	font-size: round(1.125 * $font-size-base);
+}
+h2.section-anchor:after {
+	@include section-anchor-after;
+}
+
+// MODALS
+.modal-primary {
+	.modal-content {
+		// border: 3px solid $black;
+		.modal-header {
+			margin: 0 round(0.5 * $g-unit);
+			padding-left: round(0.5 * $g-unit);
+			padding-right: round(0.5 * $g-unit);
+			border-color: lighten($black, 20%);
+		}
+	}
+}
+.modal-header {
+	position: relative;
+	padding: 8px 16px;
+	.close {
+		position: absolute;
+		right: 10px;
+		top: 6px;
+		&.close-round {
+			right: 6px;
+			top: 10px;
+		}
+	}
+}
+.modal-content .close {
+	color: $gray-600;
+	opacity: 0.7;
+	&:hover {
+		opacity: 1;
+	}
+	&.close-round {
+		border-radius: 16px;
+		background-color: $black;
+		color: $white;
+		height: 24px;
+		width: 24px;
+		font-size: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		position: fixed;
+	}
+}
+.modal-content {
+//   border-radius: 0;
+  .no-gutter {
+  	padding: 0;
+  	.close-round {
+  		top: 6px;
+  		right: 6px;
+  	}
+  }
+
+	label {
+		display: inline-block;
+		max-width: 100%;
+	}
+  .radio, .checkbox {
+    position: relative;
+    display: block;
+    margin-top: 10px;
+	margin-bottom: 10px;
+	label {
+		min-height: 22px;
+		padding-left: 20px;
+		margin-bottom: 0;
+		font-weight: $font-weight-normal;
+		cursor: pointer;
+	}
+  }
+  .checkbox label {
+    font-size: 14px;
+    text-transform: none;
+}
+.radio input[type="radio"], .radio-inline input[type="radio"], .checkbox input[type="checkbox"], .checkbox-inline input[type="checkbox"] {
+    position: absolute;
+    margin-left: -20px;
+}
+input[type="radio"], input[type="checkbox"] {
+    margin: 4px 0 0;
+    line-height: normal;
+}
+}
+.modal-footer {
+	border-top: none;
+	.btn-default {
+		background-color: $white;
+		border-color: $gray-500;
+		&:active:hover,&:hover{
+			background-color: $bg-color;
+		}
+	}
+	.btn{
+		padding: 0.45rem 0.75rem;
+		font-weight: $font-weight-light;
+		border-radius: 0;
+	}
+}
+
+
+.modal-fullscreen {
+	.modal-dialog {
+		margin: 0;
+  		margin-right: auto;
+		margin-left: auto;
+		width: 100%;
+		height: 100%;
+		@include media-breakpoint-up(sm) {
+			max-width: 100%;
+		}
+		@include media-breakpoint-up(md) {
+		// @media(min-width:$screen-sm-min) {
+			max-width: 768px;
+		}
+		@include media-breakpoint-up(lg) {
+		// @media(min-width:$screen-md-min) {
+			max-width: 970px;
+		}
+		@include media-breakpoint-up(xl) {
+		// @media(min-width:$screen-lg-min) {
+			max-width: 1170px;
+		}
+		.modal-content {
+			height: 100%;
+			border-width: 0;
+			@include media-breakpoint-up(md) {
+			// @media(min-width:$screen-sm-min) {
+				border-width: 2px;
+			}
+			.modal-body {
+				overflow-y: auto;
+				position: absolute;
+				width: 100%;
+				bottom: 74px;
+    			top: 60px;
+			}
+			.modal-footer {
+				position: absolute;
+				bottom: 0;
+				width: 100%;
+			}
+			&.fluid {
+				.modal-body {
+					overflow-y: auto;
+					position: relative;
+					width: 100%;
+					height: 100%;
+					top: auto;
+					bottom: auto;
+				}
+			}
+			&.media {
+				background-color: rgba(0, 0, 0, 0.7);;
+				color: $white;
+				.close-round {
+					background-color: $white;
+					color: $black;
+				}
+			}
+			.modal-article-container {
+				padding: 0 15px;
+				font-size: 14px;
+				h1 {
+					font-size: 28px;
+					font-weight: $font-weight-bold;
+					margin: 24px 0;
+				}
+			}
+		}
+	}
+	&.modal-fs-margin {
+		.modal-content {
+			margin: 10px;
+			height: 95%;
+		}
+		.modal-body.container-fluid {
+			top: 36px;
+			bottom: 0;
+		}
+
+		.modal-content .close.close-round {
+			right: 16px;
+		}
+	}
+	&.modal-takeover {
+		.modal-dialog {
+			max-width: none;
+		}
+	}
+}
+
+.modal-display {
+	.modal-content {
+		border-width: 3px;
+	}
+	.modal-title {
+		//font-size: 2 * $font-size-base;
+	}
+}
+
+.modal {
+	.alert {
+		margin-left: 8px;
+		margin-right: 8px;
+	}
+    .form-inline {
+        .btn {
+            margin-top: $g-unit;
+            display: block;
+			width: 100%;
+			@include media-breakpoint-up(md) {
+            // @media (min-width: $screen-sm-min) {
+                margin-top: 0;
+                display: inline;
+                width: auto;
+            }
+        }
+    }
+}
+form{
+	.has-error{
+	  .help-block {
+    	display: none;
+		  }
+	  .help-block {
+	    color: $red;
+	    font-size: 14px;
+	    padding-top: 5px;
+	  }
+	  input,select {
+	    border-color: $red;
+	  }
+
+	}
+	@mixin animated {
+  transition: 0.2s all ease-in-out;
+}
+
+/*label.float-label {
+  @include animated;
+  position: absolute;
+  opacity: 0;
+  left: 15px;
+  top: $form-padding/2;
+	z-index: -1;
+  &.input--filled {
+  	z-index: 999;
+    font-size: 14px;
+    font-weight:600;
+    color: $gray-700;
+    opacity: 1;
+    & + .form-control {
+      padding-top: $form-padding + 5;
+      padding-bottom: $form-padding - 10;
+    }
+  }
+}*/
+}
+
+
+a:focus, button:focus, input:focus, select:focus,.gift-message-container:focus,label:focus,span:focus{
+	outline: none !important;
+
+	box-shadow:0 0 0 1pt #a68bb6 !important;
+}
+
+.form-control:focus,.danger-spec:focus{
+	outline: none !important;
+	box-shadow:0 0 0 1pt #a68bb6 !important;
+	border-color: $universal-focus-color !important;
+	//box-shadow: unset;
+}
+.btn-outline-dark:focus{
+	outline: none !important;
+
+	box-shadow:0 0 0 1pt #a68bb6 !important;
+}
+.title-position-spec{
+	margin-left:35px;
+	padding:5px;
+}
+
+.list-spec{
+	margin-left:18px !important;
+}
+
+
+.form-control{
+	border-radius: 4px !important;
+}
+
+.view-tools-level-3{
+	.gtm-show-original-results{
+		border-radius: 15px !important;
+		line-height: 1.5 !important;
+		letter-spacing: unset !important;
+	}
+}
+
+@mixin drop-shadow {
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	box-sizing: border-box;
+
+	/* Shadows/01. Small */
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}

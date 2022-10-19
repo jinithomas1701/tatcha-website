@@ -1,0 +1,6 @@
+<script>
+initAfterpay();
+</script>
+<button type="button" class="btn btn-block btn-outline-dark afterpay-express-button-minibag <isif condition="${!dw.system.Site.getCurrent().getCustomPreferenceValue('BRAINTREE_APPLEPAY_Visibility_Button_On_MiniCart')}">minicart-wrap-without-applepay</isif>" id="afterpay-express-button" aria-label="Buy now with afterpay">
+	<img class="img-fluid img-responsive afterpay-express-btn-minibag" alt="AfterPay logo" src="${URLUtils.staticURL('/images/afterpay-express-logo.svg')}"  />
+</button>

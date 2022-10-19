@@ -1,0 +1,64 @@
+<link rel="stylesheet" href='${URLUtils.staticURL('/css/braintree.css')}'>
+
+<script src="${pdict.prefs.clientSdk3ClientUrl}"></script>
+<script src="${pdict.prefs.clientSdkLocalPaymentUrl}"></script>
+
+<isset name="clientToken" value="${pdict.clientToken}" scope="page" />
+<isset name="paymentConfirmUrl" value="${pdict.paymentConfirmUrl}" scope="page" />
+<isset name="lpmName" value="${pdict.lpmName}" scope="page" />
+<isset name="customerEmail" value="${pdict.email}" scope="page" />
+
+<script>
+braintree.client.create({
+    authorization: `${clientToken}`
+}).then(function (clientInstance) {
+    var lpmLoader = document.querySelector('.braintree-loader-container');
+    lpmLoader.style.display = 'block';
+
+    return braintree.localPayment.create({
+        client: clientInstance
+    });
+}).then(function (localPaymentInstance) {
+    localPaymentInstance.tokenize().then(function ({ nonce, details }) {
+        var processingMsg = document.querySelector('.processingMsg');
+        var finalProcessingMsg = document.querySelector('.finalProcessingMsg');
+        var buyerAddressDetails = Object.keys(details).length ? details : { email : `${customerEmail}` };
+        processingMsg.style.display = 'none';
+        finalProcessingMsg.style.display = 'block';
+
+        var http = new XMLHttpRequest();
+        var url = `${paymentConfirmUrl}`;
+        const params = {
+            nonce: nonce,
+            lpmName: `${lpmName}`,
+            details: buyerAddressDetails
+        }
+
+        http.open('POST', url, true);
+        http.setRequestHeader('Content-type', 'application/json');
+        http.onreadystatechange = function () {
+            if (http.readyState == 4 && http.status == 200) {
+                var response = JSON.parse(http.response)
+                window.location.href = response.redirectUrl;
+            }
+        }
+        http.send(JSON.stringify(params));
+    }).catch(function (tokenizeError) {
+        var lpmError = document.querySelector('.lpmError');
+        lpmLoader.style.display = 'none';
+        processingMsg.style.display = 'none';
+        finalProcessingMsg.style.display = 'none';
+        lpmError.style.display = 'block';
+    });
+});
+</script>
+
+<div class="lpmLoader braintree-loader-container">
+  <i class="braintree-loader"></i>
+  <div class='lpmProcessingMsg font-weight-bold'>
+    <p class="processingMsg">${Resource.msg('braintree.checkout.lpm.info.message', 'locale', null)}</p>
+    <p class="finalProcessingMsg" style="display:none">${Resource.msg('braintree.checkout.lpm.processing.message', 'locale', null)}</p>
+    <p class="lpmError" style="display:none">${Resource.msg('braintree.checkout.lpm.processing.error', 'locale', null)}
+    </p>
+  </div>
+</div>

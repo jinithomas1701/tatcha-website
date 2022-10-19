@@ -1,0 +1,51 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<div class="d-block d-md-flex" id="other-payment">
+    <div class="w-100 cart-payment-paypal-wrap " id="cart-otherpayment-button">
+        <isinclude template="braintree/cart/cartButtons"/>
+    </div>
+    	
+	<!-- Afterpay express custom code starts -->
+	<isscript>
+	var sitePreferences = require("int_afterpay_core/cartridge/scripts/util/afterpayUtilities.js").getSitePreferencesUtilities();
+	var afterpayExpressEnable = sitePreferences.isAfterpayExpressEnabled();
+	var basketObject = dw.order.BasketMgr.getCurrentBasket();
+	var orderGrandTotal = basketObject.getAdjustedMerchandizeTotalPrice(true) + basketObject.giftCertificateTotalPrice;
+	var apMessageService = require("int_afterpay_core/cartridge/scripts/product/afterpayDisplayProductMessage");
+	var thresholdResponse = apMessageService.getThresholdRange(orderGrandTotal);
+	var disableAfterpayPaymentMethod = false;
+	if(thresholdResponse && (thresholdResponse.belowThreshold || thresholdResponse.aboveThreshold)){
+		disableAfterpayPaymentMethod = true;
+	}
+	var HasRefillProducts = null;
+	if(Site.getCurrent().getCustomPreferenceValue('SorEnabled')){
+		HasRefillProducts = require('int_smartorderrefill/cartridge/scripts/smartOrderRefill/refillHelper.js').checkForRefillProducts();
+	}
+	var hasOnlyGiftCertificate = false;
+	var productLineItems = basketObject.productLineItems;
+	if(productLineItems.length === 0 && basketObject.giftCertificateLineItems && basketObject.giftCertificateLineItems.length > 0) {
+		hasOnlyGiftCertificate = true;
+	}
+	</isscript>
+	<isif condition="${afterpayExpressEnable && !disableAfterpayPaymentMethod && !HasRefillProducts && !hasOnlyGiftCertificate}">
+		<div class="w-100 mt-2 mt-md-0 ml-md-2" id="cart-afterpay-button">
+			<iscomment>AfterPay Express </iscomment>
+			<isinclude template="afterpay/afterpayButton" />
+		</div>
+	</isif>
+		<!-- Afterpay express custom code ends -->
+	</div>
+	
+	
+    <div class="col-md-12 col-lg-12 d-inline-flex flex-row px-0"> 
+        <div class="w-100 cart-payment-applepay-wrap pt-3 pl-0">
+	       <isif condition="${!HasRefillProducts}">
+				<isinclude template="braintree/cart/cartApplepayButton"/>
+			</isif>
+	    </div>
+    </div>
+    <isif condition="${disableAfterpayPaymentMethod && !HasRefillProducts && !hasOnlyGiftCertificate}"> 
+    	<isafterpaythreshold totalprice="${orderTotalValue}" classname="cart-afterpay-error-message text-center" />
+    </isif>
+</div>

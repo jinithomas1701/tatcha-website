@@ -1,0 +1,119 @@
+{
+  "name": "In-Page Navigation",
+  "description": "In-Page Navigation links",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "link1",
+      "name": "Link 1",
+      "description": "The values for link 1.",
+      "attribute_definitions": [
+        {
+          "id": "linkurl1",
+          "name": "Link 1 URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "linktext1",
+          "name": "Link 1 Text",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "link2",
+      "name": "Link 2",
+      "description": "The values for link 2.",
+      "attribute_definitions": [
+        {
+          "id": "linkurl2",
+          "name": "Link 2 URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "linktext2",
+          "name": "Link 2 Text",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "link3",
+      "name": "Link 3",
+      "description": "The values for link 2.",
+      "attribute_definitions": [
+        {
+          "id": "linkurl3",
+          "name": "Link 3 URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "linktext3",
+          "name": "Link 3 Text",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "link4",
+      "name": "Link 4",
+      "description": "The values for link 2.",
+      "attribute_definitions": [
+        {
+          "id": "linkurl4",
+          "name": "Link 4 URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "linktext4",
+          "name": "Link 4 Text",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margins for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

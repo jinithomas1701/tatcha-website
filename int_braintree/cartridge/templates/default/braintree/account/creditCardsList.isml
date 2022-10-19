@@ -1,0 +1,36 @@
+<h1>${Resource.msg('account.paymentinstrumentlist.header','account',null)}</h1>
+
+<isscript>
+    var isAllowedAddCard = true;
+    var BraintreeHelper = require('int_braintree/cartridge/scripts/braintree/braintreeHelper');
+    var braintreePrefs = BraintreeHelper.getPrefs();
+    var addCardUrl = URLUtils.url('Braintree-AccountAddCreditCard');
+    var deleteCardUrl = URLUtils.url('Braintree-AccountDeleteCreditCard');
+    isAllowedAddCard = braintreePrefs.BRAINTREE_Vault_Mode !== 'not';
+</isscript>
+
+<isif condition="${isAllowedAddCard}">
+    <isif condition="${!braintreePrefs.BRAINTREE_3DSecure_Enabled}" >
+        <a class="section-header-note button js_braintree_addCreditCartBtn" href="${addCardUrl}" title="${Resource.msg('account.paymentinstrumentlist.addcard.label','account',null)}">${Resource.msg('account.paymentinstrumentlist.addcard','account',null)}</a>
+    </isif>
+</isif>
+
+<isif condition="${pdict.PaymentInstruments.size() > 0}">
+    <ul class="payment-list">
+        <isloop items="${pdict.CurrentForms.paymentinstruments.creditcards.storedcards}" var="creditcard" status="loopstate">
+
+        <li class="<isif condition="${loopstate.first}">first <iselseif condition="${loopstate.last}">last </isif>${pdict.PaymentInstruments[loopstate.count - 1].creditCardType}">
+            <isminicreditcard card="${creditcard.object}" show_expiration="${true}"/>
+
+            <form action="${deleteCardUrl}" name="payment-remove" method="post" id="creditcards_${loopstate.count}">
+                <fieldset>
+                    <button type="submit" class="button-text delete" value="${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}" name="${creditcard.remove.htmlName}">
+                        ${Resource.msg('account.paymentinstrumentlist.deletecard','account',null)}
+                    </button>
+                    <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}" value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}"/>
+                </fieldset>
+            </form>
+        </li>
+        </isloop>
+    </ul>
+</isif>

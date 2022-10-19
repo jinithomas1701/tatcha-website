@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+    <menuaction id="customsubmenu_yotpo01" menupath="site-prefs" position="12000" site="true">
+        <name xml:lang="x-default">Yotpo Swell Login</name>
+            <short_description xml:lang="x-default">
+                Login to Yotpo Swell Loyalty
+            </short_description>
+            <description xml:lang="x-default">
+                Login to Yotpo Swell Loyalty
+            </description>
+            <exec pipeline="YotpoBM" node="GetSwellLogin"/>
+            <sub-pipelines>
+                <pipeline name="YotpoBM" />
+            </sub-pipelines>
+            <icon>icons/yotpo-logo.png</icon>
+    </menuaction>
+</extensions>

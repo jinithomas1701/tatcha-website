@@ -1,0 +1,5 @@
+<isinclude template="util/modules"/>
+<iscomment>
+	Extole zone tag integration - 'product'
+</iscomment>
+<isextolezonetag name="product_mobile" element_id="extole_zone_product_mobile" product="${pdict.Product}" />

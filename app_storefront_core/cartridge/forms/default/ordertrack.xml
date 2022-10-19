@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+ <field formid="orderNumber" label="ordertrack.orderNumber" type="string" mandatory="true" binding="orderNumber" missing-error="ordertrack.orderNumber.missing-error"/>
+ <field formid="orderEmail" label="ordertrack.orderEmail" type="string" mandatory="true" binding="orderEmail" missing-error="ordertrack.orderEmail.missing-error"/>
+
+ <action formid="findorder" valid-form="false"/>	
+</form>

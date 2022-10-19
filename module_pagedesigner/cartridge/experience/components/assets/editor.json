@@ -1,0 +1,76 @@
+{
+  "name": "Text Editor",
+  "description": "Shows rich text for text pages",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "editorhtml",
+      "name": "Editor",
+      "description": "The Editor component",
+      "attribute_definitions": [
+        {
+          "id": "html",
+          "name": "Editor Content",
+          "type": "markup",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+      {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": false,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": false,
+          "default_value": "none"
+        }
+      ]
+    },
+    {
+    	"id": "alignment",
+    	"name": "Alignment",
+    	"description": "Text Alignment",
+    	"attribute_definitions": [
+    	{
+    	  "id": "textalignment",
+          "name": "Text Alignment",
+          "description": "Text Alignment",
+          "type": "enum",
+          "values": [
+            "center",
+            "left",
+            "right"
+          ], 
+          "required": false,
+          "default_value": "center"
+    	}
+    	]	
+    }
+  ],
+  "region_definitions": []
+}

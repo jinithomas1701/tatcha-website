@@ -1,0 +1,27 @@
+.inpage-navigation-container{
+    @extend %m-top;
+    @extend %m-bottom;
+    border: 1px solid $gray-300;
+    border-left: none;
+    border-right: none;
+    .inpage-nav{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        .inpage-nav-item{
+            padding: 15px 10px;
+            text-transform: capitalize;
+            a{
+                color: $black;
+            }
+            
+            @include media-breakpoint-down(md) {
+                font-size: 12px;
+            }
+            @include media-breakpoint-up(md) {
+                font-size: 16px;
+            }
+        }
+    }
+
+}

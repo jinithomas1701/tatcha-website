@@ -1,0 +1,52 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Product Search Results No Hits',
+			type:'search',
+			ns:'search'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+	<iscomment>
+		Please mind that the productsearchrefinebar contains price information that is subject to personalization.
+		Make sure the decorated template specifies ISCACHE varyby="price_promotion".
+	</iscomment>
+
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableCSSLazyload')}">
+			<isinclude template="components/header/htmlhead_category_bs"/>
+		<iselse>
+			<isinclude template="components/header/htmlhead_bs"/>
+	</isif>
+	<isinclude template="search/pt_productsearchresult_UI"/>
+
+	<isif condition="${(pdict.CurrentHttpParameterMap.cgid.submitted && pdict.CurrentHttpParameterMap.cgid.value != '')}">
+		<link rel="canonical" href="${URLUtils.https('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid)}" />
+	</isif>
+
+	<iscomment>Add  template-specific header information here.</iscomment>
+
+</head>
+<body>
+
+	<isinclude template="components/header/header_bs"/>
+	<iscomment> New exposed mobile nav </iscomment>
+	<iscontentasset aid="mobile-exposed-nav"/>
+	<main id="main" role="main" class="product product-list search-results nohits-main" tabindex="-1">
+		<isinclude template="components/browsertoolscheck"/>
+			<isreplace/>
+	</main>
+	<isinclude template="components/footer/footer_bs"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+	<isinclude template="search/pt_productsearchresult_VARS"/>
+	
+</body>
+</html>

@@ -1,0 +1,108 @@
+{
+  "name": "Panel Full Width Product",
+  "description": "Shows Panel Full Width Product Section",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "images",
+      "name": "Image Content",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "desktopImage",
+          "name": "Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "commonfields",
+      "name": "Common Fields",
+      "description": "The common fields to show a full width panel component",
+      "attribute_definitions": [
+      	{
+      	  "id": "anchorid",
+      	  "name": "Anchor Id",
+      	  "type": "string",
+      	  "required": true
+      	},
+      	{
+      	  "id": "product",
+      	  "name": "Product Selector",
+      	  "description": "Product Selector",
+      	  "type": "product",
+      	  "required": true
+      	},
+      	{
+	      "id": "desktopLayout",
+	      "name": "Desktop Layout",
+	      "description": "Desktop Layout",
+	      "type": "enum",
+	      "values": [
+	        "Image Left - Text Right",
+        	"Text Left - Image Right"
+	      ],
+	      "required": true,
+	      "default_value": "Image Left - Text Right"
+	    },
+        {
+          "id": "body",
+          "name": "Text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "bgColor",
+          "name": "Box Color",
+          "description": "Box Color.",
+          "type": "string",
+          "required": false,
+          "default_value": "#fff"
+        }
+      ]
+    }, 
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+      {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

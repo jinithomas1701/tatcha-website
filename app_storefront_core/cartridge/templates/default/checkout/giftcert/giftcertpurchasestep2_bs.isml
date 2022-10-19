@@ -1,0 +1,180 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<script>
+$(this).scrollTop(0);
+</script>
+<isscript>
+	importScript("cart/CartUtils.ds");
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	
+	var selectedGiftCertImage = session.custom.selectedGiftimage ? session.custom.selectedGiftimage : '';
+	var giftSendername = session.custom.senderName ? session.custom.senderName : '';
+	var giftRecepientname = session.custom.recepientName ? session.custom.recepientName : '';
+	var giftCertAmount = session.custom.giftAmount ? session.custom.giftAmount: 0;
+	var recommendedItemsArr = [];
+	
+</isscript>
+<input type="hidden" id="isPage2Step2Viewed" value="${session.custom.ispage2Viewed}"/>
+<input type="hidden" id="isPage2Step3Viewed" value="${session.custom.ispage3Viewed}"/>
+<div class="row recommended-tab-contents">
+	<div class="col-12 col-md-12 col-lg-8 offset-lg-2">
+		<ul class="nav nav-progress nav-pills nav-justified">
+			<div class="col-4">
+				<li role="presentation">
+					<a class="gift-card-tab gift-design-tab" data-tab="design-tab">
+						<span class="progress-step-num">1</span>
+						<span class="progress-step-description">Design</span>
+					</a>
+				</li>
+			</div>
+			<div class="col-4">
+				<li role="presentation" class="active">
+					<a class="gift-card-tab gift-recommend-tab" data-tab="recommend-tab">
+						<span class="progress-step-num">2</span>
+						<span class="progress-step-description">Recommend</span>
+					</a>
+				</li>
+			</div>
+			<div class="col-4">
+				<li role="presentation" id="step2DelTabLi" style="pointer-events:none">
+					<a class="gift-card-tab gift-deliver-tab" data-tab="deliver-tab">
+						<span class="progress-step-num">3</span>
+						<span class="progress-step-description">Deliver</span>
+					</a>
+				</li>
+			</div>
+		</ul>
+	</div>
+</div>
+<div class="row recommended-tab-contents" style="margin-top: 16px;">
+	<div class="col-md-9 col-lg-5 offset-md-2 offset-lg-1">
+		<div class="row no-gutter">
+			<div class="col-6 col-md-6 col-lg-12 p-0">
+				<div class="product-img-main">
+					<img class="img-responsive img-fluid" src="${selectedGiftCertImage}" alt="Giftcard selected image">
+				</div>
+			</div>
+			<div class="col-6 col-md-6 col-lg-12 p-0">
+				<div class="gift-card-details">
+					$<isprint value="${giftCertAmount}" /> <br>
+					To: <span class="recipient-sender-wrap"><isprint value="${giftRecepientname}" /></span><br>
+					From: <span class="recipient-sender-wrap"><isprint value="${giftSendername}" /></span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-9 col-lg-5 offset-md-2 offset-lg-0">
+		<form name="giftpurchasestep2" id="giftpurchasestep2" action="${URLUtils.url('GiftCert-SaveGiftCertStep2Data')}" method="POST">
+			<input type="hidden" id="selectedGiftImgaeStep2" name="selectedGiftImgae" value="" />
+			<input type="hidden" id="selectedGiftUrl" name="selectedGiftUrl" value="${URLUtils.url('GiftCert-GetSelectedProducts')}" />
+			<div id="selections" class="gift-card-recommended-selections" style="margin: 16px 0;">
+				
+				<isif condition="${session.custom.step2BodyContent1 && session.custom.step2BodyContent2}">
+					<p class="text-center text-lg-left">
+						<isprint value="${session.custom.step2BodyContent1}" encoding="off" /><span style="text-transform: uppercase;margin-left: 5px;"><isprint value="${giftRecepientname}"/></span><br>
+						<isprint value="${session.custom.step2BodyContent2}" encoding="off" />
+					</p>
+				</isif>
+				<div class="selector-btn-block">
+					<a class="btn btn-outline-dark btn-sm anchor-link" href="#recommendList">Add Recommendations</a>
+				</div>
+				<isif condition="${!empty(pdict.CurrentSession.custom.recommendedItems)}"> 
+					<isscript>
+					 var gCounter = 0;
+					 var recommendedItemsArr = pdict.CurrentSession.custom.recommendedItems.split(',');
+					</isscript>
+					<div class="selection-block" id="selection-block" style="display: inline-flex;">
+						<isloop items="${recommendedItemsArr}" var="rec" status="pStatus">
+							<isscript>
+								let product = dw.catalog.ProductMgr.getProduct(rec);
+							</isscript>
+							<isset name="selectedGiftProduct" value="${product}" scope="pdict"/>
+							<isinclude template="checkout/giftcert/selecteditem"/>
+							<isscript>
+								gCounter++;
+							</isscript>
+						</isloop>
+						<isset name="limit" value="3" scope="pdict" />
+						<isif condition="${gCounter < pdict.limit}">
+							<isscript>
+								var emptySlots = [];
+								for(var i = 0; i < (pdict.limit-gCounter); i++) { 
+									emptySlots.push(i);
+								}
+							</isscript>
+							<isloop items="${emptySlots}" var="slot" status="slotStatus">
+								<div class="selection-item-cell">
+									<a href="#recommendList" class="vertical-middle anchor-link">
+										<i class="fal fa-plus fa-2x select-icon"></i>
+									</a>
+								</div>
+							</isloop>
+						</isif>
+					</div>
+					<input type="hidden" id="recommendedItems" name="recommendedItems" value="${pdict.CurrentSession.custom.recommendedItems}" />
+				 <iselse>
+					<div class="selection-block" id="selection-block" aria-label="Recommend Item List With 3 Items">
+						<div class="selection-item-cell">
+							<a href="#recommendList" class="vertical-middle anchor-link" aria-label="Recommend List Item Empty Slot 1">
+								<i class="fal fa-plus fa-2x select-icon"></i>
+							</a>
+							<div class="vertical-middle" style="display: none;">
+								<img src="assets/p-list-test-product.jpg" class="img-responsive" alt="test product 1">
+								<button type="button" class="remove"><i class="fa fa-times-circle"></i></button>
+							</div>
+						</div>
+						<div class="selection-item-cell">
+							<a href="#recommendList" class="vertical-middle anchor-link" aria-label="Recommend List Item Empty Slot 2">
+								<i class="fal fa-plus fa-2x select-icon"></i>
+							</a>
+							<div class="vertical-middle" style="display: none;">
+								<img src="assets/p-list-test-product.jpg" class="img-responsive" alt="test product 2">
+								<button type="button" class="remove"><i class="fa fa-times-circle"></i></button>
+							</div>
+						</div>
+						<div class="selection-item-cell">
+							<a href="#recommendList" class="vertical-middle anchor-link" aria-label="Recommend List Item Empty Slot 3">
+								<i class="fal fa-plus fa-2x select-icon"></i>
+							</a>
+							<div class="vertical-middle" style="display: none;">
+								<img src="assets/p-list-test-product.jpg" class="img-responsive" alt="test product 3">
+								<button type="button" class="remove"><i class="fa fa-times-circle"></i></button>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" id="recommendedItems" name="recommendedItems" value="" />
+				</isif>
+			</div>
+			
+			<div class="row no-gutter">
+				<div class="col-6" style="padding-left: 8px;padding-right: 2px;">
+					<button type="button" data-tab="design-tab" id="giftGertStep2Back" class="btn btn-lg btn-outline-dark btn-block">Previous</button>
+				</div>
+				<div class="col-6" style="padding-left: 2px;padding-right: 8px;">
+					<button type="submit" id="giftGertStep2Next" class="btn btn-lg btn-primary btn-block">Next</button>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<div class="container product-list recommended-tab-contents" id="recommendList">
+	<h2 class="gift-card-h2 text-center" style="margin-top: 48px;">Here’s What <isprint value="${giftRecepientname}" /> Can Get for $<isprint value="${giftCertAmount}" /></h2>
+	<isif condition="${!(pdict.ProductPagingModel == null) && !pdict.ProductPagingModel.empty}">	
+		<isset name="pagingmodel" value="${pdict.ProductPagingModel}" scope="pdict" />
+		<isset name="category" value="${pdict.ProductSearchResult.category}" scope="pdict" />
+		<isset name="page" value="${pdict.pageInfo}" scope="pdict" />
+		<isset name="categoryName" value="about_auto_delivery" scope="page" />
+		<isinclude template="search/gift_productgrid_bs"/>
+	<iselse/>
+		<iscomment>display no results</iscomment>
+		<div class="no-results">
+			${Resource.msg('productresultarea.noresults','search',null)}
+		</div>
+	</isif>
+</div>
+<isif condition="${!empty(pdict.CurrentSession.custom.recommendedItems)}"> 
+	<a id="selectionCount" href="#selections" class="anchor-link btn btn-primary btn-circle no-scroll back-to-top" role="button" style="width: auto;min-width:120px; margin-left: auto; margin-right: auto;right: auto;left: 50%; transform: translateX(-50%);font-size: 14px; line-height: 1;padding: 10px 2px; display: inline;"><span id="recPdCount"><isprint value="${recommendedItemsArr.length}" style="INTEGER"/></span> of 3<br>Selected</a>
+<iselse>
+	<a id="selectionCount" href="#selections" class="anchor-link btn btn-primary btn-circle no-scroll back-to-top" role="button" style="width: auto;min-width:120px; margin-left: auto; margin-right: auto;right: auto;left: 50%; transform: translateX(-50%);font-size: 14px; line-height: 1;padding: 10px 2px; display: inline;"><span id="recPdCount">0</span> of 3<br>Selected</a>
+</isif>

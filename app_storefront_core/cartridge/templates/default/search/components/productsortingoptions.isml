@@ -1,0 +1,89 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Displays the product sorting options.
+	It expects the name of the key of the pageable in a parameter
+    pageable.
+</iscomment>
+
+<isscript>
+
+	// determine the ID of the sorting rule used to sort the current search results
+	var sortingRule : SortingRule = null;
+	if(pdict.productsearchmodel.getSortingRule() != null) {
+		sortingRule = pdict.productsearchmodel.getSortingRule();
+	}
+	else {
+		var category : Category = pdict.productsearchmodel.getCategory();
+		if (category == null) {
+			category = dw.catalog.CatalogMgr.getSiteCatalog().getRoot();
+		}
+		if (category.getDefaultSortingRule() != null) {
+			sortingRule = category.getDefaultSortingRule();
+		}
+	}
+	
+	var sortingRuleID : String = null;
+	var sortingRuleDisplayName : String = '';
+	if(sortingRule != null) {
+		var sortingOptions : List = dw.catalog.CatalogMgr.getSortingOptions();
+		for(var it : Iterator = sortingOptions.iterator(); it.hasNext(); ) {
+			var option : SortingOption = it.next();
+			if(option.getSortingRule().getID() == sortingRule.getID()) {
+				sortingRuleID = sortingRule.getID();
+				sortingRuleDisplayName = option.getDisplayName();
+			}
+		}
+		
+		// Added if predictive sort is enabled for category
+		if(sortingRuleDisplayName == ''){
+		 sortingRuleDisplayName = 'Featured';
+		}
+		
+	} else {
+		var sortingOptions : List = dw.catalog.CatalogMgr.getSortingOptions();
+		for(var it : Iterator = sortingOptions.iterator(); it.hasNext(); ) {
+			var option : SortingOption = it.next();
+			sortingRuleDisplayName = option.getDisplayName();
+			break;
+		}
+	}
+	
+	// in case there are multiple elements on a page
+	var uniqueId : String = '';
+	if (! empty(pdict.uniqueid))
+	{
+		uniqueId = pdict.uniqueid;
+	}
+	
+</isscript>
+				<div class="sort-by view-option-group view-sort">
+					<div class="dropdown">
+						<button class="view-option-btn dropdown-toggle outline-global" tabindex="0" type="button" id="sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<div class="view-option-hdr">Sort By</div>
+							<div class="view-option">
+								<span class="view-option-value" id="sort-selected-value"><isprint value="${sortingRuleDisplayName}" /> </span>
+									<i class="fal fa-angle-down dropdown-icon"></i>						
+							</div>
+						</button>
+						<ul class="dropdown-menu" aria-labelledby="sort">
+							<isloop items="${dw.catalog.CatalogMgr.getSortingOptions()}" var="SortingOption" status="Status">
+								<isif condition="${(pdict.productsearchmodel.category.defaultSortingRule.ID != 'featured') && SortingOption.sortingRule.ID =='featured'} "> 
+										<iscomment>Replace featured with default </iscomment>
+										<li>
+											<a href="${URLUtils.url('Search-Show','cgid', pdict.productsearchmodel.categoryID)}" data-sort="${SortingOption.getDisplayName()}">
+												${SortingOption.getDisplayName()}
+											</a>
+										</li>
+									<iselse>
+										<li>
+											<a href="${pdict.pagingmodel.appendPaging(pdict.productsearchmodel.urlSortingRule('Search-Show', SortingOption.getSortingRule()),0)}" data-sort="${SortingOption.getDisplayName()}">
+												${SortingOption.getDisplayName()}
+											</a>
+										</li>									
+								</isif>
+							</isloop>													
+						</ul>
+					</div>
+					<div class="sr-only sort-sr-only" aria-live="polite" aria-atomic="true"></div>
+				</div>
+<!-- END: sortby -->

@@ -1,0 +1,61 @@
+<!-- Afterpay express custom code starts -->
+<isscript>
+	var sitePreferences = require("int_afterpay_core/cartridge/scripts/util/afterpayUtilities.js").getSitePreferencesUtilities();
+	var afterpayExpressEnable = sitePreferences.isAfterpayExpressEnabled();
+	var singlePageCheckoutUtils = require('int_singlepagecheckout/cartridge/scripts/util/SinglePageCheckoutUtils');
+	var basketObject = singlePageCheckoutUtils.getCurrentBasket();
+	
+	var orderGrandTotal = basketObject.getAdjustedMerchandizeTotalPrice(true) + basketObject.giftCertificateTotalPrice;
+	var apMessageService = require("int_afterpay_core/cartridge/scripts/product/afterpayDisplayProductMessage");
+	var thresholdResponse = apMessageService.getThresholdRange(orderGrandTotal);
+	var disableAfterpayPaymentMethod = false;
+	if(thresholdResponse && (thresholdResponse.belowThreshold || thresholdResponse.aboveThreshold)){
+		disableAfterpayPaymentMethod = true;
+	}
+	
+	var hasOnlyGiftCertificate = false;
+	var productLineItems = basketObject.productLineItems;
+	if(productLineItems.length === 0 && basketObject.giftCertificateLineItems && basketObject.giftCertificateLineItems.length > 0) {
+		hasOnlyGiftCertificate = true;
+	}
+	var BraintreeHelper = require('int_braintree/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+    var paypalPaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.paypalMethodName);
+	var HasRefillProducts = null;
+	if (dw.system.Site.getCurrent().getCustomPreferenceValue('SorEnabled')) {
+	        HasRefillProducts = require('int_smartorderrefill/cartridge/scripts/smartOrderRefill/refillHelper.js').checkForRefillProducts();
+	 }
+</isscript>
+<div class="payment-buttons my-3">
+	<isset name="Basket" value="${basketObject}" scope="pdict" />
+	<isif condition="${!request.custom.braintreeClientToken}">
+	    <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+	</isif>
+    <div class="row">
+        <isif condition="${prefs.BRAINTREE_PAYPAL_Visibility_Express_Button_On_Cart && !HasRefillProducts && !hasOnlyGiftCertificate}" >
+		    <div class="col-md-4 paypal-button-shipping"> 
+			    <div class="btn btn-default btn-block btn-paypal btn-alt-pay border-0">
+			    	<isset name="paypalConfig" value="${prefs.BRAINTREE_PAYPAL_Cart_Button_Config}" scope="pdict" />
+			    	<div class="braintree-paypal-buttons-wrap">
+			    		<isinclude template="braintree/cart/paypalButton"/>
+			    	</div>
+				</div>	
+		    </div>
+		</isif>
+        <isif condition="${afterpayExpressEnable && !disableAfterpayPaymentMethod && !HasRefillProducts && !hasOnlyGiftCertificate}">
+		<input type="hidden" name="afterpayExpressProcessOrderUrl" id="afterpayExpressProcessOrderUrl" value="${URLUtils.url('Afterpay-AfterpayExpressFromCart')}" />
+		<input type="hidden" name="afterpayExpressSummaryUrl" id="afterpayExpressSummaryUrl" value="${URLUtils.url('AfterpayHandleResponse-SummaryRedirect')}" />
+		<input type="hidden" name="getAfterpayExpressShippingMethodsUrl" id="getAfterpayExpressShippingMethodsUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetShippingMethods')}" />
+		<input type="hidden" name="getAfterpayExpressTokenUrl" id="getAfterpayExpressTokenUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetToken')}" />
+		<div class="col-md-4 mt-2 mt-md-0" id="cart-afterpay-button">
+			<iscomment>AfterPay Express </iscomment>
+			<isinclude template="afterpay/afterpayButton" />
+		</div>
+		</isif>
+		<isif condition="${prefs.BRAINTREE_APPLEPAY_Visibility_Button_On_Cart && !HasRefillProducts && !hasOnlyGiftCertificate}" >
+		    <div class="col-md-4 mt-2 mt-md-0">
+		    	<isinclude template="braintree/cart/applepayButtonShipping"/>
+		    </div>
+		</isif>
+    </div>
+</div>

@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'CMS Page',
+			type: 'CMS Page',
+			ns: 'cms'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+	<isinclude template="components/header/htmlhead_bs"/>
+	<isinclude template="content/content/contentogtags"/>
+	<isinclude template="content/content/pt_content_UI"/>
+	<isif condition="${!empty(pdict.Content)}">
+		<link rel="canonical" href="${URLUtils.https('Page-Show', 'cid', pdict.Content.ID)}"/>
+	</isif>
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+	<isinclude template="components/header/header_bs"/>
+	<iscomment> New exposed mobile nav </iscomment>
+	<iscontentasset aid="mobile-exposed-nav"/>
+	<isif condition="${typeof contentClass != 'undefined' && !empty(contentClass)}">
+		<main role="main" class="content ${contentClass} " tabindex="-1">
+	<iselse>
+		<main role="main">
+	</isif>
+		<isreplace/>
+		<isinclude template="components/browsertoolscheck"/>
+	</main>
+	<isset name="pageName" value="contentpage" scope="page" />
+	<isinclude template="product/components/modals"/>
+	<isinclude template="components/footer/footer_bs"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+	<isinclude template="content/home/pt_storefront_VARS"/>
+</body>
+</html>

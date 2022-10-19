@@ -1,0 +1,142 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="checkout/pt_checkout"/>
+<isinclude template="util/modules"/>
+<iscomment>
+    This template visualizes the billing step of both checkout scenarios.
+    It provides selecting a payment method, entering gift certificates and
+    specifying a separate billing address.
+    Depending on the checkout scenario (single or multi shipping) it is
+    either the second or third checkout step.
+</iscomment>
+<iscomment>Report this checkout step</iscomment>
+<isreportcheckout checkoutstep="4" checkoutname="${'Billing'}"/>
+
+
+<div class="checkout checkout-form">
+	<div class="container">
+		<h1> ${Resource.msg('checkout.title','checkout',null)}</h1>
+		<iscomment>checkout progress indicator</iscomment>
+		<isif condition="${!pdict.CurrentForms.multishipping.entered.value}">
+		    <ischeckoutprogressindicator step="2" multishipping="false" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+		<iselse/>
+		    <ischeckoutprogressindicator step="3" multishipping="true" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+		</isif>
+		
+		<div class="alert alert-danger checkout-alert" role="alert" style="display: none;"></div>
+		
+		<div class="row">
+			<div class="col-md-7">
+				<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.billing.htmlName}" class="checkout-billing address checkout-payment-panel">
+					<div class="panel panel-default panel-checkout">
+						<div class="panel-heading panel-split">
+							<h2 class="panel-title">${Resource.msg('checkout.billing.title','checkout',null)}</h2>
+						</div>
+						<div class="panel-body">
+						<isset name="OrderTotal" value="${pdict.Basket.totalGrossPrice.value}" scope="pdict"/>
+										
+							<isinclude template="checkout/billing/giftcardcontents"/>		
+							<iscomment>payment method area</iscomment>
+							<isinclude template="checkout/billing/paymentmethods"/>
+						    <isbonusdiscountlineitem p_alert_text="${Resource.msg('billing.bonusproductalert','checkout',null)}" p_discount_line_item="${pdict.BonusDiscountLineItem}"/>
+							
+							
+							
+						</div>
+						<div class="panel-footer text-right">
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+							<input type="hidden" name="${pdict.CurrentForms.billing.save.htmlName}" value="true"/>
+							<button class="btn btn-primary btn-lg btn-checkout-continue demo-save-payment" id="save-payment" type="submit" value="${Resource.msg('global.continueplaceorder','locale',null)}">
+								${Resource.msg('global.continue','locale',null)}
+							</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="col-md-5">
+				<div id="checkout-summary"><isinclude template="checkout/minisummary"/></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<isif condition="${pdict.CurrentCustomer.authenticated}">
+	<div id="addAddressModal" class="modal fade modal-primary modal-tatcha-add-address">
+		<div class="modal-dialog">
+			<div class="modal-content">
+	      		<div class="modal-header">
+		        	<button type="button" class="close close-addaddress" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+		        	<h4 class="modal-title"><strong>Add an Address</strong></h4>
+		      	</div>
+		      	<form method="post" action="${URLUtils.url('Address-Form', 'scope', 'billing')}" id="edit-address-form" name="${pdict.CurrentForms.profile.address.htmlName}">
+		        	<div class="modal-body">
+	         			<isdynamicform formobject="${pdict.CurrentForms.profile.address}" formdata="${currentCountry.dynamicForms.addressDetails}"/>
+		        	</div>
+		        	<div class="modal-footer">
+		        		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		          		<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		          		<button class="btn btn-primary btn-checkout-continue demo-save-payment" type="submit" name="${pdict.CurrentForms.profile.address.create.htmlName}" value="${Resource.msg('global.save','locale',null)}">
+							${Resource.msg('global.save','locale',null)}
+						</button>
+		        	</div>
+		      	</form>
+	    	</div>
+		</div>
+	</div>
+</isif>
+
+<isscript>
+	var BraintreeHelper : Object = require('int_braintree/cartridge/scripts/braintree/braintreeHelper.js');
+	var customerCreditCardPaymentInstruments = BraintreeHelper.getCustomerCrditCardPaymentInstruments();
+</isscript>
+<isif condition="${pdict.CurrentCustomer.authenticated && !empty(customerCreditCardPaymentInstruments)}">
+	<div id="addCardModal" class="modal fade modal-primary modal-tatcha-add-Card checkout-add-card-modal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+	      		<div class="modal-header">
+		        	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+			        <h4 class="modal-title"><strong>Add a Credit Card</strong></h4>
+		      	</div> 
+				<div class="braintree-account-add-credit-card-content">
+					<form id="addCreditCardForm" action="${URLUtils.url('Braintree-AccountAddCreditCardHandle')}" class="account-add-credit-card js_braintree_addCreditCardForm" method="post">
+			            <div class="modal-body">
+				            <isscript>
+				                var isEnable3dSecure = false;
+				                var ownerName = !empty(pdict.CardFields) && !empty(pdict.CardFields.owner) ? pdict.CardFields.owner : '';
+				                var amount = 0;
+				            </isscript>			
+				            <isset name="isAddCardModal" value="true" scope="page" />	            
+	           				<isinclude template="braintree/util/creditCardFields"/>
+	           				<div class="form-row label-inline form-indent">
+								<div class="field-wrapper checkbox">
+									<label for="braintreeCreditCardMakeDefault">
+										<input name="braintreeCreditCardMakeDefault" id="braintreeCreditCardMakeDefault" type="checkbox" value="true" />
+										<span>${Resource.msg('braintree.creditcard.makedefault', 'locale', null)}</span>
+									</label>
+								</div>
+							</div>
+							
+							<isinclude template="checkout/billing/billingaddressform"/>
+							
+				            <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="true" />
+				            <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}" value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}" />
+						</div>
+						
+			            <div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+		          			<button type="submit" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="true" class="btn btn-primary edit-save credit-card-save">${Resource.msg('braintree.addcreditcard.button.apply', 'locale', null)}</button>
+						</div>
+						<input type="hidden" name="scope" value="billing">
+					</form>
+				</div>
+		    </div>
+		</div>
+	</div>
+</isif>
+<isscript>
+    importScript("util/ViewHelpers.ds");
+    var addressForm = pdict.CurrentForms.billing.billingAddress.addressFields;
+    var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+    var json = JSON.stringify(countries);
+</isscript>
+<script>window.Countries = <isprint value="${json}" encoding="off"/>;</script>
+</isdecorate>

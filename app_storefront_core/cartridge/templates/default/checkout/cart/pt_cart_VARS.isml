@@ -1,0 +1,4 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${!dw.system.Site.getCurrent().getCustomPreferenceValue('SorEnabled')}" >
+<script type="text/javascript" src="${URLUtils.staticURL('/js/smartorderrefill.js')}"></script> 
+</isif>

@@ -1,0 +1,32 @@
+<!--- TEMPLATENAME: productCard.isml --->
+<isset name="bonusProduct" value="${pdict.bonusProduct}" scope="page"/>
+
+    <div class="sample-product col-6 text-center">
+        <div class="product-slot">
+            <div class="product-img-block">
+                <img src="${bonusProduct.images.large &&  bonusProduct.images.large[0] ? bonusProduct.images.large[0].tileItemImageURL : URLUtils.staticURL('/images/noimagemedium.png')}"
+                     alt="${bonusProduct.productName}"
+                     title="${bonusProduct.images.large[0].title}" class="img-responsive product-img img-fluid gwp-sample-img">
+            </div>
+            <h5 class="product-name free-sample-product-name gwp-sample-name" itemprop="name">${bonusProduct.productName}
+                <span class="product-subtitle secondary-name-subtitle">
+                    <isif condition="${!empty(bonusProduct.secondaryName)}">
+                        ${bonusProduct.secondaryName}
+                    </isif>
+                </span>
+            </h5>
+            <div class="product-select bonus-product-select choice-of-bonus-product" data-toggle="buttons">
+                <button type="button" class="add-product select-bonus-item select-bonus-product btn btn-outline-dark btn-promo-select btn-sm control-label free-sample-add-btn col-form-label gwp-add-sample-button ${bonusProduct.selected ? 'active active-btn' : ''}" role="checkbox" data-pid="${bonusProduct.id}" aria-label="${bonusProduct.productName}" aria-checked="true" data-qty="1">
+                    <input type="checkbox" checked autocomplete="off" aria-label="Add product">
+                    <span class="btn-status">
+                        <isif condition="${bonusProduct.selected}">
+                            Selected
+                            <iselse/>
+                            Add
+                        </isif>
+                    </span>
+                </button>
+
+            </div>
+        </div>
+    </div>

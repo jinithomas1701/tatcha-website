@@ -1,0 +1,30 @@
+<div class="modal fade modal-primary modal-promotion modal-fullscreen tatcha-gwp-gift-modal" id="gwpbonusModal" data-removecouponlineitem="${pdict.order ? pdict.order.actionUrls.removeCouponLineItem : pdict.actionUrls.removeCouponLineItem}" data-couponlineitemuuid="${pdict && pdict.editGwpProducts ? pdict.editGwpProducts.gwpCouponUUID : (pdict && pdict.order && pdict.order.editGwpProducts && pdict.order.editGwpProducts.gwpCouponUUID ? pdict.order.editGwpProducts.gwpCouponUUID : '')}" data-addtocarturl="${URLUtils.url('CartSFRA-AddBonusProducts')}" data-uuid="${pdict && pdict.editGwpProducts ? pdict.editGwpProducts.uuid : ''}" tabindex="-1" role="dialog" aria-labelledby="gwpSampleLabel" aria-hidden="true">
+    <div id="bonus-product-list-options" data-options=''></div>
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="gwpSampleLabel"></h5>
+
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body container-fluid samples-modal" data-uuid="">
+                <div class="row modal-body-content">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="d-flex align-items-center">
+                    <div class="item-count font-weight-bold mr-4">
+                        <span>
+                            <span class="gwp-selected">0</span>/<span class="gwp-max-select"></span>
+                        </span>
+                        selected
+                    </div>
+                    <div class="selected-bonus-products"></div>
+                    <button class="btn btn-primary sample-submit gwp-add-products add-bonus-products" data-url="${URLUtils.url('CartSFRA-AddBonusProducts')}" data-success-url="${typeof successUrl !== 'undefined' ? URLUtils.url(successUrl) : ''}" type="button">Done</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

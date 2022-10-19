@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <field formid="product" label="forms.sorsubscriptions.changeproduct" type="string" mandatory="true">
+        <options optionid-binding="ID" value-binding="ID" label-binding="name"/>
+    </field>
+
+    <field formid="variation" label="forms.sorsubscriptions.changevariation" type="string" mandatory="true">
+       <options optionid-binding="ID" value-binding="value" label-binding="label"/>
+    </field>
+
+    <field formid="quantity" label="forms.sorsubscriptions.quantity" type="integer" min="1" mandatory="true" binding="quantity" value-error="form.editproduct.error.quantity.invalid" parse-error="form.editproduct.error.quantity.invalid" range-error="form.editproduct.error.quantity.invalid" missing-error="form.editproduct.error.quantity.missing" />
+
+    <field formid="periodicity" label="forms.sorsubscriptions.changevariation" type="string" mandatory="true">
+       <options optionid-binding="value" value-binding="value" label-binding="label"/>
+    </field>
+
+    <field formid="interval" label="forms.sorsubscriptions.changevariation" type="string" mandatory="true">
+       <options optionid-binding="periodicity" value-binding="value" label-binding="label"/>
+    </field>
+    <action formid="save" valid-form="true"/>
+</form>

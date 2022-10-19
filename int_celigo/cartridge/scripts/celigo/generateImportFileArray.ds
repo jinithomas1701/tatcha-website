@@ -1,0 +1,50 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+* 
+* Purpose:	This script makes an iterator of files, present in a desired directory which can be
+*			configured as an input parameter. For each of files in the designated folder, it pushes 
+*			the file into the arrayList with the proper directory path (with respect to impex/src)
+*			required by a pipelet placed after it in pipeline.
+*
+*@input sourceDir : String source relative to impex
+*@output files : Object Array of files names
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.io );
+
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var sourceDirStr : String = '/src/celigo/shipment';
+	if(!empty(args.sourceDir)){
+		sourceDirStr = args.sourceDir;
+	}
+    
+    var fileType : String = sourceDirStr.substr(sourceDirStr.indexOf("src")+ 3 );
+    //var fileType : String = sourceDirStr.split("/")[2];
+    var sourceDirectory : File = new File(File.IMPEX + sourceDirStr);
+    var createStatus :Boolean;
+    if(!sourceDirectory.isDirectory()){
+   		createStatus = sourceDirectory.mkdirs();
+   	}
+   	//TODO : if createStatus is false, then do we need to return from here?
+    var files : Object = new ArrayList();
+    
+    function isMyFile(child : File){
+    	return child.isFile();
+    }
+    var childrenFiles : List = sourceDirectory.listFiles(isMyFile);
+    
+	childrenFiles.sort();
+	
+    for(var i = 0; i < childrenFiles.size() ; i++){
+    	var child : File = childrenFiles.get(i);
+    	var childName : String = child.getName();
+    	files.push(fileType + "/" + childName);
+    }
+        
+    args.files = files;
+
+   return PIPELET_NEXT;
+}

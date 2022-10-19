@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Storefront',
+			type: 'storefront',
+			ns: 'storefront'
+		};
+		pdict.showCountrySelector = true;
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<iscomment>This page must be cachable. It inherits the caching attributes by the decorated template.</iscomment>
+
+	<isinclude template="components/header/htmlhead"/>
+	<iscontentasset aid="homepagemeta"/>
+	<isinclude template="content/home/pt_storefront_UI"/>
+
+	<iscomment>Add page specific header information here.</iscomment>
+
+</head>
+<body>
+
+<isinclude template="components/header/header"/>
+	<main class="home product content" tabindex="-1">
+		<div style="min-height: 800px">
+			<isreplace/>
+		</div>
+		<isinclude template="components/browsertoolscheck" />
+	</main>
+	<isset name="pageName" value="homepage" scope="page" />
+<isinclude template="product/components/modals"/>
+<isinclude template="components/footer/footer"/>
+<isinclude template="content/home/pt_storefront_VARS"/>
+
+</body>
+</html>

@@ -1,0 +1,189 @@
+/**
+* Demandware Script File
+*
+*
+* Copies files from a remote FTP-Location
+*
+*   @input ServerUrl : String (S)FTP/WebDav-Service-URL.
+*   @input UserID : String The User-ID.
+*   @input Password : String The Password.
+*   @input FilePattern : String Input File pattern to search in local folder relatively to IMPEX/ (default is  "^[\\w\-]{1,}\\.xml$" (*.xml)).
+*   @input SourceFolder : String local folder relatively to IMPEX/.
+*   @input TargetFolder : String Remote folder into which files will be uploaded.
+*   @input ServerType : String Type of connection (FTP / SFTP / WebDav).
+*   @input DeleteFile : String When file is uploaded, delete or keep it? ("Delete" / "Keep on server").
+*   @input CurrentWorkflowComponentInstance : Object
+*   @output ErrorMsg : String An Error message
+*
+*/
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.io );
+importPackage( dw.util );
+
+var TransferClient = require('/bc_library/cartridge/scripts/remote/TransferClient.ds').TransferClient;
+
+var cvLogger : Logger = Logger;
+
+/**
+ * The main function.
+ *
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ *
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var transferServerClient : Object;
+	var copyResult : boolean = true;
+
+	if ( !empty( pdict.CurrentWorkflowComponentInstance ) ) {
+		cvLogger = pdict.CurrentWorkflowComponentInstance;
+	}
+	try {
+		//Test mandatory paramater
+		if(!empty(pdict.ServerUrl) && !empty(pdict.ServerType) && !empty(pdict.DeleteFile) && !empty(pdict.SourceFolder) && !empty(pdict.TargetFolder)) {
+
+
+			transferServerClient = new TransferClient(pdict.ServerType, pdict.ServerUrl, pdict.UserID, pdict.Password);
+			var filePattern : string;
+			if(!empty(pdict.FilePattern)) {
+				filePattern = pdict.FilePattern;
+			}
+			else {
+				filePattern = "^[\\w\-]{1,}\\.xml$";
+			}
+			var FileUtils = require("bc_library/cartridge/scripts/io/libFileUtils").FileUtils;
+
+			try {
+			    filePattern = FileUtils.checkFilePatternForPlaceholders(filePattern);
+			} catch (e) {
+			    pdict.ErrorMsg = e.message;
+
+			    return PIPELET_ERROR;
+			}
+
+			var deleteFile : boolean = false;
+			if(pdict.DeleteFile == "DELETE") {
+				deleteFile = true;
+			}
+
+			//copying process
+	   	 	var copyResult = copyFilesToTarget(transferServerClient, filePattern, pdict.TargetFolder, pdict.SourceFolder, deleteFile);
+		} else {
+			pdict.ErrorMsg = "one or more mandatory parameters are missing.";
+			return PIPELET_ERROR;
+		}
+
+		if(transferServerClient != null) {
+			transferServerClient.disconnect();
+		}
+
+		if(!copyResult) {
+			pdict.ErrorMsg = "File-List was empty.";
+			return PIPELET_NEXT;
+		}
+	} catch ( e ) {
+		pdict.ErrorMsg = e.toString();
+		return PIPELET_ERROR;
+	}
+
+	return PIPELET_NEXT;
+}
+
+/**
+*	Copy (and delete) files from a local directory to a remote (S)FTP/Webdav location
+*	@param transferServerClient 	: Object 	FTP Client used
+*	@param filePattern 	: String 	The pattern for the filenames
+*	@param targetFolder 	: String 	target FTP Folder
+*	@param sorceFolder 	: String 	source local Folder
+*	@param deleteFile 	: Boolean 	Flag if files should be deleted after successful copying
+*
+*	@returns Boolean If files were found at the specified location.
+**/
+function copyFilesToTarget(transferServerClient : Object,
+							filePattern : string,
+							targetFolder : string,
+							sourceFolder : string,
+							deleteFile : boolean) : boolean
+{
+	var regExp : RegExp = new RegExp(filePattern);
+	var sourceDir : File = new File(File.IMPEX + File.SEPARATOR + sourceFolder);
+	var fileInfoList : Collection = getFileListingFromSource(sourceDir, filePattern);
+
+	if(fileInfoList != null && fileInfoList.size() > 0)
+	{
+		var iter : Iterator = fileInfoList.iterator();
+		while(iter.hasNext())
+		{
+			var aFile : File = iter.next();
+			copyFileToTargetFolder(aFile, transferServerClient, targetFolder, deleteFile);
+		}
+
+		return true;
+
+	}
+
+	return false;
+}
+
+/**
+*	get list of files which matches the file pattern
+*	@param sourceFolder	: String 	source Folder
+*	@param filePattern 	: String 	The pattern for the filenames
+*
+*	@returns Collection List of files which match the given pattern
+**/
+function getFileListingFromSource(sourceFolder : string, filePattern : string) : Collection
+{
+	var fileList : Collection = new ArrayList();
+	var theDir : File =  sourceFolder;
+
+	var regExp : RegExp = new RegExp(filePattern);
+
+	fileList.addAll(theDir.listFiles(function(file : File)
+		{
+			if (!empty(filePattern)) {
+				return regExp.test(file.name);
+			}
+
+			return true;
+		}));
+
+	return fileList;
+}
+
+/**
+*	Copy (and delete) a a local file to a remote (S)FTP/WebDav-Folder
+*	@param transferServerClient : Object 	FTP Client used
+*	@param targetFolder 		: String 	target FTP Folder
+*	@param fileName 			: String 	The file to copy
+*	@param deleteFile 			: Boolean	Flag if files should be deleted after successful copying
+*
+**/
+function copyFileToTargetFolder(aFile : File, transferServerClient : Object, targetFolder : string, deleteFile : boolean)
+{
+	var fileName : string = aFile.name;
+	var theFile : File = aFile;
+	var remoteFilePath : String = transferServerClient.urlObject.path + targetFolder + "/" + fileName;
+
+	//create the remote dir if it does not exist
+	if ( transferServerClient.serverType == "FTP" || transferServerClient.serverType == "SFTP" ) {
+		transferServerClient.mkdir(transferServerClient.urlObject.path + targetFolder);
+	} else {
+		transferServerClient.mkcol(transferServerClient.urlObject.path + targetFolder);
+	}
+	cvLogger.debug('Uploading file from ' + theFile.fullPath + " to " +  remoteFilePath);
+
+	if ( transferServerClient.serverType == "FTP" || transferServerClient.serverType == "SFTP" ) {
+		transferServerClient.putBinary(remoteFilePath, theFile);
+	} else {
+		transferServerClient.put(remoteFilePath, theFile);
+	}
+	if(deleteFile)
+	{
+		cvLogger.debug('Deleting local file: ' + theFile.fullPath );
+		theFile.remove();
+	}
+
+}

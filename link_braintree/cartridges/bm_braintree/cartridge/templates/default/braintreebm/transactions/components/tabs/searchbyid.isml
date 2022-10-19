@@ -1,0 +1,14 @@
+<tr style="display:${(isSearchByOrderNo || isSearchByPaymentMethod) ? 'none' : 'block'}" id="braintree_search_transaction_by_id">
+<td class="infobox_item_search" colspan="2">
+    <form action="${URLUtils.https('BraintreeAdmin-Orders')}" method="post">
+        <table style="width:inherit">
+            <tr>
+                <td class="infobox_item_search braintree_order_search_title" nowrap="nowrap"><span>${Resource.msg('search.transactionnumber', 'braintreebm', null)}:</span>&nbsp;</td>
+                <td class="infobox_item_search"><input type="text" name="transactionId" value="${pdict.CurrentHttpParameterMap.transactionId.submitted ? pdict.CurrentHttpParameterMap.transactionId.stringValue : ''}" maxlength="350" size="35" class="inputfield_en"></td>
+                <td class="infobox_item_search">&nbsp;</td>
+                <td class="infobox_item_search"><button name="simpleSearch" value="true" class="button">${Resource.msg('search.submitbutton', 'braintreebm', null)}</button></td>
+            </tr>
+        </table>
+    </form>
+</td>
+</tr>

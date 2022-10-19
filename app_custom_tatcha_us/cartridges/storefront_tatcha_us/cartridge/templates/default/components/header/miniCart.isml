@@ -1,0 +1,12 @@
+
+
+<div class="mini-cart-total hide-no-link">
+    <a class="minicart-link"  title="${Resource.msgf('minicart.count','common',null, pdict.quantityTotal)}" aria-label="${Resource.msgf('minicart.count','common',null, pdict.quantityTotal)}" aria-haspopup="true">
+
+    <i class="minicart-icon fa fa-shopping-bag"></i>
+        <span class="minicart-quantity">
+            <isprint value="${pdict.quantityTotal}" formatter="##" />
+        </span>
+        </a>
+</div>
+<div class="popover popover-bottom"></div>

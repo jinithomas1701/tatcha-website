@@ -1,0 +1,43 @@
+.content-basic {
+	.content-editor-container {
+		h2 {
+			font-weight: $font-weight-light;
+		    text-transform: none;
+		    font-size: 28px;
+			margin: 32px 0 11px;
+		}
+
+		p {
+			margin-bottom: 11px;
+		}
+
+		a {
+			text-decoration: underline;
+			color: #495257;
+		}
+	}
+
+	.ourstory-container {
+		.row {
+			margin-bottom: 1rem !important;
+		}
+        @media (min-width: 768px){
+           min-width: 750px !important;
+            .content-hero-img-spec{
+                .content-hero-img-spec{
+                    min-height: 100px;
+                }
+            }
+        }
+
+        h1 {
+            font-weight: $font-weight-light;
+            margin: 32px 0 24px 0;
+            font-size: 36px;
+            @include media-breakpoint-up(lg) {
+                font-size: 44px;
+                margin: 40px 0 40px;
+            }
+        }
+	}
+}

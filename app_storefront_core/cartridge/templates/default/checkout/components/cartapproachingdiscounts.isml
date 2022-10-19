@@ -1,0 +1,119 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>
+	Renders the approaching discounts for the current basket.
+	Requires: Basket
+</iscomment>
+<isscript>
+var promotionMgr = require("dw/campaign/PromotionMgr");
+var removeMessage = false;
+var giftCardCount = pdict.Basket.getGiftCertificateLineItems().length;
+var productCount = pdict.Basket.getProductQuantities().length;
+var discounts = dw.campaign.PromotionMgr.getDiscounts(pdict.Basket);
+var bonusDiscounts = discounts.getBonusDiscounts();
+var orderDiscounts = discounts.getOrderDiscounts();
+var approchingShippingBonus = discounts.getApproachingShippingDiscounts(pdict.Basket.getDefaultShipment());
+var approchingOrderDiscounts = discounts.getApproachingOrderDiscounts();
+var priceAdjustments = pdict.Basket.getAllShippingPriceAdjustments();
+if((giftCardCount > 0 && productCount === 0 ) || 
+   (bonusDiscounts.length < 1 && priceAdjustments.length < 1 && approchingShippingBonus.length 
+   	&& approchingOrderDiscounts.length && orderDiscounts.length)){
+	removeMessage = true;
+}
+
+</isscript>
+<isif condition="${!(pdict.Basket == null || removeMessage || (empty(pdict.Basket.productLineItems) && empty(pdict.Basket.giftCertificateLineItems)))}">
+	<isset name="DiscountPlan" value="${dw.campaign.PromotionMgr.getDiscounts(pdict.Basket)}" scope="page" />
+	<isset name="addSlash" value="${false}" scope="page" />
+	
+	<div style="border-bottom: none;"  class="mobile-shipping-text text-lg-left pb-3">
+		<iscomment> Approaching order promotions </iscomment>
+		<isloop items="${DiscountPlan.getApproachingOrderDiscounts()}" var="approachingOrderDiscount" status="status">
+			<isapproachingdiscount p_approachingdiscount="${approachingOrderDiscount}" />
+			<isif condition="${!(status.last)}">
+				<span class="separator d-none d-md-inline-block">|</span>
+				<br class="d-md-none">
+			</isif>
+			<isset name="addSlash" value="${true}" scope="page" />
+		</isloop>
+		
+		<isif condition="${DiscountPlan.getApproachingShippingDiscounts(pdict.Basket.getDefaultShipment()).length > 0}">
+			<isif condition="${addSlash}">
+				<span class="separator d-none d-md-inline-block">|</span>
+				<br class="d-md-none">
+				<isset name="addSlash" value="${false}" scope="page" />
+			</isif>
+		
+			<iscomment> Approaching shipping promotions (for default shipment) </iscomment>
+			<isloop items="${DiscountPlan.getApproachingShippingDiscounts(pdict.Basket.getDefaultShipment())}" var="approachingShippingDiscount" status="status">
+				<isapproachingdiscount p_approachingdiscount="${approachingShippingDiscount}" />
+				<isif condition="${!(status.last)}">
+					<span class="separator d-none d-md-inline-block">|</span>
+					<br class="d-md-none">
+				</isif>
+				<isset name="addSlash" value="${true}" scope="page" />
+			</isloop>
+		</isif>
+		
+		
+		<isif condition="${DiscountPlan.getBonusDiscounts().length > 0}">
+			<isloop items="${DiscountPlan.getBonusDiscounts()}" var="discount" status="status">
+				<isif condition="${empty(discount.promotion.details)}"><iscontinue/></isif>
+				
+				<isif condition="${addSlash}">
+					<span class="separator d-none d-md-inline-block">|</span>
+					<br class="d-md-none">
+					<isset name="addSlash" value="${false}" />
+				</isif>
+				<span class="cart-applied-promo  mobile-shipping-text text-lg-left pb-3 ">
+					<span class="value">
+						<isprint value="${discount.promotion.details}" encoding="off"/>
+					</span>
+				</span>
+				<isset name="addSlash" value="${true}" scope="page" />
+			</isloop>
+		</isif>
+		
+		
+		<isif condition="${DiscountPlan.getOrderDiscounts().length > 0}">
+			<iscomment> Applied order promotions </iscomment>
+			<isloop items="${DiscountPlan.getOrderDiscounts()}" var="discount" status="status">
+				<isif condition="${discount.getPromotion().custom.hidePromoMessage == true && !empty(pdict.CurrentForms.cart.couponCode.htmlValue)}">
+					<iscontinue/>
+				</isif>
+				<isif condition="${empty(discount.promotion.details)}"><iscontinue/></isif>
+				
+				<isif condition="${addSlash}">
+					<span class="separator d-none d-md-inline-block">|</span>
+					<br class="d-md-none">
+					<isset name="addSlash" value="${false}" />
+				</isif>
+				<span class="cart-applied-promo  mobile-shipping-text text-lg-left pb-3 ">
+					<span class="value">
+						<isprint value="${discount.getPromotion().getDetails()}" encoding="off"/>
+					</span>
+				</span>
+				<isset name="addSlash" value="${true}" scope="page" />
+			</isloop>
+		</isif>
+				
+		<isif condition="${pdict.Basket.getAllShippingPriceAdjustments().length > 0}">
+			<iscomment> Applied shipping promotions (for default shipment) </iscomment>
+			<isloop items="${pdict.Basket.getAllShippingPriceAdjustments()}" var="priceAdjustment" status="status">
+				<isif condition="${empty(priceAdjustment.promotion.details)}"><iscontinue/></isif>
+				
+				<isif condition="${addSlash}">
+					<span class="separator d-none d-md-inline-block">|</span>
+					<br class="d-md-none">
+					<isset name="addSlash" value="${false}" />
+				</isif>
+				<span class="cart-applied-promo  mobile-shipping-text text-lg-left pb-3 ">
+					<span class="value">
+						<isprint value="${priceAdjustment.promotion.details}" encoding="off" />
+					</span>
+				</span>
+				<isset name="addSlash" value="${true}" scope="page" />
+			</isloop>
+		</isif>
+	</div>
+</isif>

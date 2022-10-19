@@ -1,0 +1,42 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+
+<isscript>
+	// Get context variables to insert into template placeholders
+    var VariationUtils = require('~/cartridge/scripts/product/VariationUtils.js');
+    var context = VariationUtils.getContext(pdict);
+</isscript>
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+<isif condition="${context.isValidProductType}">
+	<isloop items="${context.attrs}" var="attr" status="sizeattr">
+		<isif condition="${attr.hasSwatch && attr.attributeId == 'size' && attr.values.length >= 1}">
+			<div class="product-variants-block size-type text-left" >
+				<div class="form-label">Size</div>
+				<isif condition="${attr.values.length > 1}">
+				<div class="row variant-list no-gutters text-left">		
+					<isloop items="${attr.values}" var="attrValue" status="attrStatus">
+						<isset name="variantSelected" value="${attrValue.swatchClass == 'selectable selected' ? 'active' : ''}" scope="page"/>
+						<div class="col-6 col-lg-4 variant-option-cell pt-2">
+							<a class="variant-option ${variantSelected} "
+								href="${attrValue.linkUrl}"
+								title="${attrValue.resourceVariationsLabel}"
+								data-vtype="${attr.attributeId}"
+								data-productid="${attrValue.productID}"
+								data-lgimg='<isif condition="${attrValue.largeImage}">${attrValue.largeImage}</isif>'>
+							<isprint value="${attrValue.displayName}"/> <div class="variant-name"><isprint value="${attrValue.description}" /> </div></a>
+						</div>
+					</isloop>
+				</div>
+				<iselseif condition="${attr.values.length == 1}" >
+					<div class="row variant-list no-gutters text-left">	
+					<isloop items="${attr.values}" var="attrValue" status="attrStatus">	
+						<div class="col-6 col-lg-4 variant-option-cell one-size pt-2">							
+							<div class="variant-name "><isprint value="${attrValue.description}" /> </div>
+						</div>
+					</isloop>			
+					</div>
+				</isif>		
+			</div>					
+		</isif>
+	</isloop>				
+</isif>	

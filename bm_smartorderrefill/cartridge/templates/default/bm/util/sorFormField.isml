@@ -1,0 +1,99 @@
+    <isset name="htmlName" value="${!empty(pdict.dynamicname) ? pdict.formfield.dynamicHtmlName : pdict.formfield.htmlName}" scope="page" />
+    <isset name="htmlValue" value="${!empty(pdict.formfield.htmlValue) ? StringUtils.stringToHtml(pdict.formfield.htmlValue) : ''}" scope="page" />
+    <isset name="formId" value="${(pdict.formfield.formId == 'phone' || pdict.formfield.formId == 'country') ? pdict.formfield.formId : ''}" scope="page" />
+    <isset name="required" value="${(pdict.formfield.mandatory == true) ? 'required' : ''}" scope="page" />
+    
+    
+    <div class="form-row ${!empty(pdict.rowclass) ? pdict.rowclass : ''} <isif condition="${pdict.formfield.mandatory}"> required</isif> <isif condition="${!pdict.formfield.valid}">error</isif>">
+
+    <isif condition="${(pdict.type == 'select') || (pdict.type == 'password') || (pdict.type == 'input') || (pdict.type == 'textarea')}">
+
+        <isif condition="${empty(pdict.label) || !pdict.label == 'false'}">
+            <iscomment>display the field label</iscomment>
+            <label for="${htmlName}">
+                <iscomment>Display Required Star</iscomment>
+                <isif condition="${pdict.formfield.mandatory}">
+                    <span class="required-indicator">&#8226;</span>
+                </isif>
+                <iscomment>span is required to allow for dynamic change of label text</iscomment>
+                <span>
+                <isprint value="${Resource.msg(pdict.formfield.label,'sor_forms',null)}"/>
+                </span>
+            </label>
+        </isif>
+
+        <isif condition="${empty(pdict.value) || !pdict.value == 'false'}">
+            <iscomment>display input/select fields</iscomment>
+
+                <iscomment>display select boxes</iscomment>
+                <isif condition="${pdict.type == 'select'}">
+                    <select class="input-select ${formId} ${required}" name="${htmlName}" id="htmlName">
+                    <isloop items="${pdict.formfield.options}" var="option">
+                        <isset name="label" value="${Resource.msg(option.label,'sor_forms',null)}" scope="page" />
+                        <isset name="displayValue" value="${(label == null || label == '') ? '<!-- Empty -->' : label}" scope="page" />
+                              <isif condition="${option.selected}">
+                            <option class="select-option" label="${label}" value="${option.value||''}" selected="selected"><isprint value="${displayValue}" encoding="htmlsinglequote"/></option>
+                        <iselse/>
+                            <option class="select-option" label="${label}" value="${option.value||''}"><isprint value="${displayValue}" encoding="htmlsinglequote"/></option>
+                        </isif>
+                    </isloop>
+                    </select>
+
+                <iscomment>display password input fields</iscomment>
+                <iselseif condition="${pdict.type == 'password'}"/>
+                    <input type="password" class="input-text-pw ${formId} ${required}" name="${htmlName}" id="${htmlName}" value="${htmlValue}" <isif condition="${!empty(pdict.autocomplete)}"> autocomplete="${pdict.autocomplete}" </isif> />
+                <iscomment>display normal input fields</iscomment>
+                <iselseif condition="${pdict.type == 'input'}"/>
+                    <input type="text" class="input-text ${formId} ${required}" name="${htmlName}" id="${htmlName}" value="${htmlValue}" <isif condition="${!empty(pdict.autocomplete)}"> autocomplete="${pdict.autocomplete}" </isif> />
+                <iscomment>textarea</iscomment>
+                <iselseif condition="${pdict.type == 'textarea'}"/>
+                    <textarea class="input-text ${formId} ${required}" name="${htmlName}" id="${htmlName}" ><isprint value="${htmlValue}" encoding="htmlsinglequote" /></textarea>
+                </isif>
+
+                <iscomment>display description or error message</iscomment>
+                <isif condition="${pdict.formfield.valid}">
+                    <isif condition="${!empty(pdict.formfield.description)}">
+                        <span class="form-caption"><!--  Display Form Error Message --><isprint value="${Resource.msg(pdict.formfield.description,'sor_forms',null)}"/></span>
+                    </isif>
+                <iselse/>
+                    <isif condition="${!empty(pdict.formfield.error)}">
+                        <span class="form-caption error-message"><!--  Display Form Error Message --><isprint value="${Resource.msg(pdict.formfield.error,'sor_forms',null)}"/></span>
+                    <iselseif condition="${!empty(pdict.formfield.description)}"/>
+                        <span class="form-caption"><!--  Display Form Error Message --><isprint value="${Resource.msg(pdict.formfield.description,'sor_forms',null)}"/></span>
+                    </isif>
+                </isif>
+
+        </isif>
+
+    <iscomment>display checkbox fields</iscomment>
+    <iselseif condition="${pdict.type == 'checkbox'}"/>
+
+        <isif condition="${empty(pdict.label) || pdict.label == 'true'}">
+            <label for="${htmlName}"><isprint value="${Resource.msg(pdict.formfield.label,'sor_forms',null)}"/></label>
+        </isif>
+        <input type="checkbox" class="input-checkbox ${formId} ${required}" name="${htmlName}" id="${htmlName}" value="${htmlValue}" <isif condition="${pdict.formfield.checked}">checked="checked"</isif>>
+            <iscomment>display required star</iscomment>
+        <isif condition="${pdict.formfield.mandatory}">
+            <span class="required-indicator">&#8226;</span>
+        </isif>
+
+        <iscomment>display description or error message</iscomment>
+        <isif condition="${pdict.formfield.valid}">
+            <isif condition="${!empty(pdict.formfield.description)}">
+                <span class="form-caption"><isprint value="${Resource.msg(pdict.formfield.description,'sor_forms',null)}"/></span>
+            </isif>
+        <iselse/>
+            <isif condition="${!empty(pdict.formfield.error)}">
+                <span class="form-caption error-message"><isprint value="${Resource.msg(pdict.formfield.error,'sor_forms',null)}"/></span>
+            <iselseif condition="${!empty(pdict.formfield.description)}"/>
+                <span class="form-caption"><isprint value="${Resource.msg(pdict.formfield.description,'sor_forms',null)}"/></span>
+            </isif>
+        </isif>
+
+
+    <iscomment>hidden fields</iscomment>
+    <iselseif condition="${pdict.type == 'hidden'}"/>
+        <input type="hidden" name="${htmlName}" id="${htmlName}" value="${htmlValue}" />
+    </isif>
+
+    </div>

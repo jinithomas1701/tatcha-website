@@ -1,0 +1,5 @@
+<!--- TEMPLATENAME: rsc_gpds_footer.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCGPDS')}">
+    <script src="${URLUtils.staticURL('/js/rsc-gpds-widget-7ab1e506c420b54365aa.js')}" type="text/javascript"></script>
+</isif>

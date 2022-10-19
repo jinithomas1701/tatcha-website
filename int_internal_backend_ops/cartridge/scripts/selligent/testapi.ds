@@ -1,0 +1,72 @@
+/**
+* Script file for use in the Script pipelet node.
+* To define input and output parameters, create entries of the form:
+*
+* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
+*
+* where
+*   <paramUsageType> can be either 'input' or 'output'
+*   <paramName> can be any valid parameter name
+*   <paramDataType> identifies the type of the parameter
+*   <paramComment> is an optional comment
+*
+* For example:
+*
+*-   @input ExampleIn : String This is a sample comment.
+*-   @output ExampleOut : Number
+*
+*/
+
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.web );
+importPackage( dw.net );
+importPackage( dw.io );
+
+function execute( args : PipelineDictionary ) : Number
+{
+        var client : HTTPClient = new HTTPClient();
+		client.setTimeout(120000);
+		var auth : String = getSimpleAuthCredentials();
+		var response : String = null;
+		
+		
+		var content = '{"items": [ {"email": "riba@tatcha.com", "language": "EN", "data": {"PASSWORD_RESET_URL": "Optional text example" } } ]}';
+		
+		
+		var paramtest =  '{"fields":[{"filter":{"mail":"shamlah04@gmail.com","op":"="}}]}';
+		var apiAddress = dw.system.Site.current.getCustomPreferenceValue('selligentApiAddress');    
+		client.setRequestHeader("Content-Type", "application/json");
+		client.setRequestHeader("X-ApiKey", auth);	
+		client.open("POST", apiAddress);
+		client.send(content);
+		if (client.statusCode == 200){
+			response = client.text;
+		}
+
+   return PIPELET_NEXT;
+}
+
+
+	
+function getSimpleAuthCredentials()
+{
+	var creds = getAPICredentials(); 
+	var credentials = StringUtils.format("{0}:{1}",creds.userId,creds.password);
+	return credentials;
+}
+
+function getAPICredentials()
+{
+	var sitePrefs = dw.system.Site.current.preferences.custom;
+	var userId =  dw.system.Site.current.getCustomPreferenceValue('selligentApiKey');
+	var password =dw.system.Site.current.getCustomPreferenceValue('selligentSecretKey');
+	
+	if(!password || ! userId)
+	{
+		var ex = new Error("Selligent API credentials could not be determined");
+		//logError(ex);
+		throw ex;
+	}
+	return {userId:userId, password:password};
+}

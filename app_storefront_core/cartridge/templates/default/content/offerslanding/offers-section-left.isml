@@ -1,0 +1,21 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type = "relative" hour = "24">
+<div class="content-row row-side-x-side-desktop">
+	<div class="row no-gutter" style="margin: 0;">
+		<div class="col-md-6">
+			<div class="content-img-container">
+				<img class="content-img img-responsive" src="${pdict.Content.custom.offersImage.url}">
+			</div>
+		</div>
+		<div class="col-md-6 bg-default">
+			<div class="content-description">
+				<div class="content-text">
+					<isprint value="${pdict.Content.custom.offersContent}" encoding="off"/>
+				</div>
+				<div class="content-cta">
+					<a class="btn btn-default" href="${pdict.Content.custom.offersButtonURL}"><isprint value="${pdict.Content.custom.offersButtonText}"/></a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

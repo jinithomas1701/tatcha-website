@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+    <!-- form for creating and editing shipping address -->
+    <group formid="shippingAddress" form-error="address.invalid" >
+
+        <!-- use fields from shipping address definition -->
+        <include formid="addressFields" name="addressshipping"/>
+        <field formid="addressdefault" type="boolean" checked="false" default-value="false" binding="addressdefault" mandatory="false" />
+        <!-- action for actually saving the address -->
+        <action formid="save" valid-form="true"/>
+    </group>
+</form>

@@ -1,0 +1,103 @@
+.form-group {
+    position: relative;
+    &.has-error {
+        margin-bottom: 1.8rem;
+    }
+}
+.form-control {
+    &--floating {
+        height: 49px;
+        font-size: 16px;
+        padding: 20px 10px 5px;
+        border-color: #495257;
+        color: $black;
+        &::placeholder {
+            color: rgba(0, 0, 0, 0);
+        }
+        &:focus ~ .form-label--floating,
+        &:not(:placeholder-shown) ~ .form-label--floating {
+            font: {
+                size: 12px;
+                weight: 600;
+            }
+            -webkit-transform: translateY(-7px);
+            transform: translateY(-7px);
+            background-color: transparent;
+        }
+    }
+}
+.form-label {
+    &--floating {
+        font: {
+            size: 16px;
+            weight: normal;
+        }
+        color: #4B535C;
+        position: absolute;
+        top: 12px;
+        margin-bottom: 0;
+        margin-left: 10px;
+        -webkit-transform-origin: top left;
+        transform-origin: top left;
+        -webkit-transition: opacity 107ms ease-in-out, -webkit-transform 107ms ease-in-out;
+        transition: opacity 107ms ease-in-out, -webkit-transform 107ms ease-in-out;
+        transition: opacity 107ms ease-in-out, transform 107ms ease-in-out;
+        transition: opacity 107ms ease-in-out, transform 107ms ease-in-out, -webkit-transform 107ms ease-in-out;
+        cursor: text;
+        pointer-events: none;
+    }
+}
+
+.form-group--with-label {
+    border: 1px solid #9ea7b0;
+    height: 51px;
+    font-size: 16px;
+    padding: 5px 10px 10px;
+    border-radius: 4px;
+    &.has-error {
+        border-color: #b82e67;
+        margin-bottom: 3rem; // Fix for date picker validation error
+    }
+    .form-label {
+        font-size: rem-calc(12);
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+    input[type="date"] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        opacity: 0;
+        width: 100%;
+        &::-webkit-calendar-picker-indicator {
+            background: transparent;
+            bottom: 0;
+            color: transparent;
+            cursor: pointer;
+            height: auto;
+            left: -24px;
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: auto;
+        }
+    }
+    .form-mirror-value {
+        font-size: rem-calc(14);
+        line-height: 18px;
+        color: $black;
+        display: block;
+    }
+    .dropdown-icon {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        margin-top: -5px;
+        font-size: 1.5rem;
+    }
+    .help-block {
+        top: 100%;
+        left: 0;
+    }
+}

@@ -1,0 +1,56 @@
+<!-- Payment using gift card starts here -->
+<isset name="gcApplicable" value="${'false'}" scope="page"/>
+<isset name="stateSelected" value="${pdict.order.billing.billingAddress.address ? pdict.order.billing.billingAddress.address.stateCode : ''}" scope="page"/>
+<isset name="selectedCountry" value="${pdict.order.billing.billingAddress.address ? pdict.order.billing.billingAddress.address.countryCode : ''}" scope="page"/>
+
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE).isActive() && !session.custom.HasSORProducts && !session.custom.hasSORProducts}">
+    <isset name="gcApplicable" value="${'true'}" scope="page"/>
+</isif>
+
+<isset name="gcPITotal" value="${0}" scope="pdict"/>
+<isset name="OrderTotal" value="${pdict.order.totals.totalGrossPrice}" scope="pdict"/>
+<isif condition="${gcApplicable == 'true'}">
+<iscomment>only provide gift certificate redemption, if the basket doesn't contain any gift certificates</iscomment>
+	<isif condition="${pdict.order.totals.gcLineItemsSize == 0}">
+		<div class="panel-section checkout-gift-card-block" id="checkout-gift-card-block">
+		    <isif condition="${empty(pdict.order.totals.gcPIs.length) || pdict.order.totals.gcPIs.length === 0.0}">
+				<div class="giftcard-flag">
+				 	Do you have a gift card?
+					<a href="#gift" class="mr-2" data-toggle="modal" aria-label="Redeem your gift card" data-target="#modalCheckoutGiftCertificate">
+				        Redeem
+				    </a>
+				</div>
+			</isif>
+            <iscomment>render gift cert redeemed success message for each gift certificate payment instrument</iscomment>
+            <isset name="gcPITotal" value="${0}" scope="pdict"/>
+            <isif condition="${pdict.order.totals.gcPIs.length > 0}">
+                <isloop items="${pdict.order.totals.gcPIs}" var="giftCertPI">
+                    <isset name="gcPITotal" value="${pdict.gcPITotal + giftCertPI.transactionAmount}" scope="pdict"/>
+                         <div class="giftcard-applied">
+                         	${Resource.msgf('billing.giftcertredeemed', 'checkout', null, parseFloat(giftCertPI.transactionAmount).toFixed(2))}
+                         	<span class="undo-link">
+								<a href="#" id="remove-giftcert" class="remove" data-url="${URLUtils.url('CheckoutServices-RemoveGiftCertificate', 'giftCertificateID', giftCertPI.gcCode)}">
+	                                ${Resource.msg('billing.undo','checkout',null)}
+	                            </a>
+	                        </span>
+                       	</div>
+                </isloop>
+				 <isset name="balanceAmount" value="${pdict.order.totals.nonGcAmount}" scope="pdict" />
+             	<isif condition="${!empty(pdict.balanceAmount) && pdict.balanceAmount > 0}">
+             			<div class="redemption-remaining-msg pt-0">
+                         	<isif condition="${customer.authenticated && pdict.order.totals.hasApplicableCreditCards === true}">
+                         		${Resource.msgf('billing.giftcertWithCreditCard', 'checkout', null, pdict.balanceAmount)}
+                         	<iselse>
+                         		${Resource.msgf('billing.giftcertbalance', 'checkout', null, pdict.balanceAmount)}
+                         	</isif>
+                     	</div>
+                    <iselse>
+                        <isinclude template="checkout/billing/billingForm"/>
+                </isif>
+                <isif condition="${pdict.order.totals.totalNetsPrice != null && pdict.order.totals.totalNetsPrice-pdict.gcPITotal <= 0}">
+                    <isset name="OrderTotal" value="${pdict.order.totals.totalGrossPrice-pdict.gcPITotal}" scope="pdict"/>
+                </isif>
+            </isif>
+		</div>
+	</isif>
+</isif>

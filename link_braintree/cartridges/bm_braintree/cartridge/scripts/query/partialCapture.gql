@@ -1,0 +1,8 @@
+mutation PartialCaptureTransaction($input: PartialCaptureTransactionInput!) {
+  partialCaptureTransaction(input: $input) {
+    clientMutationId
+    capture {
+        ...transactionFields
+    }
+  }
+}

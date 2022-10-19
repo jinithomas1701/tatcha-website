@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="customerEmail" label="forms.sorsubscriptions.customerEmail.label" type="string" mandatory="false" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$" binding="false" max-length="50" range-error="forms.sorsubscriptions.customerEmail.invalid" parse-error="forms.sorsubscriptions.customerEmail.invalid" value-error="forms.sorsubscriptions.customerEmail.invalid"/>
+    
+    <field formid="subscriptionID" label="forms.sorsubscriptions.subscriptionID.label" type="string" mandatory="false" binding="subscriptionID"/>
+
+    <field formid="orderProduct" label="forms.sorsubscriptions.orderProduct.label" type="string" mandatory="false" binding="orderProduct"/>
+
+    <field formid="reportDateStart" label="forms.sorsubscriptions.reportDateStart.label" type="date" mandatory="false" binding="reportDateStart"/>
+
+    <field formid="reportDateEnd" label="forms.sorsubscriptions.reportDateEnd.label" type="date" mandatory="false" binding="reportDateEnd"/>
+
+    <field formid="ordersScheduled" label="forms.sorsubscriptions.ordersScheduled.label" type="boolean" mandatory="false" binding="ordersScheduled"/>
+
+    <field formid="ordersCanceled" label="forms.sorsubscriptions.ordersCanceled.label" type="boolean" mandatory="false" binding="ordersCanceled"/>
+
+    <field formid="ordersOther" label="forms.sorsubscriptions.ordersOther.label" type="boolean" mandatory="false" binding="ordersOther"/>   
+
+    <field formid="ordersProcessed" label="forms.sorsubscriptions.ordersProcessed.label" type="boolean" mandatory="false" binding="ordersProcessed"/>
+
+    <field formid="subRenewval" label="forms.sorsubscriptions.subRenewval.label" type="boolean" mandatory="false" binding="subRenewval"/>
+
+    <field formid="subCanceled" label="forms.sorsubscriptions.subCanceled.label" type="boolean" mandatory="false" binding="subCanceled"/>
+
+    <field formid="subProcessed" label="forms.sorsubscriptions.subProcessed.label" type="boolean" mandatory="false" binding="subProcessed"/>
+
+    <field formid="productCounts" label="forms.sorsubscriptions.productCounts.label" type="boolean" mandatory="false" binding="productCounts"/>
+
+    <action formid="filter" valid-form="true"/>
+    <action formid="export" valid-form="true"/>
+</form>

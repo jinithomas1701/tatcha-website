@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	
+	<field formid="fullname" label="contactus.fullname.label" type="string" mandatory="true" max-length="50"/>
+	<field formid="email" label="contactus.email.label" type="string" mandatory="true" regexp="^[\w.%+-]+@[\w.-]+\.[\w]{2,6}$" parse-error="contactus.email.parse-error" binding="email" max-length="50"/>	
+	
+	<field formid="subject" label="contactus.subject.label" type="string" mandatory="true">
+		<options>
+			<option optionid="General Information" value="General Information" label="contactus.generalinformation"/>
+			<option optionid="Order Status" value="Order Status" label="contactus.orderstatus"/>
+			<option optionid="My Account" value="My Account" label="contactus.myaccount"/>
+			<option optionid="Other" value="Other" label="contactus.other"/>
+		</options>	
+	</field>
+	<field formid="comment" label="contactus.comment" type="string" mandatory="false" binding="comment"/>
+
+	<action formid="send" valid-form="true"/>
+</form>

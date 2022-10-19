@@ -1,0 +1,12 @@
+<div class="search-promo-container container">
+	<isset name="promo1" value="${dw.content.ContentMgr.getContent('search-page-promo-1') ? dw.content.ContentMgr.getContent('search-page-promo-1').custom.catPromoType : ''}" scope="page" />
+	<isset name="promo2" value="${dw.content.ContentMgr.getContent('search-page-promo-2') ? dw.content.ContentMgr.getContent('search-page-promo-2').custom.catPromoType : ''}" scope="page" />
+	<isif condition="${!empty(promo1 && promo1.toString()) || !empty(promo2 && promo2.toString())}">
+		<h2>${Resource.msg('search.nohits.promoheading','search',null)}</h2>	
+	
+		<div class="search-promo-block row justify-content-center vsa-block">
+			<isif condition="${promo1}"><iscontentasset aid="search-page-promo-1"/></isif>				
+			<isif condition="${promo2}"><iscontentasset aid="search-page-promo-2"/></isif>	 
+		</div>
+	</isif>
+</div>

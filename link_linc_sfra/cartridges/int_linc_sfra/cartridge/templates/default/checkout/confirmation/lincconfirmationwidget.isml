@@ -1,0 +1,44 @@
+<isset name="isLincEnabled" value="${dw.system.Site.getCustomPreferenceValue('LincEnabled')}" scope="page"/>
+<isset name="publicId" value="${dw.system.Site.getCustomPreferenceValue('LincShopID')}" scope="page"/>
+<isset name="language" value="${dw.system.Site.getCustomPreferenceValue('LincLocale')}" scope="page"/>
+<isset name="testMode" value="${dw.system.Site.getCustomPreferenceValue('LincTestMode')}" scope="page"/>
+<isset name="optInUrl" value="${dw.system.Site.getCustomPreferenceValue('LincOptInUrl')}" scope="page"/>
+
+<isif condition="${testMode}">
+	<isset name="optInUrl" value="${dw.system.Site.getCustomPreferenceValue('LincStagingOptInUrl')}" scope="page"/>
+</isif>
+
+<isif condition="${isLincEnabled}">
+	<script>
+		window.lincOptinAsyncInit = function() {
+			LincOptin.init({
+				publicId : '${publicId}',
+				language : '${language}'
+			});
+		};
+
+		// Facebook Javascript SDK
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {
+				return;
+			}
+			js = d.createElement(s);
+			js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+		// End of Facebook Javascript SDK
+
+		(function(d, s, id) {
+			var js, ljs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {
+				return;
+			}
+			js = d.createElement(s);
+			js.id = id;
+			js.src = '${optInUrl}';
+			ljs.parentNode.insertBefore(js, ljs);
+		}(document, 'script', 'linc-optin-js'));
+	</script>
+ </isif>

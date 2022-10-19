@@ -1,0 +1,26 @@
+<iscache type="relative" hour="24"/>
+<div class="twouppromo-container container-fluid container-fluid-max ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+         <div class="row col-xl-10 col-xxl-8 mx-auto">
+            <a href="${pdict.buttonLink1}" class="anchor-style-reset col-12 col-md-6 position-relative mb-4 mb-md-0 twouppromo-card">
+                <img data-src="${pdict.image1.src.desktop}" width="900" height="675" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="w-100 lazyImage promo-img" alt="${pdict.imageAlt1}" data-url="${pdict.buttonLink1}"/>
+
+                <div class="card-details-container">
+                    <div class="card-details">
+                        <h3 class="card-name" role="heading" aria-level="3"><isprint value="${pdict.header1}" encoding="off" /></h3>
+                        <p class="card-content"><isprint value="${pdict.description1}" encoding="off" /></p>
+                    </div>
+                    <button class="btn btn-outline-dark card-btn outline-global" aria-label="${pdict.buttonText1}">${pdict.buttonText1}</button>
+                </div>
+            </a>
+            <a href="${pdict.buttonLink2}" class="anchor-style-reset col-12 col-md-6 position-relative twouppromo-card">
+                <img data-src="${pdict.image2.src.desktop}" width="900" height="675" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" class="w-100 lazyImage promo-img" alt="${pdict.imageAlt2}" data-url="${pdict.buttonLink2}"/>
+                <div class="card-details-container">
+                    <div class="card-details">
+                        <h3 class="card-name" role="heading" aria-level="3"><isprint value="${pdict.header2}" encoding="off" /></h3>
+                        <p class="card-content"><isprint value="${pdict.description2}" encoding="off" /></p>
+                    </div>
+                    <button class="btn btn-outline-dark card-btn outline-global" aria-label="${pdict.buttonText2}">${pdict.buttonText2}</button>
+                </div>
+            </a>
+        </div>
+</div>

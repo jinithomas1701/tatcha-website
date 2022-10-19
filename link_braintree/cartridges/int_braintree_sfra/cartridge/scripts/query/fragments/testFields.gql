@@ -1,0 +1,10 @@
+fragment testFields on Transaction {
+    statusHistory {
+        status
+        timestamp
+        amount {
+            value
+            currencyCode
+        }
+    }
+}

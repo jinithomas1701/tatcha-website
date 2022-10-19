@@ -1,0 +1,26 @@
+<!-- Cards accounts -->
+<isif condition="${pdict.braintree && pdict.braintree.isSRCBlockShown || pdict.braintree.isGooglePayBlockShown || pdict.braintree.isCreditCardBlockShown}">
+    <div class="row">
+        <isinclude template="braintree/account/creditCardAccounts"/>
+    </div>
+</isif>
+
+<!-- PayPal accounts -->
+<isif condition="${pdict.braintree && pdict.braintree.paypal && pdict.braintree.paypal.isPaypalBlockShown}">
+    <div class="card">
+        <div class="card-header clearfix">
+            <h4 class="pull-left">${Resource.msg('braintree.account.paypalaccounts.title','locale',null)}</h4>
+        </div>
+        <isinclude template="braintree/account/paypalAccounts"/>
+    </div>
+</isif>
+
+<!-- Venmo accounts -->
+<isif condition="${pdict.braintree && pdict.braintree.venmo && pdict.braintree.venmo.isVenmoBlockShown}">
+    <div class="card">
+        <div class="card-header clearfix">
+            <h4 class="pull-left">${Resource.msg('braintree.account.venmoaccounts.title','locale',null)}</h4>
+        </div>
+        <isinclude template="braintree/account/venmoAccounts"/>
+    </div>
+</isif>

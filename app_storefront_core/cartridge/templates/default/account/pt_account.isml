@@ -1,0 +1,99 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'My Account',
+			type: 'MyAccount',
+			ns: 'account'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<isinclude template="components/header/htmlhead_bs"/>
+	<isinclude template="account/pt_account_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+	<isinclude template="components/header/header_bs"/>
+	<isscript>
+	var showBackButton = false;
+	if(customer.authenticated && session.clickStream) {
+		var accountPages = ['Account-Show'];
+		var backURL = URLUtils.url('Account-Show');
+		var giftCertURL = 'GiftCert-GiftPurchase';
+		
+		var pipelineName = session.clickStream.last.pipelineName;
+		
+		if(pipelineName && accountPages.indexOf(pipelineName) < 0 && pipelineName !== giftCertURL) {
+			showBackButton = true;
+		}
+		
+		if(pipelineName == 'Address-Add' || pipelineName == 'Address-Edit') {
+			backURL = URLUtils.url('Address-List');
+		}
+		if(pipelineName == 'PaymentInstruments-Add' || pipelineName == 'PaymentInstruments-Edit') {
+			backURL = URLUtils.url('PaymentInstruments-List');
+		}
+		if(pipelineName == 'Order-Orders') {
+			backURL = URLUtils.url('Order-History');
+		}
+	}
+	
+	var requestType = request.getHttpURL()+'';	
+	try {
+	    if(requestType.indexOf('Account-PasswordReset') !== -1){
+    	   requestType = 'passwordReset';
+    	} else {
+       		requestType = 'account';
+    	}
+    } catch(err){}
+	
+	</isscript>
+	<isif condition="${(showBackButton == true)}">
+		<div class="container-fluid breadcrumb-container">
+			<ol id="myaccount-breadcrumb" class="breadcrumb container">
+		  		<li>
+		  			<a href="${backURL}">
+		  				<i class="fal fa-angle-double-left"></i>
+		  				${Resource.msg('global.back','locale',null)}
+		  			</a>
+		  		</li>
+			</ol>
+		</div>
+	</isif>
+	
+
+	
+	
+	<isif condition="${customer.authenticated && customer.registered}">
+		<isset name="mainClass" value="my-account-bs container-fluid" scope="page" />
+	<iselse>
+		<isif condition="${requestType == 'passwordReset'}"> 
+			<isset name="mainClass" value="my-account my-account-reset-password" scope="page" />
+		<iselse>		
+			<isset name="mainClass" value="my-account my-account-register" scope="page" />
+		</isif>
+	</isif>
+	
+	<main role="main" class="${mainClass}" tabindex="-1">
+			<isreplace/>
+	</main><!-- /main -->
+	
+	
+	<isset name="pageName" value="myaccount" scope="page" />
+	<isinclude template="product/components/modals"/>
+	<isinclude template="product/components/modalslegal"/>
+	<isinclude template="components/footer/footer_bs"/>
+	<isinclude template="account/pt_account_VARS"/>
+	
+</body>
+</html>

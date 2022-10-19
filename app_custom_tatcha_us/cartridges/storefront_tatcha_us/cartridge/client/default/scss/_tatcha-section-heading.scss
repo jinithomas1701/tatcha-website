@@ -1,0 +1,11 @@
+.section-heading{
+    font-family: 'Minion Pro', serif;
+    text-transform: none;
+    font-weight: 400;
+    font-size: 24px;
+    line-height: 28px;
+    @include media-breakpoint-up(md) {
+        font-size: 28px;
+        line-height: 34px;
+    }
+}

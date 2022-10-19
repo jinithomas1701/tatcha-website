@@ -1,0 +1,160 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+</isscript>
+
+<isif condition="${!request.custom.braintreeClientToken}">
+    <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+</isif>
+
+<isscript>
+    // INPUT VARS: isEnable3dSecure, ownerName, amount
+
+    var cardForm = pdict.CurrentForms.creditcard;
+    
+    if(session.customer.authenticated) {
+    	ownerName = session.customer.profile.firstName;
+    }
+
+    var hostedFieldsStyling = null;
+    var hostedFieldsAdvancedOptions = null;
+
+    try {
+        hostedFieldsStyling = JSON.parse(prefs.BRAINTREE_Hosted_Fields_Styling)
+    } catch(e){}
+    
+    try {
+        hostedFieldsAdvancedOptions = JSON.parse(prefs.BRAINTREE_Hosted_Fields_Advanced_Options)
+    } catch(e){}
+
+    var braintreeCreditCardConfig = {
+        paymentMethodName: prefs.creditCardMethodName,
+        is3dSecureEnabled: isEnable3dSecure,
+        isFraudToolsEnabled: prefs.BRAINTREE_Fraud_Tools_Enabled,
+        isSkip3dSecureLiabilityResult: prefs.BRAINTREE_3DSecure_Skip_Client_Validation_Result,
+        clientToken: request.custom.braintreeClientToken,
+        hostedFieldsStyles: hostedFieldsStyling,
+        hostedFieldsAdvancedOptions: hostedFieldsAdvancedOptions,
+        messages: {
+            validation: Resource.msg('braintree.creditcard.error.validation', 'locale', null),
+            secure3DFailed: Resource.msg('braintree.creditcard.error.secure3DFailed', 'locale', null),
+            HOSTED_FIELDS_FIELDS_EMPTY: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_FIELDS_EMPTY', 'locale', null),
+            HOSTED_FIELDS_FIELDS_INVALID: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_FIELDS_INVALID', 'locale', null),
+            HOSTED_FIELDS_FAILED_TOKENIZATION: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_FAILED_TOKENIZATION', 'locale', null),
+            HOSTED_FIELDS_TOKENIZATION_NETWORK_ERROR: Resource.msg('braintree.creditcard.error.HOSTED_FIELDS_TOKENIZATION_NETWORK_ERROR', 'locale', null),
+            CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+            CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+            CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+            CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null)
+        },
+        amount: amount ? amount : 0,
+        urls: {
+            getPaymentMethodNonceByUUID : URLUtils.url('Braintree-GetPaymentMethodNonceByUUID').toString()
+        },
+        
+        fieldsConfig: {
+            initOwnerValue: ownerName,
+            ownerHtmlName: cardForm.owner.htmlName,
+            typeHtmlName: cardForm.type.htmlName,
+            numberHtmlName: cardForm.number.htmlName
+        }
+    }
+</isscript>
+
+<div class="js_braintree_creditCardFields" data-braintree-config="${JSON.stringify(braintreeCreditCardConfig)}">
+	
+	<isif condition="${!empty(pdict.BraintreeError)}">
+		<div class="alert alert-danger">
+			<span>${Resource.msg('braintree.creditcard.paymenterror', 'locale', null)}</span>
+		</div>
+	</isif>
+	
+	<isif condition="${typeof(isAddCardModal) === 'undefined'}" >
+		<div id="braintreeCreditCardErrorContainer" class="alert alert-danger"></div>
+	</isif>
+	
+    <div id="braintreeCreditCardFieldsContainer">
+    
+        <div class="form-group">
+            <label for="braintreeCardOwner" class="control-label">
+                <span>${Resource.msg('braintree.creditcard.owner', 'locale', null)}</span>
+            </label>
+            <div class="braintree-field-wrap">
+                <div class="braintree-text-input">
+                    <input id="braintreeCardOwner" autocorrect="off" type="text" class="form-control form-control-lg" name="${braintreeCreditCardConfig.fieldsConfig.ownerHtmlName}" maxlength="40" data-init-value="${braintreeCreditCardConfig.fieldsConfig.initOwnerValue}"/>
+                </div>
+                <div id="braintreeCardOwnerPh" class="braintree-hosted-fields-ph"></div>
+                <div class='has-error'>
+                <span class='braintreeCardOwnerError help-block' ></span>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="braintreeCardNumber" class="control-label">
+                <span>${Resource.msg('braintree.creditcard.cardnumber', 'locale', null)}</span>
+            </label>
+            <div class="braintree-field-wrap">
+                <div id="braintreeCardNumber" class="braintree-hosted-fields-iframe-container form-control form-control-lg"></div>
+                <div id="braintreeCardNumberPh" class="braintree-hosted-fields-ph"></div>
+            </div>
+        </div>
+        
+        <div class="row">
+        	<div class="col-sm-6">
+        		<div class="form-group">
+		            <label for="braintreeExpirationDate" class="control-label">
+		                <span>${Resource.msg('braintree.creditcard.expirationdate', 'locale', null)}</span>
+		            </label>
+		            <div class="braintree-field-wrap">
+		                <div id="braintreeExpirationDate" class="braintree-hosted-fields-iframe-container form-control form-control-lg"></div>
+		                <div id="braintreeExpirationPh" class="braintree-hosted-fields-ph"></div>
+		            </div>
+		        </div>
+        	</div>
+        	<div class="col-sm-6">
+        		<div class="form-group required">
+        			<label for="braintreeCvv" class="control-label" data-toggle="tooltip" data-placement="right" title="" data-original-title="${Resource.msg('braintree.creditcard.cvv.hint', 'locale', null)}" aria-describedby="tooltip654525">
+                        <span></span>${Resource.msg('braintree.creditcard.cvv', 'locale', null)}</span>
+                        <i class="fal fa-question-circle label-icon"></i>
+		            </label>
+		            <div class="braintree-field-wrap">
+		                <div id="braintreeCvv" class="braintree-hosted-fields-iframe-container form-control form-control-lg"></div>
+		                <div id="braintreeCvvPh" class="braintree-hosted-fields-ph"></div>
+		            </div>
+		        </div>
+        	</div>        	
+        </div>
+    
+    </div>
+    
+    <div id="braintree3DSecureContainer">
+        <div id="braintree3DSecureIframe"></div>
+    </div>
+    
+    <input type="hidden" name="isCheckoutAddCard" id="checkout-add-card" value="true"/>
+    
+    <input id="braintreeCardType" type="hidden" name="${braintreeCreditCardConfig.fieldsConfig.typeHtmlName}" value="Visa" />
+    <input id="braintreeCardMaskNumber" type="hidden" name="${braintreeCreditCardConfig.fieldsConfig.numberHtmlName}" value="" />
+    <input id="braintreePaymentMethodNonce" type="hidden" name="braintreePaymentMethodNonce" value="" />
+    <input id="braintreeIs3dSecureRequired" type="hidden" name="braintreeIs3dSecureRequired" value="false" />
+    <input id="braintreeDeviceData" type="hidden" name="braintreeDeviceData" value="" />
+    
+    <!-- Billing address fields -->
+    
+    <input type="hidden" name="firstName" id="firstName" value=""/>
+    <input type="hidden" name="lastName" id="lastName" value=""/>
+    <input type="hidden" name="streetAddress" id="streetAddress" value=""/>
+    <input type="hidden" name="extendedAddress" id="extendedAddress" value=""/>
+    <!-- City -->
+    <input type="hidden" name="locality" id="locality" value=""/>
+    <!-- State -->
+    <input type="hidden" name="region" id="region" value=""/>
+    <input type="hidden" name="countryCodeAlpha2" id="countryCodeAlpha2" value=""/>
+    <input type="hidden" name="countryName" id="countryName" value=""/>
+    <input type="hidden" name="postalCode" id="postalCode" value=""/>
+    
+    
+    <i id="braintreeCreditCardLoader" class="braintree-loader"></i>
+
+</div>

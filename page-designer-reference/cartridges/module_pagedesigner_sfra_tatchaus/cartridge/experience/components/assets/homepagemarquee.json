@@ -1,0 +1,232 @@
+{
+  "name": "Hero Marquee",
+  "description": "Hero Marquee",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "images",
+      "name": "Image Block",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "mobileImage",
+          "name": "Mobile Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "desktopImage",
+          "name": "Desktop Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "textcontent",
+      "name": "Text Block",
+      "description": "The text content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "overline",
+          "name": "Overline",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "enableOverlay",
+          "name": "Enable Overlay",
+          "type": "boolean",
+          "required": false,
+          "default_value": false
+        },
+        {
+          "id": "mainHeading",
+          "name": "Main Heading",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "headingStyle",
+          "name": "Heading Style",
+          "description": "Heading Style.",
+          "type": "enum",
+          "values": [
+            "H1",
+            "H2"
+          ],
+          "required": false,
+          "default_value": "H1"
+        },
+        {
+          "id": "body",
+          "name": "Body",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "mobileBlockPositionVertical",
+          "name": "Mobile Vertical Block Position",
+          "description": "Mobile Vertical Block Position.",
+          "type": "enum",
+          "values": [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "required": true,
+          "default_value": "top"
+        },
+        {
+          "id": "mobileTextAlignment",
+          "name": "Mobile Text Alignment",
+          "description": "Mobile Text Alignment.",
+          "type": "enum",
+          "values": [
+            "center",
+            "left"
+          ],
+          "required": true,
+          "default_value": "center"
+        },
+        {
+          "id": "blockPositionHorizontal",
+          "name": "Desktop Horizontal Block Position",
+          "description": "Desktop Horizontal Block Position.",
+          "type": "enum",
+          "values": [
+            "left",
+            "center",
+            "right"
+          ],
+          "required": true,
+          "default_value": "left"
+        },
+        {
+          "id": "blockPositionVertical",
+          "name": "Desktop Vertical Block Position",
+          "description": "Desktop Vertical Block Position.",
+          "type": "enum",
+          "values": [
+            "top",
+            "middle",
+            "bottom"
+          ],
+          "required": true,
+          "default_value": "top"
+        },
+        {
+          "id": "textAlignment",
+          "name": "Desktop Text Alignment",
+          "description": "Desktop Text Alignment.",
+          "type": "enum",
+          "values": [
+            "center",
+            "left"
+          ],
+          "required": true,
+          "default_value": "center"
+        }
+      ]
+    },
+    {
+      "id": "ctaContent",
+      "name": "CTA Content",
+      "description": "CTA content for this component",
+      "attribute_definitions": [
+      	{
+          "id": "buttonText",
+          "name": "CTA Text 1",
+          "type": "string",
+          "required": true
+        },        
+        {  
+          "id": "url",
+          "name": "URL Link",
+          "type": "url",
+          "required": true
+        },
+        {
+          "id": "buttonText1",
+          "name": "CTA Text 2",
+          "type": "string",
+          "required": false
+        },
+        {  
+          "id": "url1",
+          "name": "URL Link",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "textColor",
+          "name": "Text & CTA Color",
+          "description": "Text & CTA Color",
+          "type": "enum",
+          "values": [
+            "black",
+            "white"
+          ],
+          "required": true,
+          "default_value": "black"
+        },
+        {
+          "id": "ctaType",
+          "name": "CTA Type",
+          "description": "CTA Type",
+          "type": "enum",
+          "values": [
+            "text link",
+            "normal button",
+            "large button",
+            "no cta"
+          ],
+          "required": true,
+          "default_value": "normal button"
+        }
+      ]	
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+      {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

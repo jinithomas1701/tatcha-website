@@ -1,0 +1,350 @@
+importPackage( dw.object 	);
+importPackage( dw.util		);
+importPackage( dw.system	);
+
+importScript('bc_integrationframework:workflow/libWorkflow.ds');
+
+/**
+ * Class which provides basic workflow schedule infrastructure<br /><br />
+ *
+ * The workflow schedule instance is made available by the framework as pipeline dictionary key named 
+ * <i>CurrentWorkflowScheduleInstance</i>
+ *
+ * @constructor
+ */
+function WorkflowScheduleInstance() {
+	this.object = null;
+	this.sortedWorkflowComponentInstances = undefined;
+}
+
+/**
+ * Marks the start of the workflow schedule execution<br />
+ * <b>Note that this is method is called by the framework and typically does not need to be called explicitly.</b>
+ */
+WorkflowScheduleInstance.prototype.start = function() {
+	// To prevent concurrent exceptions, the object is reloaded.
+	this.reloadObject();
+	
+	if (empty(this.object.custom.startTime)) {
+		var calendar : Calendar = new Calendar();
+		calendar.setTimeZone(System.getInstanceTimeZone());
+		
+		this.object.custom.startTime = calendar.getTime();
+	}
+}
+
+/**
+ * Marks the end of the workflow schedule execution, if really all components were executed.<br />
+ * <b>Note that this is method is called by the framework and typically does not need to be called explicitly.</b>
+ */
+WorkflowScheduleInstance.prototype.finish = function() {
+	// To prevent concurrent exceptions, the object is reloaded.
+	this.reloadObject();
+	
+	if (empty(this.object.custom.endTime)) {
+		var status : String = this.getStatus();
+		
+		if (   status == 'SKIPPED'
+			|| status == 'FINISHED_OK'
+			|| status == 'FINISHED_WARN'
+			|| status == 'FINISHED_ERROR') {
+			var calendar : Calendar = new Calendar();
+			calendar.setTimeZone(System.getInstanceTimeZone());
+			
+			this.object.custom.endTime = calendar.getTime();
+			
+			// persist status in case the workflow is FINISHED (AND ONLY THEN) so that components 
+			// don't have to be loaded to determine the status
+			this.object.custom.status = status;
+		}
+		
+		// TODO @aree: If FINISHED_ERROR, all other components with status WAITING could be set to another than WAITING
+		// to prevent the component from loading in the next job run.
+	}
+	
+	// Before finishing, the object is "touched" to change the lastModified date. This will be done to determine the
+	// correct next waiting WorkflowScheduleInstance. See LibWorkflow.getNextWaitingWorkflowScheduleInstance.
+	var temp = this.object.custom.workflowScheduleDefinitionID;
+	this.object.custom.workflowScheduleDefinitionID = temp;
+}
+
+/**
+ * Returns the runtime of a finished workflow, null otherwise
+ */
+WorkflowScheduleInstance.prototype.getRuntime = function() : String {
+	if (empty(this.custom.startTime) || empty(this.custom.endTime)) {
+		return null;
+	}
+	
+	var difference : Number = this.custom.endTime - this.custom.startTime;
+	var date : Date = new Date();
+	date.setTime(difference);
+	var calendar : Calendar = new Calendar(date);
+	
+	var hours : Number = calendar.get(Calendar.HOUR_OF_DAY);
+	hours += (calendar.get(Calendar.DAY_OF_YEAR) - 1) * 24;
+	// If jobs run longer than 31 days, then this implementation must be changed.
+	
+	return StringUtils.formatNumber(hours, '#00') + ':' + StringUtils.formatCalendar(calendar, 'mm:ss.SSS');
+}
+
+/**
+ * Creates the workflow component instances belonging to the workflow<br />
+ * Note that this is method is called by the framework and typically does not need to be called explicitly.
+ */
+
+WorkflowScheduleInstance.prototype.createWorkflowComponentInstances = function(siteId : String) {
+	var libWorkflow : Object = new LibWorkflow();
+	// If the workflow is currently running, then no instances are created. But to track the skip of this run, the
+	// workflow instance is created.
+	if (libWorkflow.isWorkflowScheduleRunning(siteId, this.custom.workflowScheduleDefinitionID)) {
+		return;
+	}
+	
+	var relations : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowScheduleDefinitionWorkflowComponentDefinitionRelation', 'custom.workflowScheduleDefinitionID = {0}', null, this.object.custom.workflowScheduleDefinitionID);
+
+	//@todo: Hack for problem in DW that prevents sorting by number types of custom 
+	//attributes when queried via QueryFramework
+	//--> to be removed if fix becomes available in DW
+	var wsdwcdArray : Array = [];
+	for each (var relation : CustomObject in relations) {
+		wsdwcdArray.push( relation );
+	}
+	
+	wsdwcdArray.sort( function( e1, e2) {
+		var position1 : Number = e1.custom.position;
+		var position2 : Number = e2.custom.position;
+		if ( position1 > position2 ) {
+			return 1;
+		} if ( position1 < position2 ) {
+			return -1;
+		} else {
+			return -1;
+		}
+	});
+	
+	for each (var relation : CustomObject in wsdwcdArray) {
+		//for each (var relation : CustomObject in wsdwcdArray) {
+		//@todo: Hack1 end
+		var id : String = libWorkflow.createWorkflowComponentInstanceId(this.object.custom.ID, relation.custom.workflowComponentDefinitionName, relation.custom.position);
+		
+		var workflowComponentInstance : CustomObject = CustomObjectMgr.createCustomObject('WorkflowComponentInstance', id);
+		var workflowComponentDefinition : CustomObject = CustomObjectMgr.getCustomObject('WorkflowComponentDefinition', relation.custom.workflowComponentDefinitionName);
+		
+		workflowComponentInstance.custom.workflowScheduleInstanceID = this.object.custom.ID;
+		workflowComponentInstance.custom.workflowComponentDefinitionName = relation.custom.workflowComponentDefinitionName;
+		workflowComponentInstance.custom.status = 'WAITING';
+		workflowComponentInstance.custom.action = workflowComponentDefinition.custom.action;
+		workflowComponentInstance.custom.parameterDefinitions = workflowComponentDefinition.custom.parameters;
+		workflowComponentInstance.custom.parameterValues = relation.custom.parameters;
+		workflowComponentInstance.custom.position = relation.custom.position;
+		workflowComponentInstance.custom.asynchron = relation.custom.asynchron;
+		workflowComponentInstance.custom.disabled = relation.custom.disabled;
+		workflowComponentInstance.custom.displayName = relation.custom.displayName;
+		if(relation.custom.fileLogLevel && relation.custom.fileLogLevel.value == 'inherit'){
+			workflowComponentInstance.custom.fileLogLevel = this.object.custom.fileLogLevel.value;
+		}else{
+			workflowComponentInstance.custom.fileLogLevel = relation.custom.fileLogLevel;
+		}
+		if(relation.custom.componentLogLevel && relation.custom.componentLogLevel.value == 'inherit'){
+			workflowComponentInstance.custom.componentLogLevel = this.object.custom.componentLogLevel.value;
+		}else{
+			workflowComponentInstance.custom.componentLogLevel = relation.custom.componentLogLevel;
+		}
+	}
+	relations.close();
+}
+
+/**
+ * Returns the workflow component instances of the workflow if they are already created.
+ */
+WorkflowScheduleInstance.prototype.getWorkflowComponentInstances = function() : ArrayList {
+	if (this.sortedWorkflowComponentInstances) {
+		// To prevent concurrent exceptions, the object is reloaded for each instance first.
+		for each (var workflowComponentInstance : Object in this.sortedWorkflowComponentInstances) {
+			workflowComponentInstance.reloadObject();
+		}
+		
+		return this.sortedWorkflowComponentInstances;
+	}
+	
+	var libWorkflow : Object = new LibWorkflow();
+	
+	this.sortedWorkflowComponentInstances = new ArrayList();
+	var relatedWorkflowComponentInstances : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowComponentInstance', 'custom.workflowScheduleInstanceID = {0}', 'custom.position', this.custom.ID);
+	for each (var relatedWorkflowComponentInstance : CustomObject in relatedWorkflowComponentInstances) {
+		var workflowComponentInstanceWrapper : Object = libWorkflow.createWrapperObject(relatedWorkflowComponentInstance);
+		
+		this.sortedWorkflowComponentInstances.add(workflowComponentInstanceWrapper);
+	}
+	relatedWorkflowComponentInstances.close();
+	
+	return this.sortedWorkflowComponentInstances;
+}
+
+/**
+ * Returns the status of the workflow
+ */
+WorkflowScheduleInstance.prototype.getStatus = function() {
+	// check if there is a status stored at the component first
+
+	// otherwise calculate the status
+	var workflowComponentInstances : ArrayList = this.getWorkflowComponentInstances();
+	
+	// A workflow without components will not be scheduled and skipped.
+	if (empty(workflowComponentInstances)) {
+		return 'SKIPPED';
+	}
+	
+	var status : String = 'NONE';
+	for each (var workflowComponentInstance : Object in workflowComponentInstances) {
+		if (workflowComponentInstance.object.custom.status == 'FINISHED_ERROR') {
+			return 'FINISHED_ERROR';
+		}
+		if (status != 'RUNNING') {
+			if (workflowComponentInstance.object.custom.status == 'RUNNING') {
+				status = 'RUNNING';
+			} else if (workflowComponentInstance.object.custom.status == 'WAITING') {
+				status = 'WAITING';
+			} else if (status != 'WAITING' && status != 'FINISHED_WARN') {
+				if (workflowComponentInstance.object.custom.status == 'FINISHED_WARN') {
+					status = 'FINISHED_WARN';
+				} else if (workflowComponentInstance.object.custom.status == 'FINISHED_OK' || workflowComponentInstance.object.custom.status == 'FINISHED_SKIPPED') {
+					status = 'FINISHED_OK';
+				}
+			}
+		}
+	}
+	
+	return status;
+}
+
+/**
+ * Returns the next waiting workflow component instance which needs to be executed.
+ */
+WorkflowScheduleInstance.prototype.getNextWaitingWorkflowComponentInstance = function() : Object {
+	var workflowComponentInstances : ArrayList = this.getWorkflowComponentInstances();
+	
+	var waitingWorkflowComponentInstance : Object = null;
+	Outer:
+	for (var i=0; i<workflowComponentInstances.length; i++) {
+		var workflowComponentInstance : Object = workflowComponentInstances[i];
+		var status : String = workflowComponentInstance.custom.status;
+		
+		// If at least one has this status, then the whole workflow must not be executed!
+		if (status == 'FINISHED_ERROR') {
+			return null;
+		}
+		
+		// If a waiting instance was found, it is just checked if the remaining instances do not have the error status.
+		if (!empty(waitingWorkflowComponentInstance)) {
+			continue;
+		}
+		
+		if (workflowComponentInstance.custom.status == 'WAITING') {
+			if (!workflowComponentInstance.custom.asynchron) {
+				waitingWorkflowComponentInstance = workflowComponentInstance;
+			} else {
+				// This is a very special case. If two or more components in a row are asynchronous and are able to suspend
+				// themselfs, then the one in the row which was not executed the longest time will be executed next.
+				// Example: 2 TimeComponents in a row are asynchronous. If this case would not be here, the second TimeComponent
+				// is not started until the first one is in status FINISHED_OK. This is because the first one would be set to WAITING
+				// in every execution and would always be returned here. But with this case here, they will alternate after each
+				// execution.
+				var nextWaitingWorkflowComponentInstances : ArrayList = new ArrayList();
+				for (var j=i; j<workflowComponentInstances.length; j++) {
+					if (!workflowComponentInstances[j].custom.asynchron) {
+						break;
+					}
+					
+					if (workflowComponentInstances[j].custom.status == 'WAITING') {
+						nextWaitingWorkflowComponentInstances.add(workflowComponentInstances[j]);
+					}
+				}
+				nextWaitingWorkflowComponentInstances.sort(new PropertyComparator('lastModified'));
+				
+				waitingWorkflowComponentInstance = nextWaitingWorkflowComponentInstances.get(0);
+			}
+		} else if (status == 'RUNNING') {
+			// If an instance is running and not asynchronous, then there can be no waiting instance.
+			if (!workflowComponentInstance.custom.asynchron) {
+				return null;
+			} else {
+				for (var j=i+1; j<workflowComponentInstances.length; j++) {
+					var nextWorkflowComponentInstance : Object = workflowComponentInstances[j];
+					
+					if (nextWorkflowComponentInstance.custom.asynchron) {
+						if (nextWorkflowComponentInstance.custom.status == 'WAITING') {
+							waitingWorkflowComponentInstance = nextWorkflowComponentInstance;
+							
+							continue Outer;
+						}
+					} else {
+						return null;
+					}
+				}
+				
+				return null;
+			}
+		}
+	}
+	
+	return waitingWorkflowComponentInstance;
+}
+
+/**
+ * Get the formatted component timestamp as string 
+ */
+WorkflowScheduleInstance.prototype.getTimestamp = function(format : String) : String {
+	if (empty(this.custom.startTime) || empty(format)) {
+		return '';
+	}
+	
+	var calendar : Calendar = new Calendar();
+	calendar.setTimeZone(System.getInstanceTimeZone());
+	
+	calendar.setTime(this.custom.startTime);
+	
+	return StringUtils.formatCalendar(calendar, format);
+}
+
+/**
+ * Sets the runtime data<br /><br />
+ * 
+ * <b>Note:</b><br />
+ * Value must be serializable via JSON.stringify, so no system objects must be used!<br />
+ * Existing values will be overwritten!<br />
+ * The value type will get lost (except String, Number and Boolean values)!<br />
+ */
+WorkflowScheduleInstance.prototype.setRuntimeData = function(key : String, value : Object) {
+	// To prevent concurrent exceptions, the object is reloaded.
+	this.reloadObject();
+	
+	var runtimeData : Object;
+	if (!empty(this.custom.runtimeData)) {
+		runtimeData = JSON.parse(this.custom.runtimeData);
+	} else {
+		runtimeData = new Object();
+	}
+	
+	runtimeData[key] = value;
+	
+	this.object.custom.runtimeData = JSON.stringify(runtimeData);
+}
+
+/**
+ * Returns the runtime data
+ */
+WorkflowScheduleInstance.prototype.getRuntimeData = function(key : String) : Object {
+	// To prevent concurrent exceptions, the object is reloaded.
+	this.reloadObject();
+	
+	var runtimeData : Object;
+	if (!empty(this.custom.runtimeData)) {
+		runtimeData = JSON.parse(this.custom.runtimeData);
+	} else {
+		runtimeData = new Object();
+	}
+	
+	return runtimeData[key];
+}

@@ -1,0 +1,2 @@
+<!--- TEMPLATENAME: redirect.isml --->
+<isredirect location="${pdict.RedirectURL}" />

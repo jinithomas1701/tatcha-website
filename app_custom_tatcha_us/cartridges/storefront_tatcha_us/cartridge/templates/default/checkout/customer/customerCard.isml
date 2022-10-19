@@ -1,0 +1,60 @@
+<div class="modal fade login-modal-container" id="loginModal" tabindex="-1" aria-modal="true" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-spec">
+                    <h3 class="modal-title modal-title-spec" id="exampleModalLabel" tabindex="0">LOGIN TO TATCHA</h3>
+                <button type="button" class="close" data-dismiss="modal"
+                    aria-label="Close">
+                    <i class="fal fa-times close-spec"></i>
+                </button>
+            </div>
+            <div class="modal-body modal-body-spec">
+                <div class="customer-error"></div>
+                <form autocomplete="off" id="registered-customer" method="POST" class="registered-form" action="${URLUtils.url('CheckoutServices-LoginCustomer')}"
+                    <isprint value=${pdict.forms.registeredCustomerForm.attributes} encoding="off" /> novalidate>
+                    <div class="customer-information-block">
+                        <div class="form-group position-relative">
+                            <input type="text" class="form-control form-control-spec form-control-lg border border-secondary rounded email floating__input" id="email" placeholder="email"
+                                        value="${(pdict.customer.registeredUser && pdict.customer.profile && pdict.customer.profile.email) ? pdict.customer.profile.email : ''}" <isprint value=${pdict.forms.registeredCustomerForm.email.attributes} encoding="off"/>
+                                        aria-describedby="emailInvalidMessage"
+                                        data-missing-error="Please enter a valid email address." data-pattern-mismatch="Please enter a valid email address.">
+
+                            <label class="float-label" data-content="${Resource.msg('field.customer.email','checkout',null)}">
+
+                            </label>
+                            <div class="invalid-feedback" id="emailInvalidMessage"></div>
+                        </div>
+                        <div class="form-group position-relative password-form">
+                            <input type="password" class="form-control form-control-spec form-control-lg border border-secondary rounded password floating__input" id="password" placeholder=" " data-missing-error="Please enter your password."
+                                        <isprint value=${pdict.forms.registeredCustomerForm.password.attributes} encoding="off"/>
+                                        aria-describedby="passwordInvalidMessage" >
+
+                            <label class="float-label" data-content="${Resource.msg('field.customer.password','checkout',null)}">
+
+                            </label>
+                            <div class="invalid-feedback" id="passwordInvalidMessage"></div>
+                        </div>
+                            <button class="btn btn-primary btn-block button-spec submit-customer-login" id="submit-customer-login"  name="submit" value="submit-login">
+                            ${Resource.msg('button.customer.login', 'checkout', null)}
+                        </button>
+                    </div>
+                    <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+                </form>
+                <h5 class="form-font-spec w-100 text-center">
+                    <a href="${URLUtils.https('Account-PasswordReset')}">Forgot your password?</a>
+                </h5>
+                <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('skip_email_gate') && !session.custom.HasSORProducts && !session.custom.hasSORProducts}">
+                    <div class="create-account-link-container">
+                        <a class="checkout-guest-link" href="#" data-dismiss="modal" data-url="">Checkout as Guest</a> <br>
+                        You'll have a chance to create an account later.
+                    </div>
+                <iselse>
+                    <div class="create-account-link-container">
+                        Are You A New Friend?
+                        <a class="register-link create-account-link" href="javascript:;" data-url="${URLUtils.https('Account-StartRegister')}">Create An Account</a>
+                    </div>
+                </isif>
+            </div>
+        </div>
+    </div>
+</div>

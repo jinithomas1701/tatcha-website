@@ -1,0 +1,41 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Wishlist',
+			type: 'Wishlist',
+			ns: 'wishlist'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableCSSLazyload')}">
+			<isinclude template="components/header/htmlhead_account_bs"/>
+	<iselse>
+			<isinclude template="components/header/htmlhead_bs"/>
+	</isif>
+	<iscontentasset aid="wishlistpagemeta"/>
+	<isinclude template="account/wishlist/pt_wishlist_UI"/>
+
+</head>
+
+<body>
+	<isinclude template="components/header/header_bs"/>
+	<main id="main" role="main" class="my-account my-account-wishlist" tabindex="-1">
+		<isreplace/>
+	</main><!-- /main -->
+	<isset name="pageName" value="wishlist" scope="page" />
+	<isinclude template="product/components/modals"/>
+	<isinclude template="components/footer/footer_bs"/>
+	<isinclude template="account/wishlist/pt_wishlist_VARS"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+</body>
+</html>

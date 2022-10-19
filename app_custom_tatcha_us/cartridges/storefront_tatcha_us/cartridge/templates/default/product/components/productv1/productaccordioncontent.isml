@@ -1,0 +1,129 @@
+<!--- TEMPLATENAME: productaccordioncontent.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<div class="pdp-accordion" id="accordion">
+	<div class="product-details-section">
+		<isif condition="${!empty(pdict.Product.custom.detailsField)}">
+		<div class="product-details-list">
+			<div class="product-details-link-list">
+					<a class="collapsed section-spec-link" data-toggle="collapse" href="#collapsePromiseWhyItWorks" aria-expanded="false" aria-controls="collapsePromise">
+						<h2 class="section-spec">
+							<span class="section-spec-inner">Details</span>
+							<div class="float-right plus-minus-icon pr-3">
+								<i class="fal fa-sm fa-plus"></i>
+								<i class="fal fa-sm fa-minus"></i>
+							</div>
+						</h2>
+					</a>
+					<div id="collapsePromiseWhyItWorks" class="collapse product-details-list-content" aria-labelledby="details-text-content" style="">
+						<div class="card-body pl-0 pt-0 pr-0">
+							<div class="details-text-content">
+								<isprint value="${pdict.Product.custom.detailsField}" encoding="off" />
+							</div>
+						</div>
+					</div>
+			</div>
+		</div>
+		</isif>
+		<isif condition="${!empty(pdict.Product.custom.ingredientsField) || !empty(pdict.Product.custom.fullIngredientsList) || !empty(pdict.Product.custom.whoItsFor) || !empty(pdict.Product.custom.formulatedWithout)}">
+		<div class="product-details-list">
+			<div class="product-details-link-list">
+				<a class="collapsed section-spec-link" data-toggle="collapse" href="#collapseIngredients" aria-expanded="false" aria-controls="collapsePromise">
+					<h2 class="section-spec">
+						<span class="section-spec-inner">Ingredients</span>
+						<div class="float-right plus-minus-icon pr-3">
+						<i class="fal fa-sm fa-plus"></i>
+						<i class="fal fa-sm fa-minus"></i>
+						</div>
+					</h2>
+				</a>
+				<div id="collapseIngredients" class="collapse product-details-list-content ingredients-details-content" aria-labelledby="ingredients-text-content">
+					<isif condition="${!empty(pdict.Product.custom.ingredientsField)}">
+						<div class="card-body p-0">
+							<div class="ingredients-text-content">
+								<isprint value="${pdict.Product.custom.ingredientsField}" encoding="off" />
+							</div>
+						</div>
+					</isif>
+					<isif condition="${!empty(pdict.Product.custom.fullIngredientsList)}">
+						<div class="product-ingredients-inci">
+							<a  href="#" data-toggle="modal" data-target="#inciModal">${Resource.msg('global.product.ingredients.seefullList','locale',null)}</a>
+						</div>
+						<div class="modal fade modal-primary modal-product-ingredients" id="inciModal" tabindex="-1" role="dialog" aria-labelledby="modalIngredients" style="display: none;">
+							<div class="modal-dialog" role="document">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+										<h4 class="modal-title"><strong>${Resource.msg('global.product.ingredients.heading', 'locale', null)}</strong></h4>
+									</div>
+									<div class="modal-body">
+										<div class="product-ingredients-editor">
+											<isif condition="${!empty(pdict.Product.custom.fullIngredientsList)}">
+												<isprint value="${pdict.Product.custom.fullIngredientsList}" encoding="off"></isprint>
+											</isif>
+											<isif condition="${(pdict.Product.custom.showHadasei == true)}">
+												<p><sup>*</sup>${Resource.msg('global.product.hadasei', 'locale', null)}</p>
+											</isif>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</isif>
+					<isif condition="${!empty(pdict.Product.custom.whoItsFor)}">
+					<div>
+						<p><isprint value="${pdict.Product.custom.whoItsFor}" encoding="off"/></p>
+					</div>
+					</isif>
+					<isif condition="${!empty(pdict.Product.custom.formulatedWithout)}">
+					<div>
+						<p><b>${Resource.msg('global.product.ingredients.formulatedWithout','locale',null)}</b> <isprint value="${pdict.Product.custom.formulatedWithout}" encoding="off"/>
+					</div>
+					</isif>
+				</div>
+			</div>
+		</div>
+		</isif>
+		<isif condition="${!empty(pdict.Product.custom.howToUseField)}">
+		<div class="product-details-list">
+			<div class="product-details-link-list">
+				<a class="collapsed section-spec-link" data-toggle="collapse" href="#collapseHowtouse" aria-expanded="false" aria-controls="collapsePromise">
+					<h2 class="section-spec">
+						<span class="section-spec-inner">${Resource.msg('global.product.howtouse.heading', 'locale', null)}</span>
+						<div class="float-right plus-minus-icon pr-3">
+							<i class="fal fa-sm fa-plus"></i>
+							<i class="fal fa-sm fa-minus"></i>
+						</div>
+					</h2>
+				</a>
+				<div id="collapseHowtouse" class="collapse product-details-list-content" aria-labelledby="howtouse-text-content">
+					<isif condition="${!empty(pdict.Product.custom.howToUse)}">
+					<div class="product-howto-media" id="howtouse-video-container">
+						<iscomment> checking video source </iscomment>
+						<isif condition="${empty(pdict.Product.custom.howToUseSource.value) || pdict.Product.custom.howToUseSource.value == 'youtube'}">
+							<iframe class="youtube-video-frame" id="howtouse-video-frame" allowfullscreen="1" title="how-to-use-vedio" frameborder="0" src="https://www.youtube.com/embed/${pdict.Product.custom.howToUse}?rel=0">
+							</iframe>
+						<iselseif condition="${pdict.Product.custom.howToUseSource.value == 'vimeo'}" >
+							<iframe class="youtube-video-frame" id="howtouse-video-frame" title="how-to-use-vedio" frameborder="0" src="https://player.vimeo.com/video/${pdict.Product.custom.howToUse}"
+							webkitallowfullscreen mozallowfullscreen allowfullscreen>
+							</iframe>
+						</isif>
+					</div>
+					</isif>
+					<isif condition="${!empty(pdict.Product.custom.howToUseField)}">
+					<div class="card-body px-0">
+						<div class="howtouse-text-content">
+							<isprint value="${pdict.Product.custom.howToUseField}" encoding="off"/>
+						</div>
+					</div>
+					</isif>
+					<isif condition="${!empty(pdict.Product.custom.upsellDisplay.value) && pdict.Product.custom.upsellDisplay.value == 'ppage' || pdict.Product.custom.upsellDisplay.value == 'both'}">
+						<isif condition="${!empty(pdict.Product.custom.pairsWith)}">
+							<isinclude url="${URLUtils.url('Product-ProductTile','pid',pdict.Product.custom.pairsWith,'page','P-PageProductuseitwith', 'parentpid', pdict.Product.ID)}">
+						</isif>
+					</isif>
+				</div>
+			</div>
+		</div>
+		</isif>
+	</div>
+</div>

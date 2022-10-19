@@ -1,0 +1,174 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+All PDP page modals reside here.
+</iscomment>
+<isscript>
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+var isSkinTypeVariant = ProductUtils.isSkinTypeVariant(pdict.Product);
+var ingredients = ProductUtils.getIngredients(pdict.Product,isSkinTypeVariant);
+var StringHelpers = require('~/cartridge/scripts/util/StringHelpers');
+</isscript>
+
+	<iscomment> Auto Delivery ToolTip </iscomment>
+	<div class="modal fade modal-primary modal-tatcha-auto-delivery-info" id="autoDeliveryModal" tabindex="-1" role="dialog" style="display: none;">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="auto-delivery-close close" aria-label="Close"><svg class="svg-inline--fa fa-times fa-w-12" aria-hidden="true" data-fa-replacement="true" data-prefix="fal" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M217.5 256l137.2-137.2c4.7-4.7 4.7-12.3 0-17l-8.5-8.5c-4.7-4.7-12.3-4.7-17 0L192 230.5 54.8 93.4c-4.7-4.7-12.3-4.7-17 0l-8.5 8.5c-4.7 4.7-4.7 12.3 0 17L166.5 256 29.4 393.2c-4.7 4.7-4.7 12.3 0 17l8.5 8.5c4.7 4.7 12.3 4.7 17 0L192 281.5l137.2 137.2c4.7 4.7 12.3 4.7 17 0l8.5-8.5c4.7-4.7 4.7-12.3 0-17L217.5 256z"></path></svg><!-- <i class="fal fa-times"></i> --></button>
+					<h4 class="modal-title"><strong>${Resource.msg('global.autorefill.terms.heading', 'locale', null)}</strong></h4>
+				</div>
+				<div class="modal-body">
+					<p><isprint value="${dw.system.Site.current.getCustomPreferenceValue('OsfSorDeliveryNote')}"  encoding="off" /></p>
+				</div>
+			</div>
+		</div>
+	</div>		
+	
+	<iscomment> Quickview Modal </iscomment>
+	<div class="modal fade modal-primary modal-quickview categoryQuickViewModal" id="quickviewModal" tabindex="-1" role="dialog">
+		<div class="modal-dialog modal-lg" role="document">
+			<div class="modal-content product-detail-container">
+				<div class="modal-body">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<i class="fal fa-times"></i>
+					</button>
+					<div id="quickviewModal-content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<iscomment> Add to bag modal </iscomment>
+	<div class="modal fade modal-primary modal-tatcha-add-to-bag" id="addToBagModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content" id="add-to-bag-modal-body">
+
+		</div>
+	</div>
+	</div>	
+	
+	<iscomment> Image recognition modal </iscomment>
+	<div class="modal fade modal-primary modal-image-rec-menu modal-display in" id="imageRecMenu" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content" id="image-rec-menu-body">
+	
+			</div>
+		</div>
+	</div>
+	
+
+<isif condition="${typeof pageName !== 'undefined' && pageName == 'search'}"> 
+<isset name="Refinements" value="${pdict.ProductSearchResult? pdict.ProductSearchResult.refinements : null}" scope="page"/>
+<isif condition="${Refinements != null && Refinements.refinementDefinitions.size() > 0}">
+<iscomment> Product Listing Filter modal </iscomment>
+<div class="modal fade modal-fullscreen modal-mobile-filters categoryMobileFilterModal" id="filtersModal" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <i class="fal fa-times"></i></button>
+				<h4 class="modal-title"><strong>Filter Options</strong></h4>
+			</div>
+			<div class="modal-body">
+				<isloop items="${Refinements.refinementDefinitions}" var="RefinementDefinition" status="refinementsLoopState">
+					<isif condition="${RefinementDefinition.attributeID.equals('skinType')}">
+						<isif condition="${!empty(pdict.ProductSearchResult.category.displayName) && (pdict.ProductSearchResult.category.displayName =='Normal' || pdict.ProductSearchResult.category.displayName =='Combination to Oily'
+						|| pdict.ProductSearchResult.category.displayName =='Combination to Dry' || pdict.ProductSearchResult.category.displayName =='Dry' || pdict.ProductSearchResult.category.displayName =='Oily' 
+						|| pdict.ProductSearchResult.category.displayName =='Sensitive' || pdict.ProductSearchResult.category.displayName =='Body') }">
+							<isnext/>
+						</isif>		
+					</isif>
+					
+					<isif condition="${RefinementDefinition.attributeID.equals('size')}">
+						<isif condition="${!empty(pdict.ProductSearchResult.category.displayName) && (pdict.ProductSearchResult.category.displayName =='Travel Size') }">
+							<isnext/>
+						</isif>		
+					</isif>
+					<div class="modal-filter-list">
+						<button class="btn view-option-btn collapsed" type="button" data-toggle="collapse" data-target="&#35;mobileFilter${RefinementDefinition.attributeID}" aria-expanded="false" aria-controls="mobileFilter${RefinementDefinition.attributeID}">
+							<div class="view-option">
+								<span class="view-option-value">
+									<isif condition="${RefinementDefinition.getDisplayName() == 'Solution'}">
+										<isprint value="${RefinementDefinition.getDisplayName()}"/>s
+									<iselse>
+										<isprint value="${RefinementDefinition.getDisplayName()}"/>
+									</isif>
+								</span>	
+								<i class="fal fa-lg fa-angle-down caret-rotator dropdown-icon"></i>
+							</div>	
+						</button>
+						<isif condition="${refinementsLoopState.count==1}">
+						<ul class="list-unstyled collapse in" id="mobileFilter${RefinementDefinition.attributeID}">
+						<iselse>
+						<ul class="list-unstyled collapsed collapse" id="mobileFilter${RefinementDefinition.attributeID}">
+						</iselse>
+						</isif>
+						
+							<isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue" status="RefinementValueStatus">
+								<li>								
+									<isif condition="${pdict.ProductSearchResult.isRefinedByAttributeValue(RefinementDefinition.attributeID,RefinementValue.value)}">
+										<a href="${StringHelpers.unsanitizeOR(pdict.ProductSearchResult.urlRelaxAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()))}"  data-value="${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}" tabindex="-1">
+										<div class="checkbox my-0">
+											<label class="py-2"><input type="checkbox" checked data-filter-checked="true" data-filter-code="${RefinementValue.getValue()}" >${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}</label>
+										</div>	
+										</a>											
+									<iselse>
+										<a href="${StringHelpers.unsanitizeOR(pdict.ProductSearchResult.urlRefineAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()))}"  data-value="${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}" tabindex="-1">
+										<div class="checkbox my-0">
+											<label class="py-2"><input type="checkbox" data-filter-code="${RefinementValue.getValue()}">${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}</label>
+										</div>	
+										</a>							
+									</isif>								
+								</li>	
+							</isloop>					  				
+						</ul>
+					</div>
+				</isloop>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default btn-block mobile-filter-apply">${Resource.msg('search.results.done','search',null)}</button>
+			</div>
+		</div>
+	</div>
+</div>
+</isif>
+</isif>	
+
+<iscomment> Gift builder modal </iscomment>
+<div class="modal modal-fullscreen fade modal-primary modal-promotion modal-select-minis" id="selectMinis" tabindex="-1" role="dialog">
+	  <div class="modal-dialog modal-lg" role="document">
+	  	<div class="modal-content" id="selectMinis-content">
+	  		
+	  	</div>
+	  </div>
+</div>
+
+<iscomment> E-gift add to bag modal </iscomment>
+<div class="modal fade modal-primary modal-egift-bag" id="eGiftBag" tabindex="-1" role="dialog">
+	  <div class="modal-dialog" role="document">
+	  	<div class="modal-content" id="eGiftBag-content">
+	  		
+	  	</div>
+	  </div>
+</div>
+
+<iscomment> E-gift terms and conditions </iscomment>
+<div class="modal fade modal-primary " id="giftTerms" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close close-round" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button>
+				<h4 class="modal-title"><strong>Terms &amp; Conditions</strong></h4>
+			</div>
+			<form>
+				<div class="modal-body">
+					<iscontentasset aid="product-gift-card-recipient-terms-condition"/>
+				</div>
+				<div class="modal-footer" style="text-align: center;">
+					<button type="button" class="btn btn-outline-dark btn-lg gift-term-btn" data-dismiss="modal">Close</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+
+

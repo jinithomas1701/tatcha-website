@@ -1,0 +1,21 @@
+<div class="product-qty bag-item-qty quantity-form d-inline-block">
+    <select class="form-control input-sm qty-field pl-3"
+            <isif condition="${lineItem.gwpProduct}">disabled</isif>
+            data-uuid="${lineItem.UUID}"
+            data-pid="${lineItem.id}"
+            data-action="${pdict.actionUrls.updateQuantityUrl}"
+            data-pre-select-qty="${lineItem.quantity}"
+            id="quantity-${lineItem.UUID}"
+            name="quantity-${lineItem.UUID}"
+            aria-label="quantity: ${StringUtils.formatInteger(lineItem.quantity)}">
+        <isloop begin="${lineItem.quantityOptions.minOrderQuantity}"
+                end="${lineItem.quantityOptions.maxOrderQuantity}"
+                status="status">
+            <isif condition="${lineItem.quantity === status.index}">
+                <option selected>${status.index}</option>
+                <iselse/>
+                <option>${status.index}</option>
+            </isif>
+        </isloop>
+    </select>
+</div>

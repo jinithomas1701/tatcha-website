@@ -1,0 +1,46 @@
+/**
+*	Move the found sub file into a unique location and prepares parameters for the import
+*
+* @input FileForImport : dw.io.File
+* @input LogFileName : String
+* @input ImportFileObject : dw.io.File
+* @input CurrentWorkflowComponentInstance : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.catalog );
+importPackage( dw.io );
+
+var FileUtils = require("bc_library/cartridge/scripts/io/libFileUtils").FileUtils;
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var fileToMove : File = pdict.ImportFileObject; 
+	var originalDestination : File = pdict.FileForImport; 
+		
+	fileToMove.renameTo(originalDestination);
+
+	if(!empty(pdict.LogFileName))
+	{
+		var logFile : File =  new File(File.IMPEX + File.SEPARATOR + "log" + File.SEPARATOR + pdict.LogFileName);
+		var fileReader : FileReader = new FileReader(logFile, "UTF-8");
+		var counter = 0;	
+		var readLine = "";
+		pdict.CurrentWorkflowComponentInstance.info('System Log Entries: ');
+		do {
+			readLine = fileReader.readLine();
+			counter++;
+			pdict.CurrentWorkflowComponentInstance.info(readLine);
+	
+		} while (readLine != null || counter == 100);
+	
+		if (counter == 100) {
+			var logUrl = "https://" + Site.getCurrent().getHttpsHostName() + "/on/demandware.servlet/webdav/Sites/Impex/log/" + pdict.LogFileName;
+			pdict.CurrentWorkflowComponentInstance.info("... log size exceeded. See " + logUrl + " for full log details");
+		}
+
+		fileReader.close();
+	}
+	
+    return PIPELET_NEXT;
+}

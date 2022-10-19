@@ -1,0 +1,59 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+    importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<isset name="curProd" value="${dw.catalog.ProductMgr.getProduct(LoopProductHit.id)}" scope="page"/>
+<div class="product-img-block">
+    <isset name="imageUrl" value="${getImageUrl(curProd,'sampleImage','0','false','pdp')}" scope="page"/>
+    <img class="img-responsive product-img img-fluid" src="${imageUrl}" alt="${LoopProductHit.images.large[0].alt}"/>
+</div>
+<span itemprop="productID" style="display: none"><isprint value="${LoopProductHit.id}"/></span>
+<h5 class="product-name free-sample-product-name" itemprop="name">
+    <isprint value="${LoopProductHit.productName.substring(0,48)}"/>
+    <isif condition="${curProd.custom.secondaryName}">
+        <span class="product-subtitle secondary-name-subtitle"><isprint value="${curProd.custom.secondaryName.substring(0,44)}"/></span>
+    </isif>
+</h5>
+
+<isif condition="${pdict.Product && pdict.Product.bundle && pdict.Product.getBundledProducts().size() > 0}">
+    <iscomment>Display bundle Individual Products</iscomment>
+    <iscomment>Preserve the current product instance</iscomment>
+    <isset name="ProductBundle" value="${pdict.Product}" scope="pdict"/>
+    <isloop items="${pdict.Product.getBundledProducts()}" var="BundledProduct" status="bundleLoop">
+        <isset name="Product" value="${BundledProduct}" scope="pdict"/>
+        <isset name="ProductCount" value="${bundleLoop.count}" scope="pdict"/>
+        <isobject object="${pdict.Product}" view="setproduct">
+            <isinclude template="product/components/subbonusproduct"/>
+        </isobject>
+    </isloop>
+    <iscomment>restore the current product instance</iscomment>
+    <isset name="Product" value="${pdict.ProductBundle}" scope="pdict"/>
+</isif>
+
+<isset name="pam" value="${pdict.Product ? pdict.Product.getAttributeModel() : ''}" scope="page"/>
+<isset name="group" value="${pam ? pam.getAttributeGroup('mainAttributes') : ''}" scope="page"/>
+<isinclude template="product/components/group"/>
+
+
+<isinclude template="product/components/options"/>
+<isscript>
+    var options = {
+        'product': {
+            'pid': LoopProductHit.id,
+            'productUUID': LoopProductHit.UUID,
+            'bonusDiscountLineItemUUID': pdict.BonusDiscountLineItem.UUID,
+            'Quantity': Number(empty(pdict.CurrentHttpParameterMap.Quantity.stringValue) ? 1 : pdict.CurrentHttpParameterMap.Quantity.stringValue).toFixed()
+        }
+    };
+</isscript>
+<div class="product-select bonus-product-select choice-of-bonus-product" data-pid="${LoopProductHit.id}" data-optionID="" data-ready-to-order="${LoopProductHit.readyToOrder}" data-toggle="buttons">
+    <button data-pid='${LoopProductHit.id}'  role="checkbox" aria-checked="${pdict.currentBonusLineItems && pdict.currentBonusLineItems.contains(LoopProductHit.id) ? pdict.currentBonusLineItems.contains(LoopProductHit.id) : false}"  aria-label="${LoopProductHit.productName.substring(0,48) + ' add to bag'}" type="button" data-options='<isprint value="${JSON.stringify(options)}" encoding="off" />' class='select-bonus-item select-bonus-product btn btn-outline-dark btn-promo-select btn-sm control-label free-sample-add-btn col-form-label <isif condition="${pdict.currentBonusLineItems && pdict.currentBonusLineItems.contains(LoopProductHit.id)}">active active-btn <iselseif condition="${lidata.itemCount >= lidata.maxItems}"> disabled </isif>'>
+    <input type="checkbox" checked="" autocomplete="off" aria-label="Add product">
+    <isif condition="${pdict.currentBonusLineItems && pdict.currentBonusLineItems.contains(LoopProductHit.id)}">
+        <span class="btn-status">${Resource.msg('global.selected', 'locale', null)}</span>
+        <iselse/>
+        <span class="btn-status">${Resource.msg('global.add', 'locale', null)}</span>
+    </isif>
+    </button>
+</div>
+

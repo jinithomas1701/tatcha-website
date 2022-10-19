@@ -1,0 +1,29 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+  importScript("int_talkable:talkable/libTalkable.ds");
+
+  var customer : Customer = pdict.CurrentCustomer,
+      talkable : Object = new TalkableHelper(),
+      talkableSiteId : String = talkable.getSiteId(),
+      isRegisterAffiliateEnabled : Boolean = talkable.isRegisterAffiliateEnabled(),
+      talkableData : Object = talkable.getCustomerData(customer);
+</isscript>
+
+<!-- Begin Talkable integration code -->
+<isif condition="${empty(talkableSiteId)}">
+  <!-- Talkable Site ID is blank, check your Talkable extension settings -->
+  <script type="text/javascript" src="//d2jjzw81hqbuqv.cloudfront.net/integration/talkable-3.0.min.js"></script>
+<iselse>
+  <script type="text/javascript">
+    var _talkableq = _talkableq || [];
+    _talkableq.push(["init", {
+      site_id: "${talkableSiteId}"
+    }]);
+
+    _talkableq.push(["authenticate_customer", <isprint value="${talkableData}" encoding="off"/>]);
+
+    <isif condition="${isRegisterAffiliateEnabled}">_talkableq.push(["register_affiliate", {}]);</isif>
+  </script>
+  <script type="text/javascript" src="//d2jjzw81hqbuqv.cloudfront.net/integration/clients/${encodeURIComponent(talkableSiteId)}.min.js"></script>
+</isif>
+<!-- End Talkable integration code -->

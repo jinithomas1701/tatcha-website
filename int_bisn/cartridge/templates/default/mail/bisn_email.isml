@@ -1,0 +1,5 @@
+<subject><isprint value="${Resource.msg('order.bisn-email.subject','globalProperties',null)}" encoding="off">: <isprint value="${pdict.Product.name}"></subject>
+
+<isprint value="${Resource.msg('order.bisn-email.bis','globalProperties',null)}" encoding="off"> 
+
+<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}"><isprint value="${pdict.Product.name}"></a>

@@ -1,0 +1,11 @@
+query SearchCustomer($input: CustomerSearchInput!) {
+  search {
+    customers(input: $input) {
+      edges {
+        node {
+          legacyId
+        }
+      }
+    }
+  }
+}

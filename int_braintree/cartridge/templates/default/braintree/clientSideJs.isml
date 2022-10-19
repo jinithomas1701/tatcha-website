@@ -1,0 +1,60 @@
+<isscript>
+    var prefs = require('~/cartridge/scripts/braintree/braintreeHelper').getPrefs();
+    var applePaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.applePayMethodName);
+    var paypalPaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.paypalMethodName);
+    var braintreeCreditPaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.creditCardMethodName);
+    var venmoPaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.venmoMethodName);
+
+    var isBraintreeApplePayActive = (applePaymentMethod && applePaymentMethod.getPaymentProcessor().getID() == 'BRAINTREE_APPLEPAY');
+    var isBraintreePaypalActive = (paypalPaymentMethod && paypalPaymentMethod.getPaymentProcessor().getID() == 'BRAINTREE_PAYPAL');
+    var isBraintreeCreditActive = (braintreeCreditPaymentMethod && braintreeCreditPaymentMethod.getPaymentProcessor().getID() == 'BRAINTREE_CREDIT');
+    var isBraintreeVenmoActive = (venmoPaymentMethod && venmoPaymentMethod.getPaymentProcessor().getID() == 'BRAINTREE_VENMO');
+</isscript>
+
+<iscomment>ApplePay JS</iscomment>
+<isif condition="${isBraintreeApplePayActive}">
+    <isif condition="${!request.custom.braintreeCommonClientApplePayFilesLoaded}">
+        <script type="text/javascript" src="${prefs.clientSdk3ApplePayUrl}"></script>
+        <isset name="braintreeCommonClientApplePayFilesLoaded" value="true" scope="request" />
+    </isif>
+</isif>
+
+<iscomment>PayPal JS</iscomment>
+<isif condition="${isBraintreePaypalActive}">
+    <isif condition="${!request.custom.braintreeCommonClientPaypalFilesLoaded}">
+        <script type="text/javascript" src="${prefs.clientPayPalUrl}"></script>
+        <script type="text/javascript" src="${prefs.clientSdk3PayPalUrl}"></script>
+        <script type="text/javascript" src="${prefs.clientSdk3PayPalCheckoutUrl}"></script>
+        <isset name="braintreeCommonClientPaypalFilesLoaded" value="true" scope="request" />
+    </isif>
+</isif>
+
+<iscomment>Braintree Credit Card</iscomment>
+<isif condition="${isBraintreeCreditActive}">
+    <isif condition="${!request.custom.braintreeCommonClientCreditCardFilesLoaded}">
+        <script type="text/javascript" src="${prefs.clientSdk3HostedFieldsUrl}"></script>
+        <script type="text/javascript" src="${prefs.clientSdk3ThreeDSecureUrl}"></script>
+        <isset name="braintreeCommonClientCreditCardFilesLoaded" value="true" scope="request" />
+    </isif>
+</isif>
+
+<iscomment>Braintree Venmo</iscomment>
+<isif condition="${isBraintreeVenmoActive}">
+    <isif condition="${!request.custom.braintreeCommonClientVenmoFilesLoaded}">
+        <script type="text/javascript" src="${prefs.clientSdk3VenmoUrl}"></script>
+        <isset name="braintreeCommonClientCreditCardFilesLoaded" value="true" scope="request" />
+    </isif>
+</isif>
+
+<iscomment>Braintree main JS</iscomment>
+<isif condition="${!request.custom.braintreeClientJsFilesLoaded}">
+    <isset name="braintreeClientJsFilesLoaded" value="true" scope="request" />
+    <script type="text/javascript" src="${prefs.clientSdk3ClientUrl}"></script>
+    <script type="text/javascript" src="${prefs.clientSdk3DataCollectorUrl}"></script>
+    <script src="${URLUtils.staticURL('/js/braintreeUtils.js')}" type="text/javascript"></script>
+    <script src="${URLUtils.staticURL('/js/braintreeCreditCard.js')}" type="text/javascript"></script>
+    <script src="${URLUtils.staticURL('/js/braintreePaypal.js')}" type="text/javascript"></script>
+    <script src="${URLUtils.staticURL('/js/braintreeApplepay.js')}" type="text/javascript"></script>
+    <script src="${URLUtils.staticURL('/js/braintreeVenmo.js')}" type="text/javascript"></script>
+    <script src="${URLUtils.staticURL('/js/braintreeSG.js')}" type="text/javascript"></script>
+</isif>

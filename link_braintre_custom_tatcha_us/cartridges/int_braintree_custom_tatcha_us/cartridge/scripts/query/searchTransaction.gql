@@ -1,0 +1,12 @@
+query Search($input: TransactionSearchInput!) {
+  search {
+    transactions(input: $input) {
+      edges {
+        node {
+            legacyId
+            status
+        }
+      }
+    }
+  }
+}

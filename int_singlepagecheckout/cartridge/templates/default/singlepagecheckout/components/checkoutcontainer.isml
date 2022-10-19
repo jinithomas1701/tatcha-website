@@ -1,0 +1,66 @@
+<!--- TEMPLATENAME: checkoutcontainer.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="checkoutstep" value="${2}" scope="page"/>
+<isset name="checkoutObj" value="${pdict.p_checkoutobj}" scope="page" />
+<input type="hidden" id="ajaxResponseMsg" value="${pdict.p_responsemsg}"/>
+<input type="hidden" id="ajaxResponseCode" value="${pdict.p_responsecode}"/>
+<input type="hidden" id="spcCurrentState" value="${!empty(checkoutObj)?checkoutObj.checkoutState:''}">
+
+<div class="col-lg-5 d-xs-block d-sm-block d-lg-none" id="order-summary-mob-container">
+	<div class="order-summary" id="order-summary-mob">
+		<isspcordersummary p_lineitemctnr="${checkoutObj.basket}" p_coupons="${checkoutObj.appliedCoupons}"/>
+     </div>
+</div>
+
+<div class="col-lg-7">
+	<div class="checkout-section">
+	    <h1 class="checkout-heading">Secure Checkout</h1>
+	    <div class="alert alert-danger checkout-alert" role="alert" style="display:none;"></div>
+	    <iscomment> Login Section </iscomment>
+	    <isif condition="${((checkoutObj.customerInfo.isAuthenticated == false) && (checkoutObj.shippingInfo.showSummary == false))}">	    
+			<div class="mb-3">Already have an account?
+		    	<a href="#" data-toggle="modal" data-target="#loginModal" id="checkoutshippinglogin">Login to checkout faster</a>
+		    </div>
+		    <isinclude url="${URLUtils.url('Login-LoginModal', 'scope', 'spcheckout')}"/>
+	    </isif>
+	    
+	    <iscomment> Alternate payment methods </iscomment>
+	    <isif condition="${(checkoutObj.shippingInfo.showSummary == false)}">	
+	    <isinclude template="singlepagecheckout/components/alternatepaymentmethods/alternatepaymentmethods"/>
+	    </isif>
+	    
+	    <iscomment> Shipping Section </iscomment>
+	    <isif condition="${!empty(checkoutObj) && checkoutObj.orderType !='giftcard'}">
+			<isif condition="${((checkoutObj.customerInfo.isAuthenticated == true) && (!empty(checkoutObj) && checkoutObj.customerInfo.addressBook.length > 0))}"> 
+					<isspsingleshippingsaved p_checkoutobj="${checkoutObj}"/>
+				<iselse>
+					<isspsingleshipping p_checkoutobj="${checkoutObj}" p_singleshippingform="${pdict.CurrentForms.singleshipping}"/>				
+			</isif>		    
+	    </isif>
+	    
+	    <isif condition="${!empty(checkoutObj) && checkoutObj.orderType =='giftcard'}">
+			<isspcgiftcardonlyshipping p_checkoutobj="${checkoutObj}" />
+	    </isif>
+	    
+	    <iscomment> Payment Section </iscomment>
+		<isspcbilling p_checkoutobj="${checkoutObj}"/>
+		
+		<iscomment> Review Section </iscomment>  
+        <isspsummary p_checkoutobj="${checkoutObj}"/>            
+          
+	</div>
+</div>
+<div class="col-lg-5 d-none d-lg-block" id="order-summary-desktop-container">
+	<div class="order-summary" id="order-summary-desktop">
+		<isspcordersummary p_lineitemctnr="${checkoutObj.basket}" p_coupons="${checkoutObj.appliedCoupons}" p_isdesktopsummary="${true}"/>
+     </div>
+</div>
+
+<iscomment>Modals </iscomment>
+<isif condition="${(!empty(checkoutObj) && (checkoutObj.customerInfo.isAuthenticated == true) && (checkoutObj.customerInfo.addressBook.length > 0))}"> 
+	<isinclude template="singlepagecheckout/shipping/addressmodal"/>
+</isif>
+<isinclude template="singlepagecheckout/shipping/giftmessage"/>
+<isinclude template="singlepagecheckout/components/giftcertificate/giftcertificatemodal"/>
+<isinclude template="singlepagecheckout/shipping/giftmodal"/>
+<isinclude template="singlepagecheckout/shipping/loqateaddress"/>

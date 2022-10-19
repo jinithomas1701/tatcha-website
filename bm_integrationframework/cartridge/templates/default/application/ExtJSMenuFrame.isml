@@ -1,0 +1,38 @@
+<isset name="IncludeExtJS" value="${null}">
+<isdecorate template="application/MenuFrame">
+	<link rel="stylesheet" href="${URLUtils.absStatic('/jscript/ext/resources/css/if-ext-all.css')}" />
+	<link rel="stylesheet" href="${URLUtils.absStatic('/css/if-ext-demandware.css')}" />
+	<script type="text/javascript" src="${URLUtils.absStatic('/jscript/ext/adapter/ext/if-ext-base.js')}"></script>
+	<script type="text/javascript" src="${URLUtils.absStatic('/jscript/ext/if-ext-all-debug.js')}"></script>
+	<script type="text/javascript" src="${URLUtils.absStatic('/jscript/ext/ux/if-customVTypes.js')}"></script>
+	<script type="text/javascript" src="${URLUtils.absStatic('/jscript/ext/if-ext-overrides.js')}"></script>
+	<script type="text/javascript">
+		Ext.namespace("Ext.dw");
+		Ext.dw.LocaleResources = {
+			dateFormat			: "m/d/Y",
+			datePatternHint		: "MM/dd/yyyy",
+			timeFormat			: "g:i a",
+			timePatternHint		: "h:mm a",
+			numberFormat		: "0,000.00",
+			setLocale			: function(localeID) {
+				if (Ext.dw.CKEditorResources) {
+					Ext.dw.CKEditorResources.setLocale(localeID);
+				}
+			}
+		};
+	</script>
+
+    <isreplace/>
+
+    <table style="border:0; margin-top: 75px">
+    	<tr>
+    		<td>
+				<a href="https://xchange.demandware.com/community/developer/community-suite" target="_blank"><img src="${URLUtils.absStatic('/icons/cs-logo-trans-small.png')}"/></a>
+    		</td>
+    		<td>
+	        	<div><span class="creator overview_title_description">Based on <a href="http://sencha.com" target="_blank">ExtJS2 GPL</a> and icons by <a href="http://famfamfam.com" target="_blank">famfamfam</a></span></div>
+	        	<div><span class="creator overview_title_description">This editor is part of the Demandware community suite. Use it for your own project. More info at <a href="https://xchange.demandware.com/community/developer/community-suite" target="_blank">Demandware XChange</a></span></div>
+    		</td>
+    	</tr>
+    </table>
+</isdecorate>

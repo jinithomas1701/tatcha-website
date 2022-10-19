@@ -1,0 +1,115 @@
+/**
+* Script file for use in the Script pipelet node.
+* To define input and output parameters, create entries of the form:
+*
+* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
+*
+* where
+*   <paramUsageType> can be either 'input' or 'output'
+*   <paramName> can be any valid parameter name
+*   <paramDataType> identifies the type of the parameter
+*   <paramComment> is an optional comment
+*
+* For example:
+*
+*-   @input ExampleIn : String This is a sample comment.
+*-   @output ExampleOut : Number
+*
+*/
+
+
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.io );
+importPackage( dw.util );
+importPackage( dw.catalog );
+
+function execute( args : PipelineDictionary ) : Number
+{
+
+
+      try
+	{
+    	//create file to import
+    	var importFile : File = new File(File.IMPEX + "/src/catalog/TATCHA_INVENTORY_030818.xml");
+    	
+    	// Create an output stream
+        var xsw : XMLStreamWriter = beginFeed(importFile);
+        
+        //write products to xml file
+          try{
+		      
+		      
+		           var it :  SeekableIterator = ProductMgr.queryAllSiteProducts();
+		      	   var test = it.hasNext();     
+		           
+		           //Add new code
+		           while(it.hasNext()) {
+						var pvariant : Product = it.next();
+					 				
+						if (!pvariant.master)
+						{
+							var productID : String = pvariant.ID;
+							var ats : Number = 10000;
+							startProductXML(xsw,productID,ats);         
+		                    closeProductXML(xsw); 
+						}
+				 
+		           
+		      }
+      
+      }catch(e){
+      	 
+      	 return PIPELET_ERROR;
+      }
+    
+        closeFeed(xsw);
+	}
+	catch(ex)
+	{
+		Logger.error("ConvertFile ERROR: " + ex);
+		return PIPELET_ERROR;
+	}
+       
+    
+      return PIPELET_NEXT;
+   
+}
+
+function beginFeed(file : File) : XMLStreamWriter {
+    var fw : FileWriter = new FileWriter(file, "UTF-8", false);
+    var xsw : XMLStreamWriter = new XMLIndentingStreamWriter(fw);
+    
+   	xsw.writeStartDocument("UTF-8", "1.0");
+	
+	xsw.writeStartElement( "inventory" );
+	xsw.writeDefaultNamespace("http://www.demandware.com/xml/impex/inventory/2007-05-31");
+	
+    return xsw;
+}
+function closeFeed(xsw : XMLStreamWriter) {
+	// close root element and document
+    xsw.writeEndElement();			//</catalog>
+    xsw.writeEndDocument();
+   
+    xsw.flush();
+    xsw.close();
+}
+
+
+
+
+function startProductXML(xsw : XMLStreamWriter, productID : String,ats : Number) {
+	xsw.writeStartElement( "record" );
+	xsw.writeAttribute( "product-id" , productID );
+	
+	xsw.writeStartElement( "allocation" );
+	xsw.writeCharacters(ats);
+	xsw.writeEndElement();
+			
+}
+
+function closeProductXML(xsw : XMLStreamWriter) {	
+	
+	xsw.writeEndElement();		//</product>
+}

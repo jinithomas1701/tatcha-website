@@ -1,0 +1,171 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+    var PaymentMgr = dw.order.PaymentMgr;
+    var paypalPaymentMethod = PaymentMgr.getPaymentMethod(prefs.paypalMethodName);
+    var customerPaypalPaymentInstruments = BraintreeHelper.getCustomerPaypalPaymentInstruments();
+    var braintreePaymentInstrument = BraintreeHelper.getBraintreePaymentInstrument(pdict.Basket);
+    var isPayPal = !empty(braintreePaymentInstrument) ? 
+        PaymentMgr.getPaymentMethod(braintreePaymentInstrument.getPaymentMethod()).getPaymentProcessor().getID() == 'BRAINTREE_PAYPAL' :
+        false;
+    var braintreePaymentMethodNonce = braintreePaymentInstrument ? braintreePaymentInstrument.custom.braintreePaymentMethodNonce : '';
+    var braintreePaypalEmail = braintreePaymentInstrument ? braintreePaymentInstrument.custom.braintreePaypalEmail : 'PayPal';
+    var isAllowedAddAccount = prefs.BRAINTREE_PAYPAL_Vault_Mode !== 'not';
+    
+    var newAccountSelected = true;
+    var isNeedHideContinueButton = true;
+    if(pdict.CurrentCustomer.authenticated && !empty(customerPaypalPaymentInstruments)) {
+        for each (let instrument in customerPaypalPaymentInstruments) {
+            if(instrument.custom.braintreeDefaultCard) {
+                isNeedHideContinueButton = false;
+                //newAccountSelected = false;
+                break;
+            }
+        }
+    } else if(braintreePaymentMethodNonce && isPayPal) {
+        isNeedHideContinueButton = false;
+    }
+    
+</isscript>
+
+<isif condition="${paypalPaymentMethod && paypalPaymentMethod.getPaymentProcessor().getID() == 'BRAINTREE_PAYPAL'}" >
+<div class="js_braintree_paypalContent js_braintree_paymentContent" data-braintree-method="PayPal" data-paypal-is-hide-continue-button="${isNeedHideContinueButton}">
+<a class="btn btn-default btn-sm btn-paypal paypal-button" data-button id="select-payment-paypal" href="javascript:;">
+	<img class="img-responsive" src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" alt="PayPal">
+</a>
+<isscript>
+        var amount = BraintreeHelper.getAmount(pdict.Basket);
+        var isShipped = !!pdict.Basket.getProductLineItems().size();
+        
+        var methodName = prefs.paypalMethodName;
+        var locale = empty(prefs.BRAINTREE_PAYPAL_Locale) || prefs.BRAINTREE_PAYPAL_Locale === "ShopLocale" ? dw.system.Site.getCurrent().getDefaultLocale() : prefs.BRAINTREE_PAYPAL_Locale;
+        var displayName = empty(prefs.BRAINTREE_PAYPAL_Display_Name) ? '' : prefs.BRAINTREE_PAYPAL_Display_Name;
+        var billingAgreementDescription = empty(prefs.BRAINTREE_PAYPAL_Billing_Agreement_Description) ? '' : prefs.BRAINTREE_PAYPAL_Billing_Agreement_Description;
+
+        var flow = 'checkout';
+        var intent = prefs.BRAINTREE_PAYPAL_Payment_Model;
+        if (prefs.BRAINTREE_PAYPAL_Vault_Mode !== 'not' && pdict.CurrentCustomer.authenticated) {
+            flow = 'vault';
+        }
+
+        if (intent === 'order') {
+            flow = 'checkout';
+        }
+
+        if (intent === 'authorization') {
+            intent = 'authorize';
+        }
+
+        var braintreePaypalBillingConfig = {
+            paymentMethodName: methodName,
+            clientToken: request.custom.braintreeClientToken,
+            isFraudToolsEnabled: prefs.BRAINTREE_PAYPAL_Fraud_Tools_Enabled,
+            messages: {
+                CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+                CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+                CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+                CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null),
+                PAYPAL_ACCOUNT_TOKENIZATION_FAILED: Resource.msg('braintree.error.PAYPAL_ACCOUNT_TOKENIZATION_FAILED', 'locale', null),
+                PAYPAL_INVALID_PAYMENT_OPTION: Resource.msg('braintree.error.PAYPAL_INVALID_PAYMENT_OPTION', 'locale', null),
+                PAYPAL_FLOW_FAILED: Resource.msg('braintree.error.PAYPAL_FLOW_FAILED', 'locale', null),
+                PAYPAL_BROWSER_NOT_SUPPORTED: Resource.msg('braintree.error.PAYPAL_BROWSER_NOT_SUPPORTED', 'locale', null)
+            },
+            options: {
+                flow: flow,
+                offerCredit: false,
+                amount: parseFloat(amount.getValue()),
+                currency: amount.getCurrencyCode(),
+                locale: locale,
+                enableShippingAddress: true,
+                displayName: displayName,
+                billingAgreementDescription: billingAgreementDescription
+            },
+            paypalConfig: prefs.BRAINTREE_PAYPAL_Billing_Button_Config,
+            isOverrideBillingAddress: prefs.BRAINTREE_PAYPAL_Billing_Address_Override
+        }
+
+        if (flow === 'checkout' || intent === 'order') {
+            braintreePaypalBillingConfig.options.intent = intent;
+        }
+
+        if (prefs.BRAINTREE_PAYPAL_PayNow_Button_Enabled && prefs.BRAINTREE_PAYPAL_Payment_Model === 'sale') {
+            braintreePaypalBillingConfig.options.useraction = 'commit';
+        }
+
+        if (isShipped && !prefs.BRAINTREE_PAYPAL_Shipping_Address_Override) {
+            var shippingInfo = BraintreeHelper.createAddressData(pdict.Basket.getDefaultShipment().getShippingAddress());
+            var firstName = shippingInfo.firstName || '';
+            var lastName = shippingInfo.lastName || '';
+            braintreePaypalBillingConfig.options.shippingAddressOverride = {
+                recipientName: firstName + ' ' + lastName,
+                line1: shippingInfo.streetAddress || '',
+                line2: shippingInfo.extendedAddress || '',
+                city: shippingInfo.locality || '',
+                countryCode: (shippingInfo.countryCodeAlpha2).toUpperCase() || '',
+                postalCode: shippingInfo.postalCode || '',
+                state: shippingInfo.region || '',
+                phone: shippingInfo.phoneNumber || ''
+            };
+            braintreePaypalBillingConfig.options.shippingAddressEditable = false;
+        }
+</isscript>
+
+    <isif condition="${!request.custom.braintreeClientToken}">
+        <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+    </isif>
+
+    <isif condition="${pdict.CurrentCustomer.authenticated && !empty(customerPaypalPaymentInstruments)}">
+        <div class="form-row" style="display: none">
+            <label class="label">${Resource.msg('braintree.checkout.paypalaccountlist.label','locale',null)}</label>
+            <div class="braintree-select-wrap">
+                <select name="braintreePaypalAccountList" id="braintreePaypalAccountsList" class="input-select">
+                    <option value="newaccount" <isif condition="${newAccountSelected}">selected="selected"</isif>>${Resource.msg('braintree.checkout.paypalaccountlist.newaccount','locale',null)}</option>
+                    <isloop items="${customerPaypalPaymentInstruments}" var="instrument">
+                        <isscript>
+                            var optionSelected = !!instrument.custom.braintreeDefaultCard;
+                        </isscript>
+                        <option value="${instrument.UUID}" data-default="${instrument.custom.braintreeDefaultCard}" data-id="${instrument.UUID}">
+                            ${Resource.msgf('braintree.checkout.paypalaccountlist.option', 'locale', null, instrument.custom.braintreePaypalAccountEmail)}
+                        </option>
+                    </isloop>
+                </select>
+            </div>
+        </div>
+    </isif>
+    
+    <div class="form-row ${!empty(braintreePaymentMethodNonce) && isPayPal && empty(customerPaypalPaymentInstruments) ? 'used-paypal-account' : 'used-paypal-account-hide'}">
+        <label class="label" for="braintreePaypalAccount">${Resource.msg('braintree.checkout.paypalaccountselected.label','locale',null)}</label>
+        <div class="braintree-select-wrap">
+            <select id="braintreePaypalAccount" class="input-select no-disable" disabled="disabled">
+                <option selected="selected">
+                    ${Resource.msgf('braintree.checkout.paypalaccountlist.option', 'locale', null, braintreePaypalEmail)}
+                </option>
+            </select>
+        </div>
+    </div>
+
+    <isif condition="${pdict.CurrentCustomer.authenticated && isAllowedAddAccount && prefs.BRAINTREE_PAYPAL_Payment_Model !== 'order'}">
+        <div id="braintreeSavePaypalAccountContainer" style="display:none" class="form-row label-inline form-indent">
+            <div class="field-wrapper">
+                <input name="braintreeSavePaypalAccount" id="braintreeSavePaypalAccount" type="checkbox" checked="checked" value="true" />
+            </div>
+            <label for="braintreeSavePaypalAccount"><span>${Resource.msg('braintree.checkout.paypal.saveaccount', 'locale', null)}</span></label>
+        </div>
+        <div class="form-row label-inline form-indent" style="display:none">
+            <div class="field-wrapper">
+                <input name="braintreePaypalAccountMakeDefault" id="braintreePaypalAccountMakeDefault" type="checkbox" checked="checked" value="true" />
+            </div>
+            <label for="braintreePaypalAccountMakeDefault"><span>${Resource.msg('braintree.checkout.paypal.makedefault', 'locale', null)}</span></label>
+        </div>
+    </isif>
+    <div class="form-row form-indent">
+        <div class="js_braintree_paypal_billing_button" data-braintree-config="<isprint value='${JSON.stringify(braintreePaypalBillingConfig)}' />" style="display:${!isNeedHideContinueButton ? 'none' : 'block'}"></div>
+    </div>
+   
+    <input id="braintreePaypalNonce" type="hidden" name="braintreePaypalNonce" value="${isPayPal && braintreePaymentMethodNonce ? braintreePaymentMethodNonce : ''}"/>
+    <input id="braintreePaypalEmail" type="hidden" name="braintreePaypalEmail" value="${isPayPal && braintreePaypalEmail ? braintreePaypalEmail : ''}"/>
+    <input type="hidden" name="braintreePaypalShippingAddress" value=""/>
+    <input type="hidden" name="braintreePaypalBillingAddress" value=""/>
+    <input type="hidden" name="braintreePaypalRiskData" value=""/>
+</div>
+</isif>

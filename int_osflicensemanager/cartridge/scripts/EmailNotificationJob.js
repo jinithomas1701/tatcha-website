@@ -1,0 +1,1 @@
+"use strict";exports.SendEmails=require("~/cartridge/scripts/utils/licenseJobs").SendEmails;

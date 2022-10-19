@@ -1,0 +1,52 @@
+<div class="payment-container">
+    <div class="title">Payment</div>
+    <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
+        <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
+            <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
+        </isif>
+        <isif condition="${payment.paymentMethod === 'GIFT_CERTIFICATE'}">
+            <div class="giftcert-payment-type">
+                <div class="payment-type-title">
+                    Gift Card
+                </div>
+                <div class="checkout-summary-data">
+                    ${Resource.msgf('summary.giftcertsummary','checkout',null, payment.amount)} <br>
+                </div>
+            </div>
+        </isif>
+        <isif condition="${payment.paymentMethod === 'AFTERPAY_PBI'}"/>
+            <div class="">
+                Pay with <img src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" id="afterPayLogoReview" alt="Afterpay Logo">
+            </div>
+        </isif>
+        <isif condition="${payment.paymentMethod == 'PayPal'}">
+            <div class="">
+                Pay with <img style="height: 50px" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/pp-acceptance-large.png')}" id="paypalLogoReview" alt="PayPal Acceptance">
+            </div>
+        </isif>
+        <isif condition="${payment.paymentMethod == 'ApplePay'}">
+            <div class="">
+                Pay with <img style="height: 50px;" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/applePayPaymentMark.png')}" id="appleLogoReview" alt="Apple Pay Logo">
+            </div>
+        </isif>
+    </isloop>
+    <div class="billing-container">
+
+        <isif condition="${pdict.order.billing.billingAddress.address !== null}">
+            <isset name="address" value="${pdict.order.billing.billingAddress.address}" scope="page"/>
+            <iselse>
+                <isset name="address" value="{}" scope="page"/>
+        </isif>
+        <div class="title">Billing Address</div>
+        <isif condition="${pdict.billingSameAsShipping}">Same as shipping <iselse>
+            <isif condition="${address && address.firstName}">${address.firstName}</isif>
+            <isif condition="${address && address.lastName}">${address.lastName}</isif>  <br>
+            <isif condition="${address && address.address1}">${address.address1},</isif>
+            <isif condition="${address && address.address2}">${address.address2}</isif>
+            <br> <isif condition="${address && address.city}">${address.city},</isif>
+            <isif condition="${address && address.stateCode}">${address.stateCode},</isif>
+            <isif condition="${address && address.postalCode}">${address.postalCode}</isif><br>
+            <isif condition="${address && address.phone}">${address.phone}</isif>
+         </isif>
+    </div>
+</div>

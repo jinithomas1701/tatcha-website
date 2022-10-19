@@ -1,0 +1,72 @@
+<isdecorate template="application/MenuFrame">
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isinclude template="bm/util/sorModules" />
+<isinclude template="components/header" />
+
+<div class="page-container">
+    <isinclude template="bm/sorMainMenu" />
+
+    <form action="${URLUtils.url('SmartOrderRefillReport-ManageSOR', 'searchmember', true, 'sorType', pdict.sorType)}" method="post" id="subscriptionsSearch">
+        <div class='sor-filter__container flex'>
+            <div class="sor-filter__row">
+                <div class='sor-filter-input'>
+                    <isinputfield formfield="${pdict.CurrentForms.sorsubscriptions.searchMemberBy}" type="select">
+                </div>
+                <div class='sor-filter-input'>
+                    <isinputfield formfield="${pdict.CurrentForms.sorsubscriptions.searchMember}" type="input">
+                </div>
+                <div class="sor-filter-buttons">
+                    <button class="button blue" type="submit" value="filter" name="filter">${Resource.msg('forms.sorsubscriptions.sorFilter.label', 'sor_forms', null)}</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <isif condition="${pdict.memberPaginationModel}">
+        <div class="sor-filter-table__container flex"  id="memberList">
+            <div class="sor-filter-table">
+                <div class="sor-filter-table__row-header">
+                    <div class="sor-filter-table__id">
+                        ${Resource.msg('forms.sorsubscriptions.customerNameFilter.label', 'sor_forms', null)}
+                    </div>
+
+                    <div class="sor-filter-table__customer">
+                        ${Resource.msg('forms.sorsubscriptions.customerEmailFilter.label', 'sor_forms', null)}
+                    </div>
+                </div>
+                
+                <isloop items="${pdict.memberPaginationModel.getPageElements()}" var="member">
+                    <div class="sor-filter-table__row memberSubscription" data-link="${URLUtils.https('SmartOrderRefillReport-ShowSubscriptions', 'client', member.customerNo, 'sorType' , pdict.sorType)}">
+                        <div class="sor-filter-table__id">
+                            <div class="sor-table__member--link" >
+                                <span class="value">${member.lastName}</span>
+                                <isif condition="${!empty(member.firstName)}">
+                                    <span class="value">${', ' + member.firstName}</span>
+                                </isif>
+                            </div>
+                        </div>
+
+                        <div class="sor-filter-table__customer">
+                            <div class="sor-table__member--link" >
+                                <span class="value">${member.email}</span>
+                            </div>
+                        </div>
+                    </div>
+                </isloop>
+                
+
+            </div>
+            <div class="sor-filter-table__footer subscription-pagination">
+                <isreportspagingbar pageurl="${URLUtils.https('SmartOrderRefillReport-ManageSOR')}" pagingmodel="${pdict.memberPaginationModel}"/>
+            </div>
+        </div>
+        
+    </isif>
+
+</div>
+</isdecorate>
+
+<isinclude template="components/footer" />

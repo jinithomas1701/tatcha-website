@@ -1,0 +1,62 @@
+/**
+*	Move the found sub file into a unique location and prepares parameters for the import
+*
+* @input FileForImport : dw.io.File
+* @input CurrentWorkflowComponentInstance : Object
+* @input LogObject : Object
+* @output ImportFile : String
+* @output ImportFileObject : dw.io.File
+* @output ImportMode : String
+*/
+importPackage( dw.system );
+importPackage( dw.catalog );
+importPackage( dw.io );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var fileToMove : File = pdict.FileForImport; 
+	// filePath is a directory
+	if(fileToMove.isDirectory()) {
+		pdict.CurrentWorkflowComponentInstance.addMessage("Folder found but a file was expected: " + fileToMove.getFullPath(), "ERROR");		
+	    return PIPELET_ERROR;
+	}
+	
+	// check file extension for .xml (case insensitive)
+	var extXML : Boolean = fileToMove.getFullPath().match(/\.xml$|\.xml\.gz$|\.xml\.zip$/i) != null;
+	// check file extension for .csv (case insensitive)
+	var extCSV : Boolean = fileToMove.getFullPath().match(/\.csv$|\.csv\.gz$|\.csv\.zip$/i) != null;
+	// check file extension for .xml.gz (case insensitive)
+	var extXmlGzip : Boolean = fileToMove.getFullPath().match(/\.xml\.gz$/i) != null;
+	// check if file extension is supported
+	if (extXML ||
+		(extCSV && ['activedata', 'keyvaluemapping'].indexOf( pdict.CurrentWorkflowComponentInstance.getParameterValue('objectType') ) >= 0) ) {
+		pdict.CurrentWorkflowComponentInstance.addMessage("Beginn processing file: " + fileToMove.getFullPath(), "INFO");
+		// single location for simple follow up actions
+		var destinationRelative = "temp" + File.SEPARATOR + Site.current.ID + File.SEPARATOR + "filetoimport.xml";
+		if(extXmlGzip) {
+			destinationRelative += ".gz";
+		}
+
+		var destinationFolder : File = new File(File.IMPEX + File.SEPARATOR + "src" + File.SEPARATOR + destinationRelative.slice(0, destinationRelative.lastIndexOf(File.SEPARATOR)));
+		if(!destinationFolder.exists()){
+			destinationFolder.mkdirs();
+		}
+
+		var destinationFile : File = new File(File.IMPEX + File.SEPARATOR + "src" + File.SEPARATOR + destinationRelative);
+		if (destinationFile.exists()) {
+			destinationFile.remove();
+		}
+		
+		fileToMove.renameTo(destinationFile);
+		pdict.ImportFile = destinationRelative;
+		pdict.ImportFileObject = destinationFile;
+		pdict.ImportMode = pdict.CurrentWorkflowComponentInstance.getParameterValue('importMode');
+		
+		
+		
+	    return PIPELET_NEXT;
+	} else {
+		pdict.CurrentWorkflowComponentInstance.addMessage("Invalid file found: " + fileToMove.getFullPath(), "ERROR");		
+	    return PIPELET_ERROR;
+	}
+}

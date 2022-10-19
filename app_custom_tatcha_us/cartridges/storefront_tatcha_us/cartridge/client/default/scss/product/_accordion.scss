@@ -1,0 +1,221 @@
+
+.pdp-accordion {
+    padding-top: 1.5rem;
+    padding-bottom: 1rem;
+    @include media-breakpoint-down(sm) {
+        padding-top: 0;
+    }
+    h4,h2 {
+        margin-bottom: 0;
+    }
+    .section-spec-link {
+        text-decoration: none;
+        display: block;
+    }
+    .section-spec{
+        font: {
+            family: "Minion Pro";
+            weight: 400;
+            size: rem-calc(16);
+        }
+        text-transform: none;
+        cursor: pointer;
+        padding: 14px 0 14px;
+        color: $black;
+        @include media-breakpoint-down(md) {
+            padding: 16px 0 16px;
+            font-size: 1.25rem;
+            line-height: 1.5rem;
+        }
+        @include media-breakpoint-up(lg) {
+            font-size: 1.375rem;
+            line-height: 1.5rem;
+        }
+        .plus-minus-icon {
+            font-size: 1rem;
+        }
+    }
+    .fa-minus {
+        display: block;
+    }
+    .fa-plus {
+        display: none;
+    }
+    .collapsed {
+        .fa-minus {
+            display: none;
+        }
+        .fa-plus {
+            display: block;
+        }
+    }
+    .product-details-list {
+        border-bottom: 1px solid $gray-200;
+        &:first-child {
+            border-top: 1px solid $gray-200;
+        }
+    }
+    hr {
+        margin-bottom: 0;
+    }
+    .details-text-content {
+        ul {
+            padding: 0;
+            margin-bottom: 1.5rem;
+            list-style: none;
+        }
+        li {
+            padding-left: 1rem;
+            position: relative;
+            & + li {
+                margin-top: .3rem;
+            }
+            &::before {
+                content: "";
+                position: absolute;
+                left: 0;
+                top: 10px;
+                width: 5px;
+                height: 5px;
+                background: $black;
+                border-radius: 100%;
+                display: block;
+            }
+        }
+        p {
+            margin-bottom: .8rem;
+        }
+    }
+    .details-text-content p strong,
+    .details-text-content h3,
+    .ingredients-text-content h3 {
+        font: {
+            style: normal;
+            weight: 600;
+            size: rem-calc(12);
+        }
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        @include media-breakpoint-up(md) {
+            font-size: rem-calc(14);
+        }
+    }
+    .details-text-content,
+    .ingredients-details-content {
+        p b {
+            font-weight: 600;
+        }
+    }
+    .product-ingredients-inci {
+        a {
+            font-weight: 600;
+            text-decoration: underline;
+            display: inline-block;
+            margin: .5rem 0 1.5rem 0;
+        }
+    }
+    .howtouse-text-content {
+        p {
+            margin-bottom: 0;
+            & + P {
+                margin-top: .5rem;
+            }
+            b {
+                font-weight: 300;
+            }
+        }
+    }
+    .product-howto-media {
+        position: relative;
+        overflow: hidden;
+        width: 100%;
+        height: auto;
+        .youtube-video-frame {
+            width: 100%;
+            @include media-breakpoint-up(lg) {
+                min-height: 254px;
+                height: 250px;
+                max-width: 450px;
+                width:100%;
+            }
+            @media (min-width: 321px) and (max-width: 767px) {
+                min-height: 192px;
+                height: 150px;
+                max-width: 340px;
+                width:100%;
+            }
+            @media (max-width: 320px) {
+                min-height: 150px;
+                height: 150px;
+                max-width: 340px;
+                width:100%;
+            }
+            @media (min-width: 768px)and (max-width: 1023px) {
+                min-height: 180px;
+                height: 180px;
+                max-width: 340px;
+                width:100%;
+            }
+        }
+    }
+
+    .pair-with{
+        letter-spacing: 1px;
+        line-height: 1.059rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1A232D !important; // To overwrite bootstrap style
+        b {
+            font-weight: 600;
+        }
+    }
+    .product-use-with {
+        border-radius: 8px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.6rem;
+        .product-img-block{
+            @include media-breakpoint-down(md) {
+                height: 79px;
+                width: 79px;
+            }
+            @include media-breakpoint-up(lg) {
+                height: 132px;
+                width: 132px;
+            }
+        }
+        .product-use-with-details {
+            .product-name {
+                a {
+                    font-weight: 600;
+                }
+            }
+
+            @include media-breakpoint-down(md) {
+                text-align: left;
+                margin-top: unset;
+            }
+            .cta-row {
+                .btn-sm {
+                    padding: 0.5rem 0.5rem;
+                }
+            }
+        }
+        .why-text {
+            font-weight: 600;
+        }
+        .cta-row{
+            font-size: 0.75rem;
+            .add-btn-link {
+                color: #4D186E;
+                text-decoration: underline;
+                font-size: 0.75rem;
+            }
+        }
+    }
+    .product-details-list-content {
+        font-size: rem-calc(14);
+        @include media-breakpoint-up(md) {
+            font-size: rem-calc(16);
+        }
+    }
+}

@@ -1,0 +1,24 @@
+// EXTENDED STYLES FOR TATCHA
+
+@import "tatcha-baseline";
+@import "tatcha-margin";
+@import "tatcha-hero-heading";
+@import "tatcha-footer";
+@import "tatcha-loader";
+@import "tatcha-navbar";
+@import "tatcha-product-carousel";
+@import "tatcha-bag-page";
+@import "tatcha-minbag.scss";
+@import "tatcha-browser-detection";
+
+
+// @import "tatcha-gift-finder-page";
+.grecaptcha-badge { visibility: hidden; }
+.anchor-style-reset{
+  color:$text-black;
+  text-decoration: none;
+  &:hover{
+    color:$text-black;
+    text-decoration: none;
+  }
+}

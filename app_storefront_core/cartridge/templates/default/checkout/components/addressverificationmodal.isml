@@ -1,0 +1,70 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment> Address verification modal </iscomment>
+<div id="loqateAddressVerification" class="modal fade" role="dialog">
+	<div class="modal-dialog suggested-address">
+
+		<!-- Modal content-->
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="close" data-dismiss="modal"><i class="fal fa-times"></i></button>
+				<div class="locate-header">Confirm your address</div>
+				<p>We couldn’t verify the exact address you entered, but did find a close match. Please make sure your mailing address is correct to ensure accurate delivery.</p>
+				<div class="suggested-address-title">Suggested Address:</div>
+				<div class="suggested-address-container">
+					<div>
+						<input type="radio" checked class="hidden address-radio" name="selectAddress" value="suggestedAddress" id="selectedAddress">
+						<label for="selectedAddress">
+							<i class="fal fa-circle"></i>
+							<i class="fas fa-check-circle"></i>
+						</label>
+
+					</div>
+					<div class="suggested-address-data">
+						<div class="addressline">
+							<span> </span>
+						</div>
+						<div class="address-locality">
+							<span> </span>
+						</div>
+					</div>
+				</div>
+				<div>
+				Address entered:
+				</div>
+				<div class="entered-address-container">
+					<div style="display: flex;">
+						<div>
+							<input type="radio" class="hidden address-radio" name="selectAddress" value="enteredAddress" id="enteredAddress">
+							<label for="enteredAddress">
+								<i class="fal fa-circle"></i>
+								<i class="fas fa-check-circle"></i>
+							</label>
+	
+						</div>
+						<div class="entered-address-data">
+							<div class="addressline">
+								
+							</div>
+							<div class="address-locality">
+								
+							</div>
+							
+							<div class="text-danger-checkout text-danger" style="margin-top: .5rem; font-size:14px; display: none;">
+								<i class="fal fa-exclamation-circle" style="margin-right: 4px;"></i> Proceeding with this address might result in inaccurate delivery.
+							</div>
+						</div>
+					</div>
+				</div>
+				<input type="hidden" id="addressOriginForm" name="addressOriginForm" val="" />
+			</div>
+			<input type="hidden" id="loqateSuggestedAddress" name="loqateSuggestedAddress" value=""/>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-block btn-primary save-button save-loqate-suggested-address" data-dismiss="modal">Save & Continue</button>
+				<a class="edit-link" data-dismiss="modal">Edit Address</a>
+			</div>
+		</div>
+
+	</div>
+</div>

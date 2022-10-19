@@ -1,0 +1,203 @@
+/*
+ * Returns all files of the given directory which match the given pattern.
+ *
+ * @input CurrentWorkflowComponentInstance : Object
+ * @input Directory               : dw.io.File The directory to browse.
+ * @input SortDirection           : String     'ASCENDING' or 'DESCENDING'
+ * @input FilePattern             : RegExp     The pattern for the filenames (use ".*" to get all).
+ * @input NegateFilePattern     : Boolean    Should the pattern be negated?
+ * @input OnlyFiles               : Boolean    If true, only files and no directories are returned.
+ * @input RecursiveSearch         : Boolean    If true, files below directories will be collected too.
+ * @input LogFile                 : dw.io.File The log file.
+ * @input FilterOldFiles          : Boolean     if true, the given timestamp in file name is read and files with older timestamps are ignored
+ * @input TimeStampPattern        : RegExp     the regexp format of the timestring
+ * @input TimeStampFormatter    : String     the DateFormatter format of the timestring
+ *
+ * @output FileList             : dw.util.Collection A collection of File objects.
+ */
+
+importPackage(dw.system);
+importPackage(dw.util);
+importPackage(dw.io);
+
+var FileUtils = require("bc_library/cartridge/scripts/io/libFileUtils").FileUtils;
+
+/**
+ * The main function.
+ *
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ *
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+    var directory       : File    = pdict.Directory;
+    var sortDirection   : String  = pdict.SortDirection;
+    var filePattern     : RegExp  = pdict.FilePattern;
+    var onlyFiles       : Boolean = pdict.OnlyFiles;
+    var recursiveSearch : Boolean = pdict.RecursiveSearch;
+    var negateFilePattern : Boolean = pdict.NegateFilePattern;
+
+    var logger : Logger = Logger.getLogger("utils.GetFilesFromDirectory");
+
+    try {
+        filePattern = FileUtils.checkFilePatternForPlaceholders(filePattern);
+    } catch (e) {
+        pdict.CurrentWorkflowComponentInstance.addMessage(e.message, 'ERROR');
+        logger.error('Error occurred  ' + e.stack + '  Error: ' + e.message );
+        return PIPELET_ERROR;
+    }
+
+
+    if (empty(directory)
+        || !directory.isDirectory()) {
+        logger.error('GetFilesFromDirectory.ds: No directory was given.');
+
+        pdict.FileList = null;
+
+        return PIPELET_ERROR;
+    }
+
+    Logger.debug('GetFilesFromDirectory.ds: Get file list from the following directory: "' + directory.getFullPath() + '".');
+
+    var fileList : SortedSet;
+    if (sortDirection == 'DESCENDING') {
+        fileList = new SortedSet(function(o1 : Object, o2 : Object) {
+            if (o1 < o2) {
+                return 1;
+            }
+            if (o1 > o2) {
+                return -1
+            }
+            return 0;
+        });
+    } else {
+        fileList = new SortedSet();
+    }
+
+    if (recursiveSearch) {
+        getRecursiveFiles(directory, fileList, onlyFiles, filePattern, negateFilePattern);
+    } else {
+        var regExp : RegExp = new RegExp(filePattern);
+
+        fileList.addAll(directory.listFiles(function(file : File) {
+            if (onlyFiles && file.isDirectory()) {
+                return false;
+            }
+
+            if (!empty(filePattern)) {
+                if(negateFilePattern)
+                {
+                    return !regExp.test(file.name)
+                }
+                else
+                {
+                        return regExp.test(file.name)
+                }
+            }
+
+            return true;
+        }));
+    }
+
+    if (empty(fileList)) {
+        logger.debug('GetFilesFromDirectory.ds: No files found for directory: "' + directory.getFullPath() + '".');
+
+        pdict.FileList = null;
+
+        return PIPELET_NEXT;
+    }
+
+    // Filters Files by creation timestamps in their filename
+    // If FilterOldFiles is true, TimeStampPattern and TimeStampFormatter need to be set
+    if (!empty(pdict.FilterOldFiles) && pdict.FilterOldFiles) {
+        var TIMESTAMP_PATTERN : RegExp = pdict.TimeStampPattern;
+        var TIMESTAMP_FORMAT : String = pdict.TimeStampFormatter;
+
+        // hashmap which has filenames without the timestamp as key
+        var fileMap : HashMap = new HashMap();
+        for each (var file : File in fileList) {
+            var timeStartIndex = file.name.search(TIMESTAMP_PATTERN);
+            var timeEndIndex = timeStartIndex + TIMESTAMP_FORMAT.length;
+            var key = file.name.substring(0,timeStartIndex) + file.name.substring(timeEndIndex, file.name.length);
+            var formerFile = fileMap.get(key);
+
+            // Check if file already in HashMap
+            if (empty(formerFile)) {
+                fileMap.put(key, file);
+            } else {
+                // files need to have same format: this is secured via dictionary key pattern
+                // create calendar object of timestamps in file
+                var formerTimeString = formerFile.name.substring(timeStartIndex, timeEndIndex);
+                var formerCalendar : Calendar = dw.system.Site.calendar;
+                formerCalendar.parseByFormat(formerTimeString, TIMESTAMP_FORMAT);
+
+                var currentTimeString = file.name.substring(timeStartIndex, timeEndIndex);
+                var currentCalendar : Calendar = dw.system.Site.calendar;
+                currentCalendar.parseByFormat(currentTimeString, TIMESTAMP_FORMAT);
+
+                // if current file has newer timestamp than file in map, replace the file
+                if (currentCalendar.after(formerCalendar)) {
+                    fileMap.put(key, file);
+                }
+            }
+        }
+        //fileList.clear();
+        // Create new filelist
+        var fileListNew = fileList.clone();
+        for each (var file in fileListNew) {
+            if (!fileMap.containsValue(file)) {
+                fileList.remove(file);
+            }
+        }
+    }
+    logger.debug('GetFilesFromDirectory.ds: ' + fileList.length + ' file(s) found in directory: "' + directory.getFullPath() + '".');
+
+    pdict.FileList = fileList;
+
+    return PIPELET_NEXT;
+}
+
+/**
+ * A recursive function to collect all files below a directory.
+ *
+ * @param rootDirectory       : File      The root directory.
+ * @param fileList            : SortedSet The list to which the files should be added.
+ * @param onlyFiles           : Boolean   If true, only files and no directories are returned.
+ * @param filePattern         : String    The pattern for the filenames (use ".*" to get all).
+ * @param negateFilePattern   : String     Should the pattern be negated?
+ */
+function getRecursiveFiles(rootDirectory : File, fileList : SortedSet, onlyFiles : Boolean, filePattern : String, negateFilePattern : Boolean) {
+    if (empty(rootDirectory)
+        || !rootDirectory.isDirectory()) {
+        return;
+    }
+
+    for each (var file : File in rootDirectory.listFiles()) {
+        if (file.isDirectory()) {
+            getRecursiveFiles(file, fileList, onlyFiles, filePattern, negateFilePattern);
+
+            if (!onlyFiles) {
+                fileList.add(file);
+            }
+        } else {
+            if (!empty(filePattern)) {
+                if(negateFilePattern)
+                {
+                    if (!(new RegExp(filePattern).test(file.name)))
+                    {
+                        fileList.add(file);
+                    }
+                }
+                else
+                {
+                    if (new RegExp(filePattern).test(file.name)) {
+                        fileList.add(file);
+                    }
+                }
+
+            } else {
+                fileList.add(file);
+            }
+        }
+    }
+}

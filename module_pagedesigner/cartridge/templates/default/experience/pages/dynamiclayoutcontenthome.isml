@@ -1,0 +1,9 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<isdecorate template="content/home/pt_storefront_lazyload">
+<isinclude template="util/modules"/>
+	<!--- the page markup --->
+    <div id="homepage">
+        <isprint value="${pdict.regions.main.render()}" encoding="off"/>
+    </div>
+</isdecorate>

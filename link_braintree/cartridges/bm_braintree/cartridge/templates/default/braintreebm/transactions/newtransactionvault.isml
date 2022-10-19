@@ -1,0 +1,62 @@
+<isdecorate template="braintreebm/util/pt_transactions">
+
+    <isscript>
+        var currentSite = dw.system.Site.getCurrent();
+        var allCurrencies = currentSite.getAllowedCurrencies();
+        var defaultCurrency = currentSite.getDefaultCurrency();
+    </isscript>
+
+    <form id="braintreeCreateNewTransactionVault" action="${URLUtils.url('BraintreeAdmin-Action')}" data-success-message="${Resource.msgf('server.success.updatepayment', 'braintreebm', null)}">
+
+        <input type="hidden" value="newTransactionFromVault" name="method" />
+        <isif condition="${allCurrencies.length === 1}">
+            <input type="hidden" name="currencyCode" value="${defaultCurrency}">
+        </isif>
+
+        <div class="braintree_error_msg_box braintree_error_msg_box_amt_required"><p>${Resource.msg('forms.error.amt.required', 'braintreebm', null)}</p></div>
+        <div class="braintree_error_msg_box braintree_error_msg_box_amt_greaterzero"><p>${Resource.msg('forms.error.amt.greaterzero', 'braintreebm', null)}</p></div>
+        <div class="braintree_error_msg_box braintree_error_msg_box_token_required"><p>${Resource.msg('forms.error.token.required', 'braintreebm', null)}</p></div>
+        <div class="braintree_error_msg_box braintree_custom_fields_error"><p>${Resource.msg('forms.error.customfields.format', 'braintreebm', null)}</p></div>
+
+        <table class="braintree_table">
+            <h2>${Resource.msg('transaction.title.paymentdetails', 'braintreebm', null)}</h2>
+            <isif condition="${allCurrencies.length > 1}">
+                <tr>
+                    <td class="braintree_table_cell_label">${Resource.msg('transaction.currency', 'braintreebm', null)}</td>
+                    <td class="braintree_table_cell_value">
+                        <select name="currencyCode">
+                            <isloop items="${allCurrencies}" var="currency" >
+                                <isif condition="${currency === defaultCurrency}">
+                                    <option value="${currency}" selected="selected">${currency}</option>
+                                <iselse>
+                                    <option value="${currency}">${currency}</option>
+                                </isif>
+                             </isloop>
+                        </select>
+                    </td>
+                </tr>
+            </isif>
+            <tr>
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.token', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value"><input class="braintree_table_input_text" type="text" name="token"/></td>
+            </tr>
+            <tr>
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.amt', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value"><input class="braintree_table_input_text" type="text" name="amount"/></td>
+            </tr>
+            <tr>
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.tax', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value"><input class="braintree_table_input_text" type="text" name="tax"/></td>
+            </tr>
+            <tr class="js_braintree_row_border">
+                <td class="braintree_table_cell_label">${Resource.msg('transaction.customfields', 'braintreebm', null)}</td>
+                <td class="braintree_table_cell_value">
+                    <textarea name="customFields" cols="30" rows="5"></textarea>
+                    <span class="caption"><isprint value="${Resource.msg('transaction.customfields.example', 'braintreebm', null)}" encoding="jshtml"/></span>
+                </td>
+            </tr>
+        </table>
+
+    </form>
+
+</isdecorate>

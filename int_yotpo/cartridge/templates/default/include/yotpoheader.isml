@@ -1,0 +1,32 @@
+<iscomment>This template should be included in the main header of the site. This loads the javascript
+from Yotpo which is mandatory for the Yotpo functionality to work</iscomment>
+<isif condition="${dw.system.Site.getCurrent().preferences.custom.yotpoCartridgeEnabled}">
+	<isscript>
+		var YotpoUtils = require('~/cartridge/scripts/yotpo/utils/YotpoUtils');
+		
+		var currentLocaleID : String  = YotpoUtils.getCurrentLocale(request);
+		var yotpoAppKey : String = YotpoUtils.getAppKeyForCurrentLocale(currentLocaleID);
+	 </isscript>
+	
+	
+	<script defer src="${dw.system.Site.getCurrent().preferences.custom.yotpoStaticContentURL+yotpoAppKey+'/widget.js'}"></script>
+
+	<isif condition = "${dw.system.Site.getCurrent().preferences.custom.yotpoSwellLoyaltyEnabled}">
+		<isscript>
+			var swellGUID : String = YotpoUtils.getGUIDForCurrentLocale(currentLocaleID);
+			var swellStaticContentURL = dw.system.Site.getCurrent().preferences.custom.yotpoSwellStaticContentURL.replace('<GUID>', swellGUID);
+		</isscript>
+		<script type="text/javascript">
+			var swellStaticContentURL = "${swellStaticContentURL}";
+			(function e() {
+				var e = document.createElement("script");
+						e.type = "text/javascript",
+						e.async = true,
+						e.src = swellStaticContentURL;
+				var t = document.getElementsByTagName("script")[1];
+				t.parentNode.insertBefore(e, t)
+			})();
+	    </script>
+	</isif>
+</isif>
+

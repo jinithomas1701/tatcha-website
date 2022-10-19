@@ -1,0 +1,33 @@
+<isdecorate template="application/MenuFrame">
+    <link rel="stylesheet" href="${URLUtils.staticURL('/paypalbm/css/bootstrap.min.css')}">
+    <link rel="stylesheet" href="${URLUtils.staticURL('/paypalbm/css/paypalconfigurationbm.css')}">
+
+    <script src="${pdict.paypalSDK}"></script>
+    <script src="${URLUtils.staticURL('/paypalbm/js/smartButtonConfig.js')}" defer></script>
+
+    <isinclude template="smartButton" />
+    </br>
+    <isif condition="${pdict.bannerConfigs.cart || pdict.bannerConfigs.pdp || pdict.bannerConfigs.category}">
+        <script src="${URLUtils.staticURL('/paypalbm/js/creditBannerConfig.js')}" defer></script>
+        <isinclude template="creditBanner" />
+    </isif>
+
+     <script type="text/javascript">
+        (function() {
+            window.resourcesAlertMessages = {
+                layout: {
+                    message: "<isprint value="${Resource.msgf('smartbutton.layout.alert.info.message', 'paypalbmconfiguration', null)}" encoding="on"/>",
+                    type: 'warning'
+                },
+                tagline: {
+                    message: "<isprint value="${Resource.msgf('smartbutton.tagline.alert.info.message', 'paypalbmconfiguration', null)}" encoding="on"/>",
+                    type: 'warning'
+                },
+                logoPosition: {
+                    message: "<isprint value="${Resource.msgf('banner.logotype.alert.info.message', 'paypalbmconfiguration', null)}" encoding="on"/>",
+                    type: 'warning'
+                }
+            };
+        }());
+    </script>
+</isdecorate>

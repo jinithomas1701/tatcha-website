@@ -1,0 +1,80 @@
+/**
+* Demandware Script File
+* 
+*
+* Transfers files from a one WebDav Directory to another. Directories are being coppied. Files are being moved. 
+*
+*   @input TragetDir : dw.io.File The target directory.
+*   @input SourceFile : dw.io.File The source file.
+*   @input SourceDir : dw.io.File The source directory.
+*   @input CopyBack : Boolean Are the files being coppied back?  
+*/
+ 
+importPackage(dw.system);
+importPackage(dw.util);
+importPackage(dw.io);
+
+importScript( 'bc_integrationframework:workflow/libWorkflowLogToFile.ds' );
+
+var cvLogger 	: Logger = getCurrentWorkflowInstanceFileLogger() || Logger;
+var cvNDC		: LogNDC = Log.getNDC();
+
+/**
+ * The main function.
+ *
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ * 
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+function execute( pdict : PipelineDictionary ) : Number
+{
+	cvNDC.push( 'MoveOnlyFilesCopyDirs.ds' );
+    if(pdict.TragetDir != null && pdict.SourceFile != null && pdict.SourceDir != null)
+    {
+    	if(pdict.SourceFile.isDirectory())
+    	{
+    		var theDir : File = new File(pdict.TragetDir.fullPath  + getPath(pdict.SourceFile.fullPath, pdict.SourceDir.fullPath, pdict.CopyBack));
+    		theDir.mkdirs();
+    		cvLogger.debug( 'Ensure existence of ' + theDir.fullPath );
+    	}
+    	else
+    	{
+    		var path : string = (pdict.TragetDir.fullPath+ getPath(pdict.SourceFile.fullPath, pdict.SourceDir.fullPath, pdict.CopyBack));
+    		var aFile : File = new File(path);
+    		pdict.SourceFile.renameTo(aFile);
+    		cvLogger.debug( 'Moving file from ' + pdict.SourceFile.fullPath + ' to ' + path );
+    	}
+    }
+	cvNDC.pop();
+   	return PIPELET_NEXT;
+}
+
+/**
+ * Get full path information for target file
+ * 
+ * @param sourceFileFullPath      : String    Full path information of source file
+ * @param targetDirFullPath       : SortedSet Full path information of target directory
+ * @param copyBack         		  : Boolean   Are the files being coppied back?  
+ *
+ * @returns String File path
+ */
+function getPath(sourceFileFullPath : string, targetDirFullPath : string, copyBack : Boolean) : string
+{
+	
+	cvNDC.push( 'getPath' );
+	cvLogger.debug( 'Start executing method.' );
+	var sourceFileFullPathSplitted : Array = sourceFileFullPath.split("/");
+	var targetDirFullPathSplittedLength : Number = copyBack ? (targetDirFullPath.split("/").length + 1) : targetDirFullPath.split("/").length;
+	var thePath : string = "";
+	for(var i : Number = targetDirFullPathSplittedLength; i < sourceFileFullPathSplitted.length; i++)
+	{
+		thePath = thePath + "/" +  sourceFileFullPathSplitted[i];
+		
+		if(i == (sourceFileFullPathSplitted.length - 1))
+		{
+			thePath = thePath + "/";
+		}
+	}
+	cvNDC.pop();
+	return thePath;
+}

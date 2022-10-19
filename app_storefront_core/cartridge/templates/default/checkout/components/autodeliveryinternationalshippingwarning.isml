@@ -1,0 +1,8 @@
+<div class="border rounded p-2 bag-message-danger mt-3 border-danger text-danger" role="alert" id="ad-intl-warn">
+	<div class="message">${Resource.msg('checkout.ad.warningline1','checkout',null)}</div>
+	<div>
+		<span class="message">${Resource.msg('checkout.ad.warningline2','checkout',null)}
+		${Resource.msg('checkout.ad.warningline3','checkout',null)}
+		${Resource.msg('checkout.ad.warningline4','checkout',null)}</span>
+	</div>
+</div>

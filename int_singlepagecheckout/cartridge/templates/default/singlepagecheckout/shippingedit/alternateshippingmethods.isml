@@ -1,0 +1,63 @@
+<!--- TEMPLATENAME: alternateshippingmethods.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="checkoutstep" value="${2}" scope="page"/>
+<isset name="checkoutObj" value="${pdict.p_checkoutobj}" scope="page" />
+<input type="hidden" id="ajaxResponseMsg" value="${pdict.p_responsemsg}"/>
+<input type="hidden" id="ajaxResponseCode" value="${pdict.p_responsecode}"/>
+<input type="hidden" id="spcCurrentState" value="${checkoutObj.checkoutState}">
+<div class="col-lg-7 order-12 order-lg-1">
+	<div class="checkout-section">
+	    <h1 class="checkout-heading">Secure Checkout</h1>
+	    <div class="alert alert-danger checkout-alert" role="alert" style="display:none;"></div>
+	   	  
+	   <h2 class="section-heading outer-section-inner" id="contact-section-heading" tabindex="-1">1. Contact &amp; Shipping
+		</h2>  	    	    
+	   	<iscomment>Delivery and Shipping </iscomment>	
+		<iscomment> Shipping Methods</iscomment>
+  	 <form action="${URLUtils.url('SinglePageCheckout-UpdateShippingMethod')}" method="post" name="ShippingMethodUpdateForm" id="ShippingMethodUpdateForm">
+  	 <div class="delivery-container">
+		<h2 class="section-title mt-4">Edit Delivery</h2>
+		<div id="shipping-methods">
+      <isscript>  
+      var selectedCountry=(checkoutObj.shippingInfo.shippingAddress.country)?checkoutObj.shippingInfo.shippingAddress.country:'';   
+      var stateCode = (checkoutObj.shippingInfo.shippingAddress.state)?checkoutObj.shippingInfo.shippingAddress.state:'';
+      var city = (checkoutObj.shippingInfo.shippingAddress.city)?checkoutObj.shippingInfo.shippingAddress.city:'';
+      var postalCode = (checkoutObj.shippingInfo.shippingAddress.postal)?checkoutObj.shippingInfo.shippingAddress.postal:'';
+      var address1 = (checkoutObj.shippingInfo.shippingAddress.address1)?checkoutObj.shippingInfo.shippingAddress.address1:'';
+      var address2 = (checkoutObj.shippingInfo.shippingAddress.address2)?checkoutObj.shippingInfo.shippingAddress.address2:'';
+
+      </isscript>
+			<isinclude url="${URLUtils.https('COShipping-UpdateShippingMethodList','countryCode',selectedCountry,'stateCode',stateCode,'city',city,'postalCode',postalCode,'address1',address1,'address2',address2)}"/>
+		</div>
+		<input type="hidden" id="shippingOnlyFlag" name="shippingOnlyFlag" value="true"/>	
+		<input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}" value="${stateCode}"/>				
+		<input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlName}" value="${selectedCountry}"/>		
+		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		<input id="customeremail" type="hidden" name="customeremail" value="">
+		<input  type="hidden" name="${pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.htmlName}" id="${pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.htmlName}" value="" />		    
+		<input type="hidden" name="${pdict.CurrentForms.singleshipping.shippingAddress.save.htmlName}" value="true"/>
+
+		
+		<button class="btn btn-primary update-shipping-method" type="submit" aria-label="Update Shipping Method">Edit Delivery</button>		
+	</div>
+	   </form> 
+	    <iscomment> Payment Section </iscomment>
+		<isspcbilling p_checkoutobj="${checkoutObj}"/>
+		
+		<iscomment> Review Section </iscomment>            
+        <isspsummary p_checkoutobj="${checkoutObj}"/>            
+          
+	</div>
+</div>
+<div class="col-lg-5 order-1 order-lg-12">
+	<div class="order-summary" id="order-summary">
+		<isspcordersummary p_lineitemctnr="${checkoutObj.basket}" p_coupons="${checkoutObj.appliedCoupons}" p_hide_promo_section="true" />
+     </div>
+</div>
+
+<iscomment>Modals </iscomment>
+<isinclude template="singlepagecheckout/shipping/addressmodal"/>
+<isinclude template="singlepagecheckout/shipping/giftmessage"/>
+<isinclude template="singlepagecheckout/components/giftcertificate/giftcertificatemodal"/>
+<isinclude template="singlepagecheckout/shipping/giftmodal"/>
+<isinclude template="singlepagecheckout/shipping/loqateaddress"/>

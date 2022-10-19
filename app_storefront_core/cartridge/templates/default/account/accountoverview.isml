@@ -1,0 +1,143 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account_bs"/>
+<isinclude template="util/modules"/>
+<isscript>	
+ 	var customer= pdict.CurrentCustomer;
+ 	var customerMobile = customer.profile.phoneMobile;
+ 	var countryCode = customer.profile.custom.countryCode
+ 	var isVerfiedPhone = customer.profile.custom.isVerifiedPhone;
+</isscript>
+	<div class="my-account">
+		<h1 class="text-center account-heading">
+			${Resource.msg('account.header.welcome','account',null)},
+			${pdict.CurrentCustomer.profile.firstName}
+			<!-- <span class="account-logout">(<a title="${Resource.msg('global.logout','locale',null)}" href="${URLUtils.https('Login-Logout')}">${Resource.msg('global.logout','locale',null)}</a>)</span> -->
+		</h1>
+		
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
+					<isif condition="${session.custom.showCreateAccountSuccess == true}">
+						<div class="alert alert-success text-center empty-state" role="alert" style="" id="account-creation-success" tabindex="0">
+							<div class="alert-icon">
+								<span class="fa-layers fa-fw">
+									<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+									<i class="fal fa-check fa-inverse" data-fa-transform="shrink-3"></i>
+								</span>
+							</div>
+							<div class="alert-text text-success">${Resource.msg('account.create.success','account',null)}</div>
+						</div>
+					</isif>
+					<isif condition="${!empty(customerMobile) && !isVerfiedPhone}">
+						<div class="alert alert-danger alert-verify text-center my-account-phone-add num-verify-notification" role="alert" style="display:none">
+							<div class="alert-icon">
+								<span class="fa-layers fa-fw">
+									<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+									<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+								</span>
+							</div>
+							<div class="alert-text text-danger">
+								${Resource.msg('account.user.phone.verifytext','account',null)}<br />
+								<a class="edit-phone-continue" href="#">
+									${Resource.msg('account.user.phone.verifynow','account',null)}
+								</a>
+							</div>
+						</div>
+					</isif>
+					<iscontentasset aid="account-landing"/>									
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	
+<div class="modal fade modal-primary modal-display" id="addPhone" tabindex="-1" role="dialog" aria-labelledby="modalAddPhone">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content phone-verify" style="display: none;">
+			<div class="modal-header">
+				<button type="button" class="close cancel-phone-verify" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">
+					${Resource.msg('account.user.phone.verifyyourphone','account',null)}
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-success text-center alert-resend" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+							<i class="fal fa-redo fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-success">
+						${Resource.msg('account.user.phone.codesent','account',null)}
+					</div>
+				</div>
+				<div class="alert alert-danger alert-incorrect-code" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+							<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-danger">${Resource.msg('account.user.phone.numberincorrect','account',null)}</div>
+				</div>
+				<p class="text-center">${Resource.msg('account.user.phone.codesent1','account',null)} <strong id="registeredNumber"></strong>${Resource.msg('account.user.phone.codesent2','account',null)}</p>
+				<div class="row">
+					<div class="col-xl-6 offset-xl-3">
+						<form class="text-center">
+							<div class="form-group">
+		    					<div class="input-group">
+		    						<div class="input-group-append">
+		    							<span class="input-group-text">
+			    							<i class="fa fa-lg fa-mobile-alt"></i>
+			    							<i class="fal fa-arrow-right"></i>
+		    							</span>
+		    						</div>
+		    						<input id="verification" class="form-control" style="height: 42px;">
+		    					</div>
+		    					<span class="help-block" style="display: none;">${Resource.msg('account.user.phone.fieldrequired','account',null)}</span>
+							</div>
+						</form>
+						<p class="text-center">
+							<a href="#" class="btn-account-phone-resend" data-dial="<isprint value="${countryCode}" />" data-type="sms" data-phone="<isprint value="${customerMobile}" />">${Resource.msg('account.user.phone.textagain','account',null)}</a> or <a href="#" data-type="call" data-dial="<isprint value="${countryCode}" />" class="btn-account-phone-resend" data-phone="<isprint value="${customerMobile}" />">${Resource.msg('account.user.phone.callagain','account',null)}</a>.
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-xs-6 col-sm-6">
+						<a class="btn btn-outline-secondary btn-block cancel-phone-verify" data-dismiss="modal" aria-label="Close">${Resource.msg('account.user.phone.cancel','account',null)}</a>
+					</div>
+					<div class="col-xs-6 col-sm-6">
+						<button type="button" id="account-phone-verify" class="btn btn-primary btn-block btn-phone-verify">${Resource.msg('account.user.phone.verify','account',null)}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-content phone-confirm" style="display: none;">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">${Resource.msg('account.user.phone.thankyou','account',null)}</h4>
+			</div>
+			<div class="modal-body">
+				<p class="text-center" style="line-height: 1.2;">${Resource.msg('account.user.phone.phoneverified','account',null)}</p>
+			</div>
+			<div class="modal-footer">
+				<div class="text-center">
+					<a class="btn btn-primary btn-phone-ok" data-dismiss="modal" aria-label="Close">${Resource.msg('account.user.phone.ok','account',null)}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div style="display:none;">
+	<input type="tel" id="customer_phone" value="${customerMobile}" />
+	<input type="hidden" id="customer_phone1" value="${customerMobile}" readonly="readonly"/>
+</div>
+
+<input type="hidden" id="AddProfilePhoneNumber" value="${URLUtils.url('Twilio-SendVerificationCode')}" />
+<input type="hidden" id="verifyPhoneNumber" value="${URLUtils.url('Twilio-VerifyPasswordResetCode')}" />
+<input type="hidden" id="deletePhoneNumber" value="${URLUtils.url('Twilio-DeletePhoneNumber')}" />
+
+</isdecorate>

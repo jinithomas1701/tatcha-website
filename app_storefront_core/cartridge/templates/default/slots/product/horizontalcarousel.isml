@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" minute="30" varyby="price_promotion"/>
+
+<isinclude template="util/modules"/>
+
+<div class="home-bottom-right-header">
+	<isprint value="${slotcontent.calloutMsg}" encoding="off"/>	
+</div>
+
+<div class="jcarousel-horizontal-wrapper">
+	<div id="horizontal-carousel" class="jcarousel-horizontal">
+		<ul class="horizontal-carousel">
+			<isloop items="${slotcontent.content}" var="product">
+				<li>
+					<isproducttile product="${product}" showswatches="${true}" showpricing="${true}" showpromotion="${true}" showrating="${true}" />
+				</li>
+			</isloop>
+		</ul>
+	</div>
+
+	<a class="jcarousel-horizontal-control-prev">&lsaquo;</a> 
+	<a class="jcarousel-horizontal-control-next">&rsaquo;</a>
+
+</div>

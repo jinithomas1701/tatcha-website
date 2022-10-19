@@ -1,0 +1,9 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Prints purity promise.
+</iscomment>
+	<div class="row">
+		<div class="col-md-8 offset-md-2 product-purity-promise-col">			
+			<isinclude url="${URLUtils.url('Page-Include', 'cid', 'tatcha-product-puritypromise')}"/>	
+		</div>
+	</div>

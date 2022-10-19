@@ -1,0 +1,73 @@
+<!--- TEMPLATENAME: bisform.isml --->
+<isscript>
+var product = pdict.Product.object;
+</isscript>
+<iscomment>Notify me</iscomment>
+<div class="modal fade modal-primary modal-tatcha-auto-delivery" id="notify-me-modal" tabindex="-1" role="dialog" aria-labelledby="modalEstimate" style="display: none;">
+	<div class="modal-dialog notify-me-modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title text-uppercase">${Resource.msg('global.notifyMe', 'locale', null)}</h5>
+				<button type="button" class="close out-of-stock-close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="flase">×</span>
+				</button>
+			</div>
+			<isscript>
+				var backinStockKlaviyo = dw.system.Site.current.getCustomPreferenceValue('klaviyo_back_in_stock_enabled');
+				var comingSoonURL = 'comingSoon-save';
+				var backInStockURL = 'BISNSave-Bisn';
+				if(backinStockKlaviyo) {
+					comingSoonURL = 'Klaviyo-ComingSoonSubscribe';
+					backInStockURL = 'Klaviyo-BISSubscribe';
+				}
+			</isscript>
+			<div class="mb-5 mt-3 text-success success-msg d-none text-left px-3">
+				<div class="d-flex">
+					<i class="fal fa-check-circle mr-2"></i>
+					<div class="success-msg-text">${Resource.msg('bis.backInStockSubscribeSuccess', 'locale', null)}</div>
+				</div>
+			</div>
+			<isif condition = "${product.custom.oosProductStatus.value == 'comingsoon'}">
+				<form action="${URLUtils.url(comingSoonURL)}" method="post" id="comingsoon-form" name="comingSoon">
+					<div class="modal-body pb-0 pt-2">
+						<label class="mb-2" for="email" style="font-weight: 400;"> ${Resource.msg('global.notifyMeEmail', 'locale', null)} </label>
+						<div class="form-group mb-2">							
+							<input type="hidden" name="comingsoonpid" value="${product.ID}">
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+							<input class="input-text form-control form-control-lg required floating__input" placeholder=" " type="email" id="comingsoon-email" name="comingsoonemail" data-msg-required="Please enter a valid email." data-rule-maxlength="50" maxlength="50" aria-required="true" aria-invalid="true">
+							<label class="control-label float-label" for="email" style="font-size: 12px;" data-content="Email"></label>
+						</div>
+						<label class="text-left">
+							<input type="checkbox" name="issubscribe" checked="checked" value="true">
+							<span style="font-weight: 400;">Keep me up to date on news and offers</span>
+						</label>
+					</div>
+					<div class="modal-footer pt-0 out-of-stock-footer">
+						<button type="button" class="btn btn-outline-dark rounded notify-me-cancel w-50" data-dismiss="modal">${Resource.msg('global.cancel', 'locale', null)}</button>
+						<button type="submit" class= "btn btn-primary rounded notify-me-btn notify-me w-50" id="dialogApplyBtn" name=""  value="${Resource.msg('global.apply', 'locale', null)}">${Resource.msg('global.notifyMe', 'locale', null)}</button>
+					</div>
+				</form>
+			<iselse/>
+				<form action="${URLUtils.url(backInStockURL)}" method="post" id="notify-me-form" name="notifyMe">
+					<div class="modal-body pb-0 pt-2">
+						<label class="" for="email" style="font-weight: 400;">${Resource.msg('global.notifyMeEmail', 'locale', null)}</label>
+						<div class="form-group mb-2">
+							<input type="hidden" name="bisnpid" value="${product.ID}">
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+							<input class="input-text form-control form-control-lg required floating__input" style="height: 3.3rem" placeholder=" " type="email" id="notify-me-email" name="bisnemail" data-msg-required="Please enter a valid email." data-rule-maxlength="50" maxlength="50" aria-required="true" aria-invalid="true">
+							<label class="float-label" for="email" style="font-size: 12px;" data-content="Email*"></label>
+						</div>						
+						<label class="text-left">
+							<input type="checkbox" name="issubscribe" checked="checked" value="true">
+							<span style="font-weight: 400;">Keep me up to date on news and offers</span>
+						</label>						
+					</div>
+					<div class="modal-footer pt-0 out-of-stock-footer">
+						<button type="button" class="btn btn-outline-dark rounded notify-me-cancel w-50" style="font-weight: 400" data-dismiss="modal">${Resource.msg('global.cancel', 'locale', null)}</button>
+						<button type="submit" class= "btn btn-primary rounded notify-me w-50" style="font-weight: 400" id="dialogApplyBtn" name=""  value="${Resource.msg('global.apply', 'locale', null)}">${Resource.msg('global.notifyMe', 'locale', null)}</button>
+					</div>
+				</form>
+			</isif>
+		</div>
+	</div>
+</div>

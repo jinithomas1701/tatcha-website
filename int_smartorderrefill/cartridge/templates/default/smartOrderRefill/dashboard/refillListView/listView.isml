@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+
+<isset name="isPaused" value="${pdict.isPaused}" scope="page"/>
+<div class="row">
+	<iscomment> commenting billing address 
+		<isset name="addressObject" value="${pdict.ProductList.billingAddress}" scope="page"  />
+		<isinclude template="smartOrderRefill/dashboard/refillListView/addressTable" />
+	 </iscomment>
+	 
+	<div class="col-md-7">
+		<isset name="addressObject" value="${pdict.ProductList.shippingAddress}" scope="page"  />
+		<isinclude template="smartOrderRefill/dashboard/refillListView/addressTable" />
+	</div>
+	
+	<div class="col-md-5">
+		<div class="checkout-summary">
+			<isset name="total" value="${0}" scope="page"/>
+			 <isloop items="${pdict.ProductList.products}" var="listItem" >
+	                <isset name="currencyCode" value="${listItem.currencyCode}" scope="page"/>
+	                <isset name="total" value="${total + (listItem.price * listItem.quantity)}" scope="page"/>
+	            </isloop>
+	         <isinclude template="smartOrderRefill/dashboard/refillListView/totals" />
+		</div>
+	</div>
+</div>
+<div class="order-section oreplen-product-list last" >
+    
+    <isloop items="${pdict.ProductList.products}" var="listItem" >
+        <isinclude template="smartOrderRefill/dashboard/refillListView/productRow" />
+    </isloop>
+    <isif condition="${pdict.isSubscription}">
+        <span style="display: none;" data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList','action', 'addProduct','sid',pdict.ProductList.ID)}" class="addproduct sorlink">${dw.web.Resource.msg('smartorderrefill.addProduct', 'smartorderrefill', null)}</span>
+    </isif>
+
+    <iscomment>  
+    	commenting from new cartridge
+     <isinclude template="smartOrderRefill/dashboard/refillListView/payment" />
+    </iscomment>
+</div>

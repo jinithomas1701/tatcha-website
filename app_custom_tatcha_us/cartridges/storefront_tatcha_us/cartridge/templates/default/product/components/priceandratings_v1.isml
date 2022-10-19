@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment>
+reviews
+=============================================================
+</iscomment>
+
+<isif condition="${'enableReviewsRatings' in pdict.Product.custom}">
+	<isif condition="${pdict.Product.custom.enableReviewsRatings && !isQuickView}">
+		<div class="product-rating-share-block  prd-rating-share-block prd-share-hidden">
+			<isyotpoproductbottomlinewidget product="${pdict.Product}" />
+			<isscript>
+				var YotpoUtils = require('int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+				var currentLocaleID = YotpoUtils.getCurrentLocale(request);
+				var isBottomLineEnabled = YotpoUtils.isBottomLineEnabledForCurrentLocale(currentLocaleID);
+			</isscript>
+		</div>
+	</isif>
+</isif>

@@ -1,0 +1,130 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<iscomment>
+    This template renders the search suggestions popup.
+</iscomment>
+
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+    var SearchSuggest = require('~/cartridge/scripts/search/SearchSuggest');
+    var suggest = SearchSuggest(pdict.CurrentHttpParameterMap.q.value, 5);    
+    var suggestionsAvailable = suggest.product.available || suggest.brand.available || suggest.category.available || suggest.content.available || suggest.custom.available;
+    var searchquery ="";
+    var termCount = 0;
+    var termsArrayMob = [];
+    var termsArrayDesk = [];
+    var productcount = 0;
+    var contentcount = 0;
+    var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+    var mParticleEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('mParticleEnabled') ? true : false;	
+</isscript>
+<div aria-live="assertive" aria-atomic="true">
+<isif condition="${suggestionsAvailable}">
+	   <isif condition="${suggest.product.products.hasNext()}"> 
+	       <h4 class="search-inner-titles">Best Matches </h4>
+	        <div class="results-tiles d-flex justify-content-start">
+	       
+	          <isif condition="${suggest.product.products.hasNext()}">
+		          <isloop items="${suggest.product.products}" alias="suggestedProduct" status="status">
+		          		<isset name="productcount" value="${status.count}" scope="page"/>
+		             <isset name="productSearchHit" value="${suggestedProduct.getProductSearchHit()}" scope="page"/>
+	                 <isset name="product" value="${productSearchHit.getProduct()}" scope="page"/>
+	                  <isset name="hide" value="" scope="page"/>
+	                  <isif condition="${productcount>3}">
+	                   	<isset name="hide" value="hide" scope="page"/>
+	                  </isif>
+	                  <isscript>
+                  		// Added for mParticle and other analytics 
+                 		if(mParticleEnabled){
+							var productInfo = mParticleUtil.getProductInfo(product);
+                  		}
+                  	   </isscript>
+                                
+                                    <a class="product-tile ${status.index == 4 ? 'd-md-none d-lg-block' : ''}" href="${URLUtils.url('Product-Show', 'pid', product.getID())}" data-pid="${product.getID()}">
+                                    <isset name="productImage" value="${product.getImage('large')}" scope="page"/>
+                                    <isif condition="${productImage != null}">
+	                               		<img  class="img-responsive product-img img-fluid" src="${getImageUrl(product, 'medium','0','false','pdp')}" alt="image - ${productImage.alt}" title="${productImage.title}" aria-hidden="true" />
+	                           		<iselse/>
+	                               		<img class="img-responsive product-img img-fluid" src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="image - ${product.name}" title="${product.name}" />
+	                            	</isif>
+		                            	<div class="product-content">
+	                                        <div class="product-name">
+	                                            <isprint value="${product.name.substring(0,48)}" />
+	                                        </div>
+	                                        <br/>
+	                                        <div class="product-sub">
+	                                            <isif condition="${!empty(product.custom.secondaryName)}"> 
+				                     				<isprint value="${product.custom.secondaryName.substring(0,44)}" />
+				                    			</isif>
+	                                        </div>
+	                                    </div>  
+                                    </a>
+                                                                                                                                                              
+			       </isloop>
+			  </isif>
+			 </div>
+       </isif>
+       <isif condition="${suggest.product.terms.hasNext() || suggest.content.terms.hasNext()}">
+	               			          
+	       		<!-- For desktop view -->
+		       	<isif condition="${suggest.product.terms.hasNext()}">
+		       		<isloop items="${suggest.product.terms}" alias="terms" >
+	                   <isscript>var termArray = []</isscript>
+	                 	<isloop items="${terms}" alias="term"  status="termStatus">
+	                     	<isscript>
+	                 	        termArray.push(term.value);
+	                 	    </isscript>
+	                 	</isloop>
+	                      	<isscript>
+	                 	        termsArrayDesk.push(termArray);
+	                 	        termArray = null;
+	                 	    </isscript>                	
+	                 </isloop>
+	            <iselseif condition="${suggest.content.terms.hasNext()}" >
+	            	<isloop items="${suggest.content.terms}" alias="terms" >
+	                   <isscript>var termArray = []</isscript>
+	                 	<isloop items="${terms}" alias="term"  status="termStatus">
+	                     	<isscript>
+	                 	        termArray.push(term.value);
+	                 	    </isscript>
+	                 	</isloop>
+	                      	<isscript>
+	                 	        termsArrayDesk.push(termArray);
+	                 	        termArray = null;
+	                 	    </isscript>                	
+	                 </isloop>
+		       	</isif>
+	             
+	                 
+	              <isif condition="${termsArrayDesk.length==1}">    	                         
+		                 <isloop items="${termsArrayDesk}" alias="terms">
+		                 	<isloop items="${terms}" alias="term" end="1">  
+		                 	      <isscript>
+		                 	        termCount++;
+		                 	      	searchquery = searchquery +" "+term;
+		                 	      </isscript>
+		                 	</isloop>
+		                 </isloop>
+			    </isif> 
+			                
+	             <isif condition="${termsArrayDesk.length>1}">    	                         
+		                 <isloop items="${termsArrayDesk}" alias="terms" end="1">
+		                 	<isloop items="${terms}" alias="term"  status="termStatus" end="0">
+		                 	     <isif condition="${termStatus.count==1}">
+			                 	      <isscript>
+			                 	        termCount++;
+			                 	      	searchquery = searchquery +" "+term;
+			                 	      </isscript>
+		                 	     </isif>
+		                 	</isloop>
+		                 </isloop>
+			    </isif>     
+	   </isif>       
+              
+     <isif condition="${productcount>3}">
+     	<a href="${URLUtils.url('Search-Show', 'q',searchquery)}" class="btn-link mt-3 d-block see-all-link"> SEE ALL RESULTS </a>
+	</isif>	
+	  </ul>     
+ </isif>
+ </div>

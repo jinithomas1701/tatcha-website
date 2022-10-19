@@ -1,0 +1,127 @@
+/**
+ * Archives all folders which are defined in this file. If the archived files are older than a defined value (OrganizationPreference 'archiveAge'),
+ * than the files will be deleted.
+ * 
+ * @input DirectoriesToPurge : Array Array of the full Path of the Directories 
+ * @input DirectoriesToArchive : Array Array of the full Path of the Directories
+ * @input DaysToKeep : Number The number of days to keep archive files
+ * @input FilePattern : String
+ */
+
+importPackage(dw.system);
+importPackage(dw.util);
+importPackage(dw.io);
+
+var ARCHIVE_DIRECTORY = "archive";
+
+/**
+ * The main function.
+ * 
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ * 
+ * @returns Number Returns PIPELET_NEXT. Only in case of an exception PIPELET_ERROR will be returned.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+	
+	var logToFileLib : Log = Logger.getLogger("ArchiveAndDeleteOldFiles");
+	
+	var archiveDirectory : File = new File(File.IMPEX  + File.SEPARATOR + ARCHIVE_DIRECTORY);
+	if (!archiveDirectory.exists()) {
+		archiveDirectory.mkdir();
+	}
+	
+	var archiveAndLogDirectories : Array = new Array();
+	for each (var purgeString : String in pdict.DirectoriesToPurge) {
+		if(purgeString.indexOf(File.IMPEX + File.SEPARATOR) > -1)
+		{
+			archiveAndLogDirectories.push(new File(purgeString));
+		}
+		else
+		{
+			archiveAndLogDirectories.push(new File(File.IMPEX + File.SEPARATOR + purgeString));	
+		}	
+	} 
+	
+	var directoriesToArchive : Array = new Array();
+	for each (var archiveString : String in pdict.DirectoriesToArchive) {
+		if(archiveString.indexOf(File.IMPEX + File.SEPARATOR) > -1)
+		{
+			directoriesToArchive.push(new File(archiveString));	
+		}
+		else
+		{
+			directoriesToArchive.push(new File(File.IMPEX + File.SEPARATOR + archiveString));	
+		}
+	} 
+	
+	// The archive process.
+	
+	var currentCalendar       : Calendar = System.getCalendar();
+	var currentCalendarString : String   = StringUtils.formatCalendar(currentCalendar, 'yyyyMMdd_HHmmssSSS');
+	for each (var directoryToArchive : File in directoriesToArchive) {
+		if (!directoryToArchive.exists()) {
+			continue;
+		}
+		
+		var childFiles : List = directoryToArchive.listFiles();
+		if (childFiles.length > 0) {
+			var separator : String = File.SEPARATOR;
+			if (separator == '\\') {
+				separator = '\\\\';
+			}
+			directoryToArchive.zip(new File(archiveDirectory, directoryToArchive.fullPath.substring(1).replace(new RegExp(separator, 'g'), '_') + '_' + currentCalendarString + '.zip'));
+			
+			logToFileLib.info('ArchiveAndDeleteOldFiles.ds: Archiving folder "' + directoryToArchive.fullPath + '".');
+			
+			for each (var file : File in childFiles) {
+				removeFile(file);
+			}
+		}
+	}
+	
+	// The deletion process.
+	
+	var oldCalendar : Calendar = System.getCalendar();
+	oldCalendar.setTime(currentCalendar.getTime());
+	oldCalendar.add(Calendar.DAY_OF_YEAR, -1 * pdict.DaysToKeep);
+	oldCalendar.add(Calendar.MINUTE, -10);
+	for each (var archiveDir : File in archiveAndLogDirectories){
+		logToFileLib.info('ArchiveAndDeleteOldFiles.ds: Deleting files older than '+pdict.DaysToKeep+' days from archive or log dir "' + archiveDir.fullPath + '".');
+		if(archiveDir.exists()){
+			var filteredFiles = archiveDir.listFiles();
+			
+			for each (var archiveFile : File in filteredFiles) {
+
+				try{
+					var fileCalendar : Calendar = new Calendar(new Date(archiveFile.lastModified()));
+					if (fileCalendar.before(oldCalendar)) {
+						logToFileLib.info('ArchiveAndDeleteOldFiles.ds: Deleting old archive or log file "' + archiveFile.fullPath + '".');
+						removeFile(archiveFile);
+					}
+				}catch(e){
+					logToFileLib.error('ArchiveAndDeleteOldFiles.ds: Deleting old archive or log file "' + archiveFile.fullPath + '" failed! ('+e+')');
+				}
+			}
+		}
+	}
+	
+	return PIPELET_NEXT;
+}
+
+/**
+ * Deletes the given file (even if it is a directory).
+ * 
+ * @param file : File The file to delete.
+ */
+function removeFile(file : File) {
+	if (file.isDirectory()) {
+		var childFiles : List = file.listFiles();
+		if (childFiles.length > 0) {
+			for each (var childFile : File in childFiles) {
+				removeFile(childFile);
+			}
+		}
+	}
+	
+	file.remove();
+}

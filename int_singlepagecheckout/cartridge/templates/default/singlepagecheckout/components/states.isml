@@ -1,0 +1,20 @@
+<isif condition="${!empty(pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlValue)}">
+	<isset name="selectedState" value="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlValue}" scope="page" />
+<iselse>
+	<isset name="selectedState" value="" scope="page" />
+</isif>
+
+<isif condition="${(selectedCountry == 'US' || pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlValue == 'US')||(pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlValue == '' && pdict.p_checkoutobj && pdict.p_checkoutobj.customerInfo && pdict.p_checkoutobj.customerInfo.isAuthenticated && pdict.p_checkoutobj.customerInfo.addressBook.length==0)}">
+	<isset name="style" value="required" scope="page" />
+<iselse>
+	<isset name="style" value="style='display:none'" scope="page" />
+</isif>
+<select id="state" data-msg-required="${Resource.msg('singleshipping.state.required', 'checkout', null)}" class="form-control floating__input  form-control-lg pl-3" ${style}>
+	<isloop items="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.options}" var="states" status="status">
+		<isif condition="${selectedState == states.optionId}"> 
+				<option class="select-option" label="${Resource.msg(states.label,'forms',null)}" selected value="${states.optionId}">${Resource.msg(states.label,'forms',null)}</option>		
+			<iselse>			
+				<option class="select-option" label="${Resource.msg(states.label,'forms',null)}" value="${states.optionId}">${Resource.msg(states.label,'forms',null)}</option>			
+		</isif>
+	</isloop>
+</select>

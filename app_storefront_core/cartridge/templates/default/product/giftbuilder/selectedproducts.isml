@@ -1,0 +1,44 @@
+<isscript>
+var totalPrice = 0;
+var selectedProductList = [];
+</isscript>
+<div class="set-selections">
+	<isset name="gCounter" value="0" scope="page"/>
+	<isloop items="${pdict.selectedProducts}" var="rec" status="pStatus">
+		<isset name="selectedGiftProduct" value="${rec}" scope="pdict"/>
+		<isset name="PriceModel" value="${pdict.selectedGiftProduct.getPriceModel()}" scope="page"/>
+		<isinclude template="product/giftbuilder/selecteditem"/>
+		<isscript>
+			totalPrice += PriceModel.price;
+			gCounter++;
+			selectedProductList.push(pdict.selectedGiftProduct.ID);
+		</isscript>
+	</isloop>
+	<isif condition="${gCounter < pdict.limit}">
+		<isscript>
+			var emptySlots = [];
+			for(var i = 0; i < (pdict.limit-gCounter); i++) { 
+				emptySlots.push(i);
+			}
+		</isscript>
+		<isloop items="${emptySlots}" var="slot" status="slotStatus">
+			<div class="set-selection-item giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}">
+				<a href="#" class="vertical-middle">
+					<i class="fal fa-plus fa-2x select-icon"></i>
+				</a>
+			</div>
+		</isloop>
+	</isif>
+	<input type="hidden" name="selectedProducts" id="selectedProducts" value="${JSON.stringify(selectedProductList)}">
+	<input type="hidden" name="totalAmount" id="totalAmount" value="$${Math.round(totalPrice)+""}">
+</div>
+<div class="set-selector-btn-block">
+	<isscript>
+		if(gCounter>0){
+			var buttonText = Resource.msg('giftbuilder.editbutton','product',null);
+		}else{
+			var buttonText = Resource.msg('giftbuilder.selectbutton','product',null);
+		}
+	</isscript>
+	<button class="btn btn-default giftbuilder-selector" data-url="${URLUtils.url('GiftBuilder-GetGiftProducts')}"><isprint value="${buttonText}"/></button>
+</div>

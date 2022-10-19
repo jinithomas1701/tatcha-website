@@ -1,0 +1,66 @@
+<iscache type="relative" hour="24"/>
+<div class="image-link-container container-fluid container-fluid-max ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="image-link">
+                	<isif condition="${!empty(pdict.set1desktopimage.src.desktop) && !empty(pdict.set1mobileimage.src.mobile)}">
+                		<picture>
+                		  <source data-srcset="${pdict.set1desktopimage.src.desktop}" media="(min-width: 769px)" alt="${pdict.set1imageAlt}" class="lazyImage">
+						  <source data-srcset="${pdict.set1mobileimage.src.mobile}" media="(max-width: 768px)" alt="${pdict.set1imageAlt}" class="lazyImage">
+						  <img data-src="${pdict.set1desktopimage.src.desktop}" class="img-fluid img-customv2 lazyImage" alt="${pdict.set1imageAlt}"/>
+						 </picture>
+                	</isif>
+                    <div class="text-container ${pdict.textcolor} ${pdict.textverticalalign}">
+                    	<isif condition="${!empty(pdict.set1heading)}">
+                    		<div class="headingv2">${pdict.set1heading}</div>
+                    	</isif>
+                        <isif condition="${!empty(pdict.set1linkurl)}">
+                    		<a class="btn btn-link" href="${pdict.set1linkurl}" aria-label="${pdict.set1ctaarialabel}">${pdict.set1linktext}</a>
+                    	</isif>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="image-link">
+                	<isif condition="${!empty(pdict.set2desktopimage.src.desktop) && !empty(pdict.set2mobileimage.src.mobile)}">
+                		<picture>
+                		  <source data-srcset="${pdict.set2desktopimage.src.desktop}" media="(min-width: 769px)" alt="${pdict.set2imageAlt}" class="lazyImage">
+						  <source data-srcset="${pdict.set2mobileimage.src.mobile}" media="(max-width: 768px)" alt="${pdict.set2imageAlt}" class="lazyImage">
+						  <img data-src="${pdict.set2desktopimage.src.desktop}" class="img-fluid img-customv2 lazyImage" alt="${pdict.set2imageAlt}"/>
+						 </picture>
+                	</isif>
+                    <div class="text-container ${pdict.textcolor} ${pdict.textverticalalign}">
+                    	<isif condition="${!empty(pdict.set2heading)}">
+                    		<div class="headingv2">${pdict.set2heading}</div>
+                    	</isif>
+                        <isif condition="${!empty(pdict.set2linkurl)}">
+                    		<a class="btn btn-link" href="${pdict.set2linkurl}" aria-label="${pdict.set2ctaarialabel}">${pdict.set2linktext}</a>
+                    	</isif>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="image-link">
+                	<isif condition="${!empty(pdict.set3desktopimage.src.desktop) && !empty(pdict.set3mobileimage.src.mobile)}">
+                		<picture>
+                		  <source data-srcset="${pdict.set3desktopimage.src.desktop}" media="(min-width: 769px)" alt="${pdict.set3imageAlt}" class="lazyImage">
+						  <source data-srcset="${pdict.set3mobileimage.src.mobile}" media="(max-width: 768px)" alt="${pdict.set3imageAlt}" class="lazyImage">
+						  <img data-src="${pdict.set3desktopimage.src.desktop}" class="img-fluid img-customv2 lazyImage" alt="${pdict.set3imageAlt}"/>
+						</picture>
+                	</isif>
+                    <div class="text-container ${pdict.textcolor} ${pdict.textverticalalign}">
+                    	<isif condition="${!empty(pdict.set3heading)}">
+                    		<div class="headingv2">${pdict.set3heading}</div>
+                    	</isif>
+                        <isif condition="${!empty(pdict.set3linkurl)}">
+                    		<a class="btn btn-link" href="${pdict.set3linkurl}" aria-label="${pdict.set3ctaarialabel}">${pdict.set3linktext}</a>
+                    	</isif>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

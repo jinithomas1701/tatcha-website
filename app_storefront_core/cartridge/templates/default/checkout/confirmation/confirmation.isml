@@ -1,0 +1,611 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/intlTelInput.css')}">
+
+<isdecorate template="checkout/pt_orderconfirmation">
+
+	<isinclude template="util/modules"/>
+	<isinclude template="util/reporting/ReportOrder.isml"/>
+	<iscomment>
+		This template visualizes the order confirmation page. Note, that it
+		uses a different decorator template.
+		It displays the order related information, such as the order number,
+		creation date, payment information, order totals and shipments of
+		the order.
+	</iscomment>
+	<isscript>
+	var TagManagerUtils = require('~/cartridge/scripts/util/GoogleTagManager.js');
+	var mParticleEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('mParticleEnabled') ? true : false;
+	var rscEnabled = require('dw/system/Site').getCurrent().getCustomPreferenceValue('EnableRSCADC') ? true : false;		
+	var mParticleOrderJson = {};
+	if(mParticleEnabled || rscEnabled) {
+		var mParticleHelper : Object = require('int_mParticle/cartridge/scripts/mParticleUtils.js');	
+		mParticleOrderJson = JSON.stringify(mParticleHelper.preparePurchaseData(pdict.Order));
+	}
+	var gtmOrderData = TagManagerUtils.getOrderConfirmationDataLayer(pdict.Order);
+	var orderConfirmDatalayer = '';
+	if (!empty(gtmOrderData)) {
+	    orderConfirmDatalayer = JSON.stringify(gtmOrderData);
+	}
+	
+	var tatchaUtil = require('~/cartridge/scripts/util/Tatcha.ds');
+	var gcPaymentItems = tatchaUtil.getGiftcertificateFromOrder(pdict.Order);
+	
+	var hasShippingItems = true;
+	try {
+		if(typeof(pdict.Order.productLineItems) != 'undefined' && pdict.Order.productLineItems.length ==  0){
+			hasShippingItems = false;
+		}
+	} catch(err){
+		hasShippingItems = false;
+	}
+	
+	
+</isscript>	
+
+<input type="hidden" id="orderConfirmDatalayer" value="${orderConfirmDatalayer}"/>
+
+<script>
+    try {
+    	if (!window.dataLayer) {
+			window.dataLayer = [];
+		}
+    	dataLayer.push(<isprint value="${orderConfirmDatalayer}" encoding="off"/>);
+    	//dataLayer.push({'event': 'tatcha_order_success'});
+    	
+    	// GA 4 Datalayer
+    	var orderInfo = document.getElementById("orderConfirmDatalayer").value;
+		var purchaseObj = {"event":"purchase"};
+		orderObj = JSON.parse(orderInfo);
+    	var ecommerceObj = {
+    		      'transaction_id': orderObj.transactionId,
+    		      'affiliation': 'Tatcha',
+    		      'value': orderObj.transactionTotal,
+    		      'tax': orderObj.transactionTax,
+    		      'shipping': orderObj.transactionShipping,
+    		      'currency': 'USD',
+    		      'coupon': orderObj.discountCoupon
+    	}
+
+    	var items = [];
+    	for (var i = 0; i < orderObj.transactionProducts.length; i++) {
+    		      items.push({
+    		        item_name: orderObj.transactionProducts[i].name,
+    		        item_id: orderObj.transactionProducts[i].sku,
+    		        price: orderObj.transactionProducts[i].price,
+    		        item_brand: 'Tatcha',
+    		        item_category: '',
+    		        item_variant: '',
+    		        quantity: orderObj.transactionProducts[i].quantity,
+    		      });
+    	}
+
+    	ecommerceObj.items = items;
+    	purchaseObj.ecommerce = ecommerceObj;
+
+    //	dataLayer.push({ ecommerce: null });  
+    	dataLayer.push({
+    		'event': 'purchase', 
+    		'ecommerce': purchaseObj
+    		});
+
+    } catch (e) {}
+    
+    
+</script>
+<div class="checkout checkout-order-confirmation container-fluid order-confirm-page pr-xxl-0 pl-xxl-0">
+	<div class="row">
+	<div class="header-standard col-12 col-lg-8 col-xxl-6 offset-xxl-1">
+		<div class="container order-confirm-details pl-0 pr-0" role="alert" aria-live="assertive" tabindex="0">
+			<div class="title" aria-live="assertive">${Resource.msg('order.orderconfirmation.heading','order',null)},
+			<isif condition="${!customer.authenticated}">
+				<isprint value="${pdict.Order.billingAddress.firstName}"/>.
+			<iselse/>
+				<isprint value="${customer.profile.firstName}"/>.
+			</isif>
+			</div>
+			
+			<isif condition="${!customer.authenticated}">
+				<div class="order-number" aria-live="assertive">${Resource.msg('order.orderconfirmation.ordernumber','order',null)} <strong><isprint value="${pdict.Order.orderNo}" /></strong>.</div>
+			<iselse/>
+				<div class="order-number" aria-live="assertive">${Resource.msg('order.orderconfirmation.ordernumber','order',null)} <strong><isprint value="${pdict.Order.orderNo}"/></strong>.</div>
+			</isif>
+			<div class="email-text">
+			${Resource.msg('order.orderconfirmation.message1','order',null)} <strong><isprint value="${pdict.Order.customerEmail}"/></strong>. ${Resource.msg('order.orderconfirmation.message2','order',null)}
+			</div>
+			
+			<iscomment>GTM change </iscomment>
+			
+			<isif condition="${!empty(pdict.Order.paymentInstruments) && pdict.Order.paymentInstruments.length > 0}">
+				<isloop items= "${pdict.Order.paymentInstruments}" var="paymentInstrumentMethod" >
+					<input type="hidden" id="checkouttype" value="${pdict.CheckoutType != '' ? pdict.CheckoutType : paymentInstrumentMethod.paymentMethod}">
+					<isbreak/>
+				</isloop>
+			</isif>
+		
+		</div>
+			<hr class="d-none d-md-block"/>
+
+			<isif condition="${!empty(pdict.CurrentSession.custom.userExist) && pdict.CurrentSession.custom.userExist==false && !pdict.CurrentCustomer.authenticated}">
+				<div class="creating-heading d-none d-md-block mb-3">${Resource.msg('order.orderconfirmation.benefits','order',null)} </div>
+			</isif>
+                <div class="d-flex flex-column-reverse flex-md-column">
+                  <isif condition="${!empty(pdict.CurrentSession.custom.userExist) && pdict.CurrentSession.custom.userExist==false && !pdict.CurrentCustomer.authenticated}">
+                    <div class="d-flex flex-column flex-column-reverse flex-md-row p-4 pt-5 p-md-2 sign-up-container">
+
+                        <div class="sign-up-benefits">
+                            <div class="benefits-title mb-2">Account benefits</div>
+                            <ul class="benefits-list">
+                                <li>Receive special promotions</li>
+                                <li>Receive a birthday gift</li>
+                                <li>Express Checkout</li>
+                                <li>Order history</li>
+                                <li>Wishlists</li>
+                            </ul>
+                        </div>
+                        <div class="w-100 signup-form">
+                            <form action="${URLUtils.https('COSummary-CreateNewAccount')}" method="post">
+                                <div class="form-row">
+                                    <div class="col-md-6 mb-2">
+                                        <label for="validationCustom04" class="mb-0">${Resource.msg('order.orderconfirmation.email','order',null)} <span class="email"><isprint value="${pdict.Order.getCustomerEmail()}" /></span></label>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+									<input type="hidden" id="login_username" name="login_username" value="${pdict.Order.getCustomerEmail()}">
+									<input type="hidden" id="orderNo" name="orderNo" value="${pdict.Order.orderNo}">
+									<isscript>
+										 var passconfirm = {
+											    autocomplete: "off",
+											    'data-rule-equalTo': '#'+pdict.CurrentForms.profile.login.password.htmlName,
+											    'data-msg-equalTo': Resource.msg('validate.passwordconfirm', 'forms', null),
+											    'data-msg-required': Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength)
+											    };
+											    
+										var password = {
+											    'data-msg-required': Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength)
+											    };	  
+									</isscript>
+                                    		<div class="col-md-6">
+                                       		
+                                                <isinputfield formfield="${pdict.CurrentForms.profile.login.password}" placeholder=" " rowclass="updated-validation-msg updated-validation-msg-confirmation" bsversion="true"  type="password" attributes="${password}"  class="form-control floating__input" id="validationCustom05" />
+                                              
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                            <div class="col-md-6">
+                                               
+                                                <isinputfield placeholder=" " formfield="${pdict.CurrentForms.profile.login.passwordconfirm}" rowclass="updated-validation-msg updated-validation-msg-confirmation" bsversion="true" type="password" attributes="${passconfirm}" class="form-control floating__input" id="validationCustom06"/>
+                                                 
+                                                <div class="invalid-feedback"></div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group">
+                                            <div class="form-check">
+                                                <input type="checkbox" name="${pdict.CurrentForms.profile.customer.addtoemaillist.htmlName}" class="form-check-input" value="true"/>
+                                                <label class="form-check-label" for="invalidCheck">
+                                    				${Resource.msg('order.orderconfirmation.exclusive','order',null)}
+                                    			<label>
+
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-primary btn-block d-md-none" type="submit">${Resource.msg('order.orderconfirmation.createaccount','order',null)}</button>
+                                        <button class="btn btn-primary d-none d-md-block" type="submit">${Resource.msg('order.orderconfirmation.createaccount','order',null)}</button>
+                               </form>
+                           </div>
+                           <div class="creating-heading d-md-none p-0 mb-3 w-100">${Resource.msg('order.orderconfirmation.benefits','order',null)} </div>
+                       </div>
+                       <hr class="w-100 d-none d-md-block"> 
+                       </isif>
+                            <div class="shipping-updates-container mb-4 mb-md-0">
+                                
+                                <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LincEnabled') && hasShippingItems == true}">
+	                                <div class="text-center text-md-left mx-auto shipping-container-linc">
+						                 <isinclude template="checkout/confirmation/lincconfirmation"/>
+	                                </div>
+                                </isif>
+                                <div class="shipping-orde-qns">
+                                	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LincEnabled') && hasShippingItems == true}">
+                                    	<div class="d-none vr d-md-inline-block "></div>
+                                    </isif>
+                                    <div class="d-none d-md-inline-block order-questions">
+                                        <div class="title">${Resource.msg('order.orderconfirmation.orderqns','order',null)}</div>
+                                        <div>
+                                            <a href="${URLUtils.url('Page-Show','cid', 'contact-us')}">Contact us </a>anytime. </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+		
+	                 
+          
+          <hr class="d-none d-md-block"/>
+          <div class="cancel-links mb-3 d-none d-md-block">
+          	<iscontentasset aid="orderconfirmation-ordersandreturns"/>
+          </div>
+
+	</div>
+	<div class="order-confirmation-content col-12 col-lg-4 col-xxl-4 px-0 px-lg-3">
+		
+            <div class="row no-gutters">
+                <div class="order-confirm-banner col-md-6 col-lg-12 refer-a-friend-banner">
+                   
+                   	<iscomment> Extole conversion complete tag </iscomment>
+                   <div id="extole_zone_confirmation">
+                    </div>
+                  
+					
+                </div>
+                
+                <div class="order-confirm-banner col-md-6 col-lg-12">
+                		<iscontentasset aid="orderconfirmation-marketing-container"/>
+                </div>
+            </div>
+          
+		
+	</div>
+	
+	<div class="shipping-updates-container w-100 mx-auto">
+               <div class="d-md-none mt-3 mb-3 text-center order-questions">
+                   <div class="title">${Resource.msg('order.orderconfirmation.orderqns','order',null)}</div>
+                   <div>
+                       <a href="${URLUtils.url('Page-Show','cid', 'contact-us')}">Contact us </a>anytime. </div>
+               </div>
+           </div>
+           <hr class="d-md-none"/>
+
+           <div class="cancel-links d-md-none mt-3 mb-3 text-center w-100">
+				<iscontentasset aid="orderconfirmation-ordersandreturns"/>
+           </div>
+	
+	</div>
+</div>
+
+<iscomment>Thank you note </iscomment>
+<isif condition="${gcPaymentItems.length >= 1}"> 
+	<div class="modal fade modal-primary " id="thankyouNote" tabindex="-1" role="dialog" aria-labelledby="thankyouNote">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close close-round" data-dismiss="modal" aria-label="Close" style="position: absolute;"><i class="fa fa-times"></i></button>
+					<h4 class="modal-title"><strong>${Resource.msg('gift.send.thankyou.note','giftcertificate',null)}</strong></h4>
+				</div>
+				<form id="thankyou_form" action="${URLUtils.url('GiftCert-SendThankyou')}" method="POST">
+					<div class="modal-body">
+						<div class="form-group">
+							<input id="view" name="view" type="hidden" value="${gcPaymentItems[0].view}">
+							<label for="thankYouMessage" class="control-label control-label-lg">${Resource.msgf('gift.thank.you','giftcertificate',null,gcPaymentItems[0].senderName)}</label>
+							<textarea id="thankYouMessage" name="thankYouMessage" class="form-control font-sans" rows="5" placeholder="Add your own custom message here."></textarea>
+							<span class="help-block" style="display: none;">${Resource.msg('gift.inline.message','giftcertificate',null)}
+							</span>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="button" id="send_thankyou_btn" class="btn btn-primary send-thankyou">Send</button>
+					</div>
+				</form>
+				<div class="alert alert-success alert-thankyou" id="alert-thankyou" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+							<i class="fal fa-check fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text">Your thank you note has been sent.</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</isif>
+
+<div class="modal fade modal-primary modal-display confirmation-phone-registration" id="recoveryPhone" tabindex="-1" role="dialog" aria-labelledby="modalrecoveryPhone">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content phone-capture">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;line-height: 1.2;">Complete Your Account</h4>
+			</div>
+			<div class="modal-body" style="min-height: 145px;">
+				<h5 class="text-center">Thank You for Your Order!</h5>
+				<p class="text-center" style="line-height: 1.2;">Complete your account by optionally adding a phone number. This phone number will be used for securely resetting your password.</p>
+				<form>
+					<div class="form-group text-center">
+    					<label for="phone" class="control-label">Phone</label>
+    					<input id="phone" type="tel" class="form-control" style="height: 42px;">
+    					<span class="help-block help-block-capture" style="display: none;">Please enter a valid phone number.</span>
+					</div>
+				</form>
+				<p class="text-center" style="line-height: 1.2;font-size: 14px;">We will text a verification code after you click Continue.</p>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-xs-6">
+						<a class="btn btn-default btn-block" href="#" data-dismiss="modal" aria-label="Close">Skip</a>
+					</div>
+					<div class="col-xs-6">
+						<a class="btn btn-primary btn-block btn-phone-continue" href="#">Continue</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-content phone-verify" style="display: none;">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">Verify Your Phone</h4>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-success text-center alert-resend" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+							<i class="fal fa-redo fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-success">Thank you! Your code was resent.<br>Please try again below.</div>
+				</div>
+				<div class="alert alert-danger alert-incorrect-code" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+							<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-danger">The number entered is incorrect. Please try again.</div>
+				</div>
+				<p class="text-center" style="line-height: 1.2;">We sent a verification code to <strong id="modalphone"></strong>. To complete this process, please enter it below.</p>
+				<div class="row">
+					<div class="col-xl-6 offset-xl-3">
+						<form class="text-center">
+							<div class="form-group">
+		    					<div class="input-group">
+		    						<div class="input-group-append">
+		    							<span class="input-group-text">
+			    							<i class="fa fa-lg fa-mobile-alt"></i>
+			    							<i class="fal fa-arrow-right"></i>
+			    						</span>
+		    						</div>
+		    						<input id="verification" class="form-control" style="height: 42px;">
+		    					</div>
+		    					<span class="help-block help-block-verification" style="display: none;">This field is required.</span>
+							</div>
+						</form>
+						<p class="text-center">
+							<a href="#" class="btn-phone-resend" data-type="sms">Text me again</a> or <a href="#" class="btn-phone-resend" data-type="call">call me</a>.
+						</p>
+						<p class="text-center">
+							<a href="#" class="btn-phone-different" style="font-size: 12px;">Use A Different Phone Number</a>
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-xs-6 col-sm-6">
+						<a class="btn btn-outline-secondary btn-block" href="#" data-dismiss="modal" aria-label="Close">Cancel</a>
+					</div>
+					<div class="col-xs-6 col-sm-6">
+						<a class="btn btn-primary btn-block btn-phone-verify" href="#">Verify</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-content phone-confirm" style="display: none;">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">Thank You</h4>
+			</div>
+			<div class="modal-body">
+				<p class="text-center">Your phone number has been verified.</p>
+			</div>
+			<div class="modal-footer">
+				<div class="text-center">
+					<a class="btn btn-primary" href="#" data-dismiss="modal" aria-label="Close">OK</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<input type="hidden" id="sendVerificationCodeUrl" value="${URLUtils.url('Twilio-SendVerificationCode')}"/>
+<input type="hidden" id="verifyCodeUrl" value="${URLUtils.url('Twilio-VerifyPasswordResetCode')}"/>
+<input type="hidden" id="countryCode" value=""/>
+<isif condition="${mParticleEnabled || rscEnabled}"> 
+	<input type="hidden" id="mParticleOrderDatalayer" value="${mParticleOrderJson}"/>
+</isif>
+<iscomment>
+Extole conversion complete tag
+</iscomment>
+<isextolezonetag name="conversion" order="${pdict.Order}"/>
+<isinclude template="checkout/confirmation/lincconfirmationwidget"/>
+<isinclude template="util/yotpomodules.isml" />
+<isyotpoconversiontracking order="${pdict.Order}" />
+</isdecorate>
+<iscomment>
+thank you modal js
+</iscomment>
+<isif condition="${gcPaymentItems.length >= 1}"> 
+	<isscript>
+		session.custom.checkoutRegister = false;
+	</isscript>
+	<script type="text/javascript">
+	$(document).ready(function(){
+			setTimeout(function(){
+			   $('#thankyouNote').modal('show');
+			}, 1000);
+		});
+		
+		$(document).on('click', '#send_thankyou_btn', function(e){
+	    	e.preventDefault();
+	    	var hasError = false;
+	    	if($('#thankYouMessage').val().length === 0) {
+	    		hasError = true;
+	    		$('#thankYouMessage').closest('.form-group').addClass('has-error');
+	    		$('#thankYouMessage').siblings('.help-block').show();
+	    	}
+	    	if(!hasError) {
+	    		var url = $(this).closest('form').attr('action');
+	    		var form = $(this).closest('form').serialize();
+	    		
+	    		var options = {
+	    	        url: url,
+	    	        method: 'POST',
+	    	        cache: false,
+	    	        data: form
+	    	    };
+	    		$('.loader-preventive').show();
+	    		$.ajax(options).then(function(res) {
+	    			if(res && res.status == true) {
+	    				$('#thankyouNote .modal-dialog .modal-content #thankyou_form').hide();
+	    				$('#thankyouNote .modal-dialog .modal-content #alert-thankyou').show();
+	    			}
+	    			$('.loader-preventive').hide();
+	    		});
+	    	}
+	    });
+	</script>
+</isif>
+<isif condition="${pdict.CurrentCustomer.authenticated && empty(pdict.CurrentCustomer.profile.phoneMobile) && session.custom.checkoutRegister == true}">
+<isscript>
+	session.custom.checkoutRegister = false;
+</isscript> 
+<script>
+
+$(window).load(function(){
+	setTimeout(function(){
+	   $('#recoveryPhone').modal('show');
+	}, 1500);
+});
+
+
+//Confirmation page
+$(function(){
+	  if($('main').is('.checkout-order-confirmation')){
+			
+		  var phoneValidator = window.intlTelInput(document.querySelector("#phone"), {
+		    separateDialCode: true,
+		  	utilsScript: $("#validatorScript").val()
+		  });
+			
+		  
+		  $(document).on('click', '.btn-phone-continue', function (e) {	
+		  	$('.alert-incorrect-code').hide();
+		  	$(".form-group").removeClass('has-error');
+		  	if(phoneValidator.isValidNumber()){
+			  	  var mobileNumber = document.querySelector("#phone").value.trim();
+			  	  var countryCode = phoneValidator.getSelectedCountryData().dialCode;
+			  	  var formattedNumber = phoneValidator.getNumber(1);
+			  	  var resetType = 'sms';
+			  	  $('#countryCode').val(countryCode);
+			  	  $(".form-group").find(".help-block-verification").hide();
+			  	  $(".form-group").find(".help-block-capture").hide();
+				  sendVerificationCode(mobileNumber,formattedNumber,phoneValidator.getSelectedCountryData().dialCode,false,resetType);
+		  	} else {
+	    		$(".form-group").addClass('has-error');
+	    		$(".form-group").find(".help-block-capture").show();
+		  	}
+
+		  });
+		  
+		  $(document).on('click', '.btn-phone-verify', function (e) {
+			  e.preventDefault();
+		  	  $('.alert-incorrect-code').hide();		      
+		  	  var phoneNumber = document.querySelector("#phone").value.trim();
+		  	  var countryCode = document.querySelector("#countryCode").value.trim();
+		  	  var verificationCode = document.querySelector("#verification").value.trim();
+    			 
+		  	if(verificationCode == ''){
+		  		$(".form-group").addClass('has-error');
+	    		$(".form-group").find(".help-block-verification").show();
+		  	} else {
+			  	$(".form-group").find(".help-block-verification").hide();
+			  	$(".form-group").find(".help-block-capture").hide();
+			  	 $.ajax({
+			  			type: 'POST',
+			  			url: $('#verifyCodeUrl').val(),
+			  			data: {
+			  				"phoneNumber": phoneNumber,
+			  				"verificationCode":verificationCode,
+			  				"countryCode": countryCode,
+			  				"updateProfile": true
+			  			},
+			  			success:function(r) {  
+		  					
+				  			if(r.response.success){		  
+				  				$('.phone-verify').hide();	
+				  				$('.phone-confirm').show();			  
+				  			} else {	
+				  				$('.alert-incorrect-code').show();	
+				  			}
+			  				
+			  			}
+			  	 });
+		  	}
+		  });
+		  
+		  		
+		  $(document).on('click', '.btn-phone-different', function (e) {						
+				$('.phone-confirm').hide();	
+				$('#verification').val('');
+				$('#phone').val('');
+				$('#countryCode').val('');
+				$(".form-group").removeClass('has-error');
+  				$('.phone-verify').hide();
+  				$('.alert-resend').hide();
+			  	$(".form-group").find(".help-block-verification").hide();
+			  	$(".form-group").find(".help-block-capture").hide();
+  				$('.phone-capture').show();
+		  });		  
+
+		  $(document).on('click', '.btn-phone-resend', function (e) {		
+		  	var resetType = $(this).attr("data-type");
+		  	var mobileNumber = document.querySelector("#phone").value.trim();
+		  	var formattedNumber = phoneValidator.getNumber(1);		
+		  	$(".form-group").find(".help-block-verification").hide();
+		  	$(".form-group").find(".help-block-capture").hide();
+		  	sendVerificationCode(mobileNumber,formattedNumber,phoneValidator.getSelectedCountryData().dialCode,false,resetType);
+		  	$('.alert-resend').show();
+		  	$('.alert-incorrect-code').hide();
+		  });
+
+		  //Functions
+		  function sendVerificationCode(mobileNumber,formattedNumber,dialCode,showModal,resetType){
+		  	
+		  		if (typeof resetType === 'undefined' || resetType =='') {
+		  			resetType = 'sms';
+		  		}
+		  		
+	  			try{
+	  				mobileNumber = phoneValidator.getNumber().replace("+"+phoneValidator.getSelectedCountryData().dialCode, "");
+	      		} catch(err){}
+	      		  
+		  		$.ajax({
+		  			type: 'POST',
+		  			url: $('#sendVerificationCodeUrl').val(),
+		  			data: {
+		  				"phoneNumber": mobileNumber,
+		  				"resetType": resetType,
+		  				"countryCode": dialCode,
+		  				"updateProfile": true
+		  			},
+		  			success:function(r) {
+		  				
+						if(r.response.success){
+			  					$("#modalphone").text(formattedNumber);		  					
+			  					$('.phone-capture').hide();
+			  					$('.phone-confirm').hide();	
+			  					$('#verification').val('');	
+				  				$('.phone-verify').show();	
+			  			} else {
+		  		    		$(".form-group").addClass('has-error');
+		  		    		$(".form-group").find(".help-block").show();
+			  			}
+
+		  			}
+		  		 });
+		  }
+	  }
+	  // End of confirmation page
+});
+
+
+</script>
+</isif>
+

@@ -1,0 +1,68 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isset name="DecoratorTemplate" value="account/pt_account_bs" scope="page"/>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.ajax.stringValue == 'true' }">
+    <isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+
+<div class="my-account my-account-payment">    
+    <div class="container edit-container add-credit-container">
+		<div class="row">
+			<div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3 col-xl-4 offset-xl-4">
+				<!-- New Address -->
+				<div class="card edit-group edit-state add-state-card">
+					<div class="card-header panel-split d-flex justify-content-between">
+				 		<h4 class="card-header-inner">${Resource.msg('account.paymentinstrumentlist.addcard', 'account', null)}</h4>
+					    <a href="${URLUtils.url('PaymentInstruments-List')}" class="panel-action edit-cancel icon-default">
+							<i class="fal fa-lg fa-times"></i>
+						</a>
+					</div>
+					<div class="card-body">
+						<isif condition="${!empty(pdict.BraintreeError)}">
+							<div class="alert alert-danger d-none">
+								${Resource.msg('braintree.creditcard.paymenterror', 'locale', null)}
+							</div>
+						</isif>
+						<div class="braintree-account-add-credit-card-content">
+							<form id="addCreditCardForm" action="${URLUtils.url('Braintree-AccountAddCreditCardHandle')}" class="account-add-credit-card js_braintree_addCreditCardForm" method="post">
+						
+						            <isscript>
+						                var isEnable3dSecure = false;
+						                var ownerName = !empty(pdict.CardFields) && !empty(pdict.CardFields.owner) ? pdict.CardFields.owner : '';
+						                var amount = 0;
+						            </isscript>
+							         <isinclude template="braintree/util/accountCreditCardFields"/>
+						
+						            <div class="form-row label-inline form-indent add-credit-card-makethisdefault">
+										<div class="field-wrapper checkbox">
+											<label for="braintreeCreditCardMakeDefault">
+	                    						<input name="braintreeCreditCardMakeDefault" id="braintreeCreditCardMakeDefault" type="checkbox" checked="checked" value="true" />
+												<span>${Resource.msg('braintree.creditcard.makedefault', 'locale', null)}</span>
+											</label>
+										</div>
+						            </div>
+						
+									<isscript>
+							            var currentCountry = require('app_storefront_core/cartridge/scripts/util/Countries').getCurrent(pdict);
+							        </isscript>
+							        <isdynamicform formobject="${pdict.CurrentForms.billing.billingAddress.addressFields}" formdata="${currentCountry.dynamicForms.addressDetails}"/>
+						            <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.creditcards.create.htmlName}" value="true" />
+						            <input type="hidden" name="${pdict.CurrentForms.paymentinstruments.secureKeyHtmlName}" value="${pdict.CurrentForms.paymentinstruments.secureKeyValue}" />
+						
+						            <div class="text-right add-credicard-footer-buttons">
+										<a href="${URLUtils.url('PaymentInstruments-List')}" class="btn btn-outline-dark btn-lg edit-cancel">${Resource.msg('braintree.addcreditcard.button.cancel', 'locale', null)}</a>
+										<button type="submit" class="btn btn-primary btn-lg edit-save credit-card-save">${Resource.msg('braintree.addcreditcard.button.apply', 'locale', null)}</button>
+									</div>
+									<input type="hidden" name="scope" value="${request.httpParameterMap.scope}">
+	    					</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</isdecorate>

@@ -1,0 +1,1266 @@
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
+/* stylelint-disable no-descending-specificity */
+/**
+ *  Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+ *  Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+ */
+html {
+  font-size: 62.5%; }
+
+#bm_content_column {
+  padding: 0; }
+
+#dashboard-container {
+  margin: 0 8rem; }
+
+.table_title.main-dashboard__title {
+  color: #17a8f1; }
+
+.hide {
+  display: none; }
+
+.page-container {
+  margin: 0 8rem; }
+
+.flex.sor-module__buttons-container {
+  height: 6.5rem;
+  border-top: 0.1rem solid #e0e0e0;
+  border-bottom: 0.1rem solid #e0e0e0;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -ms-flex-align: center;
+  align-items: center;
+  margin-bottom: 2rem; }
+  .flex.sor-module__buttons-container a {
+    background-color: #fff;
+    border: 0;
+    color: #8b8b8b;
+    font-size: 14pt;
+    padding: 1.6rem 0;
+    margin: 0 1.5rem; }
+    .flex.sor-module__buttons-container a:first-child {
+      margin-left: 0; }
+    .flex.sor-module__buttons-container a:hover {
+      color: #17a8f1;
+      text-decoration: none; }
+  .flex.sor-module__buttons-container .navCurrentTab {
+    font-weight: 600;
+    color: #17a8f1;
+    border-bottom: 0.3rem solid #17a8f1;
+    border-radius: 0; }
+
+#addProductForm .input-select {
+  right: 2.25rem;
+  position: relative; }
+
+#addProductForm #addPButton {
+  background-color: #17a8f1;
+  border: 0.1rem solid #17a8f1;
+  border-radius: 0;
+  color: #fff;
+  height: 3.5rem;
+  margin-top: 2rem;
+  margin-left: 3rem;
+  padding-top: 1rem;
+  cursor: pointer; }
+  #addProductForm #addPButton:hover {
+    background-color: #fff;
+    color: #17a8f1; }
+
+#addProductForm #cancelButton {
+  background-color: #e27252;
+  border: 0.1rem solid #e27252;
+  color: #fff;
+  width: 6rem;
+  padding: 1rem 2rem 0 1.2rem;
+  font-size: 1rem;
+  margin-left: 3rem;
+  height: 3.5rem;
+  margin-top: 2rem;
+  cursor: pointer; }
+  #addProductForm #cancelButton:hover {
+    background-color: #fff;
+    color: #e27252; }
+
+#addProductForm .addproduct-quantity {
+  position: relative;
+  right: 3.5rem; }
+
+#addProductForm .row {
+  min-width: 48rem; }
+
+#addProductForm label {
+  color: #8b8b8b;
+  font-size: 1.6rem;
+  min-width: 10rem;
+  max-width: 30rem;
+  width: 100%; }
+
+#addProductForm select {
+  padding: 1rem;
+  border: 0.1rem solid #17a8f1;
+  min-width: 23rem;
+  max-width: 30rem;
+  width: 100%; }
+
+#addProductForm input {
+  padding: 1rem;
+  border: 0.1rem solid #17a8f1;
+  min-width: 23rem;
+  max-width: 30rem;
+  width: 100%; }
+
+#addProductForm .quantityandbuttons .form-group {
+  display: -ms-inline-flexbox;
+  display: inline-flex; }
+
+.sor-filter__container.flex .sor-filter-input {
+  margin-right: 3rem; }
+  .sor-filter__container.flex .sor-filter-input .form-row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column; }
+
+.sor-filter__container.flex .sor-filter-input.text-input {
+  min-width: 12rem;
+  max-width: 25rem;
+  width: 100%; }
+  .sor-filter__container.flex .sor-filter-input.text-input input.input-text {
+    width: 12rem;
+    width: 100%; }
+
+.sor-filter__container.flex label {
+  color: #8b8b8b;
+  font-size: 14pt; }
+
+.sor-filter__container.flex select {
+  font-size: 12pt;
+  padding: 1rem;
+  cursor: pointer; }
+
+.sor-filter__container.flex input {
+  font-size: 12pt;
+  padding: 1rem;
+  cursor: pointer; }
+
+.sor-filter__container.flex .sor-filter__row {
+  background-color: #fff;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: row;
+  flex-direction: row; }
+  .sor-filter__container.flex .sor-filter__row label {
+    font-size: 12pt;
+    cursor: pointer; }
+  .sor-filter__container.flex .sor-filter__row select {
+    width: 100%;
+    display: inline-block;
+    margin: 0;
+    box-sizing: border-box;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMjkgMTI5IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxMjkgMTI5IiB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4Ij4KICA8Zz4KICAgIDxwYXRoIGQ9Im0xMjEuMywzNC42Yy0xLjYtMS42LTQuMi0xLjYtNS44LDBsLTUxLDUxLjEtNTEuMS01MS4xYy0xLjYtMS42LTQuMi0xLjYtNS44LDAtMS42LDEuNi0xLjYsNC4yIDAsNS44bDUzLjksNTMuOWMwLjgsMC44IDEuOCwxLjIgMi45LDEuMiAxLDAgMi4xLTAuNCAyLjktMS4ybDUzLjktNTMuOWMxLjctMS42IDEuNy00LjIgMC4xLTUuOHoiIGZpbGw9IiMwMDAwMDAiLz4KICA8L2c+Cjwvc3ZnPgo=");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 1.5rem) 1em;
+    background-size: 1.5rem;
+    padding-right: 5rem;
+    border: 0.1rem solid #e0e0e0;
+    font-weight: 600;
+    vertical-align: bottom; }
+  .sor-filter__container.flex .sor-filter__row input[type="text"] {
+    border: 0.1rem solid #e0e0e0; }
+  .sor-filter__container.flex .sor-filter__row .hasDatepicker {
+    background-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIHZpZXdCb3g9IjAgMCAxMjkgMTI5IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxMjkgMTI5IiB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4Ij4KICA8Zz4KICAgIDxwYXRoIGQ9Im0xMjEuMywzNC42Yy0xLjYtMS42LTQuMi0xLjYtNS44LDBsLTUxLDUxLjEtNTEuMS01MS4xYy0xLjYtMS42LTQuMi0xLjYtNS44LDAtMS42LDEuNi0xLjYsNC4yIDAsNS44bDUzLjksNTMuOWMwLjgsMC44IDEuOCwxLjIgMi45LDEuMiAxLDAgMi4xLTAuNCAyLjktMS4ybDUzLjktNTMuOWMxLjctMS42IDEuNy00LjIgMC4xLTUuOHoiIGZpbGw9IiMwMDAwMDAiLz4KICA8L2c+Cjwvc3ZnPgo=");
+    background-repeat: no-repeat;
+    background-position: calc(100% - 1.5rem) 1em;
+    max-width: 13rem;
+    padding-right: 3.5rem; }
+
+#ordersummary-form .sor-filter-input:first-child {
+  padding-top: 0.5rem; }
+
+#ordersummary-form .sor-filter-input:nth-child(2) {
+  padding-top: 0.5rem; }
+
+#ordersummary-form .sor-filter-input.text-input {
+  padding-top: 0.5rem; }
+
+.sor-filter-checkbox {
+  margin-right: 2rem; }
+  .sor-filter-checkbox .form-row {
+    height: 4.6rem;
+    display: -ms-flexbox;
+    display: flex; }
+    .sor-filter-checkbox .form-row input {
+      display: none; }
+    .sor-filter-checkbox .form-row label {
+      display: inline-block;
+      position: relative;
+      padding-left: 2.5rem;
+      font-size: 1.6rem;
+      line-height: 2rem;
+      margin: 0.5rem; }
+      .sor-filter-checkbox .form-row label::before {
+        line-height: 2rem;
+        content: "";
+        display: inline-block;
+        width: 2rem;
+        height: 2rem;
+        position: absolute;
+        left: 0;
+        background-color: #fff;
+        border: 0.1rem solid #17a8f1;
+        padding: 0.1rem;
+        background-clip: content-box; }
+    .sor-filter-checkbox .form-row input[type=checkbox]:checked + label::before {
+      color: #666;
+      text-align: center;
+      line-height: 1.6rem;
+      background-color: #17a8f1; }
+
+.sor-filter-buttons {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: row;
+  flex-direction: row; }
+  .sor-filter-buttons .button {
+    width: 13rem;
+    height: 4.6rem;
+    border: 0.1rem solid #17a8f1;
+    border-radius: 0;
+    font-size: 1.6rem;
+    margin-top: 2.1rem;
+    margin-right: 1.5rem;
+    transition: 0.1s all ease-out; }
+  .sor-filter-buttons .sor-module__search .button:hover {
+    color: #17a8f1;
+    background-color: #fff;
+    border: 0.1rem solid #17a8f1; }
+  .sor-filter-buttons .blue {
+    background-color: #17a8f1;
+    color: #fff; }
+    .sor-filter-buttons .blue:hover {
+      color: #17a8f1;
+      background: #fff;
+      border: 0.1rem solid #17a8f1; }
+  .sor-filter-buttons .white {
+    background-color: #fff;
+    color: #17a8f1; }
+    .sor-filter-buttons .white:hover {
+      color: #fff;
+      background-color: #17a8f1;
+      border: 0.1rem solid #17a8f1; }
+
+.sor-filter-buttons.orders .button {
+  margin-top: 2.9rem; }
+
+.sor-filter-table__container {
+  font-size: 1.6rem; }
+  .sor-filter-table__container .orderSummary {
+    transition: 0.1s all ease-out; }
+    .sor-filter-table__container .orderSummary:hover {
+      background-color: #17a8f1;
+      color: #fff; }
+  .sor-filter-table__container .subscriptionSummary {
+    transition: 0.1s all ease-out; }
+    .sor-filter-table__container .subscriptionSummary:hover {
+      background-color: #17a8f1;
+      color: #fff; }
+  .sor-filter-table__container .memberSubscription {
+    transition: 0.1s all ease-out; }
+    .sor-filter-table__container .memberSubscription:hover {
+      background-color: #17a8f1;
+      color: #fff; }
+  .sor-filter-table__container .sor-order-summary {
+    border-bottom: 0.0625rem solid #ccc;
+    line-height: 1.8em; }
+  .sor-filter-table__container .sor-filter-table__row {
+    display: -ms-flexbox;
+    display: flex;
+    border-bottom: 0.1rem solid #323232;
+    padding: 0;
+    cursor: pointer; }
+    .sor-filter-table__container .sor-filter-table__row > div {
+      font-size: 1.6rem;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: row;
+      flex-direction: row;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+      -ms-flex-align: center;
+      align-items: center;
+      font-weight: 400; }
+    .sor-filter-table__container .sor-filter-table__row .sor-filter-table__customer {
+      width: 27%; }
+    .sor-filter-table__container .sor-filter-table__row .sor-filter-table__order-date {
+      width: 10%; }
+    .sor-filter-table__container .sor-filter-table__row .sor-filter-table__status {
+      width: 10%; }
+    .sor-filter-table__container .sor-filter-table__row .sor-filter-table__valid-until {
+      width: 10%; }
+    .sor-filter-table__container .sor-filter-table__row .sor-filter-table__id {
+      min-width: 10rem;
+      width: 15%; }
+    .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items {
+      width: 43%;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+      flex-direction: column; }
+      .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items .sor-filter-table__items-name {
+        width: 46%; }
+      .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items .sor-filter-table__items-id {
+        width: 27%;
+        min-width: 11rem; }
+      .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items .sor-filter-table__items-price {
+        width: 27%;
+        min-width: 11rem; }
+    .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items-wrap {
+      width: 100%;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: row;
+      flex-direction: row; }
+      .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items-wrap > div {
+        padding: 0.5rem;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center; }
+      .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items-wrap .sor-filter-table__items-id {
+        padding-left: 0;
+        width: 27%;
+        min-width: 11rem; }
+      .sor-filter-table__container .sor-filter-table__row .sor-filter-table__items-wrap .sor-filter-table__items-name {
+        width: 70%; }
+  .sor-filter-table__container .sor-filter-table__row-header {
+    display: -ms-flexbox;
+    display: flex;
+    border-bottom: 0.1rem solid #323232;
+    padding: 0;
+    cursor: pointer; }
+    .sor-filter-table__container .sor-filter-table__row-header > div {
+      font-size: 1.6rem;
+      font-weight: 600;
+      padding: 2rem 1rem;
+      box-sizing: border-box;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: row;
+      flex-direction: row;
+      -ms-flex-pack: start;
+      justify-content: flex-start;
+      -ms-flex-align: center;
+      align-items: center; }
+    .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__customer {
+      width: 27%; }
+    .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__order-date {
+      width: 10%; }
+    .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__status {
+      width: 10%; }
+    .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__valid-until {
+      width: 10%; }
+    .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__id {
+      min-width: 10rem;
+      width: 15%; }
+    .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items {
+      width: 43%;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: row;
+      flex-direction: row; }
+      .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items .sor-filter-table__items-name {
+        width: 46%; }
+      .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items .sor-filter-table__items-id {
+        width: 27%;
+        min-width: 11rem; }
+      .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items .sor-filter-table__items-price {
+        width: 27%;
+        min-width: 11rem; }
+    .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items-wrap {
+      width: 100%;
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: row;
+      flex-direction: row; }
+      .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items-wrap > div {
+        padding: 0.5rem;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-align: center;
+        align-items: center; }
+      .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items-wrap .sor-filter-table__items-id {
+        padding-left: 0;
+        width: 27%;
+        min-width: 11rem; }
+      .sor-filter-table__container .sor-filter-table__row-header .sor-filter-table__items-wrap .sor-filter-table__items-name {
+        width: 70%; }
+  .sor-filter-table__container .sor-filter-table__footer {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    margin: 1.5rem 0 3rem; }
+    .sor-filter-table__container .sor-filter-table__footer .total-currencies {
+      font-weight: 600; }
+    .sor-filter-table__container .sor-filter-table__footer .sor-module__pagination {
+      background: #fff;
+      color: #323232; }
+      .sor-filter-table__container .sor-filter-table__footer .sor-module__pagination tr td {
+        box-sizing: border-box;
+        border-radius: 0;
+        border: 0.1rem solid #e0e0e0;
+        padding: 0; }
+        .sor-filter-table__container .sor-filter-table__footer .sor-module__pagination tr td a.button {
+          text-decoration: none;
+          color: #323232;
+          background-color: #fff;
+          border-radius: 0;
+          border: 0;
+          padding: 0.5rem 1.5rem;
+          width: 100%;
+          transition: 0.1s all ease-out; }
+        .sor-filter-table__container .sor-filter-table__footer .sor-module__pagination tr td > a:hover {
+          color: #fff;
+          background-color: #17a8f1; }
+      .sor-filter-table__container .sor-filter-table__footer .sor-module__pagination tr .middle-pag {
+        background-color: #17a8f1;
+        color: #fff;
+        box-sizing: border-box;
+        padding: 0.5rem 1.5rem;
+        border-top: 0.1rem solid #e0e0e0;
+        border-bottom: 0.1rem solid #e0e0e0; }
+
+.sor-filter-table__container#memberList .sor-filter-table__id {
+  width: 33%; }
+
+.sor-filter-table__container#memberList .sor-filter-table__customer {
+  width: 67%; }
+
+#sorModal .modal-dialog .modal-content {
+  padding: 3rem;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  font-family: "Open Sans", sans-serif;
+  border-top: 0; }
+  #sorModal .modal-dialog .modal-content .modal-header {
+    border-bottom: 0;
+    right: 0.3125rem;
+    top: 0.3125rem;
+    position: absolute; }
+  #sorModal .modal-dialog .modal-content .sor-module {
+    margin-bottom: 0; }
+  #sorModal .modal-dialog .modal-content .line {
+    border-bottom: 0.1rem solid #e0e0e0;
+    margin: 2rem 0; }
+  #sorModal .modal-dialog .modal-content h2 {
+    margin: 0;
+    font-size: 16pt; }
+  #sorModal .modal-dialog .modal-content h4 {
+    margin: 0;
+    font-size: 16pt; }
+  #sorModal .modal-dialog .modal-content .sor-module__name-title {
+    font-weight: 600; }
+  #sorModal .modal-dialog .modal-content .subscriptionSection-img {
+    margin: 2rem 0 3rem;
+    font-size: 1.4rem;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -ms-flex-align: center;
+    align-items: center; }
+    #sorModal .modal-dialog .modal-content .subscriptionSection-img img {
+      margin-right: 1.5rem;
+      width: 5rem;
+      height: auto; }
+    #sorModal .modal-dialog .modal-content .subscriptionSection-img .img-info {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+      flex-direction: column; }
+      #sorModal .modal-dialog .modal-content .subscriptionSection-img .img-info .product-name {
+        display: -ms-flexbox;
+        display: flex; }
+      #sorModal .modal-dialog .modal-content .subscriptionSection-img .img-info .refill-interval {
+        display: -ms-flexbox;
+        display: flex; }
+  #sorModal .modal-dialog .modal-content .orderSection-img {
+    margin: 2rem 0 3rem;
+    font-size: 1.4rem;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-pack: start;
+    justify-content: flex-start;
+    -ms-flex-align: center;
+    align-items: center; }
+    #sorModal .modal-dialog .modal-content .orderSection-img img {
+      margin-right: 1.5rem;
+      width: 5rem;
+      height: auto; }
+    #sorModal .modal-dialog .modal-content .orderSection-img .img-info {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+      flex-direction: column; }
+      #sorModal .modal-dialog .modal-content .orderSection-img .img-info .product-name {
+        display: -ms-flexbox;
+        display: flex; }
+      #sorModal .modal-dialog .modal-content .orderSection-img .img-info .refill-interval {
+        display: -ms-flexbox;
+        display: flex; }
+  #sorModal .modal-dialog .modal-content .sor-module__subscription-status {
+    font-size: 1.4rem;
+    margin-bottom: 1rem; }
+    #sorModal .modal-dialog .modal-content .sor-module__subscription-status strong {
+      text-transform: capitalize; }
+  #sorModal .modal-dialog .modal-content .sor-module__subscription-date {
+    font-size: 1.4rem;
+    margin-bottom: 1rem; }
+  #sorModal .modal-dialog .modal-content .exp-date {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    font-size: 1.4rem; }
+  #sorModal .modal-dialog .modal-content .renewal-button {
+    display: inline-block;
+    margin-right: 1.5rem; }
+  #sorModal .modal-dialog .modal-content .cancel-button {
+    display: inline-block;
+    margin-right: 1.5rem; }
+  #sorModal .modal-dialog .modal-content .detail-button {
+    display: inline-block;
+    margin-right: 1.5rem; }
+  #sorModal .modal-dialog .modal-content .pause-button {
+    display: inline-block;
+    margin-right: 1.5rem; }
+  #sorModal .modal-dialog .modal-content .reactivate-button {
+    display: inline-block;
+    margin-right: 1.5rem; }
+  #sorModal .modal-dialog .modal-content .button {
+    text-decoration: none;
+    border-radius: 0;
+    font-size: 1.4rem;
+    transition: 0.1s all ease-out; }
+  #sorModal .modal-dialog .modal-content .button.orange {
+    background-color: #e27252;
+    padding: 0.7rem 1.5rem;
+    color: #fff;
+    border: 0.1rem solid #e27252; }
+    #sorModal .modal-dialog .modal-content .button.orange:hover {
+      background-color: #fff;
+      color: #e27252;
+      border: 0.1rem solid #e27252; }
+  #sorModal .modal-dialog .modal-content .button.blue {
+    background-color: #17a8f1;
+    padding: 0.7rem 1.5rem;
+    color: #fff;
+    border: 0.1rem solid #17a8f1; }
+    #sorModal .modal-dialog .modal-content .button.blue:hover {
+      background-color: #fff;
+      color: #17a8f1; }
+  #sorModal .modal-dialog .modal-content .action-buttons {
+    margin-top: 1rem;
+    padding: 0 1rem;
+    box-sizing: border-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-align: center;
+    align-items: center; }
+    #sorModal .modal-dialog .modal-content .action-buttons > .detail-button {
+      margin: auto 1rem;
+      margin-left: 0; }
+  #sorModal .modal-dialog .modal-content .button.order {
+    padding: 0.7rem 1.5rem;
+    font-size: 1.4rem;
+    margin: 1rem;
+    cursor: pointer; }
+    #sorModal .modal-dialog .modal-content .button.order img {
+      width: 1.2rem;
+      padding-bottom: 0.2rem;
+      box-sizing: border-box; }
+      #sorModal .modal-dialog .modal-content .button.order img:last-child {
+        display: none; }
+    #sorModal .modal-dialog .modal-content .button.order .pauseImg {
+      display: none; }
+  #sorModal .modal-dialog .modal-content .close-btn {
+    position: relative;
+    top: 0.5rem; }
+  #sorModal .modal-dialog .modal-content .blue-invert {
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1; }
+    #sorModal .modal-dialog .modal-content .blue-invert .pauseImg {
+      display: none; }
+    #sorModal .modal-dialog .modal-content .blue-invert .reactivateImg {
+      display: none; }
+    #sorModal .modal-dialog .modal-content .blue-invert:hover {
+      background-color: #17a8f1;
+      color: #fff; }
+      #sorModal .modal-dialog .modal-content .blue-invert:hover img:first-child {
+        display: none; }
+      #sorModal .modal-dialog .modal-content .blue-invert:hover .pauseImg {
+        display: inline-block; }
+      #sorModal .modal-dialog .modal-content .blue-invert:hover .reactivateImg {
+        display: inline-block; }
+  #sorModal .modal-dialog .modal-content .closeSubscription {
+    float: right; }
+  #sorModal .modal-dialog .modal-content .orange-invert {
+    text-decoration: none;
+    display: inline-block;
+    background-color: #e27252;
+    padding: 0.7rem 1.5rem;
+    color: #fff;
+    border: 0.1rem solid #e27252;
+    cursor: pointer;
+    border-radius: 0; }
+    #sorModal .modal-dialog .modal-content .orange-invert:hover {
+      background-color: #fff;
+      color: #e27252;
+      border: 0.1rem solid #e27252; }
+      #sorModal .modal-dialog .modal-content .orange-invert:hover img {
+        width: 1.2rem;
+        padding-bottom: 0.2rem;
+        box-sizing: border-box; }
+        #sorModal .modal-dialog .modal-content .orange-invert:hover img:last-child {
+          display: inline-block; }
+        #sorModal .modal-dialog .modal-content .orange-invert:hover img:first-child {
+          display: none; }
+      #sorModal .modal-dialog .modal-content .orange-invert:hover .pauseImg {
+        display: none; }
+  #sorModal .modal-dialog .modal-content .no-subscriptions {
+    text-align: center;
+    font-size: 1.6rem; }
+
+#sorModal #edit-cancelationfee {
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -ms-flex-pack: start;
+  justify-content: flex-start;
+  -ms-flex-align: start;
+  align-items: flex-start; }
+  #sorModal #edit-cancelationfee .button.button--right {
+    position: static;
+    margin: 0;
+    margin-bottom: 2rem;
+    cursor: pointer;
+    transition: 0.1s all ease-out; }
+    #sorModal #edit-cancelationfee .button.button--right:hover {
+      background-color: #17a8f1;
+      color: #fff;
+      border: 0; }
+  #sorModal #edit-cancelationfee .sor-table {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: row;
+    flex-direction: row;
+    -ms-flex-item-align: end;
+    align-self: flex-end; }
+    #sorModal #edit-cancelationfee .sor-table h1 {
+      margin-left: 1.5rem; }
+    #sorModal #edit-cancelationfee .sor-table div.form-row {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+      flex-direction: column; }
+      #sorModal #edit-cancelationfee .sor-table div.form-row input {
+        padding: 1rem;
+        border: 0.1rem solid #17a8f1;
+        min-width: 10rem;
+        max-width: 30rem;
+        width: 100%; }
+      #sorModal #edit-cancelationfee .sor-table div.form-row label {
+        color: #8b8b8b;
+        font-size: 1.6rem;
+        min-width: 10rem;
+        max-width: 30rem;
+        width: 100%; }
+    #sorModal #edit-cancelationfee .sor-table > div:last-child {
+      display: -ms-flexbox;
+      display: flex;
+      width: auto;
+      height: auto;
+      -ms-flex-align: end;
+      align-items: flex-end; }
+    #sorModal #edit-cancelationfee .sor-table .button.confirm_btn {
+      margin-left: 2rem;
+      vertical-align: text-top;
+      font-size: 1.6rem;
+      padding: 0.9rem;
+      padding-top: 0.8rem; }
+    #sorModal #edit-cancelationfee .sor-table .cancelationfee_confirm {
+      position: relative;
+      top: 2rem; }
+    #sorModal #edit-cancelationfee .sor-table .cancelationfeeclose-btn {
+      position: relative;
+      top: 1rem; }
+
+#confirmModal {
+  z-index: 1051; }
+
+#sorModal.confirm_alert .modal-content {
+  padding: 0; }
+
+#sorModal.confirm_alert .modal-header {
+  background-color: #17a8f1;
+  color: #fff;
+  border-radius: 0;
+  width: 100%; }
+
+#sorModal.confirm_alert .modal-body {
+  border: 0;
+  font-size: 1.6rem; }
+
+#sorModal.confirm_alert .modal-footer button.btn {
+  padding: 0.5rem 2rem;
+  font-size: 1.4rem;
+  border-radius: 0;
+  text-decoration: none;
+  transition: 0.1s all ease-out; }
+
+#sorModal.confirm_alert .modal-footer a.btn-yes[type=button] {
+  padding: 0.5rem 2rem;
+  font-size: 1.4rem;
+  border-radius: 0;
+  text-decoration: none;
+  background-color: #17a8f1;
+  border: 0.1rem solid #17a8f1;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.1s all ease-out; }
+  #sorModal.confirm_alert .modal-footer a.btn-yes[type=button]:hover {
+    background: #fff;
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1; }
+
+#sorModal.confirm_alert .modal-footer button.btn-yes {
+  padding: 0.5rem 2rem;
+  font-size: 1.4rem;
+  border-radius: 0;
+  text-decoration: none;
+  background-color: #17a8f1;
+  border: 0.1rem solid #17a8f1;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.1s all ease-out; }
+  #sorModal.confirm_alert .modal-footer button.btn-yes:hover {
+    background: #fff;
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1; }
+
+#sorModal.confirm_alert .modal-footer :first-child {
+  background-color: #17a8f1;
+  border: 0.1rem solid red;
+  color: #fff; }
+  #sorModal.confirm_alert .modal-footer :first-child :hover {
+    background: #fff;
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1; }
+
+#sorModal.confirm_alert .modal-footer :last-child {
+  background-color: #e27252;
+  border: 0.1rem solid #e27252;
+  color: #fff; }
+  #sorModal.confirm_alert .modal-footer :last-child :hover {
+    background: transparent;
+    border: 0.1rem solid #e27252;
+    color: #e27252; }
+
+#confirmModal.confirm_alert .modal-content {
+  padding: 0; }
+
+#confirmModal.confirm_alert .modal-header {
+  background-color: #17a8f1;
+  color: #fff;
+  border-radius: 0;
+  width: 100%; }
+
+#confirmModal.confirm_alert .modal-body {
+  border: 0;
+  font-size: 1.6rem; }
+
+#confirmModal.confirm_alert .modal-footer button.btn {
+  padding: 0.5rem 2rem;
+  font-size: 1.4rem;
+  border-radius: 0;
+  text-decoration: none;
+  transition: 0.1s all ease-out; }
+
+#confirmModal.confirm_alert .modal-footer a.btn-yes[type=button] {
+  padding: 0.5rem 2rem;
+  font-size: 1.4rem;
+  border-radius: 0;
+  text-decoration: none;
+  background-color: #17a8f1;
+  border: 0.1rem solid #17a8f1;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.1s all ease-out; }
+  #confirmModal.confirm_alert .modal-footer a.btn-yes[type=button]:hover {
+    background: #fff;
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1; }
+
+#confirmModal.confirm_alert .modal-footer button.btn-yes {
+  padding: 0.5rem 2rem;
+  font-size: 1.4rem;
+  border-radius: 0;
+  text-decoration: none;
+  background-color: #17a8f1;
+  border: 0.1rem solid #17a8f1;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.1s all ease-out; }
+  #confirmModal.confirm_alert .modal-footer button.btn-yes:hover {
+    background: #fff;
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1; }
+
+#confirmModal.confirm_alert .modal-footer :first-child {
+  background-color: #17a8f1;
+  border: 0.1rem solid red;
+  color: #fff; }
+  #confirmModal.confirm_alert .modal-footer :first-child :hover {
+    background: #fff;
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1; }
+
+#confirmModal.confirm_alert .modal-footer :last-child {
+  background-color: #e27252;
+  border: 0.1rem solid #e27252;
+  color: #fff; }
+  #confirmModal.confirm_alert .modal-footer :last-child :hover {
+    background: transparent;
+    border: 0.1rem solid #e27252;
+    color: #e27252; }
+
+.sor-module__filter_table {
+  width: 100%; }
+  .sor-module__filter_table tr td:first-child {
+    width: 56%; }
+  .sor-module__filter_table tr td:nth-child(2) {
+    width: 22%; }
+  .sor-module__filter_table tr td:last-child {
+    width: 23%; }
+
+#subscription-details-nav {
+  display: -ms-flexbox;
+  display: flex;
+  margin: 1.5rem 5rem;
+  border-top: 0.1rem solid #e0e0e0;
+  border-bottom: 0.1rem solid #e0e0e0; }
+  #subscription-details-nav span {
+    margin: 0 1rem;
+    cursor: pointer;
+    padding: 1.5rem 0;
+    line-height: 1.3rem;
+    font-size: 1.4rem; }
+  #subscription-details-nav .selected {
+    color: #17a8f1;
+    border-bottom: 0.2rem solid #17a8f1;
+    font-weight: 600; }
+
+.button.button--right {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: #323232;
+  font-weight: 600;
+  font-size: 1.6rem;
+  margin: 1.5rem 0 0 5rem;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition: 0.1s all ease-out; }
+  .button.button--right:hover {
+    border: 0;
+    border-radius: 0;
+    color: #fff;
+    text-decoration: none;
+    background-color: #17a8f1; }
+
+.subscription-details-header {
+  margin-left: 5rem;
+  font-size: 1.8rem; }
+
+#subscription-details {
+  font-family: "Open Sans", sans-serif;
+  margin: 3rem 1.5rem 10rem 5rem;
+  width: 100%;
+  max-width: calc(100vw - 8rem);
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -ms-flex-wrap: wrap;
+  flex-wrap: wrap; }
+  #subscription-details .visualy-hidden {
+    display: none; }
+  #subscription-details .productAddbtn {
+    position: relative;
+    top: 0.3125rem; }
+    #subscription-details .productAddbtn .btnadd {
+      background: transparent;
+      border: 0.1rem solid #17a8f1;
+      color: #17a8f1;
+      font-weight: 600;
+      font-size: 1.3rem;
+      margin: 0;
+      padding: 0.7rem 2rem;
+      text-decoration: none;
+      border-radius: 0;
+      transition: 0.1s all ease-out; }
+      #subscription-details .productAddbtn .btnadd:hover {
+        background-color: #17a8f1;
+        color: #fff;
+        border: 0.1rem solid #17a8f1; }
+  #subscription-details .sor-module table {
+    width: 100%; }
+    #subscription-details .sor-module table td {
+      padding: 1rem; }
+    #subscription-details .sor-module table .sor-module__titles-row {
+      border-bottom: 0.1rem solid #e0e0e0; }
+  #subscription-details .products-section table {
+    width: 100%; }
+    #subscription-details .products-section table tr:not(:first-child) td:not(:nth-child(2)) {
+      text-align: center; }
+    #subscription-details .products-section table tr:not(:first-child) td:last-child {
+      vertical-align: middle; }
+      #subscription-details .products-section table tr:not(:first-child) td:last-child .update .button {
+        background: transparent;
+        border: 0.1rem solid #17a8f1;
+        color: #17a8f1;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin: 0;
+        padding: 0.7rem 2rem;
+        text-decoration: none;
+        border-radius: 0;
+        transition: 0.1s all ease-out; }
+        #subscription-details .products-section table tr:not(:first-child) td:last-child .update .button:hover {
+          background-color: #17a8f1;
+          color: #fff;
+          border: 0.1rem solid #17a8f1; }
+      #subscription-details .products-section table tr:not(:first-child) td:last-child .remove_product .button {
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin: 0;
+        padding: 0.7rem 2rem;
+        text-decoration: none;
+        border-radius: 0;
+        transition: 0.1s all ease-out;
+        background: transparent;
+        background-color: #17a8f1;
+        border: 0.1rem solid #e27252;
+        color: #e27252;
+        cursor: pointer; }
+        #subscription-details .products-section table tr:not(:first-child) td:last-child .remove_product .button:hover {
+          background-color: #e27252;
+          color: #fff; }
+    #subscription-details .products-section table tr:not(:first-child) td:nth-child(6) {
+      vertical-align: middle; }
+      #subscription-details .products-section table tr:not(:first-child) td:nth-child(6) .update .button {
+        background: transparent;
+        border: 0.1rem solid #17a8f1;
+        color: #17a8f1;
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin: 0;
+        padding: 0.7rem 2rem;
+        text-decoration: none;
+        border-radius: 0;
+        transition: 0.1s all ease-out; }
+        #subscription-details .products-section table tr:not(:first-child) td:nth-child(6) .update .button:hover {
+          background-color: #17a8f1;
+          color: #fff;
+          border: 0.1rem solid #17a8f1; }
+      #subscription-details .products-section table tr:not(:first-child) td:nth-child(6) .remove_product .button {
+        font-weight: 600;
+        font-size: 1.3rem;
+        margin: 0;
+        padding: 0.7rem 2rem;
+        text-decoration: none;
+        border-radius: 0;
+        transition: 0.1s all ease-out;
+        background: transparent;
+        background-color: #fff;
+        border: 0.1rem solid #e27252;
+        color: #e27252;
+        cursor: pointer; }
+        #subscription-details .products-section table tr:not(:first-child) td:nth-child(6) .remove_product .button:hover {
+          background-color: #e27252;
+          color: #fff; }
+    #subscription-details .products-section table .productName {
+      color: #323232;
+      text-decoration: none; }
+      #subscription-details .products-section table .productName:hover {
+        color: #17a8f1; }
+  #subscription-details .payment-section .sor-table tr {
+    border-bottom: 0.1rem solid #e0e0e0; }
+    #subscription-details .payment-section .sor-table tr td {
+      padding: 1rem; }
+    #subscription-details .payment-section .sor-table tr .updateCard {
+      background: transparent;
+      border: 0.1rem solid #17a8f1;
+      color: #17a8f1;
+      font-weight: 600;
+      font-size: 1.3rem;
+      margin: 1.5rem 0 0;
+      padding: 0.7rem 2rem;
+      text-decoration: none;
+      border-radius: 0;
+      transition: 0.1s all ease-out; }
+      #subscription-details .payment-section .sor-table tr .updateCard:hover {
+        background-color: #17a8f1;
+        color: #fff;
+        border: 0.1rem solid #17a8f1; }
+  #subscription-details .sub-details-total {
+    width: 25rem;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    font-size: 1.4rem; }
+    #subscription-details .sub-details-total .total-section .content-section {
+      display: -ms-flexbox;
+      display: flex;
+      -ms-flex-direction: column;
+      flex-direction: column; }
+      #subscription-details .sub-details-total .total-section .content-section .total-header .order-section-title {
+        color: #17a8f1;
+        font-weight: 600;
+        text-align: center; }
+      #subscription-details .sub-details-total .total-section .content-section .total-info p {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-direction: row;
+        flex-direction: row;
+        -ms-flex-pack: justify;
+        justify-content: space-between;
+        margin: 0;
+        padding: 0.7rem;
+        border: 0.1rem solid #e0e0e0; }
+        #subscription-details .sub-details-total .total-section .content-section .total-info p:last-child {
+          font-weight: 600; }
+        #subscription-details .sub-details-total .total-section .content-section .total-info p:not(:last-child) {
+          border-bottom: 0; }
+  #subscription-details .order-section {
+    font-size: 1.4rem;
+    width: 100%; }
+    #subscription-details .order-section ul {
+      padding: 0;
+      list-style-type: none; }
+      #subscription-details .order-section ul li {
+        cursor: pointer;
+        width: 100%;
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-pack: start;
+        justify-content: flex-start;
+        padding: 1rem;
+        border-bottom: 0.1rem solid #e0e0e0; }
+  #subscription-details .subscription-section .orders li {
+    transition: 0.1s all ease-out; }
+    #subscription-details .subscription-section .orders li:hover {
+      background-color: #17a8f1;
+      color: #fff; }
+  #subscription-details .changeaddress {
+    background: transparent;
+    border: 0.1rem solid #17a8f1;
+    color: #17a8f1;
+    font-weight: 600;
+    font-size: 1.3rem;
+    margin: 1.5rem 0 0;
+    padding: 0.7rem 2rem;
+    text-decoration: none;
+    border-radius: 0;
+    transition: 0.1s all ease-out; }
+    #subscription-details .changeaddress:hover {
+      background-color: #17a8f1;
+      color: #fff;
+      border: 0.1rem solid #17a8f1; }
+
+.edit-product-wrapper {
+  max-width: 100%;
+  margin: 2rem 5rem; }
+
+.edit-product-title {
+  margin: 2rem 0 0;
+  padding-bottom: 2rem;
+  border-bottom: 0.1rem solid #e0e0e0; }
+
+.edit-product-fields {
+  margin: 2rem 0 0;
+  font-size: 1.4rem;
+  display: -ms-flexbox;
+  display: flex; }
+  .edit-product-fields .row {
+    min-width: 48rem; }
+  .edit-product-fields label {
+    color: #8b8b8b;
+    font-size: 1.6rem;
+    min-width: 10rem;
+    max-width: 30rem;
+    width: 100%; }
+  .edit-product-fields select {
+    padding: 1rem;
+    border: 0.1rem solid #17a8f1;
+    min-width: 23rem;
+    max-width: 30rem;
+    width: 100%; }
+  .edit-product-fields input {
+    padding: 1rem;
+    border: 0.1rem solid #17a8f1;
+    min-width: 23rem;
+    max-width: 30rem;
+    width: 100%; }
+  .edit-product-fields .quantity {
+    padding-left: 2rem;
+    padding-right: 2.1rem; }
+  .edit-product-fields .form-group {
+    padding: 2rem 0;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column; }
+  .edit-product-fields .confirm_btn {
+    background-color: #17a8f1;
+    border: 0.1rem solid #17a8f1;
+    border-radius: 0;
+    color: #fff; }
+    .edit-product-fields .confirm_btn:hover {
+      background-color: #fff;
+      color: #17a8f1; }
+
+#changeAddress {
+  margin: 2rem 1.5rem 3rem 5rem; }
+  #changeAddress .button.button--right {
+    margin: 0; }
+  #changeAddress .button.confirm_btn {
+    color: #fff;
+    background-color: #17a8f1;
+    padding: 1rem;
+    border-radius: 0;
+    font-weight: 400;
+    border: 0.1rem solid #17a8f1;
+    transition: 0.1s all ease-out;
+    margin: 2rem 0 0 1rem; }
+    #changeAddress .button.confirm_btn:hover {
+      color: #17a8f1;
+      background: transparent; }
+  #changeAddress table {
+    border-collapse: collapse;
+    font-size: 1.4rem; }
+    #changeAddress table h3.order-section-title {
+      color: #8b8b8b;
+      font-size: 1.6rem; }
+    #changeAddress table tr {
+      border-bottom: 0.1rem solid #e0e0e0;
+      vertical-align: text-top; }
+      #changeAddress table tr td {
+        padding: 2rem 1rem;
+        min-width: 18rem;
+        width: 32rem; }
+        #changeAddress table tr td input {
+          padding: 1rem;
+          border: 0.1rem solid #17a8f1;
+          width: 100%; }
+        #changeAddress table tr td select {
+          padding: 1rem;
+          border: 0.1rem solid #17a8f1;
+          width: 100%; }
+        #changeAddress table tr td label {
+          color: #8b8b8b;
+          font-size: 1.6rem;
+          width: 100%; }
+        #changeAddress table tr td .form-caption {
+          display: block; }
+        #changeAddress table tr td .form-row {
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-direction: column;
+          flex-direction: column;
+          -ms-flex-pack: start;
+          justify-content: flex-start;
+          width: 100%;
+          -ms-flex-positive: 1;
+          flex-grow: 1; }
+      #changeAddress table tr:first-child {
+        border-bottom: 0.1rem solid #323232; }
+
+#editCard {
+  margin: 2rem 1.5rem 3rem 5rem; }
+  #editCard .button.button--right {
+    margin: 0; }
+  #editCard .button.confirm_btn {
+    color: #fff;
+    background-color: #17a8f1;
+    padding: 1rem;
+    border-radius: 0;
+    font-weight: 400;
+    border: 0.1rem solid #17a8f1;
+    transition: 0.1s all ease-out;
+    margin: 2rem 0 0 1rem; }
+    #editCard .button.confirm_btn:hover {
+      color: #17a8f1;
+      background: transparent; }
+  #editCard table {
+    border-collapse: collapse;
+    font-size: 1.4rem; }
+    #editCard table h3.order-section-title {
+      color: #8b8b8b;
+      font-size: 1.6rem; }
+    #editCard table tr {
+      border-bottom: 0.1rem solid #e0e0e0;
+      vertical-align: text-top; }
+      #editCard table tr td {
+        padding: 2rem 1rem;
+        min-width: 18rem;
+        width: 32rem; }
+        #editCard table tr td input {
+          padding: 1rem;
+          border: 0.1rem solid #17a8f1;
+          width: 100%; }
+        #editCard table tr td select {
+          padding: 1rem;
+          border: 0.1rem solid #17a8f1;
+          width: 100%; }
+        #editCard table tr td label {
+          color: #8b8b8b;
+          font-size: 1.6rem;
+          width: 100%; }
+        #editCard table tr td .form-caption {
+          display: block; }
+        #editCard table tr td .form-row {
+          display: -ms-flexbox;
+          display: flex;
+          -ms-flex-direction: column;
+          flex-direction: column;
+          -ms-flex-pack: start;
+          justify-content: flex-start;
+          width: 100%;
+          -ms-flex-positive: 1;
+          flex-grow: 1; }
+      #editCard table tr:first-child {
+        border-bottom: 0.1rem solid #323232; }
+  #editCard table.card-choose-table {
+    border: none; }
+    #editCard table.card-choose-table tr {
+      border: none; }
+      #editCard table.card-choose-table tr:first-child {
+        border-bottom: 0.1rem solid #323232; }
+    #editCard table.card-choose-table .card-choose tr {
+      border: none; }
+      #editCard table.card-choose-table .card-choose tr:first-child {
+        border: none; }

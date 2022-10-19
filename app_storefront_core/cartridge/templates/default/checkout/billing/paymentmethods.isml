@@ -1,0 +1,257 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> TEMPLATENAME: paymentmethods.isml </iscomment>
+<isinclude template="util/modules"/>
+<isinclude template="util/modulesafterpay.isml"/>
+<isset name="billingFormSubmitButtonID" value="billingSubmitButton" scope="page"/>
+
+<isscript>
+var selectedPayment = pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlValue;
+if(empty(selectedPayment)) {
+	selectedPayment = 'CREDIT_CARD';
+}
+var BraintreeHelper : Object = require('int_braintree/cartridge/scripts/braintree/braintreeHelper.js');
+var prefs : Object = BraintreeHelper.getPrefs();
+var HasRefillProducts = null;
+if (dw.system.Site.getCurrent().getCustomPreferenceValue('SorEnabled')) {
+   HasRefillProducts = require('int_smartorderrefill/cartridge/scripts/smartOrderRefill/refillHelper.js').checkForRefillProducts();
+}
+</isscript>
+
+<isscript>
+	var sitePreferences = require("int_afterpay_core/cartridge/scripts/util/afterpayUtilities.js").getSitePreferencesUtilities();
+	var afterpayEnable = sitePreferences.isAfterpayEnabled();
+	var basketObject = dw.order.BasketMgr.getCurrentBasket();
+	var orderGrandTotal = basketObject.getAdjustedMerchandizeTotalPrice(true)+ basketObject.giftCertificateTotalPrice + basketObject.adjustedShippingTotalPrice + basketObject.totalTax;
+	var apMessageService = require("int_afterpay_core/cartridge/scripts/product/afterpayDisplayProductMessage");
+	var thresholdResponse = apMessageService.getThresholdRange(orderGrandTotal);
+	var disableAfterpayPaymentMethod = false;
+	var minThreshold=sitePreferences.getMinThresholdAmount();
+	var maxThreshold=sitePreferences.getMaxThresholdAmount();
+	if(thresholdResponse && (thresholdResponse.belowThreshold || thresholdResponse.aboveThreshold)){
+	  	disableAfterpayPaymentMethod = true;
+	  }
+	var hasOnlyGiftCertificate = false;
+	var productLineItems = basketObject.productLineItems;
+	if(productLineItems.length === 0 && basketObject.giftCertificateLineItems && basketObject.giftCertificateLineItems.length > 0) {
+		hasOnlyGiftCertificate = true;
+	}
+</isscript>
+
+<isif condition="${pdict.OrderTotal > 0}">
+	<div class="payment-div">
+		<button style="display: none" id="payment-select-go" name="${pdict.CurrentForms.billing.paymentSelect.htmlName}" type="submit" value="Go" class="simple-submit">Select</button>
+		<isloop items="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.options}" var="paymentMethodType">
+			<iscomment>SmartOrderRefill modification</iscomment>
+			<isif condition="${pdict.CurrentSession.custom.HasSORProducts && !(paymentMethodType.value.equals(dw.order.PaymentInstrument.METHOD_CREDIT_CARD) || (afterpayEnable &&  paymentMethodType.value.equals('AFTERPAY_PBI')))}">
+			 		<iscontinue/>
+			</isif>
+			<iscomment>Ignore GIFT_CERTIFICATE method, GCs are handled separately before other payment methods.</iscomment>
+			<isif condition="${paymentMethodType.value.equals(dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE)}"><iscontinue/></isif>
+		<isset name="afterpayError" value="${!empty(pdict.AfterpayApiError) ? pdict.AfterpayApiError : (!empty(request.httpParameterMap.get('afterpay')).stringValue ? request.httpParameterMap.get('afterpay').stringValue : null)}" scope="page"/>      
+			<!-- Afterpay changes start -->
+	    <isif condition="${paymentMethodType.value=='CREDIT_CARD'}"> 
+					<isset name="radioID" value="${paymentMethodType.value}" scope="page"/>
+					<isscript>
+					var selected='';
+					if(paymentMethodType.value == pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlValue && empty(afterpayError)){
+					selected = 'selected';
+					}
+					</isscript>
+				<span class="payment-option">
+					      <input id="is-${radioID}" style="display:none;" type="radio" class="input-radio" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" value="${paymentMethodType.htmlValue}" ${selected ? "checked" : ""} >
+					<label for="is-${radioID}"><i class="fa fa-check-circle" aria-hidden="true"></i><i class="fal fa-circle" aria-hidden="true"></i><isprint value="${Resource.msg('billing.creditcardselect.message','checkout',null)}"/></label>
+				</span>
+		<div class="panel-section checkout-credit-card-block" id="checkout-credit-card-block">
+			<div class="panel-section-indent panel-section-short checkout-stack-options-block"  id="creditcard_container">
+				<div class="payment-method payment-method-expanded" data-method="CREDIT_CARD">
+					<isif condition="${dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID() == 'BRAINTREE_CREDIT'}">
+						<isinclude template="braintree/checkout/creditcard" />
+					<iselse>
+						<iscomment>display select box with stored credit cards if customer is authenticated</iscomment>
+						<isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">
+							<div class="form-row">
+								<label class="label">${Resource.msg('billing.selectcreditcard','checkout',null)}</label>
+								<div class="field-wrapper">
+									<select name="${pdict.CurrentForms.billing.paymentMethods.creditCardList.htmlName}" id="creditCardList" class="input-select">
+										<option value="" selected="selected">${Resource.msg('billing.creditcardlistselect','checkout',null)}</option>
+										<isloop items="${pdict.ApplicableCreditCards}" var="creditCardInstr">
+											<option value="${creditCardInstr.UUID}">(<isprint value="${creditCardInstr.creditCardType}"/>) <isprint value="${creditCardInstr.maskedCreditCardNumber}"/> - ${Resource.msg('billing.creditcardlistexp','checkout',null)} <isprint value="${creditCardInstr.creditCardExpirationMonth}" formatter="00" />.<isprint value="${creditCardInstr.creditCardExpirationYear}" formatter="0000" /></option>
+										</isloop>
+									</select>
+								</div>
+							</div>
+			
+							<div class="form-row form-row-button">
+								<button id="credit-card-select-go" name="${pdict.CurrentForms.billing.creditCardSelect.htmlName}" type="submit" value="Go" class="simple-submit">Select</button>
+							</div>
+			
+							<iscomment>
+								<isloop items="${pdict.ApplicableCreditCards}" var="creditCardInstr">
+									<a href="${URLUtils.https('COBilling-UpdateCreditCardSelection', 'creditCardUUID', creditCardInstr.UUID)}">
+										(<isprint value="${creditCardInstr.creditCardType}"/>)
+										<isprint value="${creditCardInstr.maskedCreditCardNumber}"/>
+										- ${Resource.msg('billing.creditcardlistexp','checkout',null)}
+										<isprint value="${creditCardInstr.creditCardExpirationMonth}" formatter="00" />
+										.<isprint value="${creditCardInstr.creditCardExpirationYear}" formatter="0000" />
+									</a>
+								</isloop>
+							</iscomment>
+						</isif>
+						<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.owner}" type="input"/>
+						<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.type}" type="select"/>
+						<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.number}" type="input" dynamicname="true"/>
+						<div class="form-row required">
+							<label>
+								<span class="required-indicator">${Resource.msg('billing.requiredindicator','checkout',null)}</span>
+								<span>${Resource.msg('billing.creditcardlistexpdate', 'checkout', null)}</span>
+							</label>
+							<isscript>
+								var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+							</isscript>
+							<isdynamicform formobject="${pdict.CurrentForms.billing.paymentMethods.creditCard.expiration}" formdata="${currentCountry.dynamicForms.expirationInfo}"/>
+						</div>
+						<isscript>
+							var help = {
+								label: Resource.msg('billing.linkcvn', 'checkout', null),
+								cid: 'checkout-security-code'
+							};
+						</isscript>
+						<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.cvn}" type="input" rowclass="cvn" dynamicname="true" help="${help}"/>
+						<iscomment>
+						 SmartOrderRefill modification
+						</iscomment>
+						<isif condition="${pdict.CurrentCustomer.authenticated && session.custom.HasSORProducts}">
+							<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="hidden"
+								rowclass="label-inline form-indent save_card" value="false"/>
+							<iscontentasset aid="smart-order-refill-credit-card" />
+						<iselseif condition="${pdict.CurrentCustomer.authenticated}" >
+							<isinputfield formfield="${pdict.CurrentForms.billing.paymentMethods.creditCard.saveCard}" type="checkbox"/>
+						</isif>
+					</isif>
+				</div>
+			</div>
+			<div class="checkout-billing-address-wrap billing-addr-form-wrap panel-section-indent" id="checkout-billing-addr">
+				<isinclude template="checkout/billing/billingaddressform"/>
+			</div>
+		  </div>
+	   </isif>
+		<!-- Afterpay changes start -->
+		<iscomment>Ignore the payment method AFTERPAY_PBI if Afterpay payment method is disabled in configuration</iscomment>
+		<isif condition="${paymentMethodType.value.equals('AFTERPAY_PBI') && afterpayEnable == false}"><iscontinue/>
+			</isif>
+			<isif condition="${paymentMethodType.value.equals('AFTERPAY_PBI') && disableAfterpayPaymentMethod}">
+				<isset name="disableAfterpay" value="${true}" scope="page" />
+      				<iselse>
+				<isset name="disableAfterpay" value="${false}" scope="page" />
+		</isif>
+		<iscomment>Show afterpay ineligible message if there is auto delivery items in the cart</iscomment>
+		<isif condition="${!disableAfterpay && paymentMethodType.value=='AFTERPAY_PBI' && HasRefillProducts}"> 
+		<isset name="radioID" value="${paymentMethodType.value}" scope="page"/>
+				<isscript>
+					var selected = '';
+					if(paymentMethodType.value == pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlValue || !empty(afterpayError)){
+					selected = 'selected';
+					}
+				</isscript>
+				<span class="payment-option disabledbutton">
+				      <input id="is-${radioID}" type="radio" class="input-radio afterpayInputRadio" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" value="${paymentMethodType.htmlValue}" ${selected ? "checked" : ""} >
+				<label style="margin-top:10px;" for="is-${radioID}"><i class="fal fa-circle" aria-hidden="true"></i><i class="fa fa-check-circle" aria-hidden="true"></i><isprint value="${Resource.msg('billing.afterpay.message','checkout',null)}"/>
+					<isset name="paymentObject" value="${paymentMethodType.object}" scope="page"/>
+				    <img src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" class="payment-image ${radioID.toLowerCase()}-image afterpay-cart-image" alt="${Resource.msg('billing.logo','afterpay',null)}"/>
+				</label>
+				<p class="afterpay-notavailable-msg">${Resource.msg('billing.afterpay.autodelivery', 'checkout', null)}</p>
+			</span>
+		</isif>
+		
+		<iscomment>Show afterpay ineligible message for ineligible order totals</iscomment>
+		<isif condition="${disableAfterpayPaymentMethod && paymentMethodType.value=='AFTERPAY_PBI' && !hasOnlyGiftCertificate}"> 
+		<isset name="radioID" value="${paymentMethodType.value}" scope="page"/>
+				<isscript>
+					var selected = '';
+					if(paymentMethodType.value == pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlValue || !empty(afterpayError)){
+					selected = 'selected';
+					}
+				</isscript>
+				<span class="payment-option disabledbutton">
+				      <input id="is-${radioID}" type="radio" class="input-radio afterpayInputRadio" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" value="${paymentMethodType.htmlValue}" ${selected ? "checked" : ""} >
+				<label style="margin-top:10px;" for="is-${radioID}"><i class="fal fa-circle" aria-hidden="true"></i><i class="fa fa-check-circle" aria-hidden="true"></i><isprint value="${Resource.msg('billing.afterpay.message','checkout',null)}"/>
+					<isset name="paymentObject" value="${paymentMethodType.object}" scope="page"/>
+				    <img src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" class="payment-image ${radioID.toLowerCase()}-image afterpay-cart-image" alt="${Resource.msg('billing.logo','afterpay',null)}"/>
+				</label>
+				<isif condition="${thresholdResponse.belowThreshold}">
+				<p class="afterpay-notavailable-msg">${Resource.msgf('minimum.threshold.message','checkout', null,  dw.util.StringUtils.formatMoney(new dw.value.Money(minThreshold, session.getCurrency().getCurrencyCode())))}</p>
+				<iselse>
+				<p class="afterpay-notavailable-msg">${Resource.msgf('maximum.threshold.message','checkout', null, dw.util.StringUtils.formatMoney(new dw.value.Money(maxThreshold, session.getCurrency().getCurrencyCode())))}</p>
+				</isif>
+			</span>
+		</isif>
+		
+		<!-- Afterpay changes end -->
+		<isif condition="${!disableAfterpay && paymentMethodType.value=='AFTERPAY_PBI' && !hasOnlyGiftCertificate && !HasRefillProducts}"> 
+				<!-- After Pay Changes Start -->
+					<isif condition="${!empty(afterpayError) && afterpayError!=='Your payment has been cancelled'}">
+						<div class="alert alert-danger" id="afterpay-error">
+							<isprint value="${afterpayError}" encoding="off" />
+						</div>
+					</isif>
+				<!-- After Pay Changes End -->
+				<isset name="radioID" value="${paymentMethodType.value}" scope="page"/>
+				<isscript>
+					var selected = '';
+					if(paymentMethodType.value == pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlValue || !empty(afterpayError)){
+					selected = 'selected';
+					}
+				</isscript>
+				<span class="payment-option" id="afterpay-span">
+				      <input id="is-${radioID}" type="radio" class="input-radio afterpayInputRadio" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" value="${paymentMethodType.htmlValue}" ${selected ? "checked" : ""} >
+				<label style="margin-top:10px;" for="is-${radioID}"><i class="fal fa-circle" aria-hidden="true"></i><i class="fa fa-check-circle" aria-hidden="true"></i><isprint value="${Resource.msg('billing.afterpay.message','checkout',null)}"/>
+					<isset name="paymentObject" value="${paymentMethodType.object}" scope="page"/>
+				    <img src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" class="payment-image ${radioID.toLowerCase()}-image afterpay-cart-image" alt="${Resource.msg('billing.logo','afterpay',null)}"/>
+				</label>
+				<p class="afterpay-gift-msg" id="afterpay-gift-msg">${Resource.msg('billing.afterpay.giftcard', 'checkout', null)}</p>
+			</span>
+			<!-- Afterpay changes start -->
+			<isif condition="${afterpayEnable == true}">
+			<div class="panel-section checkout-afterpay-block" id="containerAfterPay"  style="display: none;">
+				<div
+					class="panel-section-indent panel-section-short checkout-stack-options-block">
+					<div class="payment-method payment-method-expanded"	data-method="AFTERPAY_PBI">
+						<iscomment> Afterpay Pay Over Time-------------------------------------------------------------- </iscomment>
+						 <isslot id="afterpay-checkout-pbi" description="Afterpay checkout PBI content" context="global" /> 
+					</div>
+				</div>
+			</div>
+			</isif>
+			<!-- Afterpay changes end -->
+		</isif>
+		</isloop>
+	</div>
+	
+	<isif condition="${!empty(pdict.MissingPaymentProcessor)}">
+		<div class="billing-error">${Resource.msg('billing.missingprocessorerror','checkout',null)}</div>
+	</isif>
+	
+<iselse/>	
+			<div class="panel-section checkout-credit-card-block billing-addr-form-wrap">
+					<isinclude template="checkout/billing/billingaddressform"/>
+			</div>
+			<input type="hidden" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" value="${dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE}" />
+			<input type="hidden" id="noPaymentNeeded" name="noPaymentNeeded" value="true" />
+			<div class="disabled-payment-option">
+			<span class="payment-option disabledbutton">
+					      <input id="is-CREDIT_CARD}" type="radio" class="input-radio" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" value="CREDIT_CARD" >
+					<label for="is-CREDIT_CARD"><i class="fa fa-check-circle" aria-hidden="true"></i><i class="fal fa-circle" aria-hidden="true"></i><isprint value="${Resource.msg('billing.creditcardselect.message','checkout',null)}"/></label>
+			</span>
+			</div>
+			<isif condition="${afterpayEnable == true}">
+			<div class="disabled-payment-option">
+			<span class="payment-option disabledbutton">
+				       <input id="is-AFTERPAY_PBI" type="radio" class="input-radio afterpayInputRadio" name="${pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.htmlName}" value="AFTERPAY_PBI">
+				<label style="margin-top:10px;" for="is-AFTERPAY_PBI"><i class="fal fa-circle" aria-hidden="true"></i><i class="fa fa-check-circle" aria-hidden="true"></i><isprint value="${Resource.msg('billing.afterpay.message','checkout',null)}"/>
+				    <img src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" class="payment-image afterpay_pbi-image afterpay-image" alt="${Resource.msg('billing.logo','afterpay',null)}"/>
+				</label>
+				<p class="afterpay-notavailable-msg">${Resource.msg('billing.afterpay.giftcard', 'checkout', null)}</p>
+			</span>
+			</div>
+			</isif>
+</isif>

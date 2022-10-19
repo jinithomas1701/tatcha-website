@@ -1,0 +1,184 @@
+{
+  "name": "Content Carousel",
+  "description": "Shows Content Carousel",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "heading",
+      "name": "Content Carousel heading",
+      "attribute_definitions": [
+        {
+          "id": "headline",
+          "name": "Carousel Headline",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "card1",
+      "name": "Content Carousel 1",
+      "description": "The Content Fields to show a first card",
+      "attribute_definitions": [
+        {
+          "id": "image1",
+          "name": "Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt1",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        },
+        {
+      	  "id": "title1",
+          "name": "Card Title",
+          "type": "string",
+          "required": true
+      	},
+      	{
+      	  "id": "anchorid1",
+          "name": "Anchor Id",
+          "type": "string",
+          "required": false
+      	},
+        {  
+          "id": "linkurl1",
+          "name": "Link URL",
+          "type": "url",
+          "required": true
+        },
+        {
+          "id": "linktext1",
+          "name": "Link Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "card2",
+      "name": "Content Carousel 2",
+      "description": "The Content Fields to show a first card",
+      "attribute_definitions": [
+        {
+          "id": "image2",
+          "name": "Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt2",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        },
+        {
+      	  "id": "title2",
+          "name": "Card Title",
+          "type": "string",
+          "required": true
+      	},
+      	{
+      	  "id": "anchorid2",
+          "name": "Anchor Id",
+          "type": "string",
+          "required": false
+      	},
+        {  
+          "id": "linkurl2",
+          "name": "Link URL",
+          "type": "url",
+          "required": true
+        },
+        {
+          "id": "linktext2",
+          "name": "Link Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },    
+    {
+      "id": "card3",
+      "name": "Content Carousel 3",
+      "description": "The Content Fields to show a first card",
+      "attribute_definitions": [
+        {
+          "id": "image3",
+          "name": "Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt3",
+          "name": "Image Alt Text",
+          "type": "string",
+          "required": true
+        },
+        {
+      	  "id": "title3",
+          "name": "Card Title",
+          "type": "string",
+          "required": true
+      	},
+      	{
+      	  "id": "anchorid3",
+          "name": "Anchor Id",
+          "type": "string",
+          "required": false
+      	},
+        {  
+          "id": "linkurl3",
+          "name": "Link URL",
+          "type": "url",
+          "required": true
+        },
+        {
+          "id": "linktext3",
+          "name": "Link Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+      {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

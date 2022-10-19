@@ -1,0 +1,157 @@
+<isdecorate template="common/layout/page">
+	<isinclude template="util/modules"/>
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+		assets.addCss('/css/giftcard.css');
+		assets.addJs('/js/giftCertificate.js');
+    </isscript>
+<main class="giftcard-detail mb-5 mt-lg-5 pt-lg-3">	
+	<div class="container">
+		<div class="row">
+			<div class="col-md-6 d-xxl-flex justify-content-xxl-end">
+				<div class="giftcard-detail__left mt-3 mt-lg-0">
+					<isif condition="${pdict.imagePath != null}">
+						<img class="img-fluid" src="${pdict.imagePath}" alt="${pdict.product.name}" title="${pdict.product.name}" width="697" height="436">
+					<iselse/>
+						<img class="img-fluid" src="${URLUtils.staticURL('/images/noimagelarge.png')}" alt="${pdict.product.name}" title="${pdict.product.name}" />
+					</isif>	
+				</div>
+			</div>
+			<div class="col-md-6 col-xl-5 col-xxl-6">
+				<div class="giftcard-detail__right">
+					<h1 class="mt-4 mt-md-3 mt-lg-0">
+						<span class="giftcard-detail__product-name"><isprint value="${pdict.product.name}"/></span>
+						<span class="giftcard-detail__product-subtitle">
+							<isprint value="${pdict.product.shortDescription ? pdict.product.shortDescription : "The perfect gift starts here. To begin, simply pick an e-gift card design and fill in the blanks." }"/>
+						</span>
+					</h1>
+					<a href="#" data-toggle="modal" data-target="#giftTerms" class="giftcard-detail__t-c-link d-inline-block mb-4 mt-1 pb-1" title="Terms & Conditions">Terms & Conditions</a>
+					<form class="giftcert" action="${pdict.actionUrl}" method="post" name="giftcert-purchase-form" data-giftcard-detail="form">
+						<input type="hidden" id="giftCardCategory" name="giftCardCategory" value="${pdict.giftCertCategory}">
+						<input type="hidden" id="selectedGiftImage" name="selectedGiftImage" value="${pdict.imagePath}" />
+						<div class="form-row">
+							<div class="col-6">
+								<div class="form-group dropdown dropdown--with-label dropdown--giftcard">
+								<div class="sr-only" id="giftcard-amount-dropdown">
+								list with  ${pdict.giftAmount.length} items
+								</div>
+
+									<button class="btn view-option-btn dropdown-toggle" aria-describedby="giftcard-amount-dropdown"  data-flip="false" type="button" id="sort" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<div class="view-option-hdr">Select amount </div>
+										<div class="view-option">
+											<span class="view-option-value" data-giftcard-detail="amount-value">${dw.util.StringUtils.formatMoney(dw.value.Money(pdict.selectedAmount, session.getCurrency().getCurrencyCode()))}</span><i class="fas float-right fa-sort-down dropdown-icon"></i>
+										</div>
+									</button>
+									<ul class="dropdown-menu" data-giftcard-detail="dropdown" data-default-amount-w-c="${dw.util.StringUtils.formatMoney(dw.value.Money(pdict.selectedAmount, session.getCurrency().getCurrencyCode()))}" data-default-amount="${pdict.selectedAmount}" aria-labelledby="sort">
+										<isloop items="${pdict.giftAmount}" alias="amount">
+											<li>
+												<a href="javascript:void(0)" data-giftcard-detail="amount-list" data-amount="${amount}"><isprint value="${dw.util.StringUtils.formatMoney(dw.value.Money(amount, session.getCurrency().getCurrencyCode()))}" /></a>
+											</li>   
+										</isloop>
+									</ul>
+								</div>
+								<input
+									type="hidden"
+									value="${pdict.selectedAmount}"
+									data-giftcard-detail="amount-value-input"
+									<isprint value=${pdict.giftCertForm.purchase.amount.attributes} encoding="off"/>
+								>
+							</div>
+							<div class="col-6">
+								<div class="form-group form-group--with-label">
+									<div class="form-label">Select Date</div>
+									<span class="form-mirror-value" data-giftcard-detail="date-label"></span>
+									<i class="fas float-right fa-sort-down dropdown-icon"></i>
+									<input 
+									data-giftcard-detail="date-input" 
+									type="date" 
+									class="form-control form-control--floating" 
+									id="date" 
+									aria-labelledby="Select Date"
+									<isprint value=${pdict.giftCertForm.purchase.deliveryDate.attributes} encoding="off"/> 
+									>
+								</div>
+							</div>
+							<div class="col-md-6">						
+								<div class="form-group required">
+									<input 
+									type="text" 
+									required="required" 
+									class="form-control form-control--floating" 
+									id="ToName" 
+									aria-labelledby="To (Name)" 
+									placeholder="To (Name)"
+									<isprint value=${pdict.giftCertForm.purchase.recipient.attributes} encoding="off"/> 
+									>
+									<label class="form-label form-label--floating"  data-content="To (Name)" for="ToName">To (Name)</label>								
+								</div>
+							</div>
+							<div class="col-md-6 order-md-1">						
+								<div class="form-group required">
+									<input 
+									type="email" 
+									required="required" 
+									class="form-control form-control--floating" 
+									id="RecipientsEmail" 
+									aria-labelledby="Recipient’s email" 
+									placeholder="Recipient’s email"
+									<isprint value=${pdict.giftCertForm.purchase.recipientEmail.attributes} encoding="off" />
+									>
+									<label class="form-label form-label--floating"  data-content="Recipient’s email" for="RecipientsEmail">Recipient’s email</label>								
+								</div>
+							</div>
+							<div class="col-md-6">
+								<div class="form-group required">
+									<input 
+									type="text" 
+									required="required" 
+									class="form-control form-control--floating" 
+									id="FromName" 
+									aria-labelledby="From (Name)" 
+									placeholder="From (Name)"
+									<isprint value=${pdict.giftCertForm.purchase.from.attributes} encoding="off" />
+									>
+									<label class="form-label form-label--floating"  data-content="From (Name)" for="FromName">From (Name)</label>								
+								</div>
+							</div>
+							<div class="col-md-6 order-md-1">
+								<div class="form-group required">
+									<input 
+									type="email" 
+									required="required" 
+									class="form-control form-control--floating" 
+									id="SendersEmail" 
+									aria-labelledby="Sender’s email" 
+									placeholder="Sender’s email"
+									<isprint value=${pdict.giftCertForm.purchase.senderEmail.attributes} encoding="off" />
+									>
+									<label class="form-label form-label--floating"  data-content="Sender’s email" for="SendersEmail">Sender’s email</label>								
+								</div>
+							</div>
+						</div>					
+						<div class="form-group">
+							<textarea 
+							data-character-limit="210" 
+							class="form-control form-control--floating" 
+							rows="3" 
+							id="AddPersonalMessage" 
+							placeholder="Add a personal message"
+							<isprint value="${pdict.giftCertForm.purchase.message.attributes}" encoding="off" />
+							><isprint value="${pdict.giftCertForm.purchase.message.value ? pdict.giftCertForm.purchase.message.value.trim() : ""}" encoding="off" /></textarea>
+							<label class="form-label form-label--floating"  data-content="Recipient’s email" for="AddPersonalMessage">Add a personal message</label>								
+						</div>
+							<button class="btn btn-primary btn-block btn-44 mt-2 mt-md-4 font-weight-400" data-giftcard-detail="addToBag" data-product-info="${JSON.stringify(pdict.mParticleInfo)}" type="submit" aria-label="Add to Bag" aria-invalid="false">
+								Add to Bag - <span data-giftcard-detail="amount-value">${dw.util.StringUtils.formatMoney(dw.value.Money(pdict.selectedAmount, session.getCurrency().getCurrencyCode()))}</span>
+							</button>
+						<input type="hidden" name="product" data-giftcard-detail="product" value="${pdict.pid}"/>	
+						<input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div><!-- /.container -->	
+</main>
+<iscomment> E-gift terms and conditions modal </iscomment>
+<isinclude template="/checkout/giftcert/modals" />
+<!--- End E-gift terms and conditions modal  --->
+</isdecorate>

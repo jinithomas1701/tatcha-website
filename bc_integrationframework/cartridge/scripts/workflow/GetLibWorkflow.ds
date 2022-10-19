@@ -1,0 +1,20 @@
+/**
+ * Returns libWorkflow as a pipeline dictionary variable.
+ * 
+ * @output LibWorkflow : Object The libWorkflow variable.
+ */
+
+importScript('bc_integrationframework:workflow/libWorkflow.ds');
+
+/**
+ * The main function.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Number} PIPELET_NEXT or in case of an exception PIPELINE_ERROR.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+	pdict.LibWorkflow = new LibWorkflow();
+	
+    return PIPELET_NEXT;
+}

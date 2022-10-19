@@ -1,0 +1,16 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="content/content/pt_content">
+<isinclude template="util/modules"/>
+<div class="container sitemap-container">
+	<h1 class="sitemap-title">TATCHA</h1>
+	<div class="row">
+		<div class="col-md-1 col-lg-2"></div>
+		<div class="col-md-5 col-lg-4">
+			<iscontentasset aid="tatcha_sitemap_shopall"/>
+		</div>
+		<div class="col-md-5 col-lg-6">
+			<iscontentasset aid="tatcha_sitemap_content"/>
+		</div>
+	</div>
+</div>		
+</isdecorate>

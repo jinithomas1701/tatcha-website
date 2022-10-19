@@ -1,0 +1,71 @@
+<!--- TEMPLATENAME: updatecard.isml --->
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isinclude template="smartOrderRefill/util/modules"/>
+
+<form id="editCreditCard" name="EditCreditCard" action="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', request.httpParameterMap.sid.stringValue, 'action', 'updateCreditCardSave')}" class="form-horizontal" method="post">
+    <isif condition="${pdict.options.procesor === "CYBERSOURCE_CREDIT" || pdict.options.procesor === "BASIC_CREDIT"}">
+        <fieldset>
+            <isif condition="${pdict.options.canUpdateAll}" >
+            <div class="formfield clearfix">
+                <issorinputfield formfield="${pdict.CurrentForms.updatecard.type}" type="select" requiredtext="${dw.web.Resource.msg('creditcard.typemissing', 'forms', null)}"/>
+            </div>
+            <div class="formfield clearfix">
+                <issorinputfield  formfield="${pdict.CurrentForms.updatecard.number}" type="text" dynamicname="true"  requiredtext="${dw.web.Resource.msg('creditcard.numbermissingerror', 'forms', null)}"/>
+            </div>
+            </isif>
+            <div class="formfield clearfix">
+                <div class="form-row sor-form-row">
+                    <label class="updatecard-expiration-label">
+                        <span class="required-indicator">&#8226; </span>
+                        <span>${Resource.msg('updatecard.expirationdate', 'forms', null)}</span>
+                    </label>
+                    <div class="expiration-date-wrapper flex" data-expMonth="${pdict.options.card.expMonth}" data-expYear="${pdict.options.card.expYear}">
+                        <issorinputfield formfield="${pdict.CurrentForms.updatecard.expiration.month}" type="select" requiredtext="${dw.web.Resource.msg('creditcard.monthmissingerror', 'forms', null)}"/>
+                        <issorinputfield formfield="${pdict.CurrentForms.updatecard.expiration.year}" type="select" requiredtext="${dw.web.Resource.msg('creditcard.yearmissingerror', 'forms', null)}"/>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" value="${Resource.msg('global.submit','locale',null)}" name="${pdict.CurrentForms.updatecard.confirm.htmlName}" />
+        </fieldset>
+    <iselseif condition="${pdict.options.procesor === "ADYEN_CREDIT"}" />
+        <div class="choose-card-wrapper">
+            <isif condition="${empty(pdict.options.savedCreditCards)}">
+                <td>
+                    <p>${Resource.msg('updatecard.creditcard.nocard', 'forms', null)}</p>                   
+                </td>
+            </isif>
+            <isloop items="${pdict.options.savedCreditCards}" var="savedCreditCard" status="loopstatus">
+                <div class="choose-card-item">
+                    <div class="choose-card-row">
+                        <span>${Resource.msg(pdict.CurrentForms.updatecard.type.label,'forms',null)}</span>
+                        <span>${savedCreditCard.creditCardType}</span>
+                        <input type="hidden" name="${pdict.CurrentForms.updatecard.type.htmlName}" value="${savedCreditCard.creditCardType}">
+                    </div>
+                    <div class="choose-card-row">
+                        <span>${Resource.msg(pdict.CurrentForms.updatecard.number.label,'forms',null)}</span>
+                        <span>${savedCreditCard.creditCardNumber}</span>
+                        <input type="hidden" name="${pdict.CurrentForms.updatecard.number.htmlName}" value="${savedCreditCard.creditCardNumber}">
+                    </div>
+                    <div class="choose-card-row">
+                        <span>${Resource.msg(pdict.CurrentForms.updatecard.expiration.month.label,'forms',null)}</span>
+                        <span>${savedCreditCard.creditCardExpirationMonth}</span>
+                        <input type="hidden" name="${pdict.CurrentForms.updatecard.expiration.month.htmlName}" value="${savedCreditCard.creditCardExpirationMonth}">
+                    </div>
+                    <div class="choose-card-row">
+                        <span>${Resource.msg(pdict.CurrentForms.updatecard.expiration.year.label,'forms',null)}</span>
+                        <span>${savedCreditCard.creditCardExpirationYear}</span>
+                        <input type="hidden" name="${pdict.CurrentForms.updatecard.expiration.year.htmlName}" value="${savedCreditCard.creditCardExpirationYear}">
+                    </div>
+                    <div class="choose-card-row">                        
+                        <span><input type="radio" name="${pdict.CurrentForms.updatecard.confirm.htmlName}" value="${Resource.msg('global.submit','locale',null)}">&nbsp;${Resource.msg('updatecard.creditcard.choose','forms',null)}</span>
+                        <input type="hidden" name="${pdict.CurrentForms.updatecard.token.htmlName}" value="${savedCreditCard.creditCardToken}">
+                    </div>
+                </div>
+            </isloop>
+        </div>
+    </isif>
+
+</form>

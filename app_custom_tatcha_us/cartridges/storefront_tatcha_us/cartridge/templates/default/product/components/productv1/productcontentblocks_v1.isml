@@ -1,0 +1,190 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${(pdict.cache != null) ? pdict.cache : true}">
+	<iscache type="relative" hour="24" varyby="price_promotion"/>
+</isif>
+<isinclude template="util/yotpomodules.isml" />
+<isscript>
+importScript("int_tatcha_dis:common/GetImageUrl.ds");
+var priceTotal = 0;
+var ritualsCnt = 0;
+</isscript>
+<div id="content-blocks">
+	<isif condition="${pdict.Product.ID != pdict.giftSKU}">
+		<isset name="mainProduct" value="${pdict.Product}" scope="pdict"/>
+		<isif condition="${!empty(pdict.suggestedRoutine) && !empty(pdict.suggestedRoutine.recProducts) && pdict.suggestedRoutine.recProducts.size() > 1}">
+			<div class="product-suggested-routine">
+				<div class="container">
+					<div class="row">
+						<div class="col-12">
+							<h3 class="flickity-product-carousel__title flickity-product-carousel__title--mx-0">
+                                <isif condition="${pdict.Product.custom.hasOwnProperty('ritualHeader') && !empty(pdict.Product.custom.ritualHeader)}">
+                                    <isprint value="${pdict.Product.custom.ritualHeader}"/>
+                                <iselse/>
+                                    Suggested Ritual
+                                </isif>
+							</h3>
+							<div class="routine-step-block d-xl-flex justify-content-xl-center">
+								<input type="hidden" name="contentBlockV1" id="contentBlockV1" value="${true}" />
+								<isset name="mainProduct" value="${pdict.Product}" scope="pdict"/>
+								<isloop items="${pdict.suggestedRoutine.recProducts}" var="rec"  end="${(pdict.suggestedRoutine.recProductShortDesc.size() > 5)?5:pdict.suggestedRoutine.recProductShortDesc.size()}" status="smStatus">
+									<isset name="Product" value="${rec}" scope="pdict"/>
+									<div class="routine-step product-list-unit my-3 my-xl-0 mx-xl-2" data-id="${pdict.Product.ID}" data-url="${URLUtils.https('Product-Show', 'pid', pdict.Product.ID)}" data-index="${smStatus.index}">
+										<h6 class="d-none d-xl-block">${Resource.msg('global.product.suggestedRoutine.step'+(smStatus.index+1), 'locale', null)}
+											<isif condition="${pdict.Product.custom.hasOwnProperty('ritualStepAction') && !empty(pdict.Product.custom.ritualStepAction)}">
+												| <isprint value="${pdict.Product.custom.ritualStepAction}"/>
+											</isif>
+										</h6>
+								    	<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}">
+											<div class="product-img-block">
+												<isif condition="${pdict.Product.master && pdict.CurrentVariationModel}">
+													<isset name="imageProduct" value="${pdict.CurrentVariationModel}" scope="page"/>
+												<iselseif condition="${pdict.Product.variant && !empty(pdict.Product.getVariationModel())}">
+													<isset name="imageProduct" value="${pdict.Product.getVariationModel()}" scope="page"/>
+												<iselse/>
+													<isset name="imageProduct" value="${pdict.Product}" scope="page"/>
+												</isif>
+												<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+													<isset name="imageUrl" value="${getImageUrl(imageProduct,'medium','0','false','pdp')}" scope="page"/>
+												<iselse/>
+													<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+												</isif>
+												<img alt="${pdict.Product.name}" height="250" width="250" class="img-responsive img-fluid product-img lazyImage" data-src="${imageUrl}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+											</div>
+										</a>
+										<div class="suggested-routine-content">
+											<h6 class="d-block d-xl-none text-left mb-1">${Resource.msg('global.product.suggestedRoutine.step'+(smStatus.index+1), 'locale', null)}
+											<isif condition="${pdict.Product.custom.hasOwnProperty('ritualStepAction') && !empty(pdict.Product.custom.ritualStepAction)}">
+												| <isprint value="${pdict.Product.custom.ritualStepAction}"/>
+											</isif>
+											</h6>
+											<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}">
+											<h5 class="product-name">
+												<isif condition="${pdict.Product.name}"> <isprint value="${pdict.Product.name.substring(0,48)}"/></isif>
+												<span class="product-subtitle">
+													<isif condition="${!empty(pdict.Product) && pdict.Product.custom && pdict.Product.custom.secondaryName && (typeof(pdict.Product.custom.secondaryName) === 'string')}">
+														<isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/>
+													</isif>
+												</span>
+											</h5>
+											</a>
+											<iscomment>Rating</iscomment>
+											<div class="stars-container d-flex d-xl-block">
+												<isinclude template="product/components/carousel_rating" />
+											</div>
+											<isscript>
+												let available = null;
+												if(pdict.Product) {
+													let avm = pdict.Product.availabilityModel;
+													available = avm.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK
+													&& avm.inventoryRecord != null
+													&& avm.inventoryRecord.stockLevel.available;
+												}
+												var productPrice = 0;
+												var PriceModel = pdict.Product.getPriceModel();
+												if(PriceModel) {
+													productPrice = PriceModel.getPrice().value;
+												}
+												var comingSoonMsg = (pdict.Product && pdict.Product.custom.oosProductStatus.value) ? pdict.Product.custom.oosProductStatus.value:"";
+
+												// Added for mParticle and other analytics
+												var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+												var productInfo = mParticleUtil.getProductInfo(pdict.Product);
+											</isscript>
+											<div class="product-cta">
+												<isif condition="${(comingSoonMsg == 'comingsoon')}">
+													<input type="hidden" name="prodSku" id="prodSku" value="${''}" />
+													<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}"><button class="btn btn-sm btn-outline-dark">${Resource.msg('global.comingsoon', 'locale', null)}</button></a>
+												<iselse/>
+													<isif condition="${available == true}">
+														<input type="hidden" name="prodSku" id="prodSku" value="${pdict.Product.ID}" />
+														<isset name="ritualsCnt" value="${ritualsCnt+1}" scope="page"/>
+														<isset name="priceTotal" value="${priceTotal+productPrice}" scope="page"/>
+														<form action="${URLUtils.url('CartSFRA-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+															<input type="hidden" class="input-text" name="Quantity" value="1"/>
+															<input type="hidden" name="cartAction"  value="add" />
+															<input type="hidden" name="pid" value="${pdict.Product.ID}" />
+															<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+															<input type="hidden" name="unitPrice" id="unitPrice" value="${productPrice}" />
+															<input type="hidden" name="page" value="bag" />
+															<button class="srAddToBag btn-sm p-page-suggested-ritual btn btn-outline-dark" data-product-info="${JSON.stringify(productInfo)}" data-buttonid="p-page-suggested-ritual" data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">
+																<isif condition="${productPrice != 0}">
+																	${Resource.msg('global.addtocart', 'locale', null)} - <isprint value="${dw.value.Money(productPrice, session.getCurrency().getCurrencyCode())}" formatter="*#0" />
+																<iselse>
+																	${Resource.msg('global.addtocart', 'locale', null)}
+																</isif>
+															</button>
+														</form>
+													<iselse>
+														<input type="hidden" name="prodSku" id="prodSku" value="" />
+														<button class="btn-sm btn btn-outline-dark disabled">${Resource.msg('global.outofstock', 'locale', null)}</button>
+													</isif>
+												</isif>
+											</div>
+										</div>
+								    </div>
+								</isloop>
+								<isset name="Product" value="${pdict.mainProduct}" scope="pdict"/>
+							</div>
+						</div>
+
+							<div class="col-12 col-md-7 col-lg-7 col-xl-4 col-lg-4 mx-md-auto my-1 my-xl-4">
+								<isif condition="${ritualsCnt > 0}">
+									<button class="btn btn-primary btn-lg btn-block add-all-bag" id="add-all-to-bag" data-url="${URLUtils.url('CartSFRA-AddWhatsnextItems')}"><isprint value="${Resource.msgf('global.addalltocartwithcount', 'locale', null, ritualsCnt)}"/> <isprint value="${dw.value.Money(priceTotal, session.getCurrency().getCurrencyCode())}" formatter="*#0" /></button>
+								</isif>
+							<div>
+
+					</div>
+				</div>
+			</div>
+			</div>
+			</div>
+		</isif>
+		<iscomment>Product content </iscomment>
+		<isif condition="${!empty(pdict.Product.custom.productContentslot)}">
+            <div class="pdp-product-content-slot">
+			    <isprint value="${pdict.Product.custom.productContentslot}" encoding="off"/>
+            </div>
+		</isif>
+
+		<iscomment> Yotpo UGC Widget </iscomment>
+		<isif condition="${!empty(pdict.Product.custom.enableugcwidget) && pdict.Product.custom.enableugcwidget === true}">
+			<h3 class="flickity-product-carousel__title">tag @tatcha to share your ritual</h3>
+			<isif condition="${pdict.Product.isVariant() && !pdict.Product.master}">
+				<isset name="yotpoProductID" value="${pdict.Product.masterProduct.ID}" scope="page" />
+			<iselse>
+				<isset name="yotpoProductID" value="${pdict.Product.ID}" scope="page" />
+			</isif>
+
+			<div
+			     class="yotpo yotpo-pictures-widget"
+			     data-gallery-id="${dw.system.Site.getCurrent().getCustomPreferenceValue('ugcPpageWidgetId') ? dw.system.Site.getCurrent().getCustomPreferenceValue('ugcPpageWidgetId') : ''}"
+			     data-product-id="${yotpoProductID}">
+			</div>
+		</isif>
+
+		<isset name="Product" value="${pdict.mainProduct}" scope="pdict"/>
+		<iscomment>Yotpo review widget </iscomment>
+		<section id="reviews" class="product-section">
+			<div class="container">
+				<isyotporeviewswidget product="${pdict.Product}" yotporeviewspage="1" isreview="true" />
+			</div>
+		</section>
+
+		<iscomment>You may also like it </iscomment>
+		<isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnProductPage')}">
+			<isslot id="einstein-product-recommendation" description="Product page slot" context="global" context-object="${pdict.Product}"/>
+		<iselse>
+			<isinclude template="product/components/productv1/recommendations"/>
+		</isif>
+	<iselse>
+		<iscomment>With Our Compliments </iscomment>
+		<isinclude template="product/components/compliments"/>
+		<iscomment>You may also like it </iscomment>
+		<isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnProductPage')}">
+			<isslot id="einstein-product-recommendation" description="Product page slot" context="global" context-object="${pdict.Product}"/>
+		<iselse>
+			<isinclude template="product/components/productv1/recommendations"/>
+		</isif>
+	</isif>
+</div>
+

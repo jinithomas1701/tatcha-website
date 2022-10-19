@@ -1,0 +1,54 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<iscomment> SMART ORDER REFILL PAGINATION Component </iscomment>
+<isif condition="${!pdict.pagingmodel.empty}">
+    <div class="sor-module__pagination">
+    <iscomment>Show counts of paginated list</iscomment>
+    <iscomment>Avoid empty paging div or empty div with empty ul</iscomment>
+    <isif condition="${(!empty(pdict.OrderPagingModel) || !dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll')) && pdict.pagingmodel.pageCount > 1}">
+        <table>
+            <tr>
+                <isif condition="${(pdict.pagingmodel.currentPage > 0)}">
+                    <td>
+                        <a class="button next" href="${decodeURI(pdict.pagingmodel.appendPaging( pdict.pageurl, 0))}">
+                            <<
+                        </a>
+                    </td>
+
+                    <td>
+                        <a class="button previous" href="${decodeURI(pdict.pagingmodel.appendPaging( pdict.pageurl, pdict.pagingmodel.start - pdict.pagingmodel.pageSize))}"><span class="visually-hidden button">${Resource.msg('club.manage.back', 'sor_smartorderrefill', null)}</span></a>
+                    </td>
+                    <td>
+                        <a class="button next" href="${decodeURI(pdict.pagingmodel.appendPaging( pdict.pageurl, pdict.pagingmodel.start - pdict.pagingmodel.pageSize ))}">
+                            <isprint value="${(pdict.pagingmodel.currentPage).toFixed()}" encoding="htmlcontent" />
+                        </a>
+                    </td>
+                </isif>
+
+                <td valign='middle' class="middle-pag">
+                    <isprint value="${(pdict.pagingmodel.currentPage + 1).toFixed()}" encoding="on" />
+                </td>
+
+
+                <isif condition="${pdict.pagingmodel.maxPage >= 1}">
+                    <isif condition="${(pdict.pagingmodel.start < pdict.pagingmodel.count - pdict.pagingmodel.pageSize)}">
+                        <td>
+                            <a class="button next" href="${decodeURI(pdict.pagingmodel.appendPaging( pdict.pageurl, pdict.pagingmodel.start + pdict.pagingmodel.pageSize))}"><isprint value="${(pdict.pagingmodel.currentPage + 2).toFixed(0)}" encoding="on" /></a>
+                        </td>
+                        
+                        <td>
+                            <a class="button next" href="${decodeURI(pdict.pagingmodel.appendPaging( pdict.pageurl, pdict.pagingmodel.start + pdict.pagingmodel.pageSize))}"><span class="visually-hidden">${Resource.msg('club.manage.next', 'sor_smartorderrefill', null)}</span></a>
+                        </td>
+                        <td>
+                            <a class="button next" href="${decodeURI(pdict.pagingmodel.appendPaging( pdict.pageurl, ((pdict.pagingmodel.maxPage + 1) * pdict.pagingmodel.pageSize).toFixed()))}"> >> </a>
+                        </td>
+                    </isif>
+                </isif>
+            </tr>
+        </table>
+    </isif>
+    </div>
+</isif>

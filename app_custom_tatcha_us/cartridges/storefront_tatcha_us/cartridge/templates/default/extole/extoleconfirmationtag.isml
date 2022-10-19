@@ -1,0 +1,3 @@
+<isinclude template="util/modules"/>
+<isextolezonetag name="confirmation" element_id="extole_zone_confirmation" order="${pdict.order}"/>
+<div>testextole</div>

@@ -1,0 +1,39 @@
+/**
+ * Removes the given WorkflowScheduleDefintion.
+ * 
+ * @input WorkflowScheduleDefinition : dw.object.CustomObject The WorkflowScheduleDefintion object to remove.
+ */
+
+importPackage(dw.system);
+importPackage(dw.object);
+importPackage(dw.util);
+
+/**
+ * The main function.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Number} PIPELET_NEXT or in case of an exception PIPELINE_ERROR.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+	var workflowScheduleDefintion : CustomObject = pdict.WorkflowScheduleDefinition;
+	
+	if (empty(workflowScheduleDefintion)) {
+		return PIPELET_NEXT;
+	}
+	
+	// First all relations are removed.
+	var workflowScheduleDefinitionWorkflowComponentDefinitionRelations : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowScheduleDefinitionWorkflowComponentDefinitionRelation', 'custom.workflowScheduleDefinitionID = {0}', null, workflowScheduleDefintion.custom.ID);
+	if (!empty(workflowScheduleDefinitionWorkflowComponentDefinitionRelations)) {
+		for each (var workflowScheduleDefinitionWorkflowComponentDefinitionRelation : CustomObject in workflowScheduleDefinitionWorkflowComponentDefinitionRelations) {
+			CustomObjectMgr.remove(workflowScheduleDefinitionWorkflowComponentDefinitionRelation);
+		}
+		workflowScheduleDefinitionWorkflowComponentDefinitionRelations.close();
+	}
+	
+	CustomObjectMgr.remove(workflowScheduleDefintion);
+	
+	// The instances will not be deleted to show a correct history!
+	
+    return PIPELET_NEXT;
+}

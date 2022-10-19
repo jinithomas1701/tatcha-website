@@ -1,0 +1,18 @@
+<div>
+    <div class="src-method-name" data-braintree-payment-method="${payment.paymentMethod}">
+        ${dw.order.PaymentMgr.getPaymentMethod(payment.paymentMethod).getName()}
+    </div>
+    <isif condition="${payment.maskedCreditCardNumber}">
+        <div class="src-card-details">
+            ${payment.maskedCreditCardNumber}
+        </div>
+    </isif>
+    <isif condition="${payment.type}">
+        <div class="src-card-type">
+            ${payment.type}
+        </div>
+    </isif>
+    <div class="src-amount">
+        ${pdict.order.priceTotal}
+    </div>
+</div>

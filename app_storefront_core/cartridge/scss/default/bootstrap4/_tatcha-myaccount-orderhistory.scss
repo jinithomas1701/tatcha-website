@@ -1,0 +1,330 @@
+.my-account-order-history {
+	
+	.orders-stack-unit {
+		border-top-width: 1px;
+    	box-shadow: 2px 2px 2px 0 rgba(153,153,153,.15);
+		margin-bottom: 22px;
+		border-color: #ccd4d9;
+		
+		.order-number-col {
+			text-align: left;
+
+			.data-label {
+				color: #495257;
+				font-size: 12px;
+			    text-transform: uppercase;
+			    font-weight: normal;
+			}
+			
+			.order-number {
+				font-size: 16px;
+			    font-weight: 600;
+			    border-bottom: none;
+			    line-height: 1.5;
+			    padding-bottom: 0;
+			    margin-bottom: 0;
+			}
+		}
+		
+		
+		.order-number-first-col {
+			text-align: center;
+			
+			@include media-breakpoint-up(lg) {
+				text-align: left;
+			}
+			
+			.data-label {
+				color: #495257;
+				font-size: 12px;
+			    text-transform: uppercase;
+			    font-weight: normal;
+			}
+			
+			.order-number {
+				font-size: 28px;
+			    font-weight: $font-weight-light;
+			    border-bottom: 1px solid #E9EDF0;
+			    line-height: 1;
+			    padding-bottom: 8px;
+			    margin-bottom: 8px;
+				
+				@include media-breakpoint-up(lg) {
+					font-size: 16px;
+				    font-weight: 600;
+				    border-bottom: none;
+				    line-height: 1.5;
+				    padding-bottom: 0;
+				    margin-bottom: 0;
+				}
+			}
+		}
+		
+		.orders-product-thumbnail {
+			.product-view-link {
+				  display: inline-block;
+				.product-img {
+					margin: 8px 1px 0;
+					height: 56px;
+    				width: 56px;
+					@include media-breakpoint-up(md) {
+						height: 80px;
+    					width: 80px;
+				      }
+				}
+			}
+		}
+		
+		
+		.panel-btn-col .btn.btn-outline-secondary {
+			width: 100%;
+			margin: 12px 0 0;
+			
+			@include media-breakpoint-up(md) {
+				width: 48%;
+				margin-top: 12px 2px 0;
+		      }
+
+			@include media-breakpoint-up(xl) {
+				width: 48%;
+				margin-top: 0;
+		      }
+
+		}
+		
+		.linc {
+			border: 0!important;
+			&:hover {
+				background-color: #fff;
+			}
+			
+			a {
+				border-color: #aeb8bd!important;
+			    padding: 9px!important;
+			    text-transform: uppercase;
+			    color: #343c40;
+			    font-weight: $font-weight-light;
+			    background-color: #fff;
+			    text-decoration: none;
+				width: 100% !important;
+			}
+			
+			@include media-breakpoint-down(md) {
+				 padding: 0!important;
+		      }
+			  
+		}
+		
+		.trackorder-linc{
+
+			a:hover {
+				color: #fff !important;
+    			background-color: #495257 !important;
+				border: 1px solid #495257 !important;
+			}
+			
+			a {
+			    padding: 6px!important;
+			    text-transform: uppercase;
+				color: #495257;
+			    font-weight: $font-weight-normal;
+			    text-decoration: none;
+				width: 100% !important;
+				border-radius: 4px;
+				border-color: #495257 !important;
+			}
+		}
+		
+		.linc.btn-outline-secondary:hover {
+			background-color: #fff;
+		} 
+		
+		.linc-tracking-button, .linc-return-button {
+		    display: inline-block!important;
+		}
+		
+		/*.linc-return-button:hover, .linc-tracking-button:hover {
+		    background-color: #e6e6e6!important;
+		    border-color: #8c9aa2!important;
+		}*/
+		
+		/*.btn-order-details {
+			&:hover {
+				background-color: #e6e6e6!important;
+		    	border-color: #8c9aa2!important;
+			}
+			
+			border-color: #aeb8bd !important;
+		    padding: 9px !important;
+		    text-transform: uppercase;
+		    color: #343c40 !important;
+		    font-weight: $font-weight-light;
+		    background-color: #fff !important;
+		    text-decoration: none;
+			border-radius: 0;
+		}*/
+	}
+	
+	.myaccount-order-details {
+		
+		h1 {
+			font-weight: $font-weight-light;
+		    text-transform: uppercase;
+		    margin: 24px 0;
+
+			@include media-breakpoint-up(xl) {
+				  margin: 40px 0 40px;
+		      }
+
+			.data-label {
+				color: #495257;
+				font-size: 12px;
+			    text-transform: uppercase;
+			    font-weight: normal;
+			}
+		}
+		
+		.order-group {
+			margin-bottom: 22px;
+			box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+		    border-color: #CCD4D9;
+		    border-top-width: 3px;
+			
+			.data-label {
+				padding-top:2px;
+				color: #495257;
+				font-size: 12px;
+			    text-transform: uppercase;
+			    font-weight: normal;
+			}
+			
+			.data-value {
+				margin-bottom: 8px;
+				line-height: 1.3;
+    			padding-bottom: 16px;
+				@include media-breakpoint-up(md) {
+					   margin-bottom: 4px;
+			      }
+			}
+			
+			.dl-horizontal dt {
+				@include media-breakpoint-up(md) {
+					float: left;
+				    width: 160px;
+				    clear: left;
+				    text-align: right;
+				    overflow: hidden;
+				    text-overflow: ellipsis;
+				    white-space: nowrap;
+				}
+			}
+			
+			.order-info {
+				.data-label {
+				  	@include media-breakpoint-up(md) {
+					   width: 112px;
+			      }
+				}
+				
+				.data-value {
+					 @include media-breakpoint-up(md) {
+					   margin-left: 120px;
+			      }
+				}
+			}
+			
+			table.table th.data-label {
+				padding-top: 12px;
+			}
+		}
+		
+		.order-shipment {
+			h5 {
+				color: #869196;
+				border-top: 1px solid #E9EDF0;
+    			padding-top: 16px;
+			}
+			h6 {
+				color: #869196;
+				font-weight: 600;
+			    text-transform: none;
+			    margin-bottom: 0;
+			    margin-top: 16px;
+				text-decoration: none;
+			    font-size: 12px;
+			}
+		}
+		
+		.order-items-detail {
+			font-size: 14px;
+		    margin-bottom: 14px;
+		    border-bottom: 1px solid #E9EDF0;
+		    padding-bottom: 16px;
+
+			&:last-child {
+				border: none;
+			}
+			
+			.product-name {
+				font-size: 16px;
+			    font-weight: $font-weight-normal;
+			    color: #000;
+			    border: none;
+			    margin: 0;
+			    padding: 0;
+
+				a {
+					text-decoration: none;
+    				color: #000;
+				}
+			}
+			
+			.order-qty-price {
+				.data-label {
+					width: 40px;
+				}
+				.data-value {
+					font-size: 14px;
+					margin-bottom: 8px;
+					@include media-breakpoint-up(md) {
+						margin-left: 48px;	
+						margin-bottom: 4px;
+					}
+				}
+			}
+			
+			.order-action {
+				text-align: left;
+				@include media-breakpoint-up(md) {
+					   text-align: right;;
+			      }
+
+			 /*.buy-again {
+				    padding: 2px 6px;
+				    font-size: 12px;
+				    line-height: 1.5;
+				    border-radius: 0;
+					color: #343C40;
+			    	background-color: #fff;
+			    	border-color: #AEB8BD;
+					width: 100%;
+					
+					&:hover {
+						color: #343C40;
+					    background-color: #e6e6e6;
+					    border-color: #8c9aa2;	
+					}
+				}*/
+			.write-review-link {
+				font-size: 12px;
+				width: 100%;
+				color: #495257;
+				margin-top: 5px;
+				line-height: 1.5;
+				font-weight: $font-weight-normal;
+				letter-spacing: 0;	
+				}
+			}
+		}
+	}
+}

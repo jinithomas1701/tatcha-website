@@ -1,0 +1,41 @@
+<isscript>
+ var imagePaths = pdict.imageFilePaths;
+ var imageCounter = 1;
+ var selectedGiftCertImage = session.custom.selectedGiftimage ? session.custom.selectedGiftimage : '';
+ importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<div class="col-sm-8 offset-sm-2 col-md-8 offset-md-2 col-lg-6 offset-lg-1">
+	<div class="gift-cert-label control-label control-label-lg">Select Design</div>
+	<div class="product-img-main"><img class="img-responsive img-fluid selected-gift-cert-image" src="${getBlogMediaUrl(imagePaths[0],'pdp')}" alt="Gift card image"></div>
+	<div class="gift-card-thumbnails">
+		<isloop items="${imagePaths}" var="image" status="imageIterator">
+			<isif condition="${imageCounter % 3 === 1}">
+				<div class="row no-gutter">
+			</isif>
+			<div class="col-4">
+				<isscript>
+					var activeFlag = '';
+					if(image == selectedGiftCertImage){
+						activeFlag = 'active';
+					 } else if(imageIterator.first && selectedGiftCertImage == ''){
+						activeFlag = 'active';
+					 } else {
+						activeFlag = '';
+					}
+						
+					var imageAltTag = "image "+imageCounter;
+				</isscript>
+				<isset name="imageUrl" value="${getBlogMediaUrl(image,'pdp')}" scope="page"/>
+				<div class="product-thumbnail ${activeFlag}" href="#">
+					<img class="img-responsive img-fluid gift-cert-images" src="${imageUrl}" alt="${imageAltTag}"/>
+				</div>
+			</div>
+			<isif condition="${imageCounter % 3 === 0 || imageIterator.last}">
+				</div>
+			</isif>
+			<isscript>
+				imageCounter++;
+			</isscript>
+		</isloop>
+	</div>
+</div> 

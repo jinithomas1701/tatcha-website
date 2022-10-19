@@ -1,0 +1,52 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isif condition="${!empty(pdict.message)}">
+	<div class="product-afterpay-message ${pdict.classname}
+	${(pdict.classname != 'cart-afterpay-error-message text-center' && !pdict.hasRefillProducts && !pdict.hasOnlyGiftCertificate)? '' : 'd-none'}">
+		<span class="afterpay-link" title="${Resource.msg('terms.conditions.label','afterpay',null)}" >
+			<span class="afterpay-threshold-message">
+				${Resource.msg('payments.label','afterpay',null)} <isprint value="${pdict.message}"/>${Resource.msg('with.label','afterpay',null)}
+			</span>
+			<span class="d-inline-block">
+				<img class="afterpay-image" src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" alt="Afterpay" width=100 height=20 />
+				<a class="afterpay-icon-link" aria-label="afterpayTermsAndConditions" href="${URLUtils.url('AfterpayTerms-ShowTerms')}" data-toggle="modal" data-target="#afterpayModal" >
+					<i class="fal fa-info-circle afterpay-info-circle"></i>
+				</a>
+			</span>
+		</span>
+	</div>
+
+	<iselseif condition="${pdict.belowthreshold}" />
+	<div class="product-afterpay-message ${pdict.classname}
+	${(pdict.classname != 'cart-afterpay-message' && !pdict.hasRefillProducts && !pdict.hasOnlyGiftCertificate)? '' : 'd-none'}">
+		<span class="afterpay-link" title="${Resource.msg('terms.conditions.label','afterpay',null)}">
+			<span class="afterpay-threshold-message">
+				${Resource.msgf('minimum.threshold.message','afterpay', null, new dw.value.Money(pdict.minthresholdamount, session.getCurrency().getSymbol()))}
+			</span>
+			<span class="d-inline-block">
+				<img class="afterpay-image" src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" alt="Afterpay" width=100 height=20 />
+				<a class="afterpay-icon-link" aria-label="afterpayTermsAndConditions" href="${URLUtils.url('AfterpayTerms-ShowTerms')}" data-toggle="modal" data-target="#afterpayModal" >
+					<i class="fal fa-info-circle afterpay-info-circle"></i>
+				</a>
+			</span>
+		</span>
+	</div>
+
+	<iselseif condition="${pdict.abovethreshold}" />
+	<div class="product-afterpay-message ${pdict.classname}
+	${(pdict.classname != 'cart-afterpay-message' && !pdict.hasRefillProducts && !pdict.hasOnlyGiftCertificate)? '' : 'd-none'}">
+		<span class="afterpay-link" title="${Resource.msg('terms.conditions.label','afterpay',null)}" >
+			<span class="afterpay-threshold-message">
+				${Resource.msgf('maximum.threshold.message','afterpay',null, new dw.value.Money(pdict.maxthresholdamount, session.getCurrency().getSymbol()))}
+			</span>
+			<span class="d-inline-block">
+				<img class="afterpay-image" src="${URLUtils.httpStatic('/images/afterpay-logo.svg')}" alt="Afterpay" width=100 height=20 />
+				<a class="afterpay-icon-link" aria-label="afterpayTermsAndConditions" href="${URLUtils.url('AfterpayTerms-ShowTerms')}" data-toggle="modal" data-target="#afterpayModal" >
+					<i class="fal fa-info-circle afterpay-info-circle"></i>
+				</a>
+			</span>
+		</span>
+	</div>
+
+</isif>
+

@@ -1,0 +1,85 @@
+<!--- TEMPLATENAME: page.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isinclude template="/components/modules" sf-toolkit="off" />
+
+<!DOCTYPE html>
+<html lang="${require('dw/util/Locale').getLocale(request.getLocale()).getLanguage()}">
+<head>
+    <isscript>
+        var pageContext = {
+            title: 'Ritual Finder',
+            type: 'ritualfinder',
+            ns:'recommendation'
+        };
+    </isscript>
+    <!--[if gt IE 9]>
+    <isinclude sf-toolkit="off" template="/common/scripts" />
+    <!--<![endif]-->
+    <isinclude template="common/htmlHead" />
+    <isinclude template="content/content/contentogtags"/>
+    <isloop items="${ require('*/cartridge/scripts/assets.js').styles }" var="style">
+        <link rel="stylesheet" href="${style.src}" <isif condition="${style.integrity != null}">integrity="${style.integrity}" crossorigin="anonymous"</isif> />
+    </isloop>
+
+
+    <isif condition="${pdict.canonicalUrl}" >
+        <link rel="canonical" href="${pdict.canonicalUrl}"/>
+    </isif>
+    <isactivedatahead/>
+    <isinclude template="/components/schema" />
+</head>
+<body>
+${dw.system.HookMgr.callHook('app.template.beforeHeader', 'beforeHeader', pdict) ||''}
+
+<iscomment> mParticle Includes for SDK </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('mParticleEnabled')}">
+    <isinclude template="mParticle/mParticle_includes"/>
+</isif>
+
+<iscomment> rsc Includes for SDK </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_includes"/>
+</isif>
+
+<div class="page" data-action="${pdict.action}" data-querystring="${pdict.queryString}" >
+    <isinclude template="/components/header/pageHeader" />
+    <iscontentasset aid="mobile-exposed-nav"/>
+    <div role="main" id="maincontent" tabindex="-1">
+        <isreplace/>
+    </div>
+
+</div>
+<div class="error-messaging"></div>
+<div class="modal-background"></div>
+<iscontentasset aid="cookie_hint" />
+<isinclude template="common/UI_Includes"/>
+<isinclude sf-toolkit="off" template="/common/scripts" />
+
+<iscomment>gpds widget includes</iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_footer"/>
+</isif>
+
+<iscomment>
+    hook for Marketing Cloud connector & other integration which need to inject
+    logic at the page end
+    IMPORTANT: Note that this hook will be called to cached as well as uncached pages
+    which means you need to put privacy information into another remote include
+</iscomment>
+
+
+${dw.system.HookMgr.callHook('app.template.afterFooter', 'afterFooter', pdict) ||''}
+<iscomment><isinclude url="${dw.web.URLUtils.url('ConsentTracking-Check')}"/></iscomment>
+
+<iscomment>RDMP-3452: adding attributes for MParticle-RenderMParticleTags call</iscomment>
+<isinclude url="${URLUtils.url('LoginSfra-LoginModal',
+		'isProfileUpdated', pdict.isProfileUpdated,
+		'pagecontexttype', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.type : null,
+  		'pagecontexttitle', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.title : null,
+  		'checkoutState', ('checkoutObj' in this && !empty(checkoutObj)) ? checkoutObj.checkoutState : '',
+  		'checkoutMode', ('checkoutObj' in this && !empty(checkoutObj)) ? checkoutObj.checkoutMode : '',
+  		'paymentMethod', ('checkoutObj' in this && !empty(checkoutObj) && !empty(checkoutObj.paymentInfo.paymentInstruments)) ? checkoutObj.paymentInfo.paymentInstruments[0].paymentMethod : '')}"/>
+
+</body>
+</html>

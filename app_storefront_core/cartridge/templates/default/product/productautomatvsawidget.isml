@@ -1,0 +1,6 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment> Automat VSA widget script </iscomment>
+
+<div class="open-webchat" style="position:relative;z-index:9999;"></div>

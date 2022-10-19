@@ -1,0 +1,30 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<isinclude template="util/modules"/>
+<isif condition="${pdict.Content && pdict.Content.custom}">
+		<isif condition="${pdict.Content.custom.imageAltText}">
+			 <isset name="imageAltText" scope="page" value="${pdict.Content.custom.imageAltText}">
+		<iselse/>
+			 <isset name="imageAltText" scope="page" value="${pdict.Content.name}">
+		</isif>
+
+	<isif condition="${empty(pdict.Content.custom.ImageLinkUrl)}">
+		<div class="promo-img center-block" title="${Resource.msgf('global.categoryrefinement.label', 'locale', null,imageAltText)}" >
+			<isif condition="${pdict.Content.custom.BannerMobileImage && pdict.Content.custom.BannerMobileImage.getURL() !== null}">
+				<img class="img-fluid d-md-none category-header-promo-banner" src="${pdict.Content.custom.BannerMobileImage.getURL()}" alt="${imageAltText}">		
+			</isif>
+			<isif condition="${pdict.Content.custom.BannerDesktopImage && pdict.Content.custom.BannerDesktopImage.getURL() !== null}">
+				<img class="img-fluid d-none d-md-block category-header-promo-banner image-md" src="${pdict.Content.custom.BannerDesktopImage.getURL()}" alt="${imageAltText}">		
+			</isif>
+		</div>
+	<iselse/>
+ 		<a class="promo-img center-block" href="${pdict.Content.custom.ImageLinkUrl}" title="${Resource.msgf('global.categoryrefinement.label', 'locale', null,imageAltText)}">
+ 			<isif condition="${pdict.Content.custom.BannerMobileImage && pdict.Content.custom.BannerMobileImage.getURL() !== null}">
+				<img class="img-fluid d-md-none category-header-promo-banner" src="${pdict.Content.custom.BannerMobileImage.getURL()}" alt="${imageAltText}">		
+			</isif>
+			<isif condition="${pdict.Content.custom.BannerDesktopImage && pdict.Content.custom.BannerDesktopImage.getURL() !== null}">
+				<img class="img-fluid d-none d-md-block category-header-promo-banner" src="${pdict.Content.custom.BannerDesktopImage.getURL()}" alt="${imageAltText}">		
+			</isif>
+		</a>
+ 	</isif>
+</isif>    	

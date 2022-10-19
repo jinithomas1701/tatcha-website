@@ -1,0 +1,2 @@
+<isinclude template="util/modules"/>
+<isextolezonetag name="category_banner" element_id="extole_zone_category_banner" customer="${pdict.CurrentCustomer}"/>

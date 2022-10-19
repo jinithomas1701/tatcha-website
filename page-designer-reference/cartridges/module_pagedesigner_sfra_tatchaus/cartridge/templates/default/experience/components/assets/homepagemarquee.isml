@@ -1,0 +1,79 @@
+<iscache type="relative" hour="24"/>
+<div class="container-fluid container-fluid-max container-flush">
+<isif condition="${pdict.btnStyle && empty(pdict.buttonText1)}">
+	<a href="${pdict.url}" class="anchor-style-reset">
+</isif>
+	<section class="col-xs-12 position-relative heroV2-section hero-container ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+		<div class="hero-image">
+			<isif condition="${pdict.btnStyle && !empty(pdict.buttonText) && !empty(pdict.buttonText1)}">
+				<picture>
+				  <source media="(min-width:768px)" srcset="${pdict.desktopImage.src.desktop}">
+				  <source media="(max-width:767px)" srcset="${pdict.mobileImage.src.mobile}">
+				  <img src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" height="700" width="1920" class="hero-image img-fluid d-none d-md-block lazyImage" alt="${pdict.imageAlt}" aria-hidden="true">
+				  <img src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" height="768" width="1024" class="hero-image img-fluid d-sm-block d-md-none lazyImage" alt="${pdict.imageAlt}" aria-hidden="true">
+				</picture>
+			<iselse>
+				<picture>
+				  <source media="(min-width:768px)" srcset="${pdict.desktopImage.src.desktop}">
+				  <source media="(max-width:767px)" srcset="${pdict.mobileImage.src.mobile}">
+					<img src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" height="700" width="1920" class="hero-image img-fluid d-none d-md-block lazyImage" alt="${pdict.imageAlt}" aria-hidden="true">
+					<img src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" height="768" width="1024" class="hero-image img-fluid d-sm-block d-md-none lazyImage" alt="${pdict.imageAlt}" aria-hidden="true">				</picture>
+			</isif>
+		</div>
+
+		<div class="hero-content hero-content-md hero-content-home hero-marquee-v2 d-sm-block d-md-none ${pdict.mobileBlockPositionVertical} ${pdict.mobileTextAlignment} col-12 h-auto ${pdict.enableOverlay? 'hero-marquee-overlay':''}" style="color: ${pdict.textColor};">
+				<${pdict.headingStyle} class="hero-heading outline-global" role="heading" aria-level=1" tabindex="0">
+					<div class="overline-text"><isprint value="${pdict.overline}" encoding="off" /></div>
+					<div><isprint value="${pdict.mainHeading}" encoding="off" /></div>
+				</${pdict.headingStyle}>
+				<isif condition="${pdict.body}" >
+					<p class="outline-global" tabindex="0"><isprint value="${pdict.body}" encoding="off" /></p>
+				</isif>
+				<div class="hero-cta-container heromarqueev2-cta-container">
+					<isif condition="${pdict.btnStyle}" >
+						<div tabindex="0" class="home-page-marquee-btn outline-global ${pdict.btnStyle} ${(pdict.btnStyle != 'btn btn-link')?((pdict.textColor == 'black') ? 'btn-outline-dark' : 'btn-outline-light'):((pdict.textColor == 'black') ? 'btn-link-black' : 'btn-link-white')} heromarquee-ctabtn cta-btn" data-href="${pdict.url}">${pdict.buttonText}</div>
+					</isif>
+					<isif condition="${pdict.btnStyle && (!empty(pdict.buttonText1))}" >
+						<div tabindex="0" class="home-page-marquee-btn outline-global ${pdict.btnStyle} ${(pdict.btnStyle != 'btn btn-link')?((pdict.textColor == 'black') ? 'btn-outline-dark' : 'btn-outline-light'):((pdict.textColor == 'black') ? 'btn-link-black' : 'btn-link-white')} heromarquee-ctabtn second-cta cta-btn" data-href="${pdict.url1}"> ${pdict.buttonText1}</div>	
+					</isif>
+				</div>
+			</div>
+		
+		<isif condition="${pdict.btnStyle && !empty(pdict.buttonText) && !empty(pdict.buttonText1)}">
+			<div class="hero-content hero-content-home hero-marquee-v2 d-none d-md-block ${pdict.blockPositionVertical} ${pdict.blockPositionHorizontal} ${pdict.textAlignment} col-md-5 col-lg-6 col-xl-5 col-xxl-4 h-auto  ${pdict.enableOverlay? 'hero-marquee-overlay':''}" style="color: ${pdict.textColor};">
+				<${pdict.headingStyle} class="hero-heading outline-global" role="heading" aria-level="1" tabindex="0">
+					<div class="overline-text"><isprint value="${pdict.overline}" encoding="off" /></div>
+					<div><isprint value="${pdict.mainHeading}" encoding="off" /></div>
+				</${pdict.headingStyle}>
+				<isif condition="${pdict.body}" >
+					<p class="outline-global" tabindex="0"><isprint value="${pdict.body}" encoding="off" /></p>
+				</isif>
+				<div class="hero-cta-container heromarqueev2-cta-container">
+					<isif condition="${pdict.btnStyle}" >
+						<div tabindex="0" class="home-page-marquee-btn outline-global ${pdict.btnStyle} ${(pdict.btnStyle != 'btn btn-link')?((pdict.textColor == 'black') ? 'btn-outline-dark' : 'btn-outline-light'):((pdict.textColor == 'black') ? 'btn-link-black' : 'btn-link-white')} heromarquee-ctabtn cta-btn" data-href="${pdict.url}">${pdict.buttonText}</div>
+					</isif>
+					<isif condition="${pdict.btnStyle && (!empty(pdict.buttonText1))}" >
+						<div tabindex="0" class="home-page-marquee-btn outline-global ${pdict.btnStyle} ${(pdict.btnStyle != 'btn btn-link')?((pdict.textColor == 'black') ? 'btn-outline-dark' : 'btn-outline-light'):((pdict.textColor == 'black') ? 'btn-link-black' : 'btn-link-white')} heromarquee-ctabtn second-cta cta-btn" data-href="${pdict.url1}"> ${pdict.buttonText1}</div>	
+					</isif>
+				</div>
+				
+			</div>
+		<iselse> 
+			<div class="hero-content hero-content-home hero-marquee-v2 d-none d-md-block ${pdict.blockPositionVertical} ${pdict.blockPositionHorizontal} ${pdict.textAlignment} col-md-5 h-auto ${pdict.enableOverlay ? 'hero-marquee-overlay':''}" style="color: ${pdict.textColor};">
+				<${pdict.headingStyle} class="hero-heading outline-global" role="heading" aria-level="1" tabindex="0">
+					<div class="overline-text"><isprint value="${pdict.overline}" encoding="off" /></div>
+					<div><isprint value="${pdict.mainHeading}" encoding="off" /></div>
+				</${pdict.headingStyle}>
+				<isif condition="${pdict.body}" >
+					<p class="outline-global" tabindex="0"><isprint value="${pdict.body}" encoding="off" /></p>
+				</isif>
+				<isif condition="${pdict.btnStyle}" >
+					<div tabindex="0" class="home-page-marquee-btn outline-global outline-global-btn ${pdict.btnStyle} ${(pdict.btnStyle != 'btn btn-link')?((pdict.textColor == 'black') ? 'btn-outline-dark' : 'btn-outline-light'):((pdict.textColor == 'black') ? 'btn-link-black' : 'btn-link-white')}">${pdict.buttonText}</div>	
+				</isif>
+			</div>
+		</isif>
+	</section>
+<isif condition="${pdict.btnStyle && empty(pdict.buttonText1)}">
+</a>
+</isif>
+</div>

@@ -1,0 +1,23 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<div class="modal d-lg-none" id="searchMobileModal" tabindex="-1" role="dialog">
+      <div class="modal-dialog m-0 my-lg-5 mx-lg-auto modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <div class="d-flex justify-content-between search-mobile">
+            <a  class="close mobile-search-close" data-dismiss="modal" aria-label="Close"><i class="fal fa-chevron-double-left mr-2"></i></a>
+				<form role="search" class="simple-search-mobile" action="${URLUtils.url('Search-Show')}" method="get" name="simpleSearch">
+					<div class="mobile-search-block dropdown-search dropdown-search-mobile">
+					    <div class="search-mobile-input-container">
+					      <div class="input-group search-mobile-input">
+					        <input id="qm" name="q" type="text" class="form-control" data-toggle="tooltip" data-placement="bottom" title="Search"  placeholder="${Resource.msg('simplesearch.searchtext', 'search', null)}" label="searchMobile" aria-label="Enter text to search">
+					      </div>
+					    </div>
+					</div>
+				</form>
+            </div> 
+             
+           </div>
+          </div>
+        </div>
+      </div> 

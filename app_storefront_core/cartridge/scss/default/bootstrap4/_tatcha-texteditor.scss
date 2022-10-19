@@ -1,0 +1,13 @@
+.content-text-editor{
+    @extend %m-top;
+    @extend %m-bottom;
+    &.center{
+        text-align: center;
+    }
+    &.left{
+        text-align: left;
+    }
+    &.right{
+        text-align: right;
+    }
+}

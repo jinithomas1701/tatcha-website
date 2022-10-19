@@ -1,0 +1,8 @@
+<iscache type="relative" hour="24"/>
+<div class="container">
+<section class="row card-panel-container mr-0 ml-0 ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+	<isprint value="${pdict.regions.column1.setClassName("col-md-4 card").render()}" encoding="off"/>
+	<isprint value="${pdict.regions.column2.setClassName("col-md-4 card").render()}" encoding="off"/>
+	<isprint value="${pdict.regions.column3.setClassName("col-md-4 card").render()}" encoding="off"/>
+</section>
+</div>

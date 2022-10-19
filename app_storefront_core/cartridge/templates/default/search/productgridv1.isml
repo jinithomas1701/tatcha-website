@@ -1,0 +1,107 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${pdict.pagingmodel && !empty(pdict.pagingmodel)}">
+<isscript>
+	importScript('search/ProductGridUtils.ds');
+	
+	//Get the promounit positions 
+	var promoPositionsList = [];
+	var noOfPromoUnits = pdict.NoOfPromoUnits?Number(pdict.NoOfPromoUnits):Number(0);
+	if(pdict.ProductSearchResult && pdict.ProductSearchResult.category) {
+		var promoPositions = pdict.ProductSearchResult.category.custom.categoryPromoBannerPositions;
+		if(typeof(promoPositions) != 'undefined' && !empty(promoPositions)){
+			promoPositionsList = promoPositions.split(',');	
+		}
+	}	
+	var gridPage = '';
+	var isGiftLanding = false;
+</isscript>
+<iscomment><!--Display the remaining products as list--></iscomment>
+<iscomment><!--display a tile per product--></iscomment>
+<isset name="minimalView" value="false" scope="page" />
+
+<iscache hour="2" varyby="price_promotion" if="${!pdict.ProductSearchResult.personalizedSort}"/>
+
+<isif condition="${(typeof initialPromoPoition == 'undefined') && (pdict.initialPromoOnLazyLoad != null)}">
+	<isset name="initialPromoPoition" value="${pdict.initialPromoOnLazyLoad}" scope="page" />
+</isif>
+
+<isif condition="${(typeof currentPromoPoition == 'undefined') && (pdict.currentPromoPos != null)}">
+	<isset name="currentPromoPoition" value="${pdict.currentPromoPos}" scope="page" />
+</isif>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll')}">
+	<isif condition="${(pdict.pagingmodel.currentPage != pdict.pagingmodel.start)}">
+		<isscript>
+			var isLoaded = 'unloaded';
+			if(!empty(pdict.ScrollType) && pdict.ScrollType !== 'top' ) {
+				isLoaded = 'loaded';
+			}
+			gridPage = (pdict.pagingmodel.currentPage + 1);
+		</isscript>
+		<div class="infinite-scroll-placeholder-top" data-loading-state="${isLoaded}" data-grid-page="${pdict.pagingmodel.currentPage + 1}" data-grid-url="${decodeURI(pdict.pagingmodel.appendPaging ( pdict.ProductSearchResult.url('Search-Show'), (pdict.pagingmodel.currentPage - 1) * pdict.pagingmodel.pageSize).append('format','page-element').append('ad', minimalView).append('scrollToTop','top').append('isGiftLanding', isGiftLanding).append('initialPromoOnLazyLoad', initialPromoPoition).append('currentPromoPoition', currentPromoPoition))}" ></div>
+	<iselse>
+		<isscript>
+			gridPage = (pdict.pagingmodel.currentPage + 1);
+		</isscript>
+		<div class="infinite-scroll-placeholder-top" data-grid-page="${pdict.pagingmodel.currentPage + 1}" ></div>
+	</isif>
+</isif>
+
+
+
+<isif condition="${pdict.pagingmodel.start <= 0}">
+	<isset name="promoBannerPosition" value="${1}" scope="page"/>
+<iselse>
+	<isset name="promoBannerPosition" value="${pdict.pagingmodel.start + 1}" scope="page"/>	
+</isif>
+
+		<isloop items="${pdict.pagingmodel.pageElements}" var="LoopProductHit" status="loopstate">
+			<isscript>
+				var isFirstItem = false;
+				
+				if(loopstate.first && !empty(gridPage)) {
+					isFirstItem = true;
+				} else {
+					isFirstItem = false;
+				}
+			</isscript>
+		    <isif condition="${!pdict.ProductSearchResult.isRefinedByAttribute() && !empty(pdict.ProductSearchResult.category) }">
+					<isif condition="${(Number(promoBannerPosition)).toFixed() == (parseInt(initialPromoPoition)).toFixed()}">
+						<isinclude url="${URLUtils.url('Promo-GetPromoTile','isFirstItem',isFirstItem,'gridPage',gridPage,'index',currentPromoPoition,'initialPosition', initialPromoPoition,'categoryID', pdict.category.ID)}" />
+						<isset name="initialPromoPoition" value="${Number(initialPromoPoition) + 8}" scope="page" />
+						<isset name="currentPromoPoition" value="${Number(currentPromoPoition) + 1}" scope="page" />
+					</isif>
+			</isif>		  
+			<isset name="promoBannerPosition" value="${(promoBannerPosition + 1)}" scope="page"/>
+			<isset name="noOfPromoUnits" value="${(noOfPromoUnits + 1)}" scope="page"/>		
+			
+			<div data-index="${Number(promoBannerPosition - 1).toFixed()}" class="col-md-6 col-lg-6 col-xl-3 product-list-col <isif condition="${isFirstItem}">prd-tile-wrap </isif>" <isif condition="${isFirstItem}">data-prd-page="${gridPage}"</isif>  >
+				<isscript>
+					var isUpdatedProductTile = true;
+					isGiftLanding = false;
+					if(pdict.isgiftlandingpage !== null && pdict.isgiftlandingpage === 'true') {
+						isGiftLanding = true;
+					}
+				</isscript>
+				<isobject object="${LoopProductHit}" view="searchhit">
+					<iscomment><!-- Self contained product information. Can be cached separately even if search finds this product in different categories or positions within the grid  --></iscomment>
+					<isinclude url="${ProductGridUtils.buildHitTileURL(LoopProductHit, pdict.CurrentHttpParameterMap.cgid.value,minimalView, isUpdatedProductTile, isGiftLanding)}"/>
+				</isobject>
+			</div>
+		</isloop>
+		<isset name="promoBannerPosition" value="${(promoBannerPosition + 1)}" scope="page"/>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll')}">
+	<isif condition="${pdict.pagingmodel.currentPage != pdict.pagingmodel.maxPage }">
+		<div class="infinite-scroll-placeholder" data-loading-state="unloaded" data-grid-page="${pdict.pagingmodel.currentPage}" data-grid-url="${decodeURI(pdict.pagingmodel.appendPaging ( pdict.ProductSearchResult.url('Search-Show'), (pdict.pagingmodel.currentPage + 1) * pdict.pagingmodel.pageSize).append('format','page-element').append('ad', minimalView).append('scrollBottom','bottom').append('noOfPromoUnits','0').append('isGiftLanding', isGiftLanding).append('initialPromoOnLazyLoad', initialPromoPoition).append('currentPromoPoition', currentPromoPoition))}" ></div>
+	</isif>
+</isif>
+<script>
+	var plpImages = document.querySelectorAll('.lazyImage');
+	if(window.lazyLoad !== undefined) {
+		window.lazyLoad(plpImages, {
+		     root: null,
+		     rootMargin: "0px",
+		     threshold: .25
+		});
+	}
+</script>
+</isif>

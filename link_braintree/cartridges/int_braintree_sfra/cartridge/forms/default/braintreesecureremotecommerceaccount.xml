@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+    <field formid="uuid" type="string" mandatory="false" />
+    <field formid="email" type="string" mandatory="false" />
+    <field formid="default" type="boolean" mandatory="false" />
+
+    <field formid="nonce" type="string" mandatory="false" />
+    <field formid="addresses" type="string" mandatory="false" />
+    <field formid="makedefault" type="string" mandatory="false" />
+
+    <action formid="add" valid-form="false"/>
+    <action formid="cancel" valid-form="false"/>
+    <action formid="deletepayment" valid-form="false"/>
+
+</form>

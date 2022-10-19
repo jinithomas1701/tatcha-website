@@ -1,0 +1,136 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>
+	This template renders the slot content of a content asset
+	using only the body of the content.
+	Note, only one content asset body is rendered.
+</iscomment>
+<div class="col-md-2 col-lg-2"></div>
+<div class="col-md-12 col-lg-8">
+<a class="skip-to-content-link" role="link" tabindex="0" href=""> Skip to content</a>
+<isif condition="${slotcontent != null}">
+<div class="row justify-content-end no-gutters rotating-promo-container" >
+      <div class="col-lg-12 col-md-12 rotating-promo-wrap">
+		  <isif condition="${slotcontent.content.length > 1}">
+        <div role="navigation" aria-label="rotating-promo-nav" class="carousel rotating-promo-carousel"  data-flickity='{ "cellAlign": "center","wrapAround":"true", "contain": true, "imagesLoaded": false, "percentPosition": false, "freeScroll": false, "pageDots": false, "groupCells": false, "arrowShape": { "x0": 10, "x1": 60, "y1": 50, "x2": 65, "y2": 45, "x3": 20 } }'>
+         <isloop items="${slotcontent.content}" var="contentAsset" status="loopstate">
+         	<isif condition="${loopstate.count == 6}">
+				<isbreak/>
+			</isif>
+	 		 <div class="carousel-cell text-center">
+	 		 <isif condition="${contentAsset.custom.ImageLinkUrl}">
+	   			 <a class="rotating-banner-link" href="${contentAsset.custom.ImageLinkUrl}" aria-label="${contentAsset.custom.title.substring(0,42)}"><isprint value="${contentAsset.custom.title.substring(0,42)}" encoding="off"/></a>
+	   		<iselseif condition="${!contentAsset.custom.ImageLinkUrl && contentAsset.pageURL}" >
+	   			<a class="rotating-banner-link" href="${contentAsset.pageURL}" aria-label="${contentAsset.custom.title.substring(0,42)}"><isprint value="${contentAsset.custom.title.substring(0,42)}" encoding="off"/></a>
+	   		<iselseif condition="${!contentAsset.custom.ImageLinkUrl && !contentAsset.pageURL}" >
+	   			<isprint value="${contentAsset.custom.title.substring(0,42)}" encoding="off"/>
+	   		</isif>
+	  		</div>
+		</isloop>
+			<div class="carousel-cell text-center">
+				<isif condition="${slotcontent.content.length <= 5}">
+					<a class="rotating-banner-link see-all-link-nav" tabindex=0 data-toggle="modal" role="button" data-target="#rotatingPromoModal">See All (${slotcontent.content.length})</a>
+					<iselseif condition="${slotcontent.content.length > 5}">
+						<a class="rotating-banner-link see-all-link-nav" tabindex=0 data-toggle="modal" role="button" data-target="#rotatingPromoModal">See All (5)</a>
+				</isif>
+			</div>
+        </div>
+			  <iselse>
+				  <div class="rotating-promo-carousel text-center">
+
+						  <isif condition="${slotcontent.content[0].custom.ImageLinkUrl}">
+							  <a class="rotating-banner-link" href="${slotcontent.content[0].custom.ImageLinkUrl}" aria-label="${slotcontent.content[0].custom.title.substring(0,42)}"><isprint value="${slotcontent.content[0].custom.title.substring(0,42)}" encoding="off"/></a>
+							  <iselseif condition="${!slotcontent.content[0].custom.ImageLinkUrl && slotcontent.content[0].pageURL}" >
+								  <a class="rotating-banner-link" href="${slotcontent.content[0].pageURL}" aria-label="${slotcontent.content[0].custom.title.substring(0,42)}"><isprint value="${slotcontent.content[0].custom.title}" encoding="off"/></a>
+								  <iselseif condition="${!slotcontent.content[0].custom.ImageLinkUrl && !slotcontent.content[0].pageURL}" >
+									  <isprint value="${slotcontent.content[0].custom.title}" encoding="off"/>
+						  </isif>
+
+				  </div>
+		  </isif>
+      </div>
+    </div>
+
+
+  <div class="modal" id="rotatingPromoModal" tabindex="-1" role="dialog">
+       <div class="modal-dialog m-0 my-md-5 mx-md-auto modal-md" role="document">
+        <div class="modal-content">
+          <div class="modal-header rotating-promo-modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <i class="fal fa-times"></i>
+            </button>
+			  <h2 class="modal-title">Offers & Services</h2>
+		  </div>
+          <div class="modal-body">
+           <div class="rotating-promo-section">
+            <isloop items="${slotcontent.content}" var="promoAsset" status="loopstate">
+         	  <isif condition="${loopstate.count == 6}">
+				<isbreak/>
+			  </isif>
+         	  <div class="promo-asset-title">
+           			<b> ${promoAsset.custom.title.substring(0,42)} </b>
+              </div>
+              <isif condition="${promoAsset.description}">
+              <div class="promo-asset-desc">
+           			  ${promoAsset.description}
+              </div>
+              </isif>
+
+              <isif condition="${promoAsset.custom.body && promoAsset.custom.ImageLinkUrl}">
+	              <div class="action-links mb-4">
+		              <span class="btn btn-link promoDetailsCollapse rotating-banner-details" tabindex="0" data-toggle="collapse" data-title="${promoAsset.custom.title}" data-target="${'#detailsCollapse-'+loopstate.count}" aria-expanded="true" aria-controls="collapseOne">
+		                   Details
+		              </span>
+		              <span class="btn btn-link"><a href="${promoAsset.custom.ImageLinkUrl}" class="rotating-banner-link" title="Shop Now" data-title="${promoAsset.custom.title}">Shop Now</a></span>
+	              </div>
+	              <div id="detailsCollapse-${loopstate.count}" class="collapse indent-container" tabindex="-1" aria-labelledby="headingOne">
+		              <div>${promoAsset.custom.body}</div>
+		              <hr/>
+	              </div>
+	              <iselseif condition="${!promoAsset.custom.body && promoAsset.custom.ImageLinkUrl}" >
+	              	<span class="btn btn-link  mb-4"><a href="${promoAsset.custom.ImageLinkUrl}" class="rotating-banner-link" title="Shop Now" data-title="${promoAsset.custom.title}">Shop Now</a></span>
+	             <iselseif condition="${promoAsset.custom.body && !promoAsset.custom.ImageLinkUrl && !promoAsset.pageURL}" >
+		             <div class="action-links mb-4">
+			              <span class="btn btn-link promoDetailsCollapse rotating-banner-details" tabindex="0" data-toggle="collapse" data-title="${promoAsset.custom.title}" data-target="${'#detailsCollapse-'+loopstate.count}" aria-expanded="true" aria-controls="collapseOne">
+			                 Details
+			               </span>
+		              </div>
+	                  <div id="detailsCollapse-${loopstate.count}" class="collapse indent-container" tabindex="-1" aria-labelledby="headingOne">
+			              <div>${promoAsset.custom.body}</div>
+			              <hr/>
+		              </div>
+	              <iselseif condition="${promoAsset.custom.body && !promoAsset.custom.ImageLinkUrl && promoAsset.pageURL}" >
+		              <div class="action-links mb-4">
+			              <span class="btn btn-link promoDetailsCollapse rotating-banner-details" tabindex="0" data-toggle="collapse" data-title="${promoAsset.custom.title}" data-target="${'#detailsCollapse-'+loopstate.count}" aria-expanded="true" aria-controls="collapseOne">
+			              		Details
+			              </span>
+			               <span class="btn btn-link"><a href="${promoAsset.pageURL}" data-title="${promoAsset.custom.title}" class="rotating-banner-link" title="Learn More" aria-label="${promoAsset.custom.title}">Learn More</a></span>
+		              </div>
+	                <div id="detailsCollapse-${loopstate.count}" class="collapse indent-container" tabindex="-1" aria-labelledby="headingOne">
+	             	 <div>${promoAsset.custom.body}</div>
+	             	 <hr/>
+	              </div>
+              </isif>
+
+              <isif condition="${promoAsset.pageURL && !promoAsset.custom.ImageLinkUrl && !promoAsset.custom.body}">
+              <div class="action-links  mb-4">
+              <span class="btn btn-link"><a href="${promoAsset.pageURL}" class="rotating-banner-link" data-title="${promoAsset.custom.title.substring(0,42)}" title="Learn More" aria-label="${promoAsset.custom.title.substring(0,42)}">Learn More</a></span>
+              </div>
+              </isif>
+
+         	 </isloop>
+           </div>
+         </div>
+      </div>
+	</div>
+  </div>
+</isif>
+</div>
+<iscomment> RDMP-3615 - new nav update
+	<div class="col-md-2 d-none d-lg-block">
+		<isinclude template="components/header/headercustomerreorderlink" />
+	</div>
+</iscomment>
+
+
+

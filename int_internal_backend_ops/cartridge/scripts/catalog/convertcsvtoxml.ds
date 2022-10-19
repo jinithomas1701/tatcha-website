@@ -1,0 +1,460 @@
+/**
+* Demandware Script File
+* To define input and output parameters, create entries of the form:
+*
+* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
+*
+* where
+*   <paramUsageType> can be either 'input' or 'output'
+*   <paramName> can be any valid parameter name
+*   <paramDataType> identifies the type of the parameter
+*   <paramComment> is an optional comment
+*
+* For example:
+*
+*-   @input ExampleIn : String This is a sample comment.
+*
+*/
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.io );
+importPackage( dw.util );
+importPackage( dw.catalog );
+
+function execute( args : PipelineDictionary ) : Number
+{
+       //get file to read from
+       //soft code file name using site prefs
+       //Note: File need to be uploaded in IMPEX (src/catalog) folder prior to start runing the job
+        var fileName : String = dw.system.Site.current.preferences.custom.fileName;
+        var filePath = File.IMPEX + File.SEPARATOR+"src"+File.SEPARATOR+"catalog"+File.SEPARATOR+fileName;
+        var csvReader : dw.io.CSVStreamReader = new CSVStreamReader( new FileReader( new File( filePath ) ) );
+        
+       var calendar : Calendar = new Calendar();
+	   calendar.timeZone = "GMT";
+	   var gmtDateString : String = StringUtils.formatCalendar( calendar, "yyyy-MM-dd_HH-mm-ss" );
+		
+			
+		var importFile : File = new File(File.IMPEX + "/src/catalog/TATCHA_MASTER_CATALOG_"+gmtDateString+".xml"); 
+		
+     
+      //read all the lines
+      try
+	   {
+    	//create file to import
+    	
+    	//generating the time stamp to be added to the feed new name	
+		
+    	
+    	// Create an output stream
+        var xsw : XMLStreamWriter = beginFeed(importFile);
+        
+        //write products to xml file
+          try{
+		      var line =  csvReader.readNext();
+		      
+		      while(!empty(line) && !empty(line[0])){
+
+	        		//Get SkinConcerns Data
+	        		var skinConcerns  = [];
+	        		var Acnescars = line[29]+"_Acne Scars";   // 0
+	        		var Acne = line[30] +"_Acne";   // 1
+					var Brightening = line[31] +"_Brightening";   //2
+					var DarkSpots = line[32] +"_Dark Spots";  //3
+					var Dryness = line[33] +"_Dryness";  // 4
+					var Dullness = line[34] +"_Dullness";  //5
+					var Eczema = line[35] +"_Eczema";  // 6
+					var Elasticity = line[36] +"_Elasticity";  //7
+					var EvenTexture = line[37] +"_Even Texture";   // 8
+					var EvenTone = line[38] +"_Even Tone";   // 9
+					var FineLinesWrinkles = line[39] +"_Fine Lines/Wrinkles";  // 10
+					var Firmess = line[40] +"_Firmess";    //11
+					var Hydration = line[41] +"_Hydration";   //12
+					var Oiliness = line[42] +"_Oiliness";   //13
+					var Pores = line[43] +"_Pores";    //14
+					var Plumping = line[44] +"_Plumping";    //15
+					var Puffiness = line[45] +"_Puffiness";    //16
+					var Redness = line[46] +"_Redness";    //17
+					var SunCare = line[47] +"_SunCare";     //18
+	        		skinConcerns = [Acnescars,Acne,Brightening,DarkSpots,Dryness,Dullness,Eczema,Elasticity,EvenTexture,EvenTone,FineLinesWrinkles,Firmess,Hydration,Oiliness,Pores,Plumping,Puffiness, Redness,SunCare];
+	        		
+	        		var skinConcernsValues = [];
+	        		
+	        		for(var i = 0; i < skinConcerns.length; i++) {
+	        			    var concernValues = skinConcerns[i];
+	        			    var concernValuesArray = skinConcerns[i].split("_");
+	        			    
+							if (!empty(concernValuesArray) && concernValuesArray[0]!="" && concernValuesArray.length > 1 ){
+								skinConcernsValues.push(concernValuesArray[1]);
+							 }
+					  }
+	        		
+	        		
+	        		// Get Skin Type
+	        		var skinType = [];
+	        		var NormaltoOily = line[24] + "_normalToOily";
+					var NormaltoDry =  line[25] +"_normalToDry";
+					var Dry = line[26] + "_Dry";
+					var Oily = line[27] +"_Oily ";
+					var Sensitive = line[28] + "_Sensitive";
+					
+					
+					skinType = [NormaltoOily, NormaltoDry, Dry, Oily, Sensitive];
+					
+	        		var skinTypeValues = [];
+	        		for(var i = 0; i < skinType.length; i++) {
+	        			    var skinValues = skinType[i];
+	        			    var skinValuesArray = skinType[i].split("_");
+	        			    
+							if (!empty(skinValuesArray) && skinValuesArray[0]!="" && skinValuesArray.length > 1 ){
+								skinTypeValues.push(skinValuesArray[1]);
+							 }
+					  }
+	        		//End Skin Type
+	        	    var SkinTypeIcons = [];
+	        		
+	        		var allSkinTypes = line[64] + "_allSkinTypes";
+	        		var normalToOily = line[65] + "_normalToOily";
+	        		var normalToDry = line[66] +"_normalToDry";
+	        		var dry = line[67] +"_dry";
+	        		var oily = line[68]+"_oily";
+	        		var sensitive = line[69]+"_sensitive";
+	        		
+	        		SkinTypeIcons = [allSkinTypes,normalToOily,normalToDry,dry,oily,sensitive];
+	        		
+	        		
+	        		var skinTypeIconsValues = [];
+	        		for(var i = 0; i < SkinTypeIcons.length; i++) {
+	        			    var skinIconsValue = SkinTypeIcons[i];
+	        			    var skinIconsValuesArray = SkinTypeIcons[i].split("_");
+	        			    
+							if (!empty(skinIconsValuesArray) && skinIconsValuesArray[0]!="" && skinIconsValuesArray.length > 1 ){
+								skinTypeIconsValues.push(skinIconsValuesArray[1]);
+							 }
+					  }
+	
+	        		var skinConcernsIcons  = [];
+	        		var finelinewrinkles = line[52]+"_fine-lines";
+	        		var firmness = line[53]+"_firmness";
+	        		var antiaging = line[54]+"_anti-aging";
+	        		var darkspots = line[55] +"_dark-spots";  //3
+	        		var dullness = line[56] +"_dullness";  //5
+					var dryness = line[57] +"_dryness";  // 4
+					var puffiness = line[58] +"_puffiness";    //16
+					var eczema = line[59] +"_eczema";  // 6
+					var pores = line[60] +"_pores";    //14
+					var uneventexture = line[61] +"_uneven-texture";   // 8
+					var acneblemishes = line[62] +"_acne-blemishes";
+					var oiliness = line[63] +"_Oiliness";   //13
+					
+					
+	        		skinConcernsIcons = [finelinewrinkles,firmness,antiaging,darkspots,dullness,dryness,puffiness,eczema,pores,uneventexture,acneblemishes,oiliness];
+	        		
+	        		var skinConcernsIconsValues = [];
+	        		
+	        		for(var i = 0; i < skinConcernsIcons.length; i++) {
+	        			    var concernIconsValues = skinConcernsIcons[i];
+	        			    var concernIconsValuesArray = skinConcernsIcons[i].split("_");
+	        			    
+							if (!empty(concernIconsValuesArray) && concernIconsValuesArray[0]!="" && concernIconsValuesArray.length > 1 ){
+								skinConcernsIconsValues.push(concernIconsValuesArray[1]);
+							 }
+					  }
+	        		
+
+	        		var prodRecs_1 = line[107];    // 1
+	                var prodRecs_2 = line[109];   // 2
+	                var prodRecs_3 = line[111];   // 3
+	                var prodRecs_4 = line[113];   // 4
+			             
+		            var prodRecsList = [prodRecs_1,prodRecs_2,prodRecs_3,prodRecs_4];
+		            var usageStep;
+		            
+		             for(var i = 0; i < prodRecsList.length; i++) {
+		             	var recProd =  prodRecsList[i];
+		             	if(!empty(recProd) && recProd !="0" && recProd == line[0]){
+		             		usageStep = i + 1;
+		             		break;
+		             	}
+		             }
+	        		
+	        		
+	        		// End steps
+				    startProductXML(xsw,line);  
+				    writeCustomAttributes(xsw,line,skinTypeValues,skinConcernsValues,skinTypeIconsValues,skinConcernsIconsValues,usageStep);    
+				    //writeVariations (xsw,line);  
+				    if(!empty(usageStep)){
+				      // writeCustomAttribute(xsw, "suggestedUsageStep", usageStep,false);
+				    }
+		            closeProductXML(xsw); 
+		                                   
+	      	        line =  csvReader.readNext();
+		      }
+      
+      }catch(e){
+      	 csvReader.close();
+      	 Logger.error(" Tatcha Catalog Conversion "+e);
+      	 return PIPELET_ERROR;
+      }
+      csvReader.close();
+         
+        // Flush & close the stream
+        closeFeed(xsw);
+	}
+	catch(ex)
+	{
+		Logger.error("ConvertFile ERROR: " + ex);
+		return PIPELET_ERROR;
+	}
+       
+       args.importFilePath =  importFilePath;
+      return PIPELET_NEXT;
+   
+}
+
+function beginFeed(file : File) : XMLStreamWriter {
+    var fw : FileWriter = new FileWriter(file, "UTF-8", false);
+    var xsw : XMLStreamWriter = new XMLIndentingStreamWriter(fw);
+    
+   	xsw.writeStartDocument("UTF-8", "1.0");
+	
+	xsw.writeStartElement( "catalog" );
+	xsw.writeDefaultNamespace("http://www.demandware.com/xml/impex/catalog/2006-10-31");
+	xsw.writeAttribute( "catalog-id", "master_catalog_tatcha");
+	
+    return xsw;
+}
+function closeFeed(xsw : XMLStreamWriter) {
+	// close root element and document
+    xsw.writeEndElement();			//</catalog>
+    xsw.writeEndDocument();
+   
+    xsw.flush();
+    xsw.close();
+}
+
+
+
+
+function startProductXML(xsw : XMLStreamWriter, line : Array) {
+	xsw.writeStartElement( "product" );
+	xsw.writeAttribute( "product-id" , line[0] );
+	
+	xsw.writeStartElement("upc" );
+	//xsw.writeAttribute( "xml:lang" , "default" );   ="manufacturerSKU
+	xsw.writeCharacters(line[1]);
+	xsw.writeEndElement();
+	
+	//<online-flag>false</online-flag>
+	
+	xsw.writeStartElement("display-name" );
+	xsw.writeAttribute( "xml:lang" , "default" );
+	xsw.writeCharacters(line[5]);
+	xsw.writeEndElement();
+	
+	xsw.writeStartElement("short-description");
+	xsw.writeAttribute( "xml:lang" , "default" );
+	xsw.writeCharacters(line[90]);
+	xsw.writeEndElement();
+	//<available-flag>true</available-flag>
+    //    <searchable-flag>true</searchable-flag>
+		
+	xsw.writeStartElement("online-flag");
+	//xsw.writeAttribute( "xml:lang" , "default" );   ="manufacturerSKU
+	xsw.writeCharacters("true");
+	xsw.writeEndElement();
+	
+	xsw.writeStartElement("available-flag");
+	//xsw.writeAttribute( "xml:lang" , "default" );   ="manufacturerSKU
+	xsw.writeCharacters("true");
+	xsw.writeEndElement();
+	
+	xsw.writeStartElement("searchable-flag");
+	//xsw.writeAttribute( "xml:lang" , "default" );   ="manufacturerSKU
+	xsw.writeCharacters("true");
+	xsw.writeEndElement();
+	
+}
+
+function closeProductXML(xsw : XMLStreamWriter) {	
+	
+	xsw.writeEndElement();		//</product>
+}
+function writeCustomAttributes(xsw : XMLStreamWriter, line : Array,skinValues, concernValues,skinTypeIconsValues,skinConcernsIconsValues,usageStep) {
+	 var isVal = false;
+    var pipeEncoded  : String     = "%7c";
+		var tradedMarkEncoded : String = "&#174";
+		var aWithTilde : String = "&#195";
+		var aWithCircumflex : String = "&#194";
+		var ewithAcute : String = "&#233"; //  ï¿½
+		var eaccent : String = "&#232"; // ï¿½
+		var degreeSymbol : String = "&#176";
+		
+	xsw.writeStartElement("custom-attributes");  // productClass
+	    writeCustomAttribute(xsw, "productClass", line[2],isVal);
+	    writeCustomAttribute(xsw, "productSubClass", line[3],isVal);
+	    writeCustomAttribute(xsw, "productCollection", line[4],isVal);
+	    writeCustomAttribute(xsw, "secondaryName", line[6],isVal);  //skinTypeVariation
+	     writeCustomAttribute(xsw, "skinTypeVariation", line[11],isVal);
+	    writeCustomAttribute(xsw, "primaryVariant", line[13],isVal);
+	    writeCustomAttribute(xsw, "secondaryVariant", line[14],isVal);
+	    writeCustomAttribute(xsw, "maxOrderQuantity", parseInt(line[17]),isVal);
+	    writeCustomAttribute(xsw, "marketingFlag1", line[19],isVal);
+		writeCustomAttribute(xsw, "marketingFlag2", line[20],isVal);
+		writeCustomAttribute(xsw, "comingSoon", line[22],isVal);
+		writeCustomAttribute(xsw, "skinType", "enum",isVal,skinValues,concernValues,skinTypeIconsValues,skinConcernsIconsValues);
+		writeCustomAttribute(xsw, "skinTypeIcons", "enum",isVal,skinValues,concernValues,skinTypeIconsValues,skinConcernsIconsValues);
+		writeCustomAttribute(xsw, "size", line[9],isVal);
+		writeCustomAttribute(xsw, "color", line[10],isVal);
+		writeCustomAttribute(xsw, "skinConcerns", "enum",isVal,skinValues,concernValues,skinTypeIconsValues,skinConcernsIconsValues);
+		writeCustomAttribute(xsw, "skinConcernsIcons", "enum",isVal,skinValues,concernValues,skinTypeIconsValues,skinConcernsIconsValues);   
+		//writeCustomAttribute(xsw, "howToUseDesc", line[96],isVal);
+		writeCustomAttribute(xsw, "useItWith", line[18],isVal);
+		writeCustomAttribute(xsw, "benefitsSection1", line[91].replace(/é/g,ewithAcute),isVal);
+		writeCustomAttribute(xsw, "benefitsSection2", line[93].replace(/é/g,ewithAcute),isVal);
+		writeCustomAttribute(xsw, "benefitsSection3", line[116].replace(/é/g,ewithAcute),isVal);
+		var OsfSmartOrderRefill  = "false";
+		if (line[15] == "Yes"){
+			OsfSmartOrderRefill  = "true";
+		}
+		writeCustomAttribute(xsw, "OsfSmartOrderRefill", OsfSmartOrderRefill,isVal); // OsfSmartOrderInterval
+		writeCustomAttribute(xsw, "OsfSmartOrderInterval",line[16],isVal);   // OsfRecommendedInterval
+		if(!empty(line[16])){
+			writeCustomAttribute(xsw, "OsfRecommendedInterval", parseInt(line[16])/30,isVal);
+		}
+		writeCustomAttribute(xsw, "suggestedUsage", line[96],isVal);
+		writeCustomAttribute(xsw, "suggestedUsageStep", usageStep,false);
+		writeCustomAttribute(xsw, "dosage", line[98],isVal);
+		//writeCustomAttribute(xsw, "ingredients", line[102],isVal);
+		//get ratings
+		var enableReviews  = "false";
+		if (line[105] == "Y"){
+			 enableReviews  = "true";
+		}
+		writeCustomAttribute(xsw, "enableReviewsRatings", enableReviews,isVal ); // (skinTypeVariation)
+		writeCustomAttribute(xsw, "formulatedWithout", line[118],isVal
+		); // showHadasei
+		var showHadasei  = "false";
+		if (line[120] == "Yes"){
+			 showHadasei  = "true";
+		}
+		writeCustomAttribute(xsw, "showHadasei", showHadasei,isVal);
+		writeCustomAttribute(xsw, "fullIngredientsList", line[119].replace(/é/g,ewithAcute),isVal);   
+        writeCustomAttribute(xsw, "autoplayVideo", line[131],isVal);  
+        writeCustomAttribute(xsw, "howToUse", line[132].replace(/é/g,ewithAcute),isVal);   
+        writeCustomAttribute(xsw, "googleDescription", line[134],isVal);    
+        writeCustomAttribute(xsw, "googleId", line[135],isVal); 
+        writeCustomAttribute(xsw, "googleProductCategory", line[136],isVal);
+        writeCustomAttribute(xsw, "googleProductType", line[137],isVal);
+        writeCustomAttribute(xsw, "gtin", line[138],isVal);
+        
+        var isTravelSize = "false";
+        if (line[140] == "YES"){
+			 isTravelSize  = "true";
+		}
+        writeCustomAttribute(xsw, "isTravelSize", isTravelSize,isVal);
+       
+        
+    xsw.writeEndElement();
+}
+
+
+function writeCustomAttribute(xsw : XMLStreamWriter, elemName: String, elemValue : String,isVal:Boolean,skinValues: Array, concernValues: Array,SkinTypeIcons : Array, skinConcernsIcons: Array, type : String) {
+	
+	if(!empty(elemValue)){
+		xsw.writeStartElement("custom-attribute");
+			xsw.writeAttribute("attribute-id", elemName);
+			if(elemName == "skinConcerns"){
+				isVal = true;
+			}
+			if(elemName == "skinType"){
+				isVal = true;
+			}
+			if (elemName =="OsfSmartOrderInterval"){
+				isVal = true;
+			}
+			if(elemName =="skinTypeIcons"){
+				isVal = true;
+			}  
+			
+			if(elemName =="skinConcernsIcons"){
+				isVal = true;
+			} 
+			if(!isVal){
+			xsw.writeCharacters(elemValue);
+			} else {
+				
+				 if(elemName == "skinConcerns"){
+					for(var i = 0; i <  concernValues.length; i++) {
+					 writeAttributeValue(xsw,concernValues[i]); 
+					}
+				 } else if (elemName == "skinType") {
+				 	
+				 	for(var i = 0; i <  skinValues.length; i++) {
+					 writeAttributeValue(xsw,skinValues[i]); 
+					}
+				 	
+				 } else if(elemName == "OsfSmartOrderInterval"){
+				 	   for(var i = 1; i < 5; i++) {
+						 writeAttributeValue(xsw,i); 
+						}
+								   
+				  }  else if(elemName =="skinTypeIcons"){
+					   	for(var i = 0; i <  SkinTypeIcons.length; i++) {
+						 writeAttributeValue(xsw,SkinTypeIcons[i]); 
+						}
+				   	
+				   } // skinConcernsIcons
+				   
+				    else if(elemName =="skinConcernsIcons"){
+					   	for(var i = 0; i < skinConcernsIcons.length; i++) {
+						 writeAttributeValue(xsw,skinConcernsIcons[i]); 
+						}
+				   	
+				   } 
+			}
+		xsw.writeEndElement();
+	}
+}
+
+function writeAttributeValue(xsw : XMLStreamWriter, elemVal: String,type : String) {
+	
+	if(!empty(elemVal)){
+		xsw.writeStartElement("value");
+			xsw.writeCharacters(elemVal);
+		xsw.writeEndElement();
+	}
+}
+
+function writeVariations(xsw : XMLStreamWriter,line : Array){
+	xsw.writeStartElement("variations"); 
+	  xsw.writeStartElement("attributes");
+	  //Loop through vatiation attribute
+	    xsw.writeStartElement("variation-attribute");
+		    xsw.writeAttribute("attribute-id" , line[12] );
+			xsw.writeAttribute( "variation-attribute-id" , line[12] );
+		 xsw.writeStartElement("variation-attribute-values");
+		     //loop through variation attribute values
+		    xsw.writeStartElement("variation-attribute-value");
+		         xsw.writeAttribute("value" , line[9] );
+		          xsw.writeStartElement("display-value");
+		            xsw.writeAttribute("xml:lang","x-default");
+		               xsw.writeCharacters(line[9]);
+		          xsw.writeEndElement();
+		       //End Variation attribute values loop
+		    xsw.writeEndElement();
+		 xsw.writeEndElement();	  
+	    xsw.writeEndElement();
+	    //End Variation attribute loop
+	  xsw.writeEndElement();
+	  //Add Variants
+	  xsw.writeStartElement("variants");
+	   //Loop through prouct Variation products
+	     xsw.writeStartElement("variant");
+	     xsw.writeAttribute(" product-id","PID");
+	     xsw.writeEndElement();
+	    //End Variation product loop 
+	  xsw.writeEndElement();
+	  //End Variant
+	xsw.writeEndElement();
+}

@@ -1,0 +1,26 @@
+ <isif condition="${!pdict.customer.registeredUser}">
+    <isinclude template="checkout/customer/customer" />
+</isif>
+<div class="shipping-section mb-0 contactCollapseItem" data-toggle="collapse" data-target="#contactCollapse" aria-expanded="true" aria-controls="collapseOne">
+    <span class="outer-section" tabindex="0">
+        <div class="section-heading outer-section-inner" tabindex="-1">
+            <span id="contact-section-heading">1. Contact <isif condition="${pdict.orderType !== 'giftcard'}">& Shipping</isif></span>
+            <a href="#contact-section" class="text-primary float-right edit-contact-section d-none" data-type="${pdict.orderType}" aria-label="Edit Contact & Shipping">Edit</a>
+        </div>
+    </span>
+</div>
+<div id="contactCollapse" class="shipping-section indent-container collapse show" tabindex="-1" aria-labelledby="headingOne" data-parent="#accordion">
+    <div class="single-shipping">
+    	<isif condition="${pdict.orderType !='giftcard'}">
+	        <isset name="shippingModel" value="${pdict.order.shipping[0]}" scope="page" />
+	        <isset name="shipmentLoopState" value="${null}" scope="page" />
+	        <isset name="lineItem" value="${null}" scope="page" />
+	        <div data-shipment-uuid="${shippingModel.UUID}">
+	            <div class="shipping-error"></div>
+	            <isinclude template="checkout/shipping/shipmentCard" />
+	        </div>
+	    <iselse/>
+	    	<isinclude template="checkout/shipping/shipmentCardGift" />
+	    </isif>
+    </div>
+</div>

@@ -1,0 +1,15 @@
+<!--- TEMPLATENAME: ordersummary.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="singlepagecheckout/modules"/> 
+
+<isscript>
+	var singlePageCheckoutUtils = require('int_singlepagecheckout/cartridge/scripts/util/SinglePageCheckoutUtils');
+	var checkoutObj = singlePageCheckoutUtils.getCheckoutSummary();
+	var shippingEditOnly=pdict.shippingOnlyEdit;
+</isscript>	
+
+<isif condition="${shippingEditOnly}"> 
+<isspcordersummary p_lineitemctnr="${checkoutObj.basket}" p_coupons="${checkoutObj.appliedCoupons}" p_hide_promo_section="true" />
+<iselse>
+<isspcordersummary p_lineitemctnr="${checkoutObj.basket}" p_coupons="${checkoutObj.appliedCoupons}" />
+</isif>

@@ -1,0 +1,78 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<iscomment>Report this checkout step</iscomment>
+<isreportcheckout checkoutstep="4" checkoutname="${'Billing'}"/>
+
+<isscript>
+
+	/**
+	* Condition for hiding payment edit option when alternate payment instruments are choosed
+	**/
+	
+	var showEditPaymentLink = false;
+	var showBillingSummary =  (pdict.p_checkoutobj && pdict.p_checkoutobj.billingInfo && !empty(pdict.p_checkoutobj.billingInfo.showBillingSummary)) ?
+		pdict.p_checkoutobj.billingInfo.showBillingSummary: false;
+		
+	var paymentInstruments =  (pdict.p_checkoutobj && pdict.p_checkoutobj.paymentInfo && !empty(pdict.p_checkoutobj.paymentInfo.paymentInstruments)) ?
+		pdict.p_checkoutobj.paymentInfo.paymentInstruments: false;
+		
+	var paymentTypeApplepay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'ApplePay') ? true : false;
+	var paymentTypeAfterPay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI') ? true : false;
+	var paymentTypePaypal = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'PayPal') ? true : false;
+	
+	if(showBillingSummary && !paymentTypeApplepay && !paymentTypeAfterPay && !paymentTypePaypal) {
+		showEditPaymentLink = true;
+	}
+	
+	var paymentSectionDisabled = "disabled";
+	if(pdict.p_checkoutobj && pdict.p_checkoutobj.billingInfo && (pdict.p_checkoutobj.shippingInfo.showSummary === true)) {
+		paymentSectionDisabled = ""
+	}
+	
+</isscript>
+
+<div class="mb-0 paymentCollapseItem ${paymentSectionDisabled}" data-toggle="collapse" data-target="#paymentCollapse" aria-controls="paymentCollapse" <isif condition="${paymentSectionDisabled === ""}">aria-expanded="true" <iselse>aria-expanded="false"</isif>>
+   <span class="outer-section" tabindex="-1">
+   		<h2 class="section-heading outer-section-inner" tabindex="-1">
+   			2. Payment
+   			<isif condition="${showEditPaymentLink}">
+				<a href="#" class="text-primary float-right edit-payment-section" aria-label="Edit payment" style="display: inline;">Edit</a>   		
+    		</isif>
+   			
+    	</h2>
+   </span>
+</div>
+
+<div id="paymentCollapse" class="collapse show indent-container" aria-label="Payment accordion" data-parent="#accordion">
+	<isif condition="${pdict.p_checkoutobj && pdict.p_checkoutobj.billingInfo && pdict.p_checkoutobj.billingInfo.showBillingSummary === false &&
+		(pdict.p_checkoutobj.shippingInfo.showSummary === true)}">
+		<form action="${URLUtils.https('COBilling-Billing')}" method="post" id="${pdict.CurrentForms.billing.htmlName}" class="checkout-billing address checkout-payment-panel">
+		    <div class="payment-container">
+		    	<iscomment>Payment Methods</iscomment>
+		    	
+		    	 <isset name="OrderTotal" value="${pdict.p_checkoutobj.basket.totalGrossPrice.value}" scope="pdict"/>
+		    	 <isspcbillingpaymentmethods p_paymentmethods="${pdict.p_checkoutobj}"/>
+		    	 <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+				 <input type="hidden" name="${pdict.CurrentForms.billing.save.htmlName}" value="true"/>
+				 <input type="hidden" name="spcCTAClick" value="true" />
+			     <button class="btn btn-primary payment-submit" type="button" aria-label="Review my order">Review my order</button>
+		    </div>
+	    </form>
+	    <isscript>
+			var BraintreeHelper : Object = require('int_braintree/cartridge/scripts/braintree/braintreeHelper.js');
+			var customerCreditCardPaymentInstruments = BraintreeHelper.getCustomerCrditCardPaymentInstruments();
+		</isscript>
+		
+		<isif condition="${pdict.CurrentCustomer.authenticated && !empty(customerCreditCardPaymentInstruments)}">
+			<isinclude template="singlepagecheckout/components/billing/spcpaymentaddcardmodal" />
+		</isif>
+	</isif>
+	
+</div>
+<iscomment> Billing Summary details </iscomment>
+<isif condition="${(pdict.p_checkoutobj && pdict.p_checkoutobj.billingInfo && pdict.p_checkoutobj.billingInfo.showBillingSummary === true &&
+	(pdict.p_checkoutobj.shippingInfo.showSummary === true ||  pdict.p_checkoutobj.orderType ==='giftcard'))}">
+	<div class="indent-container">
+		<isspcbillingsummary p_checkoutObj="${pdict.p_checkoutobj}"/>
+	</div>
+</isif>

@@ -1,0 +1,115 @@
+/**
+ * Initialize SOAP services for a cartridge
+ */    
+importPackage( dw.svc );
+importPackage( dw.net );
+importPackage( dw.io );  
+importPackage( dw.ws );
+var BigInteger = require( 'dw/util/BigInteger' );
+var Site = require('dw/system/Site');
+var Tatcha = require('~/cartridge/scripts/util/Tatcha');
+
+/**
+ *
+ * SOAP Services
+ *
+ */	 
+ var system : Object = require('dw/system')
+ 
+ServiceRegistry.configure("FedEx.soap", {
+	
+	initServiceClient: function() {
+        this.webReference = webreferences.RateServicev10;
+        return this.webReference.getService("RateService", "RateServicePort");
+    },
+    createRequest: function(svc:SOAPService, params) {
+    	var cart = Tatcha.getCart();
+    	params = Tatcha.getRequestParams();
+    	
+    	var webref = this.webReference;
+	    var requestObject = new this.webReference.RateRequest();
+	    var serviceCredential : svc.ServiceCredential = svc.getConfiguration().getCredential();
+	    
+	    requestObject.webAuthenticationDetail = new webref.WebAuthenticationDetail();
+		requestObject.webAuthenticationDetail.userCredential =  new webref.WebAuthenticationCredential();
+		
+		requestObject.webAuthenticationDetail.userCredential.key = serviceCredential.user;
+		requestObject.webAuthenticationDetail.userCredential.password = serviceCredential.password;
+		requestObject.clientDetail = new webref.ClientDetail();
+		requestObject.clientDetail.accountNumber =  params.accountNumber;
+		requestObject.clientDetail.meterNumber = params.meterNumber;
+		requestObject.version = new webref.VersionId();
+		requestObject.version.serviceId = params.serviceId;
+		requestObject.version.major = 10;
+		requestObject.version.intermediate = 0;
+		requestObject.version.minor = 0;
+		
+		requestObject.transactionDetail = new webref.TransactionDetail();
+		requestObject.transactionDetail.localization =  new webref.Localization();
+		requestObject.transactionDetail.customerTransactionId =  "rateRequest";
+		requestObject.transactionDetail.localization.languageCode = params.languageCode;
+		requestObject.transactionDetail.localization.localeCode = params.localeCode;
+		
+		requestObject.requestedShipment = new webref.RequestedShipment();
+		requestObject.requestedShipment.dropoffType = webref.DropoffType.REGULAR_PICKUP;
+		//requestObject.requestedShipment.shipTimestamp = '2018-03-22T05:43:20+00:00';
+		requestObject.requestedShipment.packagingType = webref.PackagingType.YOUR_PACKAGING;
+		
+		requestObject.requestedShipment.totalInsuredValue = new webref.Money();
+		requestObject.requestedShipment.totalInsuredValue.amount = cart.object.totalNetPrice.value;
+		requestObject.requestedShipment.totalInsuredValue.currency = cart.object.currencyCode;
+		
+		requestObject.requestedShipment.shipper = new webref.Party();
+		requestObject.requestedShipment.shipper.address = new webref.Address();
+		requestObject.requestedShipment.shipper.address.postalCode = params.shipperPostalCode;
+		requestObject.requestedShipment.shipper.address.countryCode = params.shipperCountryCode;
+		
+		requestObject.requestedShipment.recipient = new webref.Party();
+		requestObject.requestedShipment.recipient.address = new webref.Address();
+		requestObject.requestedShipment.recipient.address.postalCode = params.recipientPostalCode;
+		requestObject.requestedShipment.recipient.address.countryCode = params.recipientCountryCode;
+		requestObject.requestedShipment.recipient.address.residential = true;
+		
+		requestObject.requestedShipment.shippingChargesPayment = new webref.Payment();
+		requestObject.requestedShipment.shippingChargesPayment.paymentType = webref.PaymentType.SENDER;
+		requestObject.requestedShipment.shippingChargesPayment.payor = new webref.Payor();
+		requestObject.requestedShipment.shippingChargesPayment.payor.accountNumber = params.accountNumber;
+		requestObject.requestedShipment.shippingChargesPayment.payor.countryCode = params.shipperCountryCode;
+		
+		requestObject.requestedShipment.customsClearanceDetail = new webref.CustomsClearanceDetail();
+		requestObject.requestedShipment.customsClearanceDetail.customsValue = new webref.Money();
+		requestObject.requestedShipment.customsClearanceDetail.customsValue.amount = cart.object.totalNetPrice.value;
+		requestObject.requestedShipment.customsClearanceDetail.customsValue.currency = cart.object.currencyCode;
+		
+		//Itesm
+		var cartItems = cart.getProductLineItems();
+		for(var key in cartItems) {
+			var cartItem = cartItems[key];
+			var lineItems = [];
+			var weight = !empty(cartItem.product.custom.weight) ? cartItem.product.custom.weight : 0.1;
+			lineItems[0] = new webref.RequestedPackageLineItem();
+			lineItems[0].weight = new webref.Weight();
+			lineItems[0].weight.value = weight * cartItem.quantityValue;
+			lineItems[0].weight.units = webref.WeightUnits.LB;
+			lineItems[0].groupPackageCount = 1;
+			lineItems[0].insuredValue = new webref.Money();
+			lineItems[0].insuredValue.amount = cartItem.netPrice.value;
+			lineItems[0].insuredValue.currency = cart.object.currencyCode;
+		}
+		
+		//requestObject.requestedShipment.rateRequestTypes = webref.RateRequestType.LIST;
+		requestObject.requestedShipment.packageCount = lineItems.length;
+		requestObject.requestedShipment.requestedPackageLineItems = lineItems;
+		
+		//requestObject.carrierCodes = webref.CarrierCodeType.FDXC;
+		
+	    return requestObject;
+    },
+    execute: function(svc:SOAPService, requestObject) {
+        return svc.serviceClient.getRates(requestObject);
+    },
+    parseResponse: function(svc:SOAPService, responseObject) {
+       	return responseObject;
+    }
+    
+});

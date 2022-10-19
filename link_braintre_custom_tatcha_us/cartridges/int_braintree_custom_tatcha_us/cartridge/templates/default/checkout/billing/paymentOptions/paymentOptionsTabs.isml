@@ -1,0 +1,25 @@
+<isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
+    <isif condition="${paymentOption.ID === 'CREDIT_CARD'}">
+        <isinclude template="braintree/checkout/creditcardTab" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'PayPal'}">
+        <isinclude template="braintree/checkout/paypalTab" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'ApplePay'}">
+        <isinclude template="braintree/checkout/applepayTab" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'Venmo'}">
+        <isinclude template="braintree/checkout/venmoTab" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'GooglePay'}">
+        <isinclude template="braintree/checkout/googlepayTab" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'SRC'}">
+        <isinclude template="braintree/checkout/srcTab" />
+    </isif>
+</isloop>
+<isif condition="${pdict.braintree.isActiveLpmPaymentOptions}">
+    <isloop items="${pdict.braintree.lpmPaymentOptions}" var="lpmPaymentOption" status="loopSate">
+        <isinclude template="braintree/checkout/lpmTab" />
+    </isloop>
+</isif>

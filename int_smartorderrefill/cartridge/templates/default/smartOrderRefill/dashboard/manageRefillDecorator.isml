@@ -1,0 +1,46 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+    <isinclude template="util/modules"/>
+    <iscomment>Include all important information globally , e.g. meta-data, link information, and javascript.</iscomment>
+    <isinclude template="components/header/htmlhead"/>
+    <iscomment>Add template-specific header information here.</iscomment>
+    <link rel="canonical" href="${URLUtils.https('SmartOrderRefillController-Manage')}" />
+</head>
+<body>
+    <div id="wrapper" class="pt_order refill-dashboard">
+        <isinclude url="${URLUtils.url('Home-IncludeHeader')}"/>
+        <div id="main" role="main" class="page-content clearfix">
+            <isif condition="${empty(pdict.Order)}">
+                <isbreadcrumbs bcurl1="${URLUtils.https('Account-Show')}" bctext1="${Resource.msg('account.header','account',null)}" bctext2="${Resource.msg('smartorderrefill.breadcrumb.account','account',null)}"/>
+            <iselse/>
+                <isbreadcrumbs bcurl1="${URLUtils.https('Account-Show')}" bctext1="${Resource.msg('account.header','account',null)}" bcurl2="${URLUtils.https('SmartOrderRefillController-Manage')}" bctext2="${Resource.msg('smartorderrefill.breadcrumb.account','account',null)}" bctext3="${pdict.Order.orderNo}"/>
+            </isif>
+            <div id="primary" class="primary-content">
+                <isreplace/>
+            </div>
+            <div id="secondary" class="nav">
+                <nav>
+                    <h1 class="visually-hidden">${Resource.msg('global.secondarynavheading','locale',null)}</h1>
+                    <div class="secondary-navigation">
+                        <isinclude url="${URLUtils.url('Account-IncludeNavigation')}"/>
+                    </div>
+                </nav>
+                <div class="account-nav-asset">
+                    <isinclude url="${URLUtils.url('Page-Include', 'cid', 'account-nav-text')}"/>
+                </div>
+            </div>
+        </div><!-- /main -->
+        <isinclude template="components/footer/footer"/>
+    </div>
+</body>
+</html>

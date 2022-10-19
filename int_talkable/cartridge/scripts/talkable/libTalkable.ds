@@ -1,0 +1,144 @@
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.system );
+importPackage( dw.util );
+importPackage( dw.web );
+
+var TalkableHelper = function() {
+  return {
+    //------------------------+
+    // Talkable Configuration |
+    //------------------------+
+
+    getSiteId: function() {
+      return Site.current.getCustomPreferenceValue("talkableSiteId") || "";
+    },
+
+    isRegisterAffiliateEnabled: function() {
+      return this.isDashboardEnabled() ||
+             this.isStandaloneEnabled() ||
+             this.isFloatingWidgetEnabled();
+    },
+
+    //--------------------+
+    // Talkable Campaigns |
+    //--------------------+
+
+    isDashboardEnabled: function() {
+      return this._isEnabled("talkableDashboard") &&
+             request.httpPath.match(/Talkable-Dashboard/i);
+    },
+
+    isStandaloneEnabled: function() {
+      return this._isEnabled("talkableStandalone") &&
+             request.httpPath.match(/Talkable-Standalone/i);
+    },
+
+    isPostCheckoutEnabled: function() {
+      return this._isEnabled("talkablePostCheckout");
+    },
+
+    isFloatingWidgetEnabled: function() {
+      return this._isEnabled("talkableFloatingWidget") &&
+             !request.httpPath.match(/COSummary/i); // Hide Floating Widget on the Checkout Success page
+    },
+
+    //-------------+
+    // Origin Data |
+    //-------------+
+
+    /*----------------------------------------------------------------------------------//
+      For debugging, put this at the bottom of talkable/head.isml:
+      <isset name="order" value="${dw.order.OrderMgr.getOrder('00000001')}" scope="page">
+      <isprint value="${talkable.getPurchaseData(order)}" encoding="off"/>
+    //----------------------------------------------------------------------------------*/
+    getPurchaseData: function(order : Order) {
+      var data : Object = {
+        customer: {
+          email: order.customerEmail,
+          first_name: order.billingAddress.firstName,
+          last_name: order.billingAddress.lastName,
+          customer_id: order.customerNo
+        },
+        purchase: {
+          order_date: order.creationDate.toISOString(),
+          order_number: order.orderNo,
+          subtotal: order.getAdjustedMerchandizeTotalPrice(false).add(order.giftCertificateTotalPrice).decimalValue.toString(),
+          coupon_code: [],
+          items: []
+        }
+      };
+
+      var shipments : Iterator = order.shipments.iterator();
+      for each(var shipment : Shipment in shipments) {
+        if (shipment.shippingAddress && shipment.custom.shipmentType !== "instore") {
+          data.purchase.shipping_address = this._getFullAddress(shipment.shippingAddress);
+          data.purchase.shipping_zip = shipment.shippingAddress.postalCode;
+          break;
+        }
+      }
+
+      var clis : Iterator = order.couponLineItems.iterator();
+      for each(var cli : CouponLineItem in clis) {
+        data.purchase.coupon_code.push(cli.couponCode);
+      }
+
+      var plis : Iterator = order.productLineItems.iterator();
+      for each(var pli : ProductLineItem in plis) {
+        !empty(pli.product) && data.purchase.items.push({
+          image_url: !empty(pli.product.getImage("large")) ? pli.product.getImage("large").absURL.toString() : null,
+          price: pli.getAdjustedPrice(false).decimalValue.divide(pli.quantityValue).toString(),
+          product_id: pli.productID,
+          quantity: pli.quantityValue,
+          title: pli.productName,
+          url: URLUtils.http("Product-Show", "pid", pli.productID).toString()
+        });
+      }
+
+      return JSON.stringify(data);
+    },
+
+    getCustomerData: function(customer : Customer) {
+      var data : Object = {};
+
+      if (customer && customer.authenticated && !empty(customer.profile)) {
+        var profile : Profile = customer.profile;
+        data = {
+          email: profile.email,
+          first_name: profile.firstName,
+          last_name: profile.lastName,
+          customer_id: profile.customerNo
+        };
+      }
+
+      return JSON.stringify(data);
+    },
+
+    //---------+
+    // Private |
+    //---------+
+
+    _isEnabled: function(value) {
+      return !! Site.current.getCustomPreferenceValue(value);
+    },
+
+    // Returns full address, e.g. "27 Merry Lane, East Hanover, NJ, 07936, United States"
+    _getFullAddress: function(shippingAddress : OrderAddress) {
+      var value : String = "",
+          fields : Array = ["address1", "address2", "city", "stateCode", "postalCode"],
+          address : Array = [];
+
+      for each(var field : String in fields) {
+        value = shippingAddress[field];
+        !empty(value) && address.push(value);
+      }
+
+      if (!empty(shippingAddress.countryCode)) {
+        value = shippingAddress.countryCode.displayValue;
+        address.push(Resource.msg("country." + value, "forms", value));
+      }
+
+      return address.join(", ");
+    }
+  }
+}

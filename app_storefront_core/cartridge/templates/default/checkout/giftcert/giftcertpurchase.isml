@@ -1,0 +1,164 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account">
+<isinclude template="util/modules"/>
+<isinclude template="product/components/modals"/>
+
+<isscript>
+	importScript("cart/CartUtils.ds");
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	var giftproductId = Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID');
+	var giftproduct = dw.catalog.ProductMgr.getProduct(giftproductId);
+</isscript>
+<isscript>
+	importScript( "util/ViewHelpers.ds" );
+</isscript>
+<isset name="marketingFlags" value="${getProductMarketingFlags(pdict.giftproduct)}" scope="page"/>
+<div class="product product-detail-container product-gift-card">
+	<div class="product-transaction">
+		<div class="container">
+		<div class="row">
+		<div class="col-md-6">
+			<div class="product-summary-mobile">
+				<div class="product-marketing-flag-block">
+				
+					<span class="product-marketing-flag"><isprint value="${giftproduct.custom.marketingFlag1}"/></span>
+					<span class="separator">.</span>
+					<span class="product-marketing-flag"><isprint value="${giftproduct.custom.marketingFlag2}"/></span>
+				</div>
+				<h1 class="product-name"><isprint value="${giftproduct.name}"/>
+					<span class="product-subtitle"><isprint value="${giftproduct.shortDescription}"/></span>
+				</h1>
+			</div>
+			<div class="product-img-main">
+				<isif condition="${giftproduct != null && giftproduct.getImage('large',0) != null}">
+					<isset name="imageUrl" value="${getImageUrl(giftproduct,'large')}" scope="page"/>
+					<isset name="imageAlt" value="${getImageAlt(giftproduct)}" scope="page"/>
+					<isset name="imageTitle" value="${getImageTitle(giftproduct)}" scope="page"/>
+					<img class="img-responsive product-img" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" />
+				<iselse/>
+					<img class="img-responsive product-img" src="${URLUtils.staticURL('/images/noimagelarge.png')}" alt="${giftproduct.name}" title="${giftproduct.name}" />
+				</isif>
+			</div>
+		</div>
+		<div class="col-sm-10 col-sm-offset-1 col-md-6 col-md-offset-0">
+			<div class="product-summary-desktop">
+				<div class="product-marketing-flag-block">
+					<span class="product-marketing-flag"><isprint value="${giftproduct.custom.marketingFlag1}"/></span>
+					<span class="separator">.</span>
+					<span class="product-marketing-flag"><isprint value="${giftproduct.custom.marketingFlag2}"/></span>
+				</div>
+				<h1 class="product-name"><isprint value="${giftproduct.name}"/>
+					<span class="product-subtitle"><isprint value="${giftproduct.shortDescription}"/></span>
+				</h1>
+			</div>
+			<div class="product-description-block">
+				<p><isprint value="${giftproduct.longDescription}"/></p>
+			</div>
+			<isif condition="${pdict.GiftCertificateLineItem == null}">
+				<form method="post" id="GiftCertificateForm" action="${URLUtils.url('GiftCert-AddToBasket')}">
+			<iselse/>
+				<form method="post" id="GiftCertificateForm" action="${URLUtils.url('GiftCert-Update')}">
+			</isif>
+			<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+				 	<div class="product-gift-card-form-input">
+				<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.lineItemId}" type="hidden"/>
+				<isif condition="${!pdict.CurrentHttpParameterMap.plid.empty}">
+					<input type="hidden" name="plid" value="${pdict.CurrentHttpParameterMap.plid}"/>
+				</isif>
+					<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.recipient}" type="input" rowClass="label-above"/>
+				 		<isscript>
+							var attributes = {
+					    	 autocomplete: "off",
+							'data-msg-required': Resource.msg('validate.email', 'forms', null)
+							};
+						</isscript>
+						<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.recipientEmail}" type="email" placeholder="${Resource.msg('login.username.placeholder','forms',null)}" rowClass="label-above" attributes="${attributes}"/>
+						<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.from}" type="input" rowClass="label-above"/>
+						<isinputfield formfield="${pdict.CurrentForms.giftcert.purchase.fromEmail}" type="email" placeholder="${Resource.msg('login.username.placeholder','forms',null)}" rowClass="label-above" attributes="${attributes}"/>
+					    <div class="form-group">
+							<label class="control-label" for="giftcardMessage">Message</label>
+							<textarea class="form-control" name="${pdict.CurrentForms.giftcert.purchase.message.htmlName}" rows="2" maxlength="220" id="giftcardMessage" aria-invalid="false"></textarea>
+						</div>
+				    <isscript>
+							var Site = require('dw/system/Site');
+			             	var giftAmount = JSON.parse(Site.getCurrent().getCustomPreferenceValue('giftcert-amount'));
+					 </isscript>
+					<div class="row">
+						<div class="col-sm-8">
+							<div class="form-group">
+								<label for="giftCertPurchaseAmount"  title="giftcard amount" class="control-label">Amount (in dollars)</label>
+									<div class="input-group">
+										<div class="input-group-addon">$</div>
+										<select class="form-control" id="giftCertPurchaseAmount" name="${pdict.CurrentForms.giftcert.purchase.amount.htmlName}">
+								<isloop items="${giftAmount}" alias="amount">
+									<option value="${amount}">
+									<isprint value="${amount}" />
+								 </option>
+								</isloop>
+							</select>
+								<div class="input-group-addon">.00</div>
+								</div>
+							</div>	
+						</div>
+					</div>
+		   		 </div>
+			</div>
+			</div>
+			<div class="product-add-to-bag">
+				<div class="row">
+				<div class="col-sm-8 col-sm-offset-2">
+					<button type="submit" class="btn btn-primary btn-lg btn-block" id="AddToBasketButton">
+						<isif condition="${pdict.GiftCertificateLineItem == null}">${Resource.msg('global.addtocart', 'locale', null)}<iselse/>${Resource.msg('global.updatecart', 'locale', null)}</isif>
+					</button>
+				</div>	
+				</div>
+			</div>
+		</form>
+		
+		<div class="product-marketing-banner">
+			<img class="img-responsive product-marketing-banner-img" src="http://via.placeholder.com/555x120/F7F9FA?text=Product+Promo+555x120" style="display: none;">
+				<div class="product-marketing-banner-text">
+						Free Shipping &amp; Returns
+						<span class="separator hidden-xs">|</span>
+						<br class="visible-xs-inline">
+						Complimentary Samples
+				</div>
+			</div>
+		<div>
+			
+		</div>
+		</div>
+		</div>
+	</div>
+	</div>
+	
+	<section id="terms" class="product-section">
+			<div class="product-terms">
+				<div class="container">
+					<div class="row">
+						<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+							<iscontentasset aid="giftcert-terms" />
+						</div>
+					</div>
+				</div>
+			</div>
+	</section>
+	
+	<div class="container">
+		<div class="row carosal">
+			<div class="col-xs-12">
+				<isslot id="cart-footer" description="Footer for Cart page" context="global" />
+			</div>
+		</div>
+	</div>
+	<div class="container product-purity-promise">
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3 product-purity-promise-col">
+				<iscontentasset aid="tatcha-product-puritypromise" />
+	      </div>
+	    </div>
+	 </div>   
+</div>
+</isdecorate>

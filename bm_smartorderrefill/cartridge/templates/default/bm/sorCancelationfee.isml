@@ -1,0 +1,33 @@
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+
+<isinclude template="bm/util/sorModules"/>
+
+<div id="edit-cancelationfee">
+
+<h1 class="order-section-main-title">${Resource.msg('forms.sorsubscriptions.cancelSubscriptionsFeeMessageInfo.label', 'sor_forms', null)}</h1>
+    <div class="sor-module">
+        <form method="post" id="fee-form">
+            <div class="sor-table">
+                    <div>
+                        <isinputfield formfield="${pdict.CurrentForms.cancelationfee.fee}" type="input"></field>
+                    </div>
+                    <div>
+                        <input type="hidden" name="${pdict.CurrentForms.cancelationfee.save.htmlName}" value="true">
+                        <input class="button confirm_btn blue cancelationfee_confirm" id="confirm_fee" type="button" 
+                            value="${Resource.msg('forms.sorsubscriptions.confirm.label', 'sor_forms', null)}" 
+                            data-link="${pdict.continueURL}">
+                    </div>
+                    <div>
+                        <p class="close-button" id="close-button">
+                            <span class="button cancelationfeeclose-btn orange-invert confirm_btn"> Close
+                            </span>
+                        </p>
+                    </div>
+            </div>
+        </form>    
+    </div>
+   
+</div>

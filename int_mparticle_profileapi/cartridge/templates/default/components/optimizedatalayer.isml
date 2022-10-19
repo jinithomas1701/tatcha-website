@@ -1,0 +1,17 @@
+<isif condition="${pdict.CurrentSession.custom.mparticleAudiences}">
+<script>
+	try {
+		if (!window.dataLayer) {
+			window.dataLayer = [];
+		}
+
+		dataLayer
+				.push({
+					'mParticleAudiences' : '<isprint value="${pdict.CurrentSession.custom.mparticleAudiences}" encoding="off"/>'
+				});
+	} catch (e) {
+
+	}
+</script> 
+
+</isif>

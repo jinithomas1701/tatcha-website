@@ -1,0 +1,142 @@
+<isdecorate template="application/ExtJSMenuFrame">
+	<iscontent type="text/html" charset="UTF-8" compact="true">
+
+	<table border="0" cellspacing="0" cellpadding="0" width="100%">
+		<tbody>
+			<tr>
+				<td>
+					<img src="/on/demandware.static/Sites-Site/-/default/v1473768424165/images/space.gif" width="12" height="1" alt="" border="0">
+				</td>
+				<td width="100%" class="top">
+					<div><img src="/on/demandware.static/Sites-Site/-/default/v1473768424165/images/space.gif" width="1" height="6" alt="" border="0"></div>
+					<!-- Working Area -->
+					<script type="text/javascript" src="/on/demandware.static/Sites-Site/-/default/v1473768424165/jscript/framework/l10n/l10n-support.js"></script>
+					<!-- l10ntest -->
+					<script type="text/javascript">
+						(function() {
+						var l10nSupport = Dw.framework.l10n.L10nSupport.singleton;
+						l10nSupport.init(0);
+						
+						})();
+					</script>
+		
+					<!-- Working Area -->
+				
+					<!-- beg Page Navigator -->
+					<div id="bm-breadcrumb">
+						<a class="breadcrumb" href="ViewApplication-ExpandMenuGroup?MenuGroupID=AdministrationMenu&amp;OverviewPage=SiteNavigationBar-ShowAdministrationOverview">Administration</a>&nbsp;&gt;&nbsp;
+						
+						<a class="breadcrumb" href="SiteNavigationBar-ShowMenuitemOverview?CurrentMenuItemId=operations">Operations</a>&nbsp;&gt;&nbsp;
+							Workflow Migration
+					</div>
+					<!-- end Page Navigator -->
+			
+					<table cellpadding="0" cellspacing="0" width="100%">
+						<tbody>
+							<tr>
+								<td width="100%" class="table_title aldi">Workflow Migration</td>
+							</tr>
+						</tbody>
+					</table>
+					<table>
+						<tbody>
+							<tr>
+								<td width="%100" style="border: 3px solid red; padding: 10px;">
+									<p style="padding:1em 0; font: 1.5em italic;">Disclaimer</p>
+									<p>
+										Similar to the Integration Framework itself, this migration tool is not part of the official <b>Salesforce Commerce Cloud</b> platform, 
+										but custom code that has been written and is maintained by Community Suite members for your benefit, to help quickly migrate 
+										your existing background processes from the obsolete CS Integration Framework to the feature-richer and more future-proof Job Framework.
+									</p> 
+									<p>
+										As such, it is not subject of the official <b>Salesforce Commerce Cloud</b> support. In case problems occur, you may well report them in
+										<a href="https://bitbucket.org/demandware/integrationframework" target="bitbucket">context of Bitbucket</a>, but <b>Salesforce Commerce Cloud</b> has no obligation to fix them. Instead the <b>Salesforce Commerce Cloud</b> community
+										is asked to help out here.
+									</p>
+									<p>&nbsp;</p>
+									<p>
+										By using this tool you acknowledge that:
+										<ul style="list-style: disc; padding:1em 3em;">
+											<li>This tool is not subject of the official <b>Salesforce Commerce Cloud</b> support.</li>
+											<li>You have read and understood the migration manual that has been made part of the Integration Framework distribution. You'll find it in the documentation folder.</li>
+											<li>You are aware of limitations, that issues may occur and potential code or job behavior changes may be the result.</li>
+										</ul>
+									</p>
+									<p><b>In short: Use at own risk, no pressure though :)</b></p>
+								</td>
+							</tr>
+						</tbody>
+					</table>	
+					<table cellpadding="0" cellspacing="0" width="100%">
+						<tbody>	
+							<tr>
+								<td width="%100" class="table_title_description s">
+									<p>This tool supports the migration of Workflows and Schedules from the Community Suite Integration Framework to the platform-based Job Schedules.</p>
+									<p>Please follow the instructions listed in the documentation closely and step by step.</p>
+									<p>Additionally, please refer to the documentation regarding limitations and potentially required code changes.</p>
+								</td>
+							</tr>						
+						</tbody>
+					</table>
+										
+					<table width="100%" border="0" cellspacing="0" cellpadding="0">
+						<tbody>
+							<tr>
+								<td class="table_title2 w e s" width="100%" nowrap="nowrap" colspan="2">
+									1. Export Workflow Components
+								</td>
+							</tr>
+							<tr>
+								<td width="100%" class="table_title_description w s">
+									<p>Click button to download your Workflow configuration in JSON format.</p>
+									<p>This step will export all Wokflow Component Definitions. The resulting job step ids must not be changed!</p>
+									<p>Download the JSON file, split it and move the Step Type definitions to steptypes.json files in the corresponding cartridges.</p> 
+									
+								</td>
+								<td align="right" class="table_title_description e s">
+									<a href="${URLUtils.url('WFC2JSConverter-Start')}"><button class="button" name="OrderJournalExport">Download</button></a>
+								</td>
+							</tr>
+							<tr>
+								<td class="table_title2 w e s" width="100%" nowrap="nowrap" colspan="2">
+									2. Deploy Code
+								</td>
+							</tr>
+							<tr>
+								<td width="100%" class="table_title_description w s">
+									<p>Deploy the well tested code version containing ALL required Job Steps, i.e. all migrated cartridges irrespective of their origin.</p>
+								</td>
+								<td align="right" class="e s">
+									&nbsp;
+								</td>
+							</tr>
+							<tr>
+								<td class="table_title2 w e s" width="100%" nowrap="nowrap" colspan="2">3. Export Workflow Schedules</td>
+							</tr>
+							<tr>
+								<td  width="100%" class="table_title_description w s">
+									<p>Use the Business Manager extension to download the Job Schedules that represent your Workflows.</p>
+									<p>Open the resulting XML file and check for comments. If there are comments, check the documentation before you proceed.</p>
+									<p>Import the resulting file via Business Manager. (All Jobs will be imported as disabled.)</p>
+								</td>
+								<td align="right" class="table_title_description e s">
+									<a href="${URLUtils.url('WFS2XMLConverter-Start')}"><button class="button">Download</button></a>
+								</td>
+							</tr>
+								<td class="table_title2 w e s" width="100%" nowrap="nowrap" colspan="2">4. Switch to Job Schedules</td>
+							</tr>
+							<tr>
+								<td width="100%" class="table_title_description w s" colspan="2">
+									<p>Disable each Workflow Schedule in Community Suite Integration Framework and enable the corresponding Job in the Job Schedules BM tool.</p>
+									<p>Run and monitor the Job Schedule.</p>
+									<p>Repeat this step for every workflow you want to migrate.</p>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+</isdecorate>

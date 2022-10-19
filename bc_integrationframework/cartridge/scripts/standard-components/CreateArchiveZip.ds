@@ -1,0 +1,51 @@
+/**
+*	Move the found sub file into a unique location and prepares parameters for the import
+*
+* @input FileList : dw.util.Collection
+* @input CurrentWorkflowScheduleInstance : Object
+* @input CurrentWorkflowComponentInstance : Object
+*
+*/
+importPackage( dw.system );
+importPackage( dw.catalog );
+importPackage( dw.util );
+importPackage( dw.io );
+
+var FileUtils = require("bc_library/cartridge/scripts/io/libFileUtils").FileUtils;
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+	var fileList : Collection = pdict.FileList;
+	var archiveFolderRelative : String = pdict.CurrentWorkflowComponentInstance.getParameterValue('archiveFolder');
+	if (empty(archiveFolderRelative)) {
+		archiveFolderRelative = "src" + File.SEPARATOR + "archive";
+	} else if (archiveFolderRelative.charAt(0) == File.SEPARATOR) {
+		archiveFolderRelative = archiveFolderRelative.substring(1);
+	}
+	
+	var archiveFolder : File = new File(File.IMPEX + File.SEPARATOR + archiveFolderRelative + File.SEPARATOR);
+	if (!archiveFolder.exists()) {
+		archiveFolder.mkdirs();
+	}
+	var tempfolderName = StringUtils.formatCalendar(System.getCalendar(), "yyyyMMddHHmmssSSS") + "_" + pdict.CurrentWorkflowScheduleInstance.object.custom.siteId + "_" + pdict.CurrentWorkflowScheduleInstance.object.custom.workflowScheduleDefinitionID + "_" +  pdict.CurrentWorkflowComponentInstance.getParameterValue('objectType');
+	var tempFolder = new File(archiveFolder.fullPath + tempfolderName + File.SEPARATOR);
+	
+	if (!tempFolder.exists()) {
+		tempFolder.mkdirs();
+	}
+	for each (var fileToArchive in fileList) {	
+		var fileArchiveDestination = new File(tempFolder.getFullPath() + fileToArchive.name);
+		fileToArchive.renameTo(fileArchiveDestination);
+	}
+	var logDestination = new File(tempFolder.getFullPath() + "logfile.log");
+	FileUtils.copyFile(pdict.CurrentWorkflowComponentInstance.getLogFile().getFullPath(), logDestination.getFullPath());
+
+	var zipFile = new File(archiveFolder.fullPath + tempfolderName + ".zip");
+	tempFolder.zip(zipFile);
+	FileUtils.deleteDirectory(tempFolder);
+	
+	pdict.CurrentWorkflowComponentInstance.addMessage("Finished archiving download archive and zip: ", "INFO", [zipFile]);
+	
+	Logger.debug("end")
+    return PIPELET_NEXT;
+}

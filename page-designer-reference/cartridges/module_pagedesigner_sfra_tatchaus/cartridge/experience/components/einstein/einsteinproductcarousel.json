@@ -1,0 +1,72 @@
+{
+  "name": "Real-time Personalized Product Carousel",
+  "description": "Shows real-time personalized product recommendations carousel on homepage & content pages",
+  "group": "einstein",
+  "attribute_definition_groups": [
+    {
+      "id": "data",
+      "name": "Recommendation Rules",
+      "description": "The recommender and recommendation tile work against",
+      "attribute_definitions": [
+        {
+          "id": "recommender",
+          "name": "Einstein Recommender",
+          "type": "custom",
+          "required": true,
+          "editor_definition": {
+            "type": "einstein.globalrecommenderselector"
+          }
+        }
+      ]
+    },
+    {
+      "id": "heading",
+      "name": "Heading",
+      "description": "The heading values for the carousel.",
+      "attribute_definitions": [
+        {
+          "id": "title",
+          "name": "Heading",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margin Options for the section.",
+      "attribute_definitions": [
+        {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

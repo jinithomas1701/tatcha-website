@@ -1,0 +1,141 @@
+{
+  "name": "Two Up Promo",
+  "description": "Two up promo slot component",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "images1",
+      "name": "Image Block",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "image1",
+          "name": "Promo 1 Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt1",
+          "name": "Promo 1 Image Alt Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "textcontent1",
+      "name": "Text Block",
+      "description": "The text content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "header1",
+          "name": "Promo 1 Heading",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "description1",
+          "name": "Promo 1 Body Text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "buttonText1",
+          "name": "Promo 1 CTA Text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "buttonLink1",
+          "name": "Promo 1 URL Link",
+          "type": "url",
+          "required": true
+        }
+      ]
+    },{
+      "id": "images2",
+      "name": "Image Block",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "image2",
+          "name": "Promo 2 Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt2",
+          "name": "Promo 2 Image Alt Text",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "textcontent2",
+      "name": "Text Block",
+      "description": "The text content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "header2",
+          "name": "Promo 2 Heading",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "description2",
+          "name": "Promo 2 Body Text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "buttonText2",
+          "name": "Promo 2 CTA Text",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "buttonLink2",
+          "name": "Promo 2 URL Link",
+          "type": "url",
+          "required": true
+        }
+      ]
+    },{
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+        {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

@@ -1,0 +1,15 @@
+<div class="product-line-item product-item row no-gutters" data-product-line-item="${lineItem.UUID}">
+	<isif condition="${!empty(lineItem.image)}">
+        <div class="col-3">
+         <img class="product-img img-fluid" alt="${lineItem.lineItemText}" src="${lineItem.image}" />
+        </div>
+    <iselse/>
+        <div class="col-3">
+        <img class="product-img img-fluid" alt="${lineItem.lineItemText}" src="${URLUtils.staticURL('/images/gift_cert.gif')}" />
+        </div>
+    </isif>
+    <div class="product-content col-7 pl-lg-3">
+        <div class="product-name"> ${lineItem.lineItemText}</div>
+    </div>
+    <div class="price col-2">${lineItem.price.grossPrice}</div>
+</div>

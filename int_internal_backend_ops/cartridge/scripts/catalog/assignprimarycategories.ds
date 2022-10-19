@@ -1,0 +1,155 @@
+/**
+* Demandware Script File
+* To define input and output parameters, create entries of the form:
+*
+* @<paramUsageType> <paramName> : <paramDataType> [<paramComment>]
+*
+* where
+*   <paramUsageType> can be either 'input' or 'output'
+*   <paramName> can be any valid parameter name
+*   <paramDataType> identifies the type of the parameter
+*   <paramComment> is an optional comment
+*
+* For example:
+*
+*-   @input ExampleIn : String This is a sample comment.
+*-   @output ExampleOut : Number
+*
+*/
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.io );
+importPackage( dw.util );
+importPackage( dw.catalog );
+
+function execute( args : PipelineDictionary ) : Number
+{
+
+     // Create file reader to read csv file
+      
+        var fileName : String = dw.system.Site.current.preferences.custom.fileName;
+        var filePath = File.IMPEX + File.SEPARATOR+"src"+File.SEPARATOR+"catalog"+File.SEPARATOR+fileName;
+        var csvReader : dw.io.CSVStreamReader = new CSVStreamReader( new FileReader( new File( filePath ) ) );
+        
+        var pipeEncoded  : String     = "%7c";
+		var tradedMarkEncoded : String = "&#174";
+		var aWithTilde : String = "&#195";
+		var aWithCircumflex : String = "&#194";
+		var ewithAcute : String = "&#233"; //  �
+		var eaccent : String = "&#232"; // �
+		var degreeSymbol : String = "&#176";
+		var ulgerman : String = "&#252"; // �
+		var olgerman : String = "&#246";  // �
+		var algerman : String = "&#228"; // �
+		var augerman : String = "&#196"; // �
+		var bgerman : String = "&#223";   // �
+     
+      //read all the lines
+      try
+	   {
+    	//create file to import
+    	
+    	//generating the time stamp to be added to the feed new name	
+		var calendar : Calendar = new Calendar();
+		calendar.timeZone = "GMT";
+		var gmtDateString : String = StringUtils.formatCalendar( calendar, "yyyy-MM-dd_HH-mm-ss" );
+		
+			
+		var importFile : File = new File(File.IMPEX + "/src/catalog/TATCHA_CATEGORY_ASSIGNMENTS_"+gmtDateString+".xml");
+    	
+    	// Create an output stream
+        var xsw : XMLStreamWriter = beginFeed(importFile);
+        
+        //write products to xml file
+          try{
+		      var line =  csvReader.readNext();
+		      
+		      while(!empty(line) && !empty(line[0]) && !empty(line[141])){
+                    
+   				    startCategoryXML(xsw,line[141],line[0]);  
+					    writePrimaryCategoryValues(xsw);       
+			            closeCategoryXML(xsw); 
+	        		
+	                                  
+	      	        line =  csvReader.readNext();
+		      }
+      
+      }catch(e){
+      	 csvReader.close();
+      	 Logger.error(" Tatcha Catalog Conversion "+e);
+      	 return PIPELET_ERROR;
+      }
+      csvReader.close();
+         
+        // Flush & close the stream
+        closeFeed(xsw);
+	}
+	catch(ex)
+	{
+		Logger.error("ConvertFile ERROR: " + ex);
+		return PIPELET_ERROR;
+	}
+       
+    
+      return PIPELET_NEXT;
+   
+}
+
+function beginFeed(file : File) : XMLStreamWriter {
+    var fw : FileWriter = new FileWriter(file, "UTF-8", false);
+    var xsw : XMLStreamWriter = new XMLIndentingStreamWriter(fw);
+    
+   	xsw.writeStartDocument("UTF-8", "1.0");
+	
+	xsw.writeStartElement( "catalog" );
+	xsw.writeDefaultNamespace("http://www.demandware.com/xml/impex/catalog/2006-10-31");
+	xsw.writeAttribute( "catalog-id", "storefront_catalog_tatcha_us");
+	
+    return xsw;
+}
+function closeFeed(xsw : XMLStreamWriter) {
+	// close root element and document
+    xsw.writeEndElement();			//</catalog>
+    xsw.writeEndDocument();
+   
+    xsw.flush();
+    xsw.close();
+}
+
+
+
+
+function startCategoryXML(xsw : XMLStreamWriter,catID : String, prodID : String) {
+	xsw.writeStartElement( "category-assignment" );  // assignment
+	xsw.writeAttribute( "category-id" , catID );
+	xsw.writeAttribute( "product-id" , prodID );
+	
+	
+}
+
+function closeCategoryXML(xsw : XMLStreamWriter) {	
+	
+	xsw.writeEndElement();		//</end category assignment>
+}
+function writePrimaryCategoryValues(xsw : XMLStreamWriter) {
+	 var elemValue = true;
+
+	xsw.writeStartElement("primary-flag");  // 
+	  xsw.writeCharacters(elemValue); 
+    xsw.writeEndElement();
+}
+// Write recommendation: <recommendation source-id="PC-OIL" source-type="product" target-id="ESSENCE" type="4"/>
+function startRecommendationXML(xsw : XMLStreamWriter, prodID, recommendedPID, type) {
+	xsw.writeStartElement( "recommendation" );  // assignment
+	xsw.writeAttribute("source-id" , prodID );
+	xsw.writeAttribute( "source-type" , "product" );
+	xsw.writeAttribute( "target-id" , recommendedPID );
+	xsw.writeAttribute( "target-id" ,type );
+	
+	
+}
+
+function closeRecommendationXML(xsw : XMLStreamWriter) {	
+	
+	xsw.writeEndElement();		//</end category assignment>
+}

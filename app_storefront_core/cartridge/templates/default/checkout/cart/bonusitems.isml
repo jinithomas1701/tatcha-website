@@ -1,0 +1,20 @@
+<!--- TEMPLATENAME: sampleitems.isml --->
+<iscomment>Bonus discount line items</iscomment>
+
+<isloop items="${pdict.CurrentForms.cart.shipments}" var="Shipment"	status="loopstate">								
+	<isscript>
+	var lineItems = [];
+	for each(var liItem in Shipment.items) {
+		lineItems.push(liItem);
+	}
+	lineItems.reverse();
+	var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+	</isscript>
+	<isloop items="${lineItems}" alias="FormLi" status="loopstate">
+		<isset name="lineItem" value="${FormLi.object}" scope="page" />
+		<isif condition="${lineItem.product.ID == giftWrapId}"><iscontinue/></isif>
+		<isif condition="${lineItem.bonusDiscountLineItem != null}">
+		
+		</isif>
+	</isloop>
+</isloop>

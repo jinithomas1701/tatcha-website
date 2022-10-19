@@ -1,0 +1,22 @@
+<!--- TEMPLATENAME: homelinks.isml ---><iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+
+<iscomment>
+	This template renders the slot content of a content asset
+	using only the body of the content.
+	Note, only one content asset body is rendered.
+</iscomment>
+
+<iscomment>make sure we have content at all</iscomment>
+<isif condition="${slotcontent != null}">
+	<div class="row" style="margin-top: 16px;">
+		<isloop items="${slotcontent.content}" var="contentAsset">
+			<div class="col-sm-6 col-md-3 col-md-offset-3">
+				 <a href="${contentAsset.custom.homeCategoryUrl1}" class="btn btn-default btn-block btn-carousel-cat" style="margin-top: 16px;"><isprint value="${contentAsset.custom.homeCategoryLink1}" /></a>
+			</div>
+			<div class="col-sm-6 col-md-3">
+			     <a href="${contentAsset.custom.homeCategoryUrl2}" class="btn btn-default btn-block btn-carousel-cat" style="margin-top: 16px;"><isprint value="${contentAsset.custom.homeCategoryLink2}" /></a>
+			</div>
+		</isloop>
+	</div>
+</isif>

@@ -1,0 +1,86 @@
+<!--- TEMPLATENAME: minilineitem.isml --->
+<iscomment> renders individual product item in minicart </iscomment>
+<isset name="productLineItem" value="${pdict.p_productitem}" scope="page"/>
+<isscript>
+ var Site = require('dw/system/Site');
+ var samplePromoID = Site.getCurrent().getCustomPreferenceValue('samplePromotionID');
+ </isscript>
+<div class="summary-bag-item">
+    <isset name="itemUrl" value="${empty(productLineItem.categoryID) ? URLUtils.http('Product-Show','pid', productLineItem.productID) : URLUtils.http('Product-Show','pid', productLineItem.productID, 'cgid', productLineItem.categoryID)}" scope="page"/>
+    <div class="summary-bag-item-img-block">
+        <a href="${itemUrl}">
+            <isif condition="${productLineItem.product != null && productLineItem.product.getImage('large',0) != null}">
+				<isset name="lineItemImageUrl" value="${getImageUrl(productLineItem.product,'small')}" scope="page"/>
+				<isset name="lineItemImageAlt" value="${getImageAlt(productLineItem.product)}" scope="page"/>
+				<isset name="lineItemImageTitle" value="${getImageTitle(productLineItem.product)}" scope="page"/>		            
+                <img class="img-responsive product-img" src="${lineItemImageUrl}" alt="${lineItemImageAlt}" title="${lineItemImageTitle}"/>
+            <iselse/>
+                <img class="img-responsive product-img" src="${URLUtils.staticURL('/images/noimagesmall.png')}" alt="${productLineItem.productName}"  title="${productLineItem.productName}"/>
+            </isif>
+        </a>
+    </div>
+    <div class="summary-bag-item-details">
+        <h5 class="product-name">
+            <a href="${itemUrl}" title="${Resource.msgf('product.label','product',null, productLineItem.productName)}">
+	            <isprint value="${productLineItem.productName.substring(0,48)}"/>	
+				<isif condition="${productLineItem.product.custom.secondaryName}"> 
+					<span class="product-subtitle">
+						<isif condition="${productLineItem.product.custom.secondaryName}">
+							<isprint value="${productLineItem.product.custom.secondaryName.substring(0,44)}"/>
+						</isif>
+					</span>
+				</isif>
+			</a>
+        </h5>
+        
+        <iscomment>Display the variant infomation </iscomment>
+        <isif condition="${productLineItem.bonusProductLineItem && 
+			(empty(productLineItem.bonusDiscountLineItem) || productLineItem.bonusDiscountLineItem.promotionID != samplePromoID)}">
+			<div class="summary-bag-promotion-item">
+				<div class="bag-item-variant">
+					<span class="label label-default">${Resource.msg('cart.promotionalgift','checkout',null)}</span>
+				</div>
+			</div>
+		</isif>
+		<isif condition="${!empty(productLineItem.product) && (productLineItem.product.isVariant())}">	
+			<div class="summary-bag-item-variant">
+				<isloop items="${productLineItem.product.variationModel.getProductVariationAttributes()}" var="VA" status="status">
+					<isset name="SelectedVariationValue" value="${productLineItem.product.variationModel.getSelectedValue(VA)}" scope="page"/>
+					<span class="product-variant">
+		            	<isif condition="${SelectedVariationValue != null}">
+							<isprint value="${SelectedVariationValue.displayValue}"/>
+						</isif>
+						<isif condition="${!(status.last)}"><span class="separator">|</span></isif>
+					</span>
+				</isloop>
+		    </div>
+		</isif>        
+
+        <div class="summary-bag-item-qty-price">
+            <span class="control-label">${Resource.msg('global.qty','locale',null)}:</span> <isprint value="${productLineItem.quantity}"/> <span class="separator">|</span>
+            <isif condition="${productLineItem.bonusProductLineItem}">
+                <isset name="bonusProductPrice" value="${productLineItem.getAdjustedPrice()}" scope="page"/>
+                <isif condition="${bonusProductPrice>0}">
+                		<isprint value="${bonusProductPrice}" />
+                <iselse>
+                		<isif condition="${productLineItem.bonusProductLineItem && 
+							(empty(productLineItem.bonusDiscountLineItem) || productLineItem.bonusDiscountLineItem.promotionID != samplePromoID)}">
+							${Resource.msg('cart.complimentary','checkout',null)}
+						<iselse/>
+							${Resource.msg('global.sample','locale',null)}
+					</isif>
+                </isif>
+            <iselseif condition="${productLineItem.getTaxBasis().value != productLineItem.getAdjustedPrice().value}" />
+            	<isprint value="${productLineItem.getTaxBasis()}" />
+            <iselse/>
+                <isset name="productTotal" value="${productLineItem.adjustedPrice}" scope="page"/>
+                <isif condition="${productLineItem.optionProductLineItems.size() > 0}">
+                    <isloop items="${productLineItem.optionProductLineItems}" var="optionLI">
+                        <isset name="productTotal" value="${productTotal.add(optionLI.adjustedPrice)}" scope="page"/>
+                    </isloop>
+                </isif>
+                <isprint value="${productTotal}"/>
+            </isif>
+        </div>
+    </div>
+</div>

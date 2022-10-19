@@ -1,0 +1,99 @@
+<isif condition="${!empty(pdict.index)}">
+	<isif condition="${!empty(pdict.promoSessionData)}">
+		<isscript>
+			importScript("int_tatcha_dis:common/GetImageUrl.ds");
+			var ProductFactory = require('*/cartridge/scripts/factories/product');
+		</isscript>
+		<isset name="noOfPromotions" value="${pdict.promoSessionData.split('&&').length}" scope="page" />
+		<isset name="isLast" value="false" scope="page" />
+		<isloop items="${pdict.promoSessionData.split('&&')}" var="position" status="positionStatus">
+			<isif condition="${Number(positionStatus.index) == pdict.index && pdict.index < noOfPromotions}">
+				<isif condition="${parseInt(noOfPromotions).toFixed() == (parseInt(pdict.index)).toFixed()}"> <isset name="isLast" value="true" scope="page" /> </isif>
+				<isif condition="${!empty(pdict.promoSessionData)}">
+					<isset name="catPromoBannerAssetsArray" value="${pdict.promoSessionData.split('&&')}" scope="page" />
+					<isif condition="${!empty(catPromoBannerAssetsArray) && (pdict.index < catPromoBannerAssetsArray.length)}">
+						<isset name="contentAsset" value="${dw.content.ContentMgr.getContent(catPromoBannerAssetsArray[pdict.index])}" scope="page" />
+						<div class="col-md-12 col-lg-12  col-xl-6 product-list-col vsa-block  <isif condition="${pdict.isFirstItem}">prd-tile-wrap </isif> <isif condition="${contentAsset.custom.catPromoType.toString() == 'Video'}">vsa-video</isif>" <isif condition="${pdict.isFirstItem}">data-prd-page="${pdict.gridPage}"</isif> >
+							<isif condition="${contentAsset && contentAsset.custom.catPromoType.toString() == 'Video'}">
+									<div class="product-list-unit-v2 vsa-block-content" style="">
+									<video autoplay class="promo-video" loop="true" muted playsinline="" style="" poster="${contentAsset.custom.catPromoVideoFallback ? contentAsset.custom.catPromoVideoFallback.getURL():''}">
+								 		 <source src="${contentAsset.custom.catPromoVideoURL}">
+										<img  alt="${contentAsset.custom.catPromoImageAltText}" src="${contentAsset.custom.catPromoVideoFallback ? contentAsset.custom.catPromoVideoFallback.getURL():''}" class="w-100"/>
+									</video>
+									<div role=button tabindex="0" aria-label="Play <isif condition="${!empty(contentAsset.custom.catPromotitle)}">${contentAsset.custom.catPromotitle}</isif> Video" class="video-play-pause pause">
+										<i class="fas fa-play"></i>
+										<i class="fas fa-pause"></i>
+									</div>
+								</div>
+							<iselse>
+								<isset name="catPromoImageDesktopUrl" value="${getBlogMediaUrl(contentAsset.custom.catPromoImageDesktop,'category')}" scope="page"/>
+								<div class="product-list-unit-v2 product-list-unit-promo vsa-block-content">
+								<picture>
+									<source media="(min-width:768px)" srcset="${catPromoImageDesktopUrl}">
+									<source media="(max-width:767px)" srcset="${catPromoImageDesktopUrl}">
+									<img src="${catPromoImageDesktopUrl}" width="900" height="760" class="img-fluid" alt="${contentAsset.custom.catPromotitle}"/>
+								</picture>
+									<div class="vsa-main-block">
+										<div class="vsa-heading" style="color:${(contentAsset && !empty(contentAsset.custom.catPromoTextColor)) ? contentAsset.custom.catPromoTextColor : '#000'}">
+											<isif condition="${contentAsset.custom.catPromotitle}"><h2>${contentAsset.custom.catPromotitle}</h2></isif>
+											<isif condition="${contentAsset.custom.catPromoBody}"><span class="vsa-subtitle" style="color:${(contentAsset && !empty(contentAsset.custom.catPromoTextColor)) ? contentAsset.custom.catPromoTextColor : '#000'}">${contentAsset.custom.catPromoBody}</span></isif>
+										</div>
+										<div class="vsa-img-block">  </div>
+										<isif condition="${contentAsset && contentAsset.custom.catPromoType.toString() == 'Message + CTA' || contentAsset.custom.catPromoType.toString() == 'Automat'}">
+											<isif condition="${contentAsset.custom.catPromoCtaText}">
+												<div class="vsa-cta-block">
+													<isif condition="${contentAsset && contentAsset.custom.catPromoType.toString() == 'Message + CTA'}">
+														<div class="cta">
+															<a href="${contentAsset.custom.catPromoCtaLink}" aria-labelledby="cta-button">
+																<button class="btn btn-lg <isif condition="${contentAsset && contentAsset.custom.catPromoTextColor == '#fff'}">btn-outline-light<iselse>btn-outline-dark</isif>" id="cta-button" aria-label="${contentAsset.custom.catPromoCtaText}" tabindex="-1">${contentAsset.custom.catPromoCtaText}</button>
+															</a>
+														</div>
+													<iselseif condition="${contentAsset && contentAsset.custom.catPromoType.toString() == 'Automat'}" >
+														<div class="vsa-cta">
+															<button class="btn btn-lg <isif condition="${contentAsset && contentAsset.custom.catPromoTextColor == '#fff'}">btn-outline-light<iselse>btn-outline-dark</isif>" aria-label="${contentAsset.custom.catPromoCtaText}" >${contentAsset.custom.catPromoCtaText}</button>
+														</div>
+													</isif>
+												</div>
+											</isif>
+										<iselseif condition="${contentAsset && contentAsset.custom.catPromoType.toString() == 'Pairs with'}" >
+											<isset name="pairsWithProducts" value="${contentAsset.custom.pairsWithPrdId.split(',')}" scope="page" />
+											<isset name="totalPrice" value="${0}" scope="page" />
+											<isset name="isOutofStock" value="${false}" scope="page" />
+											<isloop items="${pairsWithProducts}" var="productId" status="prodLoop" >
+												<isif condition="${prodLoop.index <= 1}">
+                                                    <isscript>
+                                                        var productObj = ProductFactory.get({ pid: productId, pview: 'tile'});
+                                                    </isscript>
+													<isset name="product" value="${productObj}" scope="page" />
+													<isif condition="${product.oosProductStatus == 'comingsoon'}">
+														<isset name="isOutofStock" value="${true}" scope="page" />
+													<iselse>
+														<isif condition="${product.available}">
+															<isset name="totalPrice" value="${totalPrice + product.price.sales.value}" scope="page" />
+														<iselse>
+															<isset name="isOutofStock" value="${true}" scope="page" />
+														</isif>
+													</isif>
+												</isif>
+											</isloop>
+											<div class="vsa-cta-block">
+												<div class="cta">
+													<isif condition="${isOutofStock}">
+														<button class="btn btn-lg <isif condition="${contentAsset && contentAsset.custom.catPromoTextColor == '#fff'}">btn-outline-light<iselse>btn-outline-dark</isif> disabled" aria-label="Out of stock"> Out of stock </button>
+													<iselse>
+														<button class="btn btn-lg <isif condition="${contentAsset && contentAsset.custom.catPromoTextColor == '#fff'}">btn-outline-light<iselse>btn-outline-dark</isif> cat-pairswith-promo-btn" data-pid="${pairsWithProducts[0]}" data-parentpid="${pairsWithProducts[1]}" aria-label="Add both to bag">Add both to bag - <isprint value="${dw.value.Money(totalPrice, session.getCurrency().getCurrencyCode())}" formatter="*#0"/> </button>
+													</isif>
+												</div>
+											</div>
+										</isif>
+									</div>
+								</div>
+							</isif>
+						</div>
+					</isif>
+				</isif>
+			</isif>
+		</isloop>
+		<isif condition="${isLast == 'true'}"><isset name="catPromoBannerAssetsArray" value="" scope="session" /></isif>
+	</isif>
+</isif>

@@ -1,0 +1,9 @@
+<isscript>
+	var Site = dw.system.Site.current;
+    var lincShopID = Site.current.getCustomPreferenceValue('LincShopID');
+    var locale = Site.current.getCustomPreferenceValue('LincLocale');
+	var testMode = Site.getCustomPreferenceValue('LincTestMode');
+	var lincUtils = require('int_linc/cartridge/scripts/common/Utils');
+</isscript>
+<script src="https://connect.letslinc.com/v1/myAccountWidget.js"></script>
+<div id="letslinc-params" data-locale="${locale}" data-shop-id="${lincShopID}" <isif condition="${testMode}">data-staging="true"</isif>></div>

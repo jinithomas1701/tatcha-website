@@ -1,0 +1,49 @@
+
+<isscript>
+    var Site = require('dw/system/Site').getCurrent();
+	var isLincEnabled = Site.getCustomPreferenceValue('LincEnabled');
+	var publicId = Site.getCustomPreferenceValue('LincShopID');
+	var language = Site.getCustomPreferenceValue('LincLocale');
+	var testMode = Site.getCustomPreferenceValue('LincTestMode');
+	var optInUrl = Site.getCustomPreferenceValue('LincOptInUrl');
+	if(testMode) {
+		optInUrl = Site.getCustomPreferenceValue('LincStagingOptInUrl');
+	}
+	
+</isscript>
+
+<isif condition="${isLincEnabled}">
+	<script>
+		window.lincOptinAsyncInit = function() {
+			LincOptin.init({
+				publicId : '${publicId}',
+				language : '${language}'
+			});
+		};
+	
+		// Facebook Javascript SDK
+		(function(d, s, id) {
+			var js, fjs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {
+				return;
+			}
+			js = d.createElement(s);
+			js.id = id;
+			js.src = "//connect.facebook.net/en_US/sdk.js";
+			fjs.parentNode.insertBefore(js, fjs);
+		}(document, 'script', 'facebook-jssdk'));
+		// End of Facebook Javascript SDK
+	
+		(function(d, s, id) {
+			var js, ljs = d.getElementsByTagName(s)[0];
+			if (d.getElementById(id)) {
+				return;
+			}
+			js = d.createElement(s);
+			js.id = id;
+			js.src = '${optInUrl}';
+			ljs.parentNode.insertBefore(js, ljs);
+		}(document, 'script', 'linc-optin-js'));
+		
+	</script>
+ </isif>

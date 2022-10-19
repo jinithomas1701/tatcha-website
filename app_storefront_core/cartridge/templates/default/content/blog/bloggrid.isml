@@ -1,0 +1,139 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<div class="container">
+	<isset name="blogList" value="${pdict.pagingmodel.pageElements}" scope="page" />
+	<isscript>
+	  var blogCounter = 1;
+	  importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	</isscript>
+	<isloop iterator = "${blogList}" var = "blog">
+		<isif condition="${blog && blog.custom && blog.ID !== 'home' && blog.onlineFlag !== false}">
+		<isset name="blogImageUrl" value="${getBlogMediaUrl(blog.custom.postImage,'blogIndex')}" scope="page"/>
+			<isif condition="${blogCounter % 3 === 1}">
+				<div class="row">
+			</isif>
+				<div class="col-md-4">
+					<div class="blog-index-post">
+						<isif condition="${blog.custom.postImage && blog.custom.postImage.getURL()}">
+							<div class="blog-post-img-container">
+								<img class="blog-post-img img-responsive lazyImage" src="${URLUtils.staticURL('/images/blog-index-placeholder.png')}" data-src="${blogImageUrl}" alt="${(!empty(blog.custom.imageAltTag) && blog.custom.imageAltTag != null) ? blog.custom.imageAltTag : ""}" />
+							</div>
+						<iselse>
+							<div class="blog-post-img-container">
+								<img class="blog-post-img img-responsive lazyImage" data-src="${URLUtils.staticURL('/images/blog-index-placeholder.png')}" />
+							</div>
+						</isif>
+						<div class="blog-post-description">
+							<h2 class="blog-post-title">
+								<isprint value="${blog.custom.blogTitle}" />
+							</h2>
+							<div class="blog-post-cta">
+								<a class="btn btn-default btn-md" href="${URLUtils.url('Page-Show','cid', blog.ID)}" aria-label="Read more about ${blog.custom.blogTitle}" tabindex="0">Read More</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			<isif condition="${blogCounter % 3 === 0}">
+				</div>
+			</isif>
+			<isscript>
+				blogCounter++;
+			</isscript>
+		</isif>
+	</isloop>
+	<isscript>
+		var firstClass = '';
+		var lastClass = '';
+		var loopBegin = 1;
+		if(pdict.pagingmodel.maxPage > 5){
+			var loopEnd = 5;
+		}else{
+			var loopEnd = pdict.pagingmodel.maxPage;
+		}
+		var totalPages = pdict.pagingmodel.maxPage;
+		var lastPage = pdict.pagingmodel.maxPage;
+		var currentPage = pdict.pagingmodel.currentPage+1;
+		var previousPage = 1;
+		var nextPage = totalPages;
+		if((currentPage >= 1) && (currentPage <= totalPages)){
+			var previousPage = currentPage-1;
+			var nextPage = currentPage+1;
+		}
+		if(currentPage > 3){
+			var loopBegin = (currentPage - 3) + 1;
+			var loopEnd = 4 + loopBegin;
+			if(loopEnd > totalPages){
+				loopEnd = totalPages;
+				loopBegin = totalPages - 3;
+			}
+		}
+		if(currentPage == 1){
+			firstClass = 'disabled';
+		}else if(currentPage == totalPages) {
+			lastClass = 'disabled';
+		}else{
+			firstClass = '';
+			lastClass = '';
+		}
+		
+		var pageNumber = loopBegin;
+	</isscript>
+	<isif condition="${(totalPages>1)}">
+		<div aria-label="Page navigation" class="text-center">
+				<ol class="pagination">
+					<li class="${firstClass}">
+						<isif condition="${firstClass == 'disabled'}">
+							<span aria-hidden="true"><i class="fal fa-chevron-double-left"></i></span>
+						<iselse>
+							<a href="${URLUtils.url('Blog-Show','page', 1)}" aria-label="First Page">
+								<span aria-hidden="true"><i class="fal fa-chevron-double-left"></i></span>
+							</a>
+						</isif>
+					</li>
+					<li class="${firstClass}">
+						<isif condition="${firstClass == 'disabled'}">
+							<span aria-hidden="true"><i class="fal fa-chevron-left"></i></span>
+						<iselse>
+							<a href="${URLUtils.url('Blog-Show','page', previousPage)}" aria-label="Previous Page">
+								<span aria-hidden="true"><i class="fal fa-chevron-left"></i></span>
+							</a>
+						</isif>
+					</li>
+					<isloop Begin="${loopBegin}" End="${loopEnd}" step="1" status="loopstate">
+						<isif condition="${pageNumber == currentPage }"> 
+							<li class="active"><a href="${URLUtils.url('Blog-Show','page', pageNumber)}" aria-current="true" aria-label="Current Page, Page ${pageNumber.toFixed()}"><isprint value="${pageNumber}" style="INTEGER"></a></li>
+						<iselse>
+							<li><a href="${URLUtils.url('Blog-Show','page', pageNumber)}" aria-label="Page ${pageNumber.toFixed()}"><isprint value="${pageNumber}" style="INTEGER"></a></li>
+						</isif>
+						<isscript> 
+							pageNumber++;
+						</isscript>
+					</isloop>
+					<li class="${lastClass}">
+						<isif condition="${lastClass == 'disabled'}">
+							<span aria-hidden="true"><i class="fal fa-chevron-right"></i></span>
+						<iselse>
+							<a href="${URLUtils.url('Blog-Show','page', nextPage)}" aria-label="Next Page">
+								<span aria-hidden="true"><i class="fal fa-chevron-right"></i></span>
+							</a>
+						</isif>
+					</li>
+					<li class="${lastClass}">
+						<isif condition="${lastClass == 'disabled'}">
+							<span aria-hidden="true"><i class="fal fa-chevron-double-right"></i></span>
+						<iselse>
+							<a href="${URLUtils.url('Blog-Show','page', lastPage)}" aria-label="Last Page">
+								<span aria-hidden="true"><i class="fal fa-chevron-double-right"></i></span>
+							</a>
+						</isif>
+					</li>
+				</ol>
+		</div>
+	</isif>
+</div>
+	
+	<!-- <isif condition="${(pdict.pagingmodel.currentPage != pdict.pagingmodel.maxPage)}">
+		
+		<div class="m-top text-center see-more blog-more-container">
+			<button class="btn btn-default blog-more" data-api-url="${decodeURI(pdict.pagingmodel.appendPaging ( pdict.ContentSearchResult.url('Search-Show'), (pdict.pagingmodel.currentPage + 1) * pdict.pagingmodel.pageSize).append('fdid','blog').append('format','page-element'))}"> See More </button>
+		</div> 
+	</isif>-->

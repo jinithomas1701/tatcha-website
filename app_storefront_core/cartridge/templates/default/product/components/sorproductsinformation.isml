@@ -1,0 +1,29 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Creates a list of sor information based on the product line item.
+	p_productli : the product line item.
+</iscomment>
+<isset name="p_productli" value="${pdict.p_productli}" scope="page"/>
+<isscript>
+	var refillInterval : Number = null;
+	var weekRefillInterval : Number = null;
+	if ('OsfSorSmartOrderRefillInterval' in p_productli.custom) {
+	refillInterval = p_productli.custom.OsfSorSmartOrderRefillInterval;
+	}
+	if ('OsfSorSmartOrderRefillWeekInterval' in p_productli.custom) {
+	weekRefillInterval =
+	p_productli.custom.OsfSorSmartOrderRefillWeekInterval;
+	}
+	var sordeliveryoption = p_productli.custom.sordeliveryoption;
+</isscript>
+<isif condition="${!empty(sordeliveryoption)}">
+	<isif condition="${sordeliveryoption === 'week'}">
+		<isset name="displayWeek" value="inline-block" scope="page" />
+		<isset name="displayMonth" value="none" scope="page" />
+		<iselse>
+		<isset name="displayWeek" value="none" scope="page" />
+		<isset name="displayMonth" value="inline-block" scope="page" />
+	</isif>
+</isif>
+
+<isinclude url="${URLUtils.url('SmartOrderRefillController-Modify','liuuid', p_productli.UUID)}">

@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isinclude template="smartOrderRefill/util/modules"/>
+<div class="sorlogin-wrapper">
+    <div class="sorlogin-col">
+        <div class="login-box login-create-account clearfix">
+            <h2>${Resource.msg('smartorderrefill.loginform.createheader','smartorderrefill',null)}</h2>
+            <div class="login-box-content clearfix">
+                <p>${Resource.msg('smartorderrefill.loginform.createmessage','smartorderrefill',null)}</p>
+                <isinclude url="${URLUtils.url('Page-Include', 'cid', 'create-account-benefits')}"/>
+                <form novalidate action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.sorlogin.htmlName}">
+                    <fieldset>
+                        <div class="form-row sor-form-row">
+                            <button class="btn btn-primary" type="submit" value="${Resource.msg('smartorderrefill.loginform.createbutton','smartorderrefill',null)}" name="${pdict.CurrentForms.sorlogin.register.htmlName}">
+                                ${Resource.msg('smartorderrefill.loginform.createbutton','smartorderrefill',null)}
+                            </button>
+                        </div>
+                        <input type="hidden" name="${pdict.CurrentForms.sorlogin.register.htmlName}" value="${Resource.msg('smartorderrefill.loginform.createbutton','smartorderrefill',null)}"/>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="sorlogin-col">
+        <div class="login-box login-account">
+            <h2>${Resource.msg('smartorderrefill.loginform.customersheader','smartorderrefill',null)}
+            <div class="dialog-required"></div>
+            </h2>
+            <div class="login-box-content returning-customers clearfix">
+                <isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+                <p>${Resource.msg('smartorderrefill.loginform.registered','smartorderrefill',null)}</p>
+                <form novalidate action="${URLUtils.httpsContinue()}" method="post" class="clearfix" id="${pdict.CurrentForms.sorlogin.htmlName}">
+                    <fieldset>
+                        <issorinputfield formfield="${pdict.CurrentForms.sorlogin.username}" type="text" requiredtext="${Resource.msg('login.username.missing-error','forms',null)}"/>
+                        <issorinputfield formfield="${pdict.CurrentForms.sorlogin.password}" type="password" requiredtext="${Resource.msg('login.password.missing-error','forms',null)}" />
+                        <div class="form-row sor-form-row">
+                            <button class="btn btn-primary" type="submit" value="${Resource.msg('smartorderrefill.loginform.loginbutton','smartorderrefill',null)}" name="${pdict.CurrentForms.sorlogin.login.htmlName}">
+                                ${Resource.msg('smartorderrefill.loginform.loginbutton','smartorderrefill',null)}
+                            </button>
+                            <issorinputfield formfield="${pdict.CurrentForms.sorlogin.rememberme}" type="checkbox" rowclass="label-inline login-rememberme"/>
+                        </div>
+                        <input type="hidden" name="${pdict.CurrentForms.sorlogin.login.htmlName}" value="${Resource.msg('smartorderrefill.loginform.loginbutton','smartorderrefill',null)}"/>
+                    </fieldset>
+                </form>
+                </isif>
+            </div>
+        </div>
+    </div>
+</div>

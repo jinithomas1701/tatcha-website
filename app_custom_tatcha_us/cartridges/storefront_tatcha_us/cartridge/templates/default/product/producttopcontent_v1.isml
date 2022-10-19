@@ -1,0 +1,95 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>In the product pipeline, if a product was not found for the selected attributes, we need to refresh the ProductVariationModel using the default selected variant</iscomment>
+
+<iscomment> Yotpo Modules </iscomment>
+<isinclude template="util/yotpomodules.isml" />
+<isinclude template="product/components/marketingflags"/>
+<isinclude template="product/components/productname"/>
+
+<iscomment>Sticky add to bag </iscomment>
+<isscript>
+	let product = pdict.Product;
+	let variationModel = pdict.CurrentVariationModel || product.getVariationModel();
+	let selectedVariant = variationModel.getSelectedVariant();
+
+	let avm = selectedVariant ? selectedVariant.getAvailabilityModel() : product.getAvailabilityModel();
+	pdict.isProductAvailable = avm.availability > 0;
+
+	let disabledAttr = pdict.isProductAvailable && !product.master ? '' : ' disabled="disabled"';
+
+	var buttonTitle = dw.web.Resource.msg('global.addtocart','locale','Add to Cart');
+	var oosStatus = (pdict.Product.custom.oosProductStatus.value)?pdict.Product.custom.oosProductStatus.value:"notifyme";
+	let availableCount = "0";
+	if (pdict.isProductAvailable && !empty(avm.inventoryRecord)) {
+		availableCount = avm.inventoryRecord.perpetual ? "999" : avm.inventoryRecord.ATS.value.toFixed().toString();
+	}
+	var maxQty = 0;
+	if(!empty(pdict.maxOrderQuantity) && (pdict.maxOrderQuantity > 0)){
+		maxQty = pdict.maxOrderQuantity;
+	}
+	if(!empty(pdict.Product.custom.maxOrderQuantity) && pdict.Product.custom.maxOrderQuantity > 0){
+		maxQty = pdict.Product.custom.maxOrderQuantity;
+	}
+
+	var showCartButtons = true;
+	if(pdict.Product.getPriceModel().getPrice() === null || pdict.Product.getPriceModel().getPrice().valueOrNull === 0) {
+		showCartButtons = false;
+	}
+	if(pdict.hasCartCategory) {
+		showCartButtons = true;
+	}
+</isscript>
+<iscomment>
+<isif condition="${!disabledAttr && oosStatus != 'comingsoon'}">
+	<div class="add-to-bag-sticky-container d-sm-block d-md-none">
+		<div class="row bag-affix">
+		<div class="col-2 col-sm-3 col-md-2 col-lg-2 offset-md-0">
+		<div class="form-inline">
+			<div class="form-group product-qty">
+				<label for="Quantity-<isprint value="${pdict.Product.ID}" />" class="control-label qty-control-label ml-auto">Qty</label>
+				<select name="product-quantity" label="quantity" aria-label="select quantity"  id="Quantity-<isprint value="${pdict.Product.ID}" />" data-available="${availableCount}" class="form-control-lg select-qty" <isif condition="${!showCartButtons}">disabled</isif>>
+					<isloop begin="1" end="${maxQty}" status="qtyIndex">
+						<option value="${qtyIndex.index}">${qtyIndex.index}</option>
+					</isloop>
+				</select>
+			</div>
+		</div>
+		</div>
+		<div class="line"></div>
+		<div class="col-9 col-sm-7 col-md-8 col-lg-7 align-self-center add-to-bag-btn-container">
+			<isif condition="${showCartButtons}">
+				<button id="fixed-add-to-cart" type="submit" data-price="${pdict.Product.getPriceModel().getPrice().value}" data-productname="${pdict.Product.name}" data-matchbox-addtocart="${pdict.Product.ID}" data-product-info="${pdict.mParticleProductJson}" data-buttonid="p-page-main" value="${buttonTitle}" class="btn btn-primary btn-lg btn-block add-to-cart add-to-bag mparticle-product add-to-bag-sticky">${buttonTitle} -  <isprint value="${pdict.Product.getPriceModel().getPrice()}" formatter="*#0"/></button>
+			</isif>
+		</div>
+	</div>
+		<div class="alert-text ad-promocode-error-affix col-12 d-md-none" tabindex="0"><i class="fal fa-exclamation-circle mr-2"></i><span class="error-text"></span></div>
+	</div>
+<iselse>
+	<isif condition="${(oosStatus == 'comingsoon') || (oosStatus == 'notavailable') || (oosStatus == 'notifyme')}">
+		<div class="product-to-be-available row sticky no-gutters px-3 py-2 d-sm-block d-md-none add-to-bag-sticky-container">
+		<div class="col-12 col-sm-10 out-of-stock-text rounded">
+		<isif condition="${(oosStatus == 'comingsoon')}">
+			<a href="#" data-toggle="modal" class="text-decoration-none" data-target="#notify-me-modal">
+				<h4 class="out-of-stock-heading">${Resource.msg('global.comingsoon', 'locale', null)}</h4>
+				<div class="notify-me text-uppercase pb-2">${Resource.msg('global.notifyme', 'locale', null)}</div>
+			</a>
+		<iselseif condition="${(oosStatus == 'notavailable')}" >
+			<h4 class="out-of-stock-heading">${Resource.msg('global.outofstock', 'locale', null)}</h4>
+			<div class="product-not-available-text ">${Resource.msg('global.outofstock.nolonger', 'locale', null)}</div>
+		<iselseif condition="${(oosStatus == 'notifyme')}" >
+			<a href="#" data-toggle="modal" class="text-decoration-none" data-target="#notify-me-modal">
+				<h4 class="out-of-stock-heading">${Resource.msg('global.outofstock', 'locale', null)}</h4>
+				<div class="notify-me text-uppercase pb-2">${Resource.msg('global.notifyme', 'locale', null)}</div>
+			</a>
+		</isif>
+		</div>
+		</div>
+	</isif>
+</isif>
+</iscomment>
+<div class="primary-images col-md-6 col-xl-7 px-0">
+    <isinclude template="product/components/productimages_v1"/>
+</div>
+<div class="product-content-spec col-md-6 col-xl-5 col-xxl-5 offset-lg-0 pl-md-0 mt-4 mt-md-0 product-detail">
+    <isinclude template="product/productcontent_v1"/>
+</div>

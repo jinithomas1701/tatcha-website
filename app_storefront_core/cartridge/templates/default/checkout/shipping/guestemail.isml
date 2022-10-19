@@ -1,0 +1,33 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+    
+</iscomment>
+  
+<iscomment></iscomment>
+		<div class="panel-section">			 
+				<div class="panel-section-short guest-login">
+					<div class="showlogin-link">
+					${Resource.msg('account.login.guest.checkout.alreadyhaveaccount', 'account', null)}
+					<a href="javascript:;" data-toggle="modal" data-target="#loginModal" id="checkoutshippinglogin">
+						 ${Resource.msg('account.login.guest.checkout.checkoutfaster', 'account', null)}
+					</a>
+					</div>
+					<h3> Contact Information</h3>
+				<div class="panel-section-indent">		
+					<div class="form-row form-group required" id="guest-email-div">
+						<label class="control-label">
+							<span>${Resource.msg('account.login.guest.checkout.email', 'account', null)}</span>
+						</label>
+						<div class="field-wrapper">
+							<input class="input-text form-control required" type="email" name="email">
+						</div>
+						<span id="error-text" class="help-block"></span>
+					</div>
+				</div>
+			</div>
+		</div>
+	
+<isinclude url="${URLUtils.url('Login-LoginModal', 'scope', 'checkout')}"/>
+
+  
+

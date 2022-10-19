@@ -1,0 +1,23 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+* 
+* Purpose:	It converts object to String.
+* Use Case: Prevously in pipeline, a script generates a iterator of files to be processed.
+*			As only objects can be inserted into an iterator and pipelet requires an String as an 
+*			input parameter, so this script does the required conversion of file name from Object 
+*			to String.
+*
+*@input file : Object
+*@output fileNameStr : String
+*/
+importPackage( dw.system );
+
+function execute( args : PipelineDictionary ) : Number
+{
+
+    var fileName : Object = args.file;
+    var fileNameStr : String = fileName.toString();
+    args.fileNameStr = fileNameStr;
+
+   return PIPELET_NEXT;
+}

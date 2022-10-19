@@ -1,0 +1,23 @@
+ <iscomment>Conversion tracking should only be done in the purchase confirmation page once the customer has paid.</iscomment>
+
+ <isif condition="${dw.system.Site.getCurrent().preferences.custom.yotpoCartridgeEnabled}">
+
+	 <isif condition="${!empty(pdict.order)}">
+		<isif condition="${pdict.order.totalGrossPrice.available}">
+			<isset name="orderTotalValue" value="${pdict.order.totalGrossPrice.value}" scope="page"/>
+		<iselse/>
+			<isset name="orderTotalValue" value="${pdict.order.getAdjustedMerchandizeTotalPrice(true).add(pdict.order.giftCertificateTotalPrice.value)}" scope="page"/>
+		</isif>
+		<isscript>
+			var YotpoUtils = require('~/cartridge/scripts/yotpo/utils/YotpoUtils');
+
+			var currentLocaleID : String  = YotpoUtils.getCurrentLocale(request);
+			var yotpoAppKey : String = YotpoUtils.getAppKeyForCurrentLocale(currentLocaleID);
+			var conversionTrackingURL : String = dw.system.Site.getCurrent().preferences.custom.yotpoConversionTrackingPixelURL;
+			var conversionTrkURL : String = conversionTrackingURL + "?order_amount=" + orderTotalValue +
+				"&order_id=" + pdict.order.orderNumber + "&order_currency=" + pdict.order.currencyCode + "&app_key=" + yotpoAppKey;
+		</isscript>
+		<img src="${conversionTrkURL}" width="1" height="1">
+	 </isif>
+
+</isif>

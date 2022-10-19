@@ -1,0 +1,10 @@
+<!--- TEMPLATENAME: ordersummary.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="singlepagecheckout/modules"/> 
+
+<isscript>
+	var singlePageCheckoutUtils = require('int_singlepagecheckout/cartridge/scripts/util/SinglePageCheckoutUtils');
+	var checkoutObj = singlePageCheckoutUtils.getCheckoutSummary();
+</isscript>	
+
+<isspcheckoutcontainer p_checkoutobj="${checkoutObj}" p_responsecode="${(pdict.responseCode)?pdict.responseCode:''}" p_responsemsg="${(pdict.responseMsg)?pdict.responseMsg:''}"/>

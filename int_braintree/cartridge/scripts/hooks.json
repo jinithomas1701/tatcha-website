@@ -1,0 +1,24 @@
+{
+    "hooks": [
+		{
+			"name": "app.payment.processor.BRAINTREE_CREDIT",
+			"script": "./payment/processor/BRAINTREE_CREDIT"
+		},
+		{
+		    "name": "app.payment.processor.BRAINTREE_PAYPAL",
+		    "script": "./payment/processor/BRAINTREE_PAYPAL"
+		},
+		{
+            "name": "app.payment.processor.BRAINTREE_APPLEPAY",
+            "script": "./payment/processor/BRAINTREE_APPLEPAY"
+		},        
+		{
+            "name": "app.payment.processor.BRAINTREE_GOOGLEPAY",
+            "script": "./payment/processor/BRAINTREE_GOOGLEPAY"
+        },
+        {
+			"name": "app.payment.processor.BRAINTREE_VENMO",
+			"script": "./payment/processor/BRAINTREE_VENMO"
+		}
+    ]
+}

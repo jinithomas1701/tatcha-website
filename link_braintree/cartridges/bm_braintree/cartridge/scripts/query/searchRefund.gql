@@ -1,0 +1,38 @@
+query Search($input: RefundSearchInput!) {
+  search {
+    refunds(input: $input) {
+      edges {
+        node {
+          id
+          legacyId
+          orderId
+          paymentMethod {
+            id
+            legacyId
+          }
+          amount {
+            value
+            currencyCode
+          }
+          createdAt
+          customer {
+            firstName
+            lastName
+            id
+            email
+            legacyId
+          }
+          status
+          statusHistory {
+            status
+            timestamp
+            amount {
+                value
+                currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,8 @@
+<isif condition="${!empty(request.custom.isBraintreeCustomError)}">
+    <div class="alert alert-danger alert-dismissible valid-cart-error fade show" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <isprint value="${Resource.msg('braintree.cart.defaulterror', 'locale', null)}"/>
+    </div>
+</isif>

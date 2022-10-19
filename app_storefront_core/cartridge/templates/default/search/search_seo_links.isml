@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isif condition="${!empty(pdict.CurrentHttpParameterMap.cgid.stringValue)}">
+	<link rel="canonical" href="${URLUtils.https('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid.stringValue)}"/>
+	<isscript>
+		var pageLoaded = pdict.PageLoaded;
+		var totalPages = 0;
+		if(!empty(pdict.ProductPagingModel)){
+			var totalPages = pdict.ProductPagingModel.maxPage;
+		}
+		if(pageLoaded > 0){
+			var previousPage = 1;
+			var nextPage = totalPages;
+			if((pageLoaded >= 1) && (pageLoaded <= totalPages)){
+				var previousPage = pageLoaded-1;
+				var nextPage = pageLoaded+1;
+			}
+		} else {
+			var pageLoaded = 1; 
+			var previousPage = pageLoaded-1;
+			var nextPage = pageLoaded+1;
+		}
+		
+	</isscript>
+	<isif condition="${pageLoaded != 1}">
+		<link rel='prev' href="${URLUtils.url('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid.stringValue, 'page', previousPage)}" />
+	</isif>
+	<isif condition="${pageLoaded != totalPages}">
+		<link rel='next' href="${URLUtils.url('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid.stringValue, 'page', nextPage)}" />
+	</isif>
+</isif>

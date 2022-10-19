@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19" secure="false">
+	<field formid="username" label="sorlogin.label.username" type="string" mandatory="true"/>
+	<field formid="password" label="sorlogin.label.password" type="string" mandatory="true"/>
+	<field formid="rememberme" label="sorlogin.login.rememberme" type="boolean" mandatory="false" />
+	<action formid="login" valid-form="true"/>
+	<action formid="register" valid-form="false"/>
+</form>

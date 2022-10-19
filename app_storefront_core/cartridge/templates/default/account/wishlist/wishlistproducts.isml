@@ -1,0 +1,127 @@
+<isset name="products" value="${pdict.products}" scope="page" />
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<isloop items="${pdict.pagingmodel.pageElements}" var="item" status="loopstate">
+	<isset name="isGiftCert" value="${item.type == item.TYPE_GIFT_CERTIFICATE}" scope="page"/>
+	<isif condition="${((pdict.CurrentCustomer == pdict.ProductList.owner) || (pdict.CurrentCustomer != pdict.ProductList.owner && item.public && (item.product != null || item.TYPE_GIFT_CERTIFICATE)))}">
+		<form action="${URLUtils.httpsContinue()}" method="post">
+			<input type="hidden" name="productListID" value="${pdict.ProductList.ID}"/>
+			<isscript>
+				// Added for mParticle and other analytics 
+				var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+				var productInfo = mParticleUtil.getProductInfo(item.product);
+				
+			</isscript>
+			<div class="card product-stack-list-unit wishlist-product-container" id="${item.product.ID}">
+				<div class="card-body" style="padding:.5rem;">
+					<isif condition="${pdict.CurrentCustomer == pdict.ProductList.owner}">
+						<button
+							data-api-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', (item.product != null) ? item.product.ID : null , 'source', 'productdetail')}"
+							data-pid="${item.product.ID}"
+							data-pname="${item.product.name}"
+							class="list-remove icon-default delete-wishlist-item" type="submit">
+							<i class="fal fa-times fa-lg"></i>
+						</button>
+					</isif>
+					<div class="order-items-detail product">
+						<div class="row">
+							<div class="col-12 col-md-8 col-lg-9">
+									<a class="row no-gutters wishlist-item-link" href="${URLUtils.http('Product-Show','pid', item.product.ID)}" aria-label="${item.product.name}">
+										<div class="col-12 col-md-4 col-lg-2">
+											<isif condition="${item.product != null && item.product.getImage('large',0) != null}">
+												<isset name="imageUrl" value="${getImageUrl(item.product,'medium')}" scope="page"/>
+												<isset name="imageAlt" value="${getImageAlt(item.product)}" scope="page"/>
+												<isset name="imageTitle" value="${getImageTitle(item.product)}" scope="page"/>
+												<img class="img-responsive product-img img-fluid" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" />
+											<iselse/>
+												<img class="img-responsive product-img img-fluid" src="${URLUtils.staticURL('/images/noimagemedium.png')}" alt="${item.product.productName}" title="${item.product.productName}" />
+											</isif>
+										</div>
+										<isscript>
+											var productData = dw.catalog.ProductMgr.getProduct(item.product.ID);
+											var PriceModel = productData.getPriceModel();
+										</isscript>
+										<div class="col-12 col-md-8 col-lg-10 product-text-col">
+											<div class="product-name wishlist-product-name">
+												<isprint value="${item.product.name}" /></h4>
+												<isif condition="${!empty(productData.custom.secondaryName)}">
+													<span class="product-subtitle">
+														<isprint value="${productData.custom.secondaryName.substring(0,44)}" />
+													</span>
+												</isif>
+											</div>
+											<isdisplayvariationvaluesbs product="${item.product}"/>
+											<div class="product-variants">
+												<isprint value="${PriceModel.price}" />
+											</div>
+										</div>
+									</a>
+							</div>
+							
+							<div class="col-12 col-md-4 col-lg-3 stack-list-action">
+								<div class="row">
+									<div class="col-9 col-lg-8 d-flex justify-content-center align-items-center">
+										<isif condition="${(item.product != null && item.product.custom.oosProductStatus.value == 'comingsoon')}">
+											<div class="product-stock-message" >${Resource.msg('global.comingsoon.button', 'locale', null)}</div>
+										<iselse/>
+											<isif condition="${(item.product != null && item.product.availabilityModel.inStock) || (isGiftCert)}">
+												<isif condition="${isGiftCert}">
+													<a class="button" href="${URLUtils.url('GiftCert-Purchase')}">
+														${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}
+													</a>
+												<iselse>
+													<input type="hidden" name="cartAction" id="cartAction" value="update" />
+													<input type="hidden" name="pid" id="pid" value="${item.product.ID}" />
+													<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+													<input type="hidden" name="unitPrice" id="unitPrice" value="${PriceModel.price.value}" />
+													<input type="hidden" name="page" value="bag" />
+													<input class="input-text" type="hidden" min="0" step="1" name="Quantity" value="<isprint value="${item.quantity.value}" formatter="#"/>"/>
+													<button type="submit" title="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" data-product-info="${JSON.stringify(productInfo)}" value="${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}" class="btn wishlist-add-to-cart btn-outline-secondary btn-block">
+														${Resource.msg('global.addtocart', 'locale', 'Add to Cart')}
+													</button>
+												</isif>
+											<iselse>
+												<iscomment>OOS conditions </iscomment>
+												<isif condition ="${(item.product.custom.oosProductStatus.value == 'comingsoon')}">
+		      										<div class="product-stock-message" >${Resource.msg('global.comingsoon.button', 'locale', null)}</div>
+		       									<iselseif condition ="${(item.product.custom.oosProductStatus.value == 'notifymy')}">
+													<div class="product-stock-message" >${Resource.msg('global.outofstock', 'locale', null)}</div>
+		       									<iselseif condition ="${(item.product.custom.oosProductStatus.value == 'notavailable')}">
+													<div class="product-stock-message"><span class="discontinued">${Resource.msg('global.outofstock.reorder.nolonger', 'locale', null)}</span></div>														
+			 									<iselse>
+													<div class="product-stock-message" >${Resource.msg('global.outofstock', 'locale', null)}</div>
+		    									</isif>
+											 </isif>
+										</isif>
+									</div>
+									<isif condition="${pdict.CurrentCustomer == pdict.ProductList.owner}">
+										<div class="col-3 col-lg-4">
+											<button
+												aria-label="remove product from wishlist"
+												data-pid="${item.product.ID}"
+												data-pname="${item.product.name}"
+												data-api-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', (item.product != null) ? item.product.ID : null , 'source', 'productdetail')}"
+												data-toggle="tooltip" data-placement="top"
+												class="btn btn-link btn-wishlist wishlist-active no-scroll delete-item delete-wishlist-item">
+												<span class="fa-layers fa-fw fa-lg">
+													<i class="fa fa-heart fa-lg" data-fa-transform="left-3 down-3"></i>
+													<i class="fal fa-list" data-fa-transform="right-11 down-12 shrink-6"></i>
+												</span>
+											</button>
+										</div>
+									</isif>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</form>
+	</isif>
+</isloop>
+<isif condition="${(pdict.pagingmodel.currentPage != pdict.pagingmodel.maxPage)}">
+	<div class="m-top text-center see-more wishlist-more-container">
+		<button class="btn btn-lg btn-outline-secondary wishlist-more" data-api-url="${decodeURI(pdict.pagingmodel.appendPaging ( URLUtils.url('Wishlist-Show'), (pdict.pagingmodel.currentPage + 1) * pdict.pagingmodel.pageSize).append('format','page-element'))}"> See More </button>
+	</div>
+</isif>

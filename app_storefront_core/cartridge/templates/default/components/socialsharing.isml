@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	var escapedUrl = pdict.url ? encodeURIComponent(pdict.url): '';
+	var title = Resource.msg('account.email.subject.registrywishlist', 'account', null) ;	
+	var escapedTitle = pdict.title ? encodeURIComponent(pdict.title) : title;
+	var escapedUrlMail = escapedUrl;
+	if(escapedUrlMail!=''){
+		escapedUrlMail = "Hello,%0D%0A%0D%0AI've got my eye on these Tatcha treasures, and I wanted to share them with you.Check out my wishlist:%0D%0A%0D%0A "+escapedUrlMail;
+	}
+</isscript>
+
+<h2 class="share-your-wishlist-title">Share Your Wishlist</h2>
+<ul class="list-inline">
+	<li>
+		<a class="icon-link" title="${Resource.msg('global.socialshare.facebook.label', 'locale', null)}" data-share="facebook" aria-label="share wishlist through Facebook" href="https://www.facebook.com/sharer/sharer.php?u=${escapedUrl}" target="_blank">
+			<span class="fa-layers fa-fw fa-3x">
+				<i class="fa fa-circle"></i>
+			  	<i class="fab fa-facebook-f fa-inverse" data-fa-transform="shrink-8x"></i>
+			</span>
+		</a>
+	</li>
+	<li>
+		<a class="share-icon" title="${Resource.msg('global.socialshare.email.label', 'locale', null)}" aria-label="share wishlist through Email" data-share="email" href="mailto:?subject=${escapedTitle}&body=${escapedUrlMail}" target="_blank">
+			<span class="fa-layers fa-fw fa-3x">
+			  <i class="fa fa-circle"></i>
+			  <i class="fal fa-envelope fa-inverse" data-fa-transform="shrink-8x"></i>
+			</span>
+		</a>
+	</li>
+	<li>
+		<a class="share-icon share-link icon-link shareLink no-scroll" title="share wishlist through link" data-target=".share-link-content" href="#" aria-label="share wishlist through link">
+			<span class="fa-layers fa-fw fa-3x">
+		  		<i class="fa fa-circle"></i>
+		  		<i class="fal fa-link fa-inverse" data-fa-transform="shrink-8x"></i>
+			</span>
+		</a>
+	</li>
+</ul>
+<div style="display: none">
+	<a class="share-icon" title="${Resource.msg('global.socialshare.twitter.label', 'locale', null)}" data-share="twitter" href="https://twitter.com/intent/tweet/?url=${escapedUrl}&text=${escapedTitle}" target="_blank"><i class="fa fa-twitter-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.twitter', 'locale', null)}</span></a>
+	<a class="share-icon" title="${Resource.msg('global.socialshare.googleplus.label', 'locale', null)}" data-share="googleplus" href="https://plus.google.com/share?url=${escapedUrl}" target="_blank"><i class="fa fa-google-plus-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.googleplus', 'locale', null)}</span></a>
+	<a class="share-icon" title="${Resource.msg('global.socialshare.pinterest.label', 'locale', null)}" data-share="pinterest" href="https://www.pinterest.com/pin/create/button/?url=${escapedUrl}&description=${escapedTitle}" target="_blank"><i class="fa fa-pinterest-square"></i><span class="visually-hidden">${Resource.msg('global.socialshare.pinterest', 'locale', null)}</span></a>
+</div>

@@ -1,0 +1,49 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/trackorder/pt_trackorder">
+	<isinclude template="util/modules"/>
+	<div class="container" style="margin-top: 40px;">
+		<h1 class="text-center track-order-title">Track An Order</h1>
+		<div class="row">
+			<div class="col-md-8 offset-md-2">
+				<p class="text-center">
+					Track and check on an order below. <br/>
+					<strong>Have an account?</strong> View your order history by 
+					<a href="javascript:;" class="track-order-link" data-toggle="modal" data-target="#loginModal">logging in</a>.
+				</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-6 offset-md-3 col-lg-4 offset-lg-4">
+				<isif condition="${pdict.OrderNotFound != null}">
+					<div class="error-form alert alert-danger" role="alert"><isprint value="${Resource.msg('account.login.ordererror','account',null)}" /></div>
+				</isif>
+				<form action="${URLUtils.https('Order-OrderTrackSubmit')}" method="post" id="${pdict.CurrentForms.ordertrack.htmlName}">
+					<isscript>
+						var attributes = {
+							autocomplete: "off",
+							'data-msg-required': Resource.msg('validate.trackorder', 'forms', null),
+							'aria-label' : 'Order Number'
+						};
+						var attributes2 = {
+							autocomplete: "off",
+							'data-msg-required': Resource.msg('validate.trackorderemail', 'forms', null),
+							'aria-label' : 'Order Email'
+						};
+					</isscript>
+					<div class="form-group">
+						<isinputfield placeholder=" " formfield="${pdict.CurrentForms.ordertrack.orderNumber}" type="input" attributes="${attributes}" bsversion="true"/>
+			 		</div>
+					<div class="form-group">
+						<isinputfield  placeholder=" "  formfield="${pdict.CurrentForms.ordertrack.orderEmail}" type="input" attributes="${attributes2}" bsversion="true"/>
+					</div>				
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+				
+					<button class="btn btn-primary btn-block button-primary-block trackorder-button" type="submit" value="${Resource.msg('account.login.orderbutton','account',null)}" name="${pdict.CurrentForms.ordertrack.findorder.htmlName}">
+						Find Order
+					</button>
+				
+				</form>
+			</div>	
+		</div>
+	</div><!-- /.container -->
+</isdecorate>

@@ -1,0 +1,25 @@
+<div class="payment-details">
+    <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
+        <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
+            <isinclude template="braintree/checkout/creditcardSummary" />
+        </isif>
+        <isif condition="${payment.paymentMethod === 'PayPal'}">
+            <isinclude template="braintree/checkout/paypalSummary" />
+        </isif>
+        <isif condition="${payment.paymentMethod === 'ApplePay'}">
+            <isinclude template="braintree/checkout/applepaySummary" />
+        </isif>
+        <isif condition="${payment.paymentMethod === 'Venmo'}">
+            <isinclude template="braintree/checkout/venmoSummary" />
+        </isif>
+        <isif condition="${payment.paymentMethod === 'GooglePay'}">
+            <isinclude template="braintree/checkout/googlepaySummary" />
+        </isif>
+        <isif condition="${payment.paymentMethod === 'SRC'}">
+            <isinclude template="braintree/checkout/srcSummary" />
+        </isif>
+        <isif condition="${payment.paymentMethod === pdict.braintree.lpmActivePaymentMethod}">
+            <isinclude template="braintree/checkout/lpmSummary" />
+        </isif>
+    </isloop>
+</div>

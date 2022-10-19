@@ -1,0 +1,21 @@
+<div class="tab-pane applepay-content js_braintree_applepayContent" id="applepay-content" role="tabpanel" data-paypal-is-hide-continue-button="${false}">
+    <fieldset class="payment-form-fields">
+        <input type="hidden" class="form-control" name="isBraintree" value="true" disabled="disabled" />
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="ApplePay" >
+        <div class="alert alert-info" role="alert">
+            ${Resource.msg('braintree.checkout.applepay.billingaddressinfo', 'locale', null)}
+        </div>
+        <div class="braintree-billingpage-apple-buttons-wrap js_braintree_applepayButtonsWrap">
+            <div class="braintree-billingpage-apple-button-wrap">
+                <div class="braintree-billingpage-apple-button js_braintree_applepay_button" data-braintree-config="${JSON.stringify(pdict.braintree.applePayButtonConfig)}">
+                    <div class="apple-pay-button-with-text apple-pay-button-black-with-text"><span class="text"></span><span class="logo"></span></div>
+                </div>
+                <div class="braintreeApplePayLoader braintree-loader-container">
+                    <i class="braintree-loader"></i>
+                </div>
+        </div>
+        <input type="hidden" id="braintreeApplePayNonce" name="braintreeApplePayNonce"/>
+        <input type="hidden" id="braintreeApplePayBillingAddress" name="braintreeApplePayBillingAddress"/>
+        <input type="hidden" id="braintreeApplePayDeviceData" name="braintreeApplePayDeviceDataInput" value=""/>
+    </fieldset>
+</div>

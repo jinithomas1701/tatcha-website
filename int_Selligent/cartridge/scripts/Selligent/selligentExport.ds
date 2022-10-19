@@ -1,0 +1,223 @@
+/**
+* Demandware Script File
+* This script launch sub-scripts to export products/ abandonedbaskets / customers / orders
+*  @input exportAll : Boolean
+*  @input exportType : String
+*/
+importPackage( dw.system );
+importPackage( dw.io );
+importPackage( dw.util );
+importPackage( dw.catalog );
+importPackage( dw.customer );
+importScript("Selligent/selligentExportCustomers.ds");
+importScript("Selligent/selligentExportProducts.ds");
+importScript("Selligent/selligentExportOrders.ds");
+importScript("Selligent/selligentExportAbandonedBasket.ds");
+
+/**
+* Main function of the script.
+*
+* @param {PipelineDictionary} pdict contains the exportType parameter and the boolean for incremental/full export 
+*/
+function execute( args : PipelineDictionary ) : Number
+{
+	try
+	{
+		var lastExportDate : Date;
+		var currentDt : Date;
+		var currentDate : String = "";
+		var exportFileName : String = "";
+		
+		clearLogError(args.exportType);
+    	createSelligentDirectory(args.exportType);
+    	lastExportDate = getLastExportDate(args.exportType, args.exportAll);
+    	currentDt = new Date();
+    	currentDate = StringUtils.formatNumber(currentDt.getFullYear(), "0000") + "-" + StringUtils.formatNumber(currentDt.getMonth() + 1, "00") + "-" + StringUtils.formatNumber(currentDt.getDate(), "00") + "-" + StringUtils.formatNumber(currentDt.getHours(), "00") + "-" + StringUtils.formatNumber(currentDt.getMinutes(), "00") + "-" + StringUtils.formatNumber(currentDt.getSeconds(), "");
+		exportFileName = getExportFileName(args.exportType, currentDate);
+		if(args.exportType == "product")
+		{
+			if(exportProducts(exportFileName, lastExportDate))
+				updateExportDate(args.exportType,currentDate);
+		}
+		if(args.exportType == "abandonedbasket")
+		{
+			if(exportAbandonedBaskets(exportFileName, lastExportDate))
+				updateExportDate(args.exportType,currentDate);
+		}
+		if(args.exportType == "customer")
+		{
+			if(exportCustomers(exportFileName, lastExportDate))
+				updateExportDate(args.exportType,currentDate);
+		}
+		if(args.exportType == "order")
+		{
+			if(exportOrders(exportFileName, lastExportDate))
+				updateExportDate(args.exportType,currentDate);
+		}
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to complete " + args.exportType + " export: " + e.message);	
+		exportErrorFile = new File(File.IMPEX + "/log/" + args.exportType + "_exportError.json"); 		 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		return PIPELET_ERROR;
+	}
+   return PIPELET_NEXT;
+}
+
+/**
+* clear log file error
+*
+* @param {String} the export type
+*/
+function clearLogError(exportType : String)
+{
+	try
+	{
+		var exportErrorFile : File = new File(File.IMPEX + "/log/" + exportType + "_exportError.json");  
+		if (exportErrorFile.exists())
+		{
+			exportErrorFile.remove();
+		}
+	}
+	catch(e) 
+	{
+		Logger.error("Unable to delete product error log: "+e.message);
+	} 
+}
+
+/**
+* Create Selligent subdirectory in the DW IMPEX folder
+*
+* @param {String} the export type
+*/
+function createSelligentDirectory(exportType : String)
+{
+	try
+	{
+		var exportDirectory : File = new File(File.IMPEX + "/Selligent"); 
+		if (!exportDirectory.exists())
+			exportDirectory.mkdir();
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;		
+		Logger.error("Unable to create Selligent Directory: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/" + exportType + "_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	} 
+}
+
+/**
+* Return the last export date by export type to provide incremental export
+*
+* @param {String} the export type
+* @param {Boolean} full/incremental
+* @returns the last export date
+*/
+function getLastExportDate(exportType : String, exportAll : Boolean) : Date
+{
+	try
+	{
+		var lastExportDate : Date = new Date(0);
+		if(exportAll)
+		{
+			var selligentFolder : File = new File(File.IMPEX + "/Selligent");
+			var existingExportFiles : List = selligentFolder.listFiles();
+			var exportFile : File;
+			if (existingExportFiles != null)
+			{
+				for each(exportFile in existingExportFiles)
+				{
+					if(String.indexOf(exportFile.getName(),exportType + "export") == 0 && String.indexOf(exportFile.getName(),".json") > 0)
+					{					
+						if (!exportFile.remove())
+					 		Logger.error("Unable to delete file: "+ exportFile.getFullPath());
+					}						
+				}
+			}
+		}
+		else
+		{
+			var importFile : File = new File(File.IMPEX + "/Selligent/" + exportType + "exportdates.json");
+			if (importFile.exists())
+			{
+				var reader : FileReader = new FileReader(importFile);
+				var lastExportDates : Array = reader.readLines();	 	 
+				reader.close();
+				if (lastExportDates.length > 0)
+				{
+					var lastExportsplit : Array = lastExportDates[lastExportDates.length - 1].split('-');
+					var month = Number(lastExportsplit[1]) - 1;
+			 		lastExportDate = new Date(lastExportsplit[0], month ,lastExportsplit[2], lastExportsplit[3], lastExportsplit[4], lastExportsplit[5] );
+			 	}
+			}
+		}
+		return lastExportDate;
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to get last export date: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/" + exportType + "_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	} 
+}
+
+/**
+* Return the export file name based on the export type and the current date
+*
+* @param {String} the export type
+* @param {String} the current date
+* @returns the file name
+*/
+function getExportFileName(exportType : string, currentDate : String) : String
+{
+	var currentDateParts : Array = currentDate.split('-');
+	var exportFileName : String = currentDateParts[0] + currentDateParts[1] + currentDateParts[2] + currentDateParts[3] + currentDateParts[4] + currentDateParts[5];
+	return exportType + "_export" + exportFileName;     
+}
+
+/**
+* Set the last export date for an export type
+*
+* @param {String} the export type
+* @param {String} the current date
+*/
+function updateExportDate(exportType : String, currentDate : String)
+{
+	var writerDate : FileWriter;
+	try
+	{
+		var exportFileDates : File = new File(File.IMPEX + "/Selligent/" + exportType + "exportdates.json");
+		writerDate = new FileWriter(exportFileDates, true);
+		writerDate.writeLine(currentDate);
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to update date file: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/" + exportType + "_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+	finally 
+	{
+		if (writerDate) writerDate.close();
+	} 
+}

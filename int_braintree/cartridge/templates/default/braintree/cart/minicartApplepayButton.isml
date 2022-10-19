@@ -1,0 +1,66 @@
+<!--- TEMPLATENAME: minicartApplepayButton.isml --->
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+    if(Site.getCurrent().getCustomPreferenceValue('SorEnabled')){
+        var HasSORProducts = session.custom.hasSORProducts;
+    }
+    var basket = pdict.Basket;
+    var productLineItems = basket.object.productLineItems;
+    var hasOnlyGiftCertificate = false;
+    if (productLineItems.length === 0 && basket.object.giftCertificateLineItems && basket.object.giftCertificateLineItems.length > 0) {
+        hasOnlyGiftCertificate = true;
+    }
+</isscript>
+
+<isif condition="${HasSORProducts != true}">
+    <isif condition="${!request.custom.braintreeClientToken}">
+        <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+    </isif>
+    <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('BRAINTREE_APPLEPAY_Visibility_Button_On_MiniCart')}" >
+        <isscript>
+            try {
+                if (!hasOnlyGiftCertificate) {
+                    BraintreeHelper.addDefaultShipping(pdict.Basket);
+                }
+            } catch (e) {
+            }
+            var amount = BraintreeHelper.getAmount(pdict.Basket);
+
+            //session.custom.NoCall = false;
+            var app = require('app_storefront_controllers/cartridge/scripts/app');
+            var cartModel = app.getModel('Cart').get();
+            var balanceAmount = cartModel.getNonGiftCertificateAmount();
+
+            var applePayButtonConfig = {
+                paymentMethodName: prefs.applePayMethodName,
+                clientToken: request.custom.braintreeClientToken,
+                messages: {
+                    CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+                    CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+                    CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+                    CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null)
+                },
+                returnUrl: URLUtils.url('Braintree-AppleCheckoutFromCart', 'fromCart', 'true').toString(),
+                options: {
+                    amount: parseFloat(balanceAmount.getValue()),
+                    currency: balanceAmount.getCurrencyCode(),
+                    displayName: prefs.BRAINTREE_APPLEPAY_Display_Name
+                },
+                /*customFields: {
+                    field_2: 'client_value'
+                },*/
+            }
+
+        </isscript>
+
+        <div class="braintree-cart-apple-buttons-wrap js_braintree_applepayButtonsWrap">
+            <div class="braintree-cart-apple-button-wrap">
+                <div class="braintree-cart-apple-button js_braintree_applepay_button apple-pay-button apple-pay-button-black btn-block btn-alt-pay" data-braintree-config="${JSON.stringify(applePayButtonConfig)}">
+                </div>
+            </div>
+        </div>
+        <div class="applepayoverlay" >
+        </div>
+    </isif>
+</isif>

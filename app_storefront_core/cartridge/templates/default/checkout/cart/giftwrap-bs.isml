@@ -1,0 +1,84 @@
+<!--- TEMPLATENAME: giftwrap.isml --->
+<isscript>
+	importScript("cart/CartUtils.ds");
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	var Tatcha = require('~/cartridge/scripts/util/Tatcha');
+	var hasGiftWrap = CartUtils.checkCartHasGiftWrap(pdict.Basket);
+	var defaultShipment = pdict.Basket.getDefaultShipment();
+	var hasGiftMessage = defaultShipment.gift;
+	var giftMessage = !empty(defaultShipment.giftMessage) ? defaultShipment.giftMessage : '';
+	var giftFrom = !empty(defaultShipment.custom.giftFrom) ? defaultShipment.custom.giftFrom : '';
+	var giftTo = !empty(defaultShipment.custom.giftTo) ? defaultShipment.custom.giftTo : '';
+	var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+	var giftMsgLength = Site.getCurrent().getCustomPreferenceValue('GiftMsgLen');
+	var giftWrapDesc = Site.getCurrent().getCustomPreferenceValue('Giftwrapdescription');
+	var giftproduct = dw.catalog.ProductMgr.getProduct(giftWrapId);
+	var giftpricemodel = giftproduct.getPriceModel();
+	var giftprice = giftpricemodel.getPrice();
+    var scope = 'cart';
+    if(session.clickStream && session.clickStream.last.pipelineName == 'COShipping-Start') {
+    	scope = 'shipping';
+    }
+    var giftwrapEligibility = Tatcha.giftWrapEligibility();
+	var giftmsg = pdict.Basket.getDefaultShipment().getGiftMessage();
+</isscript>
+<div class ="checkout-gift-block" id="bag-gift-block">
+	<a href="${URLUtils.url('Cart-AddGiftWrap','scope', scope)}" id="add-giftwrap-button" style="display: none">Add gift Wrap</a>
+	<a href="${URLUtils.url('Cart-RemoveGiftWrap','scope', scope)}" id="remove-giftwrap-button" style="display: none">Remove gift Wrap</a>
+<br>
+<iscomment> for GTM </iscomment>
+<input type="hidden" id="giftMsg" value="${giftmsg}">
+<input type="hidden" id="hasGiftWrap" value="${hasGiftWrap}">
+
+	<div class="d-flex flex-row justify-content-between gift-message-add-block-bs">
+		<div class="gift-options">
+			<i class="fal fa-gift"></i>
+			<isprint value="${giftproduct.name}" />
+			
+			<a class="btn btn-link hasGiftMessage" href="#" aria-label="edit tatcha gift options" id="hasGiftMessage-edit" data-toggle="modal" data-target="#giftMessageModal" <isif condition="${!giftmsg && !hasGiftWrap}">style="display:none"</isif>>EDIT</a>
+
+			<a class="btn btn-link hasGiftMessage" href="#" aria-label="add tatcha gift options" id="hasGiftMessage-add" data-toggle="modal" data-target="#giftMessageModal" <isif condition="${giftmsg || hasGiftWrap}">style="display:none"</isif>>ADD</a>
+			
+		</div>
+	</div>
+	
+		<div class="bag-item-detail">
+			<div class="gift-message-block">
+				<div class="gift-message-summary-block border rounded p-2 bag-message mt-2" <isif condition="${!giftmsg}">style="display:none"</isif>>
+					<div class="gift-message gift-message-box pb-2 title d-flex justify-content-between">
+						<span class="data-label">${Resource.msg('checkout.shipment.giftmessage','forms',null)}</span>
+						<a href="${URLUtils.url('Cart-RemoveGiftMessage', 'scope', scope)}" class="gift-message-remove icon-default" id="remove-giftmsg"><i class="fal fa-times float-right"></i></a>
+					</div>
+					<small><em><isprint encoding="on" value="${giftmsg}"/></em></small>
+				</div>
+										
+			</div>
+		</div>
+	
+</div>
+<hr/>
+
+<div class="modal fade modal-primary modal-tatcha-gift-info in" id="giftInfoModal" tabindex="-1" role="dialog" aria-labelledby="modalGiftInfo" style="display: none;">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><svg class="svg-inline--fa fa-times fa-w-12" aria-hidden="true" data-fa-replacement="true" data-prefix="fal" data-icon="times" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M217.5 256l137.2-137.2c4.7-4.7 4.7-12.3 0-17l-8.5-8.5c-4.7-4.7-12.3-4.7-17 0L192 230.5 54.8 93.4c-4.7-4.7-12.3-4.7-17 0l-8.5 8.5c-4.7 4.7-4.7 12.3 0 17L166.5 256 29.4 393.2c-4.7 4.7-4.7 12.3 0 17l8.5 8.5c4.7 4.7 12.3 4.7 17 0L192 281.5l137.2 137.2c4.7 4.7 12.3 4.7 17 0l8.5-8.5c4.7-4.7 4.7-12.3 0-17L217.5 256z"></path></svg><!-- <i class="fal fa-times"></i> --></button>
+				<h4 class="modal-title"><strong>${Resource.msg('checkout.shipment.giftBox','forms',null)}</strong></h4>
+			</div>
+			<div class="modal-body">
+				<p class="text-center">
+                 <isif condition="${giftproduct != null && giftproduct.getImage('large',0) != null}">
+				<isset name="imageUrl" value="${getImageUrl(giftproduct,'medium')}" scope="page"/>
+				<isset name="imageAlt" value="${getImageAlt(giftproduct)}" scope="page"/>
+				<isset name="imageTitle" value="${getImageTitle(giftproduct)}" scope="page"/>
+				<img class="img-responsive product-img" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" />
+			<iselse/>
+				<img class="img-responsive product-img" src="${URLUtils.staticURL('/images/noimagelarge.png')}" alt="${giftproduct.name}" title="${giftproduct.name}" />
+			</isif>					
+				</p>
+				<p><isprint value="${giftproduct.shortDescription}"/></p>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,91 @@
+<div class="gift-options bag-product-item mb-3">
+    <div class="title-text add-coupon py-3 pl-0 bag-item-container hasGiftMessage">
+        <span><i class="fa fa-gift mr-2"></i>
+            <isif condition="${pdict.giftWrapExistsInCart || !empty(pdict.giftMessage)}">
+                    <a href="#javascript" data-toggle="modal" data-target="#giftOptionsModal">Edit Tatcha Gift Options</a>
+                <iselse>
+                    <a href="#javascript" data-toggle="modal" data-target="#giftOptionsModal">Add Tatcha Gift Options</a>
+             </isif>
+        </span>
+    </div>
+    <iscomment> for GTM </iscomment>
+    <input type="hidden" id="giftMsg" value="${pdict.giftMessage}">
+    <input type="hidden" id="hasGiftWrap" value="${pdict.giftWrapExistsInCart}">
+
+    <isif condition="${!empty(pdict.giftMessage)}">
+        <div class="bag-item-detail">
+            <div class="gift-message-block">
+                <div class="gift-message-summary-block border rounded p-2 bag-message mt-2">
+                    <div class="gift-message gift-message-box pb-2 title d-flex justify-content-between text-capitalize">
+                        <span class="data-label">Your Message</span>
+                        <a href="${URLUtils.url('CartSFRA-removeGiftMessage')}" class="gift-message-remove icon-default" id="remove-giftmsg"><i class="fal fa-times"></i></a>
+                    </div>
+                    <small>
+                        <em>
+                            ${pdict.giftMessage}
+                        </em>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </isif>
+
+    <div class="modal fade gift-options-modal gift-modal modal-tatcha-gift-message" id="giftOptionsModal" tabindex="-1" role="dialog" aria-labelledby="giftOptionModal" aria-hidden="true" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content gift-content">
+                <div class="modal-header">
+                    <h5 class="modal-title gift-title">Tatcha Gift Wrapping</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true"><i class="fal fa-times close-spec"></i></span>
+                    </button>
+                </div>
+                <div class="modal-body container-fluid">
+                    <div class="gift-slot p-3">
+                        <div class="gift-body d-sm-flex align-items-start add-gift-container d-flex">
+                            <img class="product-img img-fluid d-inline-block"
+                                 src="${pdict.giftWrapDetails.giftWrapImageUrl ? pdict.giftWrapDetails.giftWrapImageUrl : URLUtils.staticURL('/images/noimagemedium.png')}"
+                            />
+                            <p class="description">${pdict.giftWrapDetails.giftWrapProduct.shortDescription}
+                            </p>
+                        </div>
+                        <form method="POST" id="giftWrapAndMessage" action="${URLUtils.url('CartSFRA-SaveGiftWrapAndMessage')}">
+                            <div class="mt-2 mb-4">
+                                <isif condition="${pdict.giftWrapExistsInCart}">
+                                        <input type="checkbox" class="gift-toggle" data-eligibility="${pdict.giftwrapEligibility}" name="addGift" checked id="addGift">
+                                    <iselse>
+                                        <input type="checkbox" class="gift-toggle" name="addGift" data-eligibility="${pdict.giftwrapEligibility}" id="addGift">
+                                </isif>
+
+                                <span class="form-check-label" for="addGift">Add gift wrap for this order. ($5.00)</isprint> </span>
+                            </div>
+                            <div id="giftbox-ineligibile-validation" class="giftbox-eligibility" style="display: none;">
+                                <span class="giftbox-circle">
+                                    <i class="fal fa-exclamation-circle"></i>
+                                </span>
+                                <span class="giftbox-msg">The items in your bag are already exquisitely packaged, so they are not eligible for a gift wrapping. The gift wrap will not be added to your order.</span>
+                            </div>
+                            <div id="giftbox-part-eligible-validation" class="giftbox-eligibility" style="display: none;">
+                                <span class="giftbox-circle">
+                                    <i class="fal fa-exclamation-circle"></i>
+                                </span>
+                                <span class="giftbox-msg">Some items in your bag are already exquisitely packaged, so they are not eligible for a gift wrapping. The items that are eligible will be placed in a gift wrap if you choose this option.</span>
+                            </div>
+                            <div class="form-group">
+                                <div class="form-top-label">Enter your Message</div>
+                                <textarea data-character-limit="210" id="giftMessage" class="form-control gift-text-area giftmessage" placeholder="Your Message (optional)"  rows="2" maxlength="${pdict.giftWrapDetails.giftMsgLength}" name="giftMessage" pattern="(?!.*(?:[-]|?[?-?]|?[?-?])).*" autocomplete="disabled" aria-invalid="false"><isprint value="${pdict.giftMessage}"/></textarea>
+                                <label class="text-char-count">You have <span class="char-remain-count"><isprint value="${pdict.giftWrapDetails.giftMsgLength}"></isprint></span> characters left out of <isprint value="${pdict.giftWrapDetails.giftMsgLength}"></isprint></label>
+                            </div>
+                            <div class="form-group mb-0">
+                                <button type="submit" class="btn btn-primary btn-block gift-btn">Save</button>
+                                <button class="btn btn-block btn-link text-primary" data-dismiss="modal">Cancel</button>
+                            </div>
+                            <input type="hidden" name="giftWrapSku" id="giftWrapSku" value="${pdict.giftWrapDetails.giftWrapProduct.ID}" />
+                            <input type="hidden" name="scope" id="scope" value="cart" />
+
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

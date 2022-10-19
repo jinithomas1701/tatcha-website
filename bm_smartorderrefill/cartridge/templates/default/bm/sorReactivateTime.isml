@@ -1,0 +1,48 @@
+<isinclude template="bm/util/sorModules" />
+<isinclude template="components/header" />
+
+<form data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'sid', request.httpParameterMap.sid.stringValue, 'client', request.httpParameterMap.client.stringValue, 'action', 'reactivateSave', 'available', pdict.Available)}"
+        method="post"
+        id="reactivatePeriodForm">
+    <isif condition="${pdict.Available}">
+        <isif condition="${new Date(pdict.RemainingDate) > new Date()}">
+            <div class="sor-filter-checkbox">
+                <input type="radio" id="reactivateRemaining" name="reactiveType"  value="remaining" checked>
+                <label for="reactivateRemaining">${Resource.msgf('forms.sorsubscriptions.reactivate.remainperiod.label','sor_smartorderrefill',null, new Date(pdict.RemainingDate).toDateString())}</label>
+            </div>
+        </isif>
+        <div class="sor-filter-checkbox">
+            <input type="radio" id="reactivateOneYear" name="reactiveType" value="year" >
+            <label for="reactivateOneYear">${Resource.msgf('forms.sorsubscriptions.reactivate.oneyear.label','sor_smartorderrefill',null, new Date(pdict.OneYearDate).toDateString())}</label>
+        </div>
+        <isif condition="${!empty(pdict.PriceChanges)}">
+            <div>
+                <input type="hidden" name="priceChanged" value="${true}">
+                <isprint value="${Resource.msg('smartorderrefill.reactivesubs.pricechange','smartorderrefill',null)}"/>
+                <br>
+                <table class='sor-module__filter_table'>
+                    <thead>
+                        <tr>
+                            <th>
+                                <isprint value="${Resource.msg('smartorderrefill.reactivate.product','smartorderrefill',null)}"/>
+                            </th>
+                            <th>
+                                <isprint value="${Resource.msg('smartorderrefill.reactivate.oldprice','smartorderrefill',null)}"/>
+                            </th>
+                            <th>
+                                <isprint value="${Resource.msg('smartorderrefill.reactivate.newprice','smartorderrefill',null)}"/>
+                            </th>
+                        </tr>
+                    </thead>
+                    <isloop items="${pdict.PriceChanges}" var="product">
+                        <tr>
+                            <td>${product.name}</td>
+                            <td><isprint value="${new dw.value.Money(product.oldPrice, session.getCurrency().getCurrencyCode())}" /></td>
+                            <td><isprint value="${new dw.value.Money(product.newPrice, session.getCurrency().getCurrencyCode())}" /></td>
+                        </tr> 
+                    </isloop>
+                </table>
+            </div>
+        </isif>
+    </isif>
+</form>

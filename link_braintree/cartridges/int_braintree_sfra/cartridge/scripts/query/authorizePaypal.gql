@@ -1,0 +1,11 @@
+mutation AuthorizePayPalAccount($input: AuthorizePayPalAccountInput!) {
+  authorizePayPalAccount(input: $input) {
+    clientMutationId
+    transaction {
+      ...transactionFields
+    }
+    billingAgreementWithPurchasePaymentMethod {
+        ...paymentMethodFields
+    }
+  }
+}

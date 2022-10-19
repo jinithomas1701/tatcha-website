@@ -1,0 +1,174 @@
+<!--- TEMPLATENAME: loginmodal.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules.isml"/>
+<div class="modal fade modal-primary modal-display login-modal-container" id="loginModal" tabindex="-1" aria-modal="true" role="dialog">
+	<div class="modal-dialog modal-logindialog-spec" role="document">
+		<div class="modal-content">
+			<div class="modal-header modal-header-spec">
+				<button type="button" class="close" data-dismiss="modal"
+					aria-label="Close">
+					<i class="fal fa-times close-spec"></i>
+				</button>
+				<h4 class="modal-title modal-title-spec text-center" id="exampleModalLabel" tabindex="0">LOGIN TO TATCHA</h4>
+			</div>
+
+			<div class="modal-body modal-body-spec">
+					<div id="ad-warning" class="border rounded border-warning text-warning p-2 pl-2 pr-2 m-3 text-center" style="display: none;">
+						${Resource.msg('account.login.ad.warning1','account',null)} <br>
+						${Resource.msg('account.login.ad.warning2','account',null)}
+					</div>
+						<iscomment>Login Unsuccessful Error Message</iscomment>
+						<isif condition="${!pdict.CurrentForms.login.loginsucceeded.valid}">
+ 							<div class="alert alert-danger" role="alert"><isprint value="${Resource.msg('account.login.logininclude.loginerror','account',null)}" /></div>
+						</isif>
+						<isscript>
+							var oAuthErrorModalmsg = session.custom.oAuthError;
+						</isscript>
+						<isif condition="${oAuthErrorModalmsg != null}">
+ 							<div class="alert alert-danger" role="alert"><isprint value="${Resource.msgf('account.login.logininclude.oauthloginerror','account','')}" /></div>
+						</isif>
+						<div id="login-modal-error" class="alert alert-danger" style="display: none"></div>
+						<isscript>
+							var browsing = require('app_storefront_controllers/cartridge/scripts/util/Browsing');
+							var originalUrl = browsing.lastUrl().toString();
+							if(originalUrl.indexOf('password-reset') != -1 || originalUrl.indexOf('Account-PasswordResetForm') != -1 || originalUrl.indexOf('setpassword') != -1 || originalUrl.indexOf('Account-RegistrationForm') != -1) {
+								originalUrl = URLUtils.url('Account-Show').toString();
+							}else if(originalUrl.indexOf('Cart-SubmitForm') != -1){
+								originalUrl = URLUtils.url('Cart-Show').toString();
+							}
+							originalUrl = dw.crypto.Encoding.fromURI(originalUrl);
+						</isscript>
+						<form action="${URLUtils.https('Login-HandleLoginModal')}" method="post" id="${pdict.CurrentForms.login.htmlName}" name="${pdict.CurrentForms.login.htmlName}">
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+							<input type="hidden" name="loginUrl" value="${URLUtils.url('Login-Show')}" />
+							<input type="hidden" name="originalUrl" value="${originalUrl}" />
+							<input type="hidden" name="redirectUrl" value="" />
+							<input type="hidden" name="callBackAction" value="" />
+							<input type="hidden" name="pid" value="" />
+							<input type="hidden" name="scope" value="${pdict.scope}" />
+
+							<isscript>
+								var attributes = {
+								     autocomplete: "off",
+									'data-msg-required': Resource.msg('validate.email', 'forms', null)
+								};
+								if(pdict.CurrentForms.login.username.value == null) {
+									pdict.CurrentForms.login.username.setValue('');
+								}
+							</isscript>
+							<div class="form-group position-relative">
+								<input type="email"
+									class="form-control floating__input form-control-spec form-control-lg border border-secondary rounded"
+									id="${pdict.CurrentForms.login.username.htmlName}" aria-describedby=""
+									name="${pdict.CurrentForms.login.username.htmlName}"
+									placeholder=" "
+									aria-label="Email Address" >
+									<label class="float-label" data-content="Email" for="${pdict.CurrentForms.login.username.htmlName}" aria-hidden="true"></label>
+
+							</div>
+							<isscript>
+								var attributes = {
+									autocomplete: "off",
+									'data-msg-required': Resource.msg('validate.password', 'forms', null)
+								};
+							</isscript>
+							<div class="form-group position-relative">
+								<input type="password"
+									autocomplete="off"
+									class="form-control floating__input form-control-spec form-control-lg border border-secondary rounded password_msg"
+									id="${pdict.CurrentForms.login.password.htmlName}" aria-describedby=""
+									name="${pdict.CurrentForms.login.password.htmlName}"
+									placeholder=" "
+									aria-label="Password">
+										<label class="float-label" for="${pdict.CurrentForms.login.password.htmlName}" data-content="Password" aria-hidden="true"></label>
+
+							</div>
+
+							<button type="submit" id="login-btn" value="${Resource.msg('global.login','locale',null)}" class="btn btn-primary btn-block button-spec" name="${pdict.CurrentForms.login.login.htmlName}">
+								<isprint value="${Resource.msg('global.login','locale',null)}" />
+							</button>
+						 	<!-- <div class="form-actions text-center" style="margin: 16px 0;">
+						 		<a href="${URLUtils.https('Account-PasswordReset')}">Forgot Your Password?</a>
+						 	</div> -->
+
+						</form>
+
+						<div class="sr-only" id="wishlist-action-sr" role="status" aria-live="polite" aria-atomic="true"></div>
+
+						<h5 class="form-font-spec w-100 text-center">
+							<a href="${URLUtils.https('AccountSfra-PasswordReset')}">Forgot your password?</a>
+						</h5>
+
+						<isscript>
+							var Site = require('dw/system/Site');
+							var showFBLogin = Site.getCurrent().getCustomPreferenceValue('enableFacebookLogin');
+						</isscript>
+						<isif condition="${showFBLogin === true}">
+							<div class="form-box">
+								<a href="#" class="fb-loginbtn btn btn-facebook btn-outline-info btn-block btn-outline-spec">
+									<i class="fab fa-lg fa-facebook"></i>  Continue with Facebook
+								</a>
+							</div>
+						</isif>
+
+                    	<isscript>
+							var browsing = require('app_storefront_controllers/cartridge/scripts/util/Browsing');
+							var lastUrl = browsing.lastUrl();
+						</isscript>
+						<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('skip_email_gate') && (pdict.scope == 'checkout' || pdict.scope == 'spcheckout') && !session.custom.HasSORProducts && !session.custom.hasSORProducts}">
+							<div class="create-account-link-container">
+								<span>
+									<a class="checkout-guest-link" href="javascript:;" data-url="">Checkout as Guest</a> <br>
+									You'll have a chance to create an account later.
+								</span>
+							</div>
+						<iselse>
+							<div class="create-account-link-container">
+								<span> New to Tatcha?
+									<a class="register-link create-account-link" href="javascript:;" data-url="${URLUtils.https('AccountSfra-StartRegister')}">Create An Account</a>
+								</span>
+							</div>
+						</isif>
+			</div>
+		</div>
+	</div>
+</div>
+
+<iscomment>RDMP-3452:Extole Includes</iscomment>
+<div style="display:none">
+	<iscomment> common extole tags </iscomment>
+	<isinclude template="extole/extoleaccountdropdowntag"/>
+	<isinclude template="extole/extolefootersubscription"/>
+	<isinclude template="extole/extoleglobalnavmobiletag"/>
+	<isinclude template="extole/extolefootertag"/>
+
+	<iscomment> cateogry </iscomment>
+	<isif condition="${pdict.originalUrl.indexOf('/category') > 0}">
+		<isinclude template="extole/extolecategorybannertag"/>
+	</isif>
+
+	<iscomment> product page </iscomment>
+	<isif condition="${pdict.originalUrl.indexOf('product') > 0 || pdict.originalUrl.indexOf('Product-Show') > 0}">
+		<isinclude template="extole/extoleproducttag"/>
+		<isinclude template="extole/extoleproductmobiletag"/>
+	</isif>
+
+	<iscomment> confirmation page </iscomment>
+	<isif condition="${pdict.originalUrl.indexOf('checkout/confirmation') > 0}">
+		<isinclude template="extole/extoleconfirmationtag"/>
+	</isif>
+
+
+	<iscomment> removed  extolepromobannertag, extolepromobannermobiletag and extoleofferslanding</iscomment>
+</div>
+
+<iscomment>RDMP-3452: Resources-LoadTransient</iscomment>
+<script type="text/javascript"><isinclude template="resources/appresources_transient"></script>
+
+<iscomment>RDMP-3452: adding MParticle-RenderMParticleTags call</iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('mParticleEnabled')}">
+	<isinclude template="mParticle/mParticle_tag"/>
+</isif>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_tag"/>
+</isif>

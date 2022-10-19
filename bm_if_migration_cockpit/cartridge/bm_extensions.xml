@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+	<!-- IF Migration Cockpit Menu Entry -->
+	<menuaction id="if_component_wfc2jsconverter" menupath="operations"
+	    position="12000" site="false">
+	    <name xml:lang="x-default">CS Integration Framework Workflow Migration</name>
+	    <short_description xml:lang="x-default">Transformation of WorkflowComponentDefinitions into JobStepsJSON</short_description>
+	    <description xml:lang="x-default">Transformation of integration framework (community suite) workflow components into job steps needed for the platform framework. The purpose is to simpify the migration to the new framework</description>
+	    <!-- no icon specified -->
+	    <exec pipeline="JobMigration" node="Start" />
+	    <sub-pipelines>
+	        <pipeline name="JobMigration-Start" />
+	        <pipeline name="WFC2JSConverter-Start" />
+	        <pipeline name="WFS2XMLConverter-Start" />
+	    </sub-pipelines>
+	    <parameters>
+	        <parameter name="menuname" value="IF Component Converter"/>
+	        <parameter name="mainmenuname" value="global_operations" />
+	    </parameters>
+	    <icon>icons/rentention-ico.png</icon>
+	</menuaction>    
+</extensions>

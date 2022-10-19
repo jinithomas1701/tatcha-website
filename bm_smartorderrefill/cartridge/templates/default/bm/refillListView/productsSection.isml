@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="order-section oreplen-product-list last products-section visualy-hidden">
+    <isset name="total" value="${0}" scope="page" />
+    <table class="sor-module sor-module__subscription_table">
+        <isinclude template="bm/refillListView/productHeader"  /> 
+        <isloop items="${pdict.ProductList.products}" var="listItem">
+            <isinclude template="bm/refillListView/productRow"  />
+        </isloop>
+    </table>
+    
+    <div id="addProductbtn" class="productAddbtn">
+        <isif condition="${pdict.preferences.SorToAddProduct && pdict.isSubscription}">
+            <span data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList','sid', request.httpParameterMap.sid.stringValue,'client', pdict.ProductList.customerNo,'action','addProductToBM')}" class="btn btn-primary btnadd"><isprint value="${Resource.msg('smartorderrefill.addProduct.text', 'smartorderrefill', null)}" encoding="htmlcontent"/></span>
+        </isif>
+    </div>
+</div>

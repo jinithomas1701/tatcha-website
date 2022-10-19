@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+
+	<!-- =============================================================== -->
+	<!-- ==                                                           == -->
+	<!-- ==  ADMINISTRATION MENU EXTENSIONS                           == -->
+	<!-- ==                                                           == -->
+	<!-- =============================================================== -->
+	<!--
+	A custom menu item in the Administration section
+-->
+	<menuitem id="avatax_adminmenuextension_id101" position="99999" site="true">
+		<name xml:lang="x-default">AvaTax</name>
+		<short_description xml:lang="x-default">
+	  Avalara taxation service
+		</short_description>
+		<description xml:lang="x-default">
+  	Avalara AvaTax connects to the software that you already own and dynamically delivers sales tax decisions based on precise geo-location in more than 10,000 taxing jurisdictions in the U.S.
+		</description>
+		<icon>icons/avalara.png</icon>
+	</menuitem>
+
+
+	<menuaction id="avatax_reconcilesubmenu_id03" menupath="avatax_adminmenuextension_id101" position="100" site="true">
+		<name xml:lang="x-default">Reconcile Orders</name>
+		<short_description xml:lang="x-default">
+	  Reconcile orders against transactions on Avalara admin console
+		</short_description>
+		<description xml:lang="x-default">
+	 		Reconcile your transactions to rectify the discrepancies in AvaTax and your accounting software data.
+		</description>
+		<!-- no icon specified -->
+		<exec pipeline="AvataxBM" node="Start"/>
+		<sub-pipelines>
+			<pipeline name="AvataxBM-Start" />
+			<pipeline name="AvataxBM-GetOrders" />
+			<pipeline name="AvataxBM-Reconcile" />
+			<pipeline name="AvataxBM-GetSiteInfoAJAX" />
+		</sub-pipelines>
+		<parameters>
+			<parameter name="menuname" value="Reconcile Orders"/>
+			<parameter name="mainmenuname" value="Avatax"/>
+		</parameters>
+		<icon>icons/data_replication_ico.gif</icon>
+	</menuaction>
+
+
+	<menuaction id="avatax_reconcilesubmenu_id04" menupath="avatax_adminmenuextension_id101" position="100" site="true">
+		<name xml:lang="x-default">AvaTax Settings</name>
+		<short_description xml:lang="x-default">
+	  		Configure AvaTax and other settings
+		</short_description>
+		<description xml:lang="x-default">
+	 		A place for all configurations related to AvaTax for all sites on this Business Manager.
+		</description>
+		<!-- no icon specified -->
+		<exec pipeline="AVSettings" node="Start"/>
+		<sub-pipelines>
+			<pipeline name="AVSettings-Start" />
+			<pipeline name="AVSettings-Save" />
+			<pipeline name="AVSettings-Test" />
+			<pipeline name="AVSettings-Void" />
+			<pipeline name="AVSettings-Commit" />
+			<pipeline name="AVSettings-Validate" />
+		</sub-pipelines>
+		<parameters>
+			<parameter name="menuname" value="AvaTax Settings"/>
+			<parameter name="mainmenuname" value="Avatax"/>
+		</parameters>
+		<icon>icons/toolkit_ico.gif</icon>
+	</menuaction>
+
+	<menuaction id="avatax_reconcilesubmenu_id05" menupath="avatax_adminmenuextension_id101" position="100" site="true">
+		<name xml:lang="x-default">AvaTax Help</name>
+		<short_description xml:lang="x-default">
+	  		A guide for anything and eveything related to AvaTax services
+		</short_description>
+		<description xml:lang="x-default">
+	 		A guide for anything and eveything related to AvaTax services
+		</description>
+		<!-- no icon specified -->
+		<exec pipeline="AVHelp" node="Start"/>
+		<sub-pipelines>
+			<pipeline name="AVHelp-Start" />
+
+		</sub-pipelines>
+		<parameters>
+			<parameter name="menuname" value="AvaTax Help"/>
+			<parameter name="mainmenuname" value="Avatax"/>
+		</parameters>
+		<icon>icons/operations_ico.gif</icon>
+	</menuaction>
+
+
+</extensions>

@@ -1,0 +1,13 @@
+<isif condition="${pdict.braintree.applePayButtonConfig}" >
+    <div class="braintree-cart-apple-buttons-wrap js_braintree_applepayButtonsWrap minicart-payment-btn-common d-lg-none">
+            <div class="braintree-cart-apple-button js_braintree_applepay_button btn-block" data-braintree-config="${JSON.stringify(pdict.braintree.applePayButtonConfig)}">
+                <div class="apple-pay-button apple-pay-button-black btn-block"><span class="text"></span><span class="logo"></span></div>
+            </div>
+            <div class="braintreeApplePayLoader braintree-loader-container">
+                <i class="braintree-loader"></i>
+            </div>
+        <input type="hidden" id="braintreeApplePayDeviceData" name="braintreeApplePayDeviceDataInput" value=""/>
+        <input type="hidden" name="braintreeApplePayShippingAddress">
+    </div>
+</isif>
+

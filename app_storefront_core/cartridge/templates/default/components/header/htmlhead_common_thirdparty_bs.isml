@@ -1,0 +1,33 @@
+    <iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<iscomment> This template mainly contains different third party includes for the head section of page.</iscomment>
+
+<iscomment>Insert meta tag for the "Google-Verification" feature to verify that you are the owner of this site.</iscomment>
+<isif condition="${'GoogleVerificationTag' in dw.system.Site.current.preferences.custom && dw.system.Site.current.preferences.custom.GoogleVerificationTag!=''}">
+    <meta name="google-site-verification" content="<isprint value="${dw.system.Site.current.preferences.custom.GoogleVerificationTag}"/>" />
+</isif>
+
+<iscomment>Gather device-aware scripts</iscomment>
+<isinclude url="${URLUtils.url('Home-SetLayout')}"/>
+
+<isinclude template="googleoptimize/googleoptimize"/>
+
+<iscomment> mParticle Includes for SDK </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('mParticleEnabled')}">
+    <isinclude template="mParticle/mParticle_includes"/>
+</isif>
+
+<iscomment> rsc Includes for SDK </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_includes"/>
+</isif>
+
+<iscomment>Extole Library</iscomment>
+<isinclude template="extole/core"/>
+<isinclude template="include/datadomeheader"/>
+
+<iscomment> SigniFyd Includes </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('SignifydEnableCartridge')}">
+    <isinclude template="signifyd_device_fingerprint" />
+</isif>
+

@@ -1,0 +1,159 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="lazyLoad" value="${true}" scope="page"/>
+<isscript>
+importScript("int_tatcha_dis:common/GetImageUrl.ds");
+var Site = require('dw/system/Site');
+var samplePromoID = Site.getCurrent().getCustomPreferenceValue('samplePromotionID');
+</isscript>
+<isset name="imagesize" value="${(empty(pdict.CurrentHttpParameterMap.imagesize.stringValue) ? 'medium' : pdict.CurrentHttpParameterMap.imagesize.stringValue)}" scope="page"/>
+<isif condition="${pdict.CurrentHttpParameterMap.lazyLoad.stringValue == 'true' }">
+	<isset name="lazyLoad" value="${false}" scope="page"/>
+</isif>
+
+<iscomment>This template renders a list of bonus products for adding to the minicart.</iscomment>
+<isinclude template="util/modules"/>
+	<isscript>
+		var lidata = {
+			uuid:pdict.BonusDiscountLineItem.UUID,
+			maxItems:pdict.BonusDiscountLineItem.getMaxBonusItems(),
+			itemCount:pdict.BonusDiscountLineItem.getBonusProductLineItems().size(),
+			pageStart: pdict.CurrentHttpParameterMap.pageStart.intValue,
+			bpTotal: pdict.BPTotal,
+			pageSize: pdict.CurrentHttpParameterMap.pageSize.intValue
+		};
+	</isscript>
+	<div id="bonus-product-list-options" data-options='<isprint value="${JSON.stringify(lidata)}" encoding="off"/>'></div>
+
+	<div class="ajax-loader">
+            <img src="${URLUtils.staticURL('/images/loading-progress-98x22.gif')}" class="loader-img">
+     </div>
+	<div class="samples-content">
+		<div class="samples-title">
+			<i tabindex="0" aria-label="back button" class="fal fa-angle-double-left"></i> <h2 tabindex="0"><isprint value="${pdict.BonusDiscountLineItem.getPromotion().getName()}" encoding="off"/></h2>
+		</div>
+		<div class="sample-products">
+		<div class="row no-gutters row-no-gutters">
+
+			<isif condition="${(pdict.BonusDiscountLineItem.bonusProducts && pdict.BonusDiscountProducts) && (pdict.BonusDiscountLineItem.bonusProducts.size() == 1 || pdict.BonusDiscountProducts.size() == 1)}"><!-- one item --></isif>
+			<isset name="BonusProductsCollection" value="${pdict.BonusDiscountLineItem.bonusProducts.size() > 0 ? pdict.BonusDiscountLineItem.bonusProducts : pdict.BonusDiscountProducts}" scope="page">
+			<isscript>
+			  var sampleProductCounter = 1;
+			  var bonusProductsList = [];
+			  for each (bonusProductItem in BonusProductsCollection) {
+			  	var bonusItem = !empty(bonusProductItem.variationModel) ? bonusProductItem : bonusProductItem.variationModel.defaultVariant;
+			  	if(bonusItem.getAvailabilityModel().isOrderable() && bonusItem.getAvailabilityModel().isInStock()) {
+			  		bonusProductsList.push(bonusItem);
+			  	}
+			  }
+			  var bonusCollection : dw.util.Collection = new dw.util.ArrayList(bonusProductsList);
+			</isscript>
+			<isif condition="${bonusCollection.size() > 0}">
+			<isloop items="${bonusCollection}" var="LoopProductHit" status="loopstate">
+				<isset name="hasDefaultVariant" value="${!empty(LoopProductHit.variationModel)}" scope="page"/>
+				<isset name="Product" value="${hasDefaultVariant ? LoopProductHit : LoopProductHit.variationModel.defaultVariant}" scope="pdict"/>
+				<isscript>
+					var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+					var productType = ProductUtils.getProductType(pdict.Product);
+				</isscript>
+				<div class="col-12 col-sm-4 col-md-4">
+					<isif condition="${pdict.Product != null && pdict.Product.getImage('large',0) != null}">
+						<isif condition="${!empty(imagesize)}">
+							<isset name="imageUrl" value="${getImageUrl(pdict.Product, imagesize,'0','false','pdp')}" scope="page"/>
+						<iselse>
+							<isset name="imageUrl" value="${getImageUrl(pdict.Product,'medium','0','false','pdp')}" scope="page"/>
+						</isif>
+						<isset name="imageAlt" value="${getImageAlt(pdict.Product)}" scope="page"/>
+						<isset name="imageTitle" value="${getImageTitle(pdict.Product)}" scope="page"/>
+					<iselse/>
+						<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+						<isset name="imageAlt" value="${pdict.Product.name}" scope="page"/>
+						<isset name="imageTitle" value="${pdict.Product.name}" scope="page"/>
+					</isif>
+
+
+					<isscript>
+						var productID = !empty(pdict.Product) ? pdict.Product.ID : '';
+						var options = {
+							'product': {
+								'pid': productID,
+								'productUUID': pdict.Product.UUID,
+								'bonusDiscountLineItemUUID': pdict.BonusDiscountLineItem.UUID,
+								'Quantity': Number(empty(pdict.CurrentHttpParameterMap.Quantity.stringValue) ? 1 : pdict.CurrentHttpParameterMap.Quantity.stringValue).toFixed()
+							}
+						};
+
+					    var avm = pdict.Product.availabilityModel;
+					    var disableAttr = '';
+					    if (!(avm.availabilityStatus === dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK && avm.inventoryRecord != null && (avm.inventoryRecord.stockLevel.available || avm.inventoryRecord.perpetual))) {
+					        disableAttr = 'disabled="disabled"';
+					    }
+
+					    var listItems = pdict.BonusDiscountLineItem.getBonusProductLineItems();
+						var isSelected = null;
+						for(var i = 0; i < listItems.length; i++) {
+							if(listItems[i].product.ID == productID) {
+								isSelected = true;
+							}
+						}
+					</isscript>
+
+					<div class="product-slot desktop free-sample-desktop" id="${'item-'+pdict.Product.UUID}" data-producttype="${productType}">
+						<div class="product-img-block">
+							<img class="img-fluid img-responsive product-img" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}">
+						</div>
+						<h3 class="product-name free-sample-products"> <isprint value="${pdict.Product.name.substring(0,48)}"/>
+						<isif condition="${pdict.Product.custom.secondaryName}">
+							<span class="product-subtitle secondary-name-subtitle"> <isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/> </span>
+					</isif>
+					<isif condition="${pdict.Product.shortDescription}">
+					  		<span class="product-subtitle"><isprint value="${pdict.Product.shortDescription.toString().substring(0,145)}"/></span>
+					  </isif>
+						</h3>
+						<div class="product-select" class="btn-group-toggle" data-toggle="buttons">
+							<button  aria-label="${isSelected?'selected':'add'}" data-pid='${productID}' data-options='<isprint value="${JSON.stringify(options)}" encoding="off" />' class='select-minicart-bonus-item btn btn-outline-dark btn-promo-select btn-sm col-form-label <isif condition="${isSelected}">active active-btn</isif>' ${disableAttr}>
+								<isif condition="${isSelected}">
+									<span class="btn-status">Selected</span>
+								<iselse/>
+									<span class="btn-status">Add</span>
+								</isif>
+							</button>
+						</div>
+					</div>
+
+					<div class="product-slot mobile free-sample-mobile" id="${'item-mob-'+pdict.Product.UUID}" data-producttype="${productType}">
+						<div class="product-img-block">
+							<img class="img-fluid img-responsive product-img" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}">
+
+						</div>
+						<div class="sample-product-details">
+							<h3 class="product-name free-sample-products"> <isprint value="${pdict.Product.name.substring(0,48)}"/>
+							<isif condition="${pdict.Product.custom.secondaryName}">
+								<span class="product-subtitle secondary-name-subtitle"><isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/></span>
+						</isif>
+						<isif condition="${pdict.Product.shortDescription}">
+					  		<span class="product-subtitle"><isprint value="${pdict.Product.shortDescription.toString().substring(0,145)}"/></span>
+					  	</isif>
+							</h3>
+							<div class="product-select" class="btn-group-toggle" data-toggle="buttons">
+								<button aria-label="${isSelected?'selected':'add'}" data-pid='${productID}' data-options='<isprint value="${JSON.stringify(options)}" encoding="off" />' class='select-minicart-bonus-item btn btn-outline-dark btn-promo-select btn-sm col-form-label <isif condition="${isSelected}">active active-btn</isif>' ${disableAttr}>
+									<isif condition="${isSelected}">
+										<span class="btn-status">Selected</span>
+									<iselse/>
+										<span class="btn-status">Add</span>
+									</isif>
+								</button>
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</isloop>
+			</isif>
+		</div>
+		</div>
+		<div class="samples-action" data-url="${URLUtils.url('Cart-AddBonusProduct', 'bonusDiscountLineItemUUID', pdict.BonusDiscountLineItem.UUID)}">
+			<span class="product-count"><isprint value="${lidata.itemCount}" />/<isprint value="${lidata.maxItems}" /> selected</span>
+			<button class="btn btn-primary gtm-samples-action">Done</button>
+		</div>
+		</div>
+

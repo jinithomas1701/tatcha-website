@@ -1,0 +1,41 @@
+<iscomment>It displays the rating for current product on category/search pge. 
+Session variables used in this template are declared in yotpobottomlineheader.isml</iscomment>
+<iscontent type="text/html" />
+<isscript>
+	var YotpoUtils = require('int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+	var currentLocaleID = YotpoUtils.getCurrentLocale(request);
+	var yotpoAppKey = YotpoUtils.getAppKeyForCurrentLocale(currentLocaleID);
+	var isBottomLineEnabled = YotpoUtils.isBottomLineEnabledForCurrentLocale(currentLocaleID);
+	var productInformationFromMaster = dw.system.Site.getCurrent().preferences.custom.producInformationFromMaster;
+</isscript>
+
+<isif condition="${dw.system.Site.getCurrent().preferences.custom.yotpoCartridgeEnabled}">
+	<isif condition="${!empty(pdict.product)}">
+		<div id="yotpoProductDiv" data-yotpo-pid="${pdict.product.id}" style="display:none;"> </div>
+		<isscript>
+			var productAvgRating = pdict.product.yotpoAggregateRating;
+			var productID = pdict.product.isVariantProduct ? pdict.product.masterProductID : pdict.product.id;
+		</isscript>
+		<isif condition="${empty(productAvgRating)}">
+			<div class="yotpo bottomline">
+				<div class="yotpo-bottomline pull-left  star-clickable">
+				   <span class="yotpo-stars">
+					 <span class="yotpo-icon yotpo-icon-empty-star pull-left" style="color: #4d186e;"></span>
+					 <span class="yotpo-icon yotpo-icon-empty-star pull-left" style="color: #4d186e;"></span>
+					 <span class="yotpo-icon yotpo-icon-empty-star pull-left" style="color: #4d186e;"></span>
+					 <span class="yotpo-icon yotpo-icon-empty-star pull-left" style="color: #4d186e;"></span>
+					 <span class="yotpo-icon yotpo-icon-empty-star pull-left" style="color: #4d186e;"></span>
+				   </span>
+					<span class="text-m" style="color: #4d186e;">0 Reviews</span>
+					<div class="yotpo-clr"></div>
+				</div>
+			</div>
+		<iselse>
+			<div id="yotpo-bottomline-top-div" class="yotpo bottomLine"
+				 data-appkey="${session.custom.yotpoAppKey}"
+				 data-product-id="${productID}">
+			</div>
+		</isif>
+
+	</isif>
+</isif>

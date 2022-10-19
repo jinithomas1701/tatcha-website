@@ -1,0 +1,128 @@
+<!--- TEMPLATENAME: osf_smartorderrefill_report.isml --->
+<isdecorate template="application/MenuFrame">
+<iscomment>
+Property of OSF Global Services, Inc., (widiv its brand OSF Commerce). OSF remains dive sole owner of all right, title and interest in dive software.
+Do not copy, sell, reverse engineer or odiverwise attempt to derive or obtain information about dive functioning, manufacture or operation diverein.
+</iscomment>
+<isinclude template="bm/util/sorModules" />
+<isinclude template="components/header" />
+
+<div class="page-container">
+    <isinclude template="bm/sorMainMenu" />
+
+    <form action="${dw.web.URLUtils.https('SmartOrderRefillReport-HandleSubscriptionFormFilter')}" method="post" class="sor-admin" id="subscription-summary">
+        <div class='sor-filter__container flex'>
+            <div class="sor-filter__row">
+                <div class="sor-filter-input">
+                    <fieldset id="date_from">
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.reportDateStart}" type="input" rowclass="datepickerFrom" autocomplete="off" >
+                    </fieldset>
+                </div>
+                <div class="sor-filter-input">
+                    <fieldset id="date_to">
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.reportDateEnd}" type="input" rowclass="datepickerTo" autocomplete="off">
+                    </fieldset>
+                </div>
+                <div class="sor-filter-input text-input">
+                    <fieldset>
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.customerEmail}" type="input">
+                    </fieldset>
+                </div>
+                <div class="sor-filter-buttons">
+                    <button type="submit" value="filter" name="${pdict.CurrentForms.osfsorreport.filter.htmlName}"
+                        class='button blue'>${Resource.msg('forms.sorsubscriptions.sorFilter.label', 'sor_forms', null)}</button>
+                    <button type="submit" value="export" name="${pdict.CurrentForms.osfsorreport.export.htmlName}"
+                        class='button blue'>${Resource.msg('forms.sorsubscriptions.sorExport.label', 'sor_forms', null)}</button> 
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <isif condition="${pdict.productCount.size() > 0}">
+        <div class='report_q_container'>
+            <div class="button-container">
+                <button class="toggle-visibility" type="submit" value="filter" name="${pdict.CurrentForms.osfsorreport.filter.htmlName}">Toggle</button>
+            </div>
+            <div class="report_q_div toggle-off">
+                <isloop items="${pdict.productCount.keySet()}" var="productKey">
+                    <div>
+                        <div>
+                            <isprint value="${dw.catalog.ProductMgr.getProduct(productKey).getName()}">
+                        </div>
+                        <div>
+                            <isprint value="${productKey}">
+                        </div>
+                        <div>
+                            <isprint value="${pdict.productCount.get(productKey)}" style="INTEGER">
+                        </div>
+                    </div>
+                </isloop>
+            </div>
+        </div>
+        <isset name="div_class" value="report_div_bottom_container" scope="page">
+    <iselse>
+        <isset name="div_class" value="report_div_container" scope="page">
+    </isif>
+
+    <isif condition="${!pdict.subscriptionPagingModel.empty}">
+        <div class="sor-filter-table__container flex">
+            <div class="sor-filter-table">
+                <div class="sor-filter-table__row-header">
+                    <div class="sor-filter-table__id">${Resource.msg('report.tableheader.subscriptionid', 'sor_smartorderrefill', null)}</div>
+                    <div class="sor-filter-table__customer">${Resource.msg('report.tableheader.customer', 'sor_smartorderrefill', null)}</div>
+                    <div class="sor-filter-table__valid-until">${Resource.msg('report.tableheader.validuntil', 'sor_smartorderrefill', null)}</div>
+                    <div class="sor-filter-table__status">${Resource.msg('report.tableheader.status', 'sor_smartorderrefill', null)}</div>
+                    <div class="sor-filter-table__items">                            
+                        <div class="sor-filter-table__items-id">
+                            ${Resource.msg('report.tableheader.productid','sor_smartorderrefill',null)}
+                        </div>
+                        <div class="sor-filter-table__items-name">
+                            ${Resource.msg('report.tableheader.productname','sor_smartorderrefill',null)}    
+                        </div>
+                    </div>
+                </div>
+                <isloop items="${pdict.subscriptionPagingModel.getPageElements()}" var="subscription" status="subscriptionloopstate">
+                    <div class='sor-filter-table__row subscriptionSummary' data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'action', 'view', 'sid', subscription.ID, 'client', subscription.customerNo,
+                                        'viewType', 'subscription', 'sorType', subscription.type)}">
+
+
+                        <div class="sor-filter-table__id">
+                            <isprint value="${subscription.ID}">
+                        </div>
+                        <div class="sor-filter-table__customer">
+                            <isprint value="${dw.customer.CustomerMgr.getCustomerByCustomerNumber(subscription.customerNo).getProfile().getEmail()}">
+                        </div>
+                        <div class="sor-filter-table__valid-until">
+                            <isprint value="${new Date(subscription.validUntil).toISOString().slice(0,10);}">
+                        </div>
+                        <div class="sor-filter-table__status">
+                            <isprint value="${subscription.status}">
+                        </div>
+                        <div class="sor-filter-table__items">
+                            <isloop items="${subscription.products}" var="productItem">
+                                <div class="sor-filter-table__items-wrap">
+                                    <div class="sor-filter-table__items-id">
+                                        <isprint value="${productItem.ID}">
+                                    </div>
+                                    <div class="sor-filter-table__items-name">
+                                        <isprint value="${dw.catalog.ProductMgr.getProduct(productItem.ID).getName()}">(<isprint
+                                                value="${productItem.quantity}">)
+                                    </div>
+                                </div>
+                            </isloop>
+                        </div>
+                    </div>
+                </isloop>
+            </div>
+            <div class="sor-filter-table__footer subscription-pagination">
+                <isreportspagingbar pageurl="${URLUtils.https('SmartOrderRefillReport-HandleSubscriptionPagination')}"
+                    pagingmodel="${pdict.subscriptionPagingModel}" />
+            </div>
+            
+        </div>
+    </isif>
+</div>
+
+</isdecorate>
+
+<isinclude template="components/footer" />

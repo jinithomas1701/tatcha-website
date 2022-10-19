@@ -1,0 +1,21 @@
+{
+  "name": "HTML Block (Dev Only)",
+  "description": "Shows rich text for text pages, such as help or FAQ pages",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "textcontent",
+      "name": "Text Content",
+      "description": "The content to show in this component",
+      "attribute_definitions": [
+        {
+          "id": "html",
+          "name": "Content",
+          "type": "text",
+          "required": false
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

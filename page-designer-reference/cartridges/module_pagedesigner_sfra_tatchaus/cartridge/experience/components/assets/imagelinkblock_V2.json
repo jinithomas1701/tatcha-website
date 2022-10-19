@@ -1,0 +1,222 @@
+{
+  "name": "Three Up Image Block",
+  "description": "Image link block section",
+  "group": "assets",
+  "attribute_definition_groups": [
+  	{
+  		"id": "featureset1",
+      	"name": "Block 1 Content",
+      	"description": "Block 1 content",
+      	"attribute_definitions": [
+	        {
+	          "id": "set1desktopimage",
+	          "name": "Desktop Background Image",
+	          "type": "image",
+	          "required": true
+	        },
+	        {
+	          "id": "set1mobileimage",
+	          "name": "Mobile Background Image",
+	          "type": "image",
+	          "required": true
+	        },
+	        {
+	          "id": "set1imageAlt",
+	          "name": "Image Alt Text",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set1heading",
+	          "name": "Block1 Heading",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set1linktext",
+	          "name": "Link Text",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set1linkurl",
+	          "name": "Link URL",
+	          "type": "url",
+	          "required": true
+	        },
+	        {
+	          "id": "set1ctaarialabel",
+	          "name": "Aria Label",
+	          "type": "string",
+	          "required": true
+	        }
+        ]
+  	},
+  	{
+  		"id": "featureset2",
+      	"name": "Block 2 Content",
+      	"description": "Block 2 content",
+      	"attribute_definitions": [
+	        {
+	          "id": "set2desktopimage",
+	          "name": "Desktop Background Image",
+	          "type": "image",
+	          "required": true
+	        },
+	        {
+	          "id": "set2mobileimage",
+	          "name": "Mobile Background Image",
+	          "type": "image",
+	          "required": true
+	        },
+	        {
+	          "id": "set2imageAlt",
+	          "name": "Image Alt Text",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set2heading",
+	          "name": "Block2 Heading",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set2linktext",
+	          "name": "Link Text",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set2linkurl",
+	          "name": "Link URL",
+	          "type": "url",
+	          "required": true
+	        },
+	        {
+	          "id": "set2ctaarialabel",
+	          "name": "Aria Label",
+	          "type": "string",
+	          "required": true
+	        }
+        ]
+  	},
+  	{
+  		"id": "featureset3",
+      	"name": "Block 3 Content",
+      	"description": "Block 3 content",
+      	"attribute_definitions": [
+	        {
+	          "id": "set3desktopimage",
+	          "name": "Desktop Background Image",
+	          "type": "image",
+	          "required": true
+	        },
+	        {
+	          "id": "set3mobileimage",
+	          "name": "Mobile Background Image",
+	          "type": "image",
+	          "required": true
+	        },
+	        {
+	          "id": "set3imageAlt",
+	          "name": "Image Alt Text",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set3heading",
+	          "name": "Block3 Heading",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set3linktext",
+	          "name": "Link Text",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set3linkurl",
+	          "name": "Link URL",
+	          "type": "url",
+	          "required": true
+	        },
+	        {
+	          "id": "set3ctaarialabel",
+	          "name": "Aria Label",
+	          "type": "string",
+	          "required": true
+	        }
+        ]
+  	},
+  	{
+      "id": "textstyle",
+      "name": "Text Style Options",
+      "description": "Text Style Options.",
+      "attribute_definitions": [
+      		{
+	          "id": "textcolor",
+	          "name": "Text Color",
+	          "description": "Text Color.",
+	          "type": "enum",
+	          "values": [
+	            "white",
+	            "black"
+	          ],
+	          "required": true,
+	          "default_value": "white"
+	        },
+	        {
+	          "id": "textverticalalign",
+	          "name": "Vertical Align Text",
+	          "description": "Vertical Align Text.",
+	          "type": "enum",
+	          "values": [
+	            "top",
+	            "middle",
+	            "bottom"
+	          ],
+	          "required": true,
+	          "default_value": "top"
+	        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margins for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

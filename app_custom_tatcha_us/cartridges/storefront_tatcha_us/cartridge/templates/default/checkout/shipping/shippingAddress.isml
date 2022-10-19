@@ -1,0 +1,236 @@
+<isset name="addressFields" value="${pdict.forms.shippingForm.shippingAddress.addressFields}" scope="page"/>
+<isset name="provinceList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('provinceList'))}" scope="page"/>
+<input type="hidden" value="${false}" id="validAddress"/>
+<input type="hidden" value="${!customer.authenticated || customer.profile.addressBook.addresses.length === 0}" id="newAddress"/>
+<input type="hidden" value="${request.getGeolocation().getCountryCode()}" id="geoLocCountryCode"/>
+<isset name="geoLocCountryCode" value="${request.getGeolocation().getCountryCode()}" scope="page" />
+<input type="hidden" id="euCountryYN" value="${pdict.euCountryYN}" scope="page" />
+<isif condition="${shippingModel.shippingAddress}">
+    <isset name="shippingAddress" value="${shippingModel.shippingAddress}" scope="page" />
+<iselse/>
+    <isset name="shippingAddress" value="${{}}" scope="page" />
+</isif>
+
+<isif condition="${shippingAddress.countryCode && !empty(shippingAddress.countryCode.value)}">
+    <isset name="selectedCountry" value="${shippingAddress.countryCode.value}" scope="page" />
+    <iselse>
+        <isset name="selectedCountry" value="${geoLocCountryCode}" scope="page" />
+</isif>
+
+<input type="hidden" id="isGift" <isprint value=${pdict.forms.shippingForm.shippingAddress.isGift.attributes} encoding="off"/> value=${shippingModel.isGift? shippingModel.isGift : ''}/>
+<input type="hidden" id="giftMessage" <isprint value=${pdict.forms.shippingForm.shippingAddress.giftMessage.attributes} encoding="off"/> value=${shippingModel.giftMessage? shippingModel.giftMessage : ''}/>
+<input type="hidden" id="curUrl" value="${''}"/>
+<isif condition="${!empty(dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput'))}">
+    <isset name="countryArrayList" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput')}" scope="page" />
+<iselse/>
+    <isset name="countryArrayList" value="${'AU|BR|ET|DE|IN|MX|FM|MM|NG|PW|SD'}" scope="page" />
+</isif>
+<input type="hidden" name="newsLetterKlaviyoSubscribtionUrl" id="newsLetterKlaviyoSubscribtionUrl" value="${URLUtils.url('KlaviyoSfra-Subscribe')}" />
+<input type="hidden" name="source" id="source" value="checkout" />
+
+<input type="hidden" id="countryWithState" value="${countryArrayList}"/>
+<input type="hidden" id="editMode" name="editMode" value="${'false'}">
+<input type="hidden" value="${shippingAddress.stateCode ||''}" id="shippingStatedefault" <isprint value=${addressFields.states.stateCode.attributes} encoding="off"/> />
+<isset name="countriesList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('CountriesList'))}" scope="page"/>
+<isif condition="${!(customer.registered && customer.authenticated)}">
+    <div class="form-row">
+        <div class="form-group required col-12 checkout-email-input">
+            <input type="email" value="${pdict.order.orderEmail ||''}" required class="form-control  form-control-lg floating__input emailaddress" id="emailaddress" data-missing-error="${Resource.msg('validate.email','forms',null)}" data-pattern-mismatch="${Resource.msg('error.message.parse.email.profile.form','forms',null)}"
+                aria-labelledby="Enter email address" autocomplete="email Id" aria-describedby="emailHelp"
+                placeholder="Enter email" aria-required="true"
+                <isprint value="${addressFields.emailaddress.attributes}" encoding="off"/>>
+            <label class="float-label" for="emailaddress"data-content="Email*"></label>
+            <div class="invalid-feedback" id="guestEmailInvalidMessage"></div>
+
+            <div class="mt-2 ml-4 keep-me-update-check" id="addtoemaillist_container">
+                <input class="form-check-input" type="checkbox" id="addtoemaillist" name="addtoemaillist" aria-label="Select if you want to join our email list to receive special promotion, early access to new products" />
+                <span>Keep me up to date on news and offers</span>
+            </div>
+        </div>
+    </div>
+</isif>
+
+<h5 class="section-title mt-3">Shipping Info</h5>
+
+<div class="form-row ">
+    <div class="form-group col-md-6 checkout-address-form
+        ${addressFields.firstName.mandatory === true ? 'required' : ''}
+        ${addressFields.firstName.htmlName}">
+        <input type="text" class="form-control  form-control-lg floating__input shippingFirstName" pattern="^[a-zA-Z.\s]+$"   data-pattern-mismatch="Please enter a valid name" data-missing-error="This field is required"  id="shippingFirstName${lineItem ? lineItem.UUID : 'default'}" aria-describedby="${lineItem ? lineItem.UUID : 'default'}FirstName"
+            value="${shippingAddress.firstName||''}" <isprint value="${addressFields.firstName.attributes}" encoding="off"/>
+            autocomplete="shipping given-name" placeholder="First Name" data-pattern-mismatch="${Resource.msg('error.message.parse.name','forms',null)}">
+        <label class="float-label" for="shippingFirstName${lineItem ? lineItem.UUID : 'default'}" data-content="First Name*"></label>
+        <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}FirstName"><isprint value="${addressFields.firstName.error}" ></div>
+    </div>
+    <div class="form-group col-md-6 checkout-address-form
+        ${addressFields.lastName.mandatory === true ? 'required' : ''}
+        ${addressFields.lastName.htmlName}">
+        <input type="text" class="form-control  form-control-lg floating__input shippingLastName" pattern="^[a-zA-Z.\s]+$"   data-pattern-mismatch="Please enter a valid name" data-missing-error="This field is required"  id="shippingLastName${lineItem ? lineItem.UUID : 'default'}" aria-describedby="${lineItem ? lineItem.UUID : 'default'}LastName"
+            value="${shippingAddress.lastName||''}" <isprint value="${addressFields.lastName.attributes}" encoding="off"/>
+            autocomplete="shipping family-name" placeholder="Last Name" data-pattern-mismatch="${Resource.msg('error.message.parse.name','forms',null)}">
+        <label class="float-label" for="shippingLastName${lineItem ? lineItem.UUID : 'default'}"data-content="Last Name*"></label>
+        <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}LastName"><isprint value="${addressFields.lastName.error}" ></div>
+    </div>
+</div>
+
+<!--- make drop down--->
+
+<div class="form-row">
+    <div class="form-group col-12 checkout-address-form
+        ${addressFields.address1.mandatory === true ? 'required' : ''}
+        ${addressFields.address1.htmlName}">
+        <input type="text" class="form-control  form-control-lg floating__input shippingAddressOne" pattern="^[\x20-\x7E]*$"   data-pattern-mismatch="Please enter a valid address"  data-missing-error="This field is required"  id="shippingAddressOne${lineItem ? lineItem.UUID : 'default'}" aria-describedby="${lineItem ? lineItem.UUID : 'default'}AddressLine1"
+            value="${shippingAddress.address1||''}" <isprint value="${addressFields.address1.attributes}" encoding="off"/>
+            autocomplete="shipping address-line1" placeholder="Street Address" data-pattern-mismatch="${Resource.msg('error.message.nonenglishcharacters','forms',null)}">
+        <label class="float-label" for="shippingAddressOne${lineItem ? lineItem.UUID : 'default'}" data-content="Street Address*">
+        </label>
+        <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}AddressLine1"><isprint value="${addressFields.address1.error}" ></div>
+    </div>
+</div>
+
+<a href="#addressCollapse" class="mb-0 address-collapse" data-toggle="collapse" aria-expanded="false" aria-controls="collapseOne" aria-label="Enter address manually">
+    <span class="enter-address-link">Enter address manually</span>
+</a>
+<div class="collapse" aria-labelledby="headingOne" id="addressCollapse">
+    <div class="form-row">
+    <div class="form-group col-12 checkout-address-form
+        ${addressFields.address2.mandatory === true ? 'required' : ''}
+        ${addressFields.address2.htmlName}">
+        <input type="text" class="form-control  form-control-lg floating__input shippingAddressTwo"  pattern="^[\x20-\x7E]*$"   data-pattern-mismatch="Please enter a valid address" id="shippingAddressTwo${lineItem ? lineItem.UUID : 'default'}" aria-describedby="${lineItem ? lineItem.UUID : 'default'}AddressLine2"
+            value="${shippingAddress.address2||''}" <isprint value="${addressFields.address2.attributes}" encoding="off"/>
+            autocomplete="shipping address-line2" placeholder="Street Address 2">
+        <label class="float-label" for="shippingAddressTwo${lineItem ? lineItem.UUID : 'default'}" data-content="Street Address 2 (Optional)">
+        </label>
+        <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}AddressLine2"><isprint value="${addressFields.address2.error}" ></div>
+    </div>
+</div>
+
+<isif condition="${selectedCountry == 'US' || selectedCountry == 'CA' ||  countryArrayList.indexOf(selectedCountry) > -1}">
+    <isset name="labelHide" value="" scope="page" />
+    <isset name="widthClass" value="${'col-md-6'}" scope="page" />
+<iselse>
+    <isset name="labelHide" value="${'d-none'}" scope="page" />
+    <isset name="widthClass" value="${'col-12'}" scope="page" />
+</isif>
+
+<isset name="stateUsStyle" value="style='display:none'" scope="page" />
+<isset name="stateCaStyle" value="style='display:none'" scope="page" />
+<isset name="stateTextStyle" value="style='display:none'" scope="page" />
+
+<isif condition="${selectedCountry === 'US'}">
+    <isset name="stateUsStyle" value="required" scope="page" />
+<iselseif condition="${selectedCountry === 'CA'}">
+    <isset name="stateCaStyle" value="required" scope="page" />
+<iselse>
+    <isif condition="${countryArrayList.indexOf(selectedCountry) > -1}">
+        <isset name="stateTextStyle" value="required" scope="page" />
+    <iselse>
+        <isset name="stateTextStyle" value="style='display:none'" scope="page" />
+    </isif>
+</isif>
+    <div class="form-row">
+        <div class="form-group col-12 checkout-address-form
+        ${addressFields.city.mandatory === true ? 'required' : ''}
+        ${addressFields.city.htmlName}">
+            <input minlength="3" type="text" class="form-control  form-control-lg floating__input shippingAddressCity"  pattern="^[\x20-\x7E]*$" data-pattern-mismatch="Please enter a valid city"   data-missing-error="${Resource.msg('error.message.parse.city','forms',null)}" id="shippingAddressCity${lineItem ? lineItem.UUID : 'default'}" aria-describedby="${lineItem ? lineItem.UUID : 'default'}City"
+                   value="${shippingAddress.city||''}" <isprint value="${addressFields.city.attributes}" encoding="off"/>
+            autocomplete="shipping address-level2" placeholder="City"  data-range-error="${Resource.msg('error.message.parse.city','forms',null)}">
+            <label class="float-label" for="shippingAddressCity${lineItem ? lineItem.UUID : 'default'}" data-content="City*">
+            </label>
+            <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}City"><isprint value="${addressFields.city.error}" ></div>
+        </div>
+    </div>
+
+
+<div class="form-row">
+    <isif condition="${!empty(shippingAddress.stateCode)}">
+        <isset name="selectedState" value="${shippingAddress.stateCode}" scope="page" />
+    <iselse>
+        <isset name="selectedState" value="${' '}" scope="page" />
+    </isif>
+
+    <div class="form-group col-md-6 checkout-address-form
+        ${addressFields.states.stateCode.mandatory === true ? 'required' : ''}
+        ${addressFields.states.stateCode.htmlName}">
+
+        <input type="text" ${stateTextStyle} data-missing-error="Please select a state." value="${shippingAddress.stateCode || ''}"  class="form-control floating__input form-control-lg" id="stateText" name="stateText" aria-label="Enter province" placeholder="State*">
+        <select id="stateUS" ${stateUsStyle} data-missing-error="Please select a state." aria-describedby="state" autocomplete="shipping address-level1" class="form-control floating__input  form-control-lg pl-3 shippingState">
+            <isloop items="${addressFields.states.stateCode.options}" var="states" status="status">
+                <isif condition="${ (typeof selectedState != 'undefined' && selectedState == states.id) || (typeof selectedState != 'undefined' && selectedState == 'null' && status.first)}">
+                        <option class="select-option" id="${states.id}" label="${Resource.msg(states.label,'forms',null)}" selected value="${states.htmlValue || ''}">${Resource.msg(states.label,'forms',null)}</option>
+                    <iselse>
+                        <option class="select-option" id="${states.id}" label="${Resource.msg(states.label,'forms',null)}" value="${states.htmlValue || ''}">${Resource.msg(states.label,'forms',null)}</option>
+                </isif>
+            </isloop>
+        </select>
+        <select id="stateNonUS" ${stateCaStyle} data-missing-error="Please select a state." class="form-control floating__input  form-control-lg pl-3">
+            <isloop items="${provinceList}" alias="province">
+                <isif condition="${province.country == 'CA'}">
+                    <isloop items="${province.states}" alias="pstate">
+                        <isif condition="${typeof selectedState != 'undefined' && selectedState == pstate.value}">
+                            <option class="select-option" id="${pstate.value}" label="${pstate.label}" selected value="${pstate.value}">${pstate.label}</option>
+                        <iselse>
+                            <option class="select-option" id="${pstate.value}" label="${pstate.label}"  value="${pstate.value}">${pstate.label}</option>
+                        </isif>
+                    </isloop>
+                </isif>
+            </isloop>
+        </select>
+        <label class="float-label state-label ${labelHide}" for="shippingState${lineItem ? lineItem.UUID : 'default'}" data-content="State*">
+        </label>
+        <div class="invalid-feedback state-field" id="${lineItem ? lineItem.UUID : 'default'}State"><isprint value="${addressFields.states.stateCode.error}" ></div>
+    </div>
+    <div class="form-group ${widthClass} checkout-address-form
+        ${addressFields.postalCode.mandatory === true ? 'required' : ''}
+        ${addressFields.postalCode.htmlName}">
+        <input type="text" class="form-control  form-control-lg floating__input shippingZipCode" <isif condition="${selectedCountry === 'CA'}">pattern="^[ABCEGHJKLMNPRSTVXY]{1}\d{1}[A-Z]{1} *(?:\d{1}[A-Z]{1}\d{1})?$"<iselseif condition="${selectedCountry === 'US'}">pattern="^\d{5}(?:[-\s]\d{4})?$"</isif> data-missing-error="${Resource.msg('error.message.parse.postalCode','forms',null)}" data-pattern-mismatch="${Resource.msg('error.message.parse.postalCode','forms',null)}" id="shippingZipCode${lineItem ? lineItem.UUID : 'default'}" aria-describedby="${lineItem ? lineItem.UUID : 'default'}ZipCode"
+               value="${shippingAddress.postalCode||''}" <isprint value="${addressFields.postalCode.attributes}" encoding="off"/>
+        autocomplete="shipping postal-code" placeholder="Zipcode" data-range-error="${Resource.msg('error.message.parse.postalCode','forms',null)}">
+        <label class="float-label" for="shippingZipCode${lineItem ? lineItem.UUID : 'default'}" data-content="Zipcode*">
+        </label>
+        <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}ZipCode"><isprint value="${addressFields.postalCode.error}" ></div>
+    </div>
+</div>
+
+
+<div class="form-row">
+    <div class="form-group col-12 checkout-address-form
+    ${addressFields.country.mandatory === true ? 'required' : ''}
+    ${addressFields.country.htmlName}">
+        <select class="form-control floating__input form-control-lg pl-3 shippingCountry" id="shippingCountry${lineItem ? lineItem.UUID : 'default'}"
+                missing-error="Please select a country"
+        <isprint value=${addressFields.country.attributes} encoding="off"/>
+        autocomplete="shipping country"
+        aria-describedby="${lineItem ? lineItem.UUID : 'default'}Country">
+        <option label="Select a country"></option>
+
+        <isloop items="${countriesList}" alias="country">
+            <isif condition="${selectedCountry == country.value}">
+                <option value="${country.value}" selected><isprint value="${country.label}" /></option>
+                <iselse>
+                    <option value="${country.value}"><isprint value="${country.label}" /></option>
+            </isif>
+        </isloop>
+        </select>
+        <label class="float-label" for="shippingCountry${lineItem ? lineItem.UUID : 'default'}" data-content="Country*"></label>
+        <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}Country"><isprint value="${addressFields.country.error}" ></div>
+    </div>
+</div>
+<input type="hidden" value="${selectedCountry}" id="selectedCountry"/>
+
+
+</div>
+
+<div class="form-row">
+    <div class="form-group col-12 checkout-address-form
+        ${addressFields.phone.mandatory === true ? 'required' : ''}
+        ${addressFields.phone.htmlName}">
+        <a class="phone-tooltip" title='' tabindex="0" href="javascript:void(0)"  data-trigger="hover click" data-toggle="tooltip" data-placement="top" aria-label="A phone number is required in case our shipping carrier needs to contact you with updates." data-original-title="A phone number is required in case our shipping carrier needs to contact you with updates."> <i class="fa fa-question-circle"></i> </a>
+        <input <isif condition="${selectedCountry === 'US' || selectedCountry === 'CA'}">pattern="^[\+]?1?[\s-]?\(?([2-9][0-9][0-9])\)?[\-\. ]?([0-9][0-9]{2})[\-\. ]?([0-9]{4})(\s*x[0-9]+)?$"</isif> type="tel" class="form-control  form-control-lg floating__input shippingPhoneNumber" data-missing-error="This field is required." data-pattern-mismatch="Please enter a valid phone number" data-range-error="This field is required."  id="shippingPhoneNumber${lineItem ? lineItem.UUID : 'default'}" aria-describedby="${lineItem ? lineItem.UUID : 'default'}TelephoneNumber"
+            value="${shippingAddress.phone||''}" <isprint value="${addressFields.phone.attributes}"  encoding="off"/>
+                autocomplete="shipping tel" placeholder="Phone Number">
+        <label class="float-label" for="shippingPhoneNumber${lineItem ? lineItem.UUID : 'default'}" data-content="Phone Number*">
+        </label>
+        <div class="invalid-feedback" id="${lineItem ? lineItem.UUID : 'default'}TelephoneNumber"><isprint value="${addressFields.phone.error}" ></div>
+    </div>
+</div>

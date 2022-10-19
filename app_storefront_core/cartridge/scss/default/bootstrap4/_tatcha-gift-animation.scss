@@ -1,0 +1,465 @@
+//gift certification animation
+
+.startAnimation .giftBoxTop {
+  left: 0px;
+  right: 0px;
+  animation-name: slideGiftBoxTop;
+  animation-duration: 2s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+  animation-delay: 1s;
+}
+@keyframes slideGiftBoxTop {
+  from {
+    left: 0px;
+    right: 0px;
+  }
+  to {
+    left: 300%;
+    right: -300%;
+    display: none;
+  }
+}
+
+.startAnimation .giftBoxUBorder {
+  animation-name: changeUBorderZIndex;
+  animation-duration: 0s;
+  animation-timing-function: ease-in;
+  animation-fill-mode: forwards;
+  animation-delay: 2s;
+}
+@keyframes changeUBorderZIndex {
+  100% {
+    z-index: 1;
+  }
+}
+
+@media (min-width: 1900px) {
+	.startAnimation .cards {
+	  animation: zoomInCard 0.5s ease-in 2s forwards;
+	}
+	@keyframes zoomInCard {
+	  0% {
+	    width: 80%;
+	  }
+	  100% {
+	  	top: 2%;
+	    transform: scale(2, 2);
+	  }
+	}
+}
+
+@media only screen and (min-width: 768px) {
+	.startAnimation .cards {
+	  animation: zoomInCard 0.5s ease-in 2s forwards;
+	}
+	@keyframes zoomInCard {
+	  0% {
+	    width: 80%;
+	  }
+	  100% {
+	  	top: -5%;
+	    transform: scale(1.5, 1.5);
+	  }
+	}
+}
+
+@media only screen and (max-width: 768px) {
+	.startAnimation .cards {
+	  animation: zoomInCard 0.5s ease-in 2s forwards;
+	}
+	@keyframes zoomInCard {
+	  0% {
+	    width: 80%;
+	  }
+	  100% {
+	  	top: -5%;
+	    transform: scale(1.4, 1.4);
+	  }
+	}
+  .eventBox {
+    width: 75%;
+    position: relative;
+    margin: auto;
+    margin-top: 100px;
+  }
+  .gift-card-amount {
+    font-size: 18px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+  .card-top .card-contents {
+    top: 8px;
+  }
+  .gift-card-cta a {
+    padding: 8px 24px;
+  }
+  .gift-card-message {
+    margin: 15px auto;
+  }
+}
+
+/*
+html,
+body {
+  margin: 0;
+  padding: 0;
+} */
+.giftbox-section-wrap {
+  background-size: cover;
+  background-repeat: no-repeat;
+  height: 100vh;
+  overflow-x: hidden;
+  font-family: "Lato", sans-serif;
+  background-position: center;
+  background-color: rgba(181, 131, 254, .4) !important;
+}
+.eventWrapper {
+  width: 100%;
+  height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+.eventBox {
+  width: 500px;
+  position: relative;
+  margin: auto;
+  margin-top: 100px;
+}
+.eventBox img {
+  width: 100%;
+  display: block;
+}
+.giftBoxTop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 6;
+
+}
+.giftBoxBottom > img {
+  -webkit-box-shadow: 10px 11px 45px -4px rgba(0,0,0,0.75);
+  -moz-box-shadow: 10px 11px 45px -4px rgba(0,0,0,0.75);
+  box-shadow: 10px 11px 45px -4px rgba(0,0,0,0.75);
+}
+
+.giftBoxUBorder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 7;
+}
+
+.cards {
+  position: absolute;
+  top: 10%;
+  left: 10%;
+  width: 85%;
+  height: auto;
+  z-index: 5;
+}
+/*.card {
+  display: block;
+  position: relative;
+  -webkit-perspective: 900px;
+  cursor: pointer;
+}
+*/
+
+
+@media only screen and (min-width: 768px) {
+    .front-view {
+	  visibility: visible;
+	  position: absolute;
+	  z-index: 2;
+      width: 100%;
+      height: 365px;
+      top: -5%;
+      animation: hideFrontView .5s ease-in 3s forwards;
+      background-position: center;
+      background-size: cover;
+	}
+
+	.back-view {
+	  visibility: hidden;
+	  background-position: center;
+      background-size: cover;
+	  position: absolute;
+	  width: 100%;
+	  height: 430px;
+      top: 0;
+      animation: showBackView .5s ease-in 3.5s forwards,
+    	flipMsgCard 0.5s ease-in 3.5s forwards;
+	}
+}
+
+
+
+@keyframes hideFrontView {
+	0% {
+		visibility: visible;
+	}
+	100% {
+		visibility: hidden;
+	}
+}
+
+@keyframes showBackView {
+	0% {
+		visibility: hidden;
+	}
+	100% {
+		-webkit-box-shadow: -9px 10px 26px -4px rgba(0,0,0,0.75);
+        -moz-box-shadow: -9px 10px 26px -4px rgba(0,0,0,0.75);
+        box-shadow: -9px 10px 26px -4px rgba(0,0,0,0.75);
+		visibility: visible;
+	}
+}
+
+@keyframes flipMsgCard {
+  0% {
+  	transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+  	transform: rotateY(180deg);
+  }
+}
+
+.card:hover .face {
+  -webkit-transition: all 0.3s ease-out;
+}
+
+.gift-message-wrap {
+	word-break: break-word;
+}
+
+/**** Card contents ****/
+.card-content-wrapper {
+  position: relative;
+}
+
+.eventBox img.gift-card-image {
+  width: 36%;
+  display: block;
+  margin: auto;
+  border-radius: 14px;
+  height: 24%;
+}
+.gift-card-amount {
+  font-size: 16px;
+  font-weight: 700;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  color: $text-black;
+}
+.gift-card-name {
+  font-weight: $font-weight-light;
+  color: $text-black;
+  font-size: 1.4rem;
+}
+
+.gift-card-message {
+  color: $text-black;
+  width: 95%;
+  max-width: 500px;
+  margin: 1rem auto;
+  font-size: 14px;
+}
+.gift-card-cta a {
+  visibility: hidden;
+  display: inline-block;
+  padding: 6px 29px;
+  font-weight: $font-weight-light;
+  background-color: #4D186E;
+  border: 1px solid #4D186E;
+  text-transform: uppercase;
+  font-size: 14px;
+  color: #fff;
+  text-decoration: none;
+  animation: showGiftData 0.5s ease-in 3.7s forwards;
+}
+
+.card-contents {
+    top: 0;
+    visibility: hidden;
+    padding: 2rem 1rem;
+    transform: rotateY(180deg);
+    text-align: center;
+    animation: showGiftData 0.5s ease-in 3.7s forwards;
+}
+
+@keyframes showGiftData {
+  0% {
+  	visibility: hidden;
+	z-index: 0;
+  }
+  100% {
+  	visibility: visible;
+    z-index: 4;
+  }
+}
+
+/**** Card contents ****/
+
+@media (max-width: 768px) {
+  .eventBox {
+    width: 300px;
+
+    img.gift-card-image {
+   		width: 40%;
+	    display: block;
+	    margin: auto;
+	    border-radius: 14px;
+	    height: 25%;
+    }
+  }
+
+  .front-view {
+	visibility: visible;
+	position: absolute;
+	z-index: 2;
+    width: 100%;
+    height: 238px;
+    top: 0;
+    left: -2%;
+    animation: hideFrontView .5s ease-in 3s forwards;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .back-view {
+	visibility: hidden;
+	position: absolute;
+	width: 100%;
+	height: 310px;
+    top: 0;
+    left: -2%;
+    background-position: center;
+    background-size: cover;
+    animation: showBackView .5s ease-in 3.5s forwards,
+    	flipMsgCard 0.5s ease-in 3.5s forwards;
+   }
+  .gift-card-amount {
+    font-size: 12px;
+    margin-top: 5px;
+    margin-bottom: 3px;
+  }
+
+ .gift-card-name {
+ 	font-size: 1.1rem;
+ }
+
+  .card-top .card-contents {
+    top: 8px;
+  }
+  .gift-card-cta a {
+    padding: 5px 20px;
+    font-size: 10px;
+  }
+
+ .gift-card-message {
+    color: #000;
+    width: 100%;
+    max-width: 500px;
+    margin: 6px auto 7px;
+    font-size: 10px;
+ }
+  .card-contents {
+    padding: 1rem 1rem;
+  }
+}
+
+@media (min-width: 1900px) {
+	.eventBox {
+	    width: 625px;
+	    margin-top: 125px;
+
+	  .gift-card-image {
+   		width: 40%;
+	    display: block;
+	    margin: auto;
+	    border-radius: 14px;
+	    height: 26%;
+    }
+   }
+
+  .front-view {
+	visibility: visible;
+	position: absolute;
+	z-index: 2;
+    width: 100%;
+    height: 480px;
+    animation: hideFrontView .5s ease-in 3s forwards;
+    background-position: center;
+    background-size: cover;
+  }
+
+  .back-view {
+	visibility: hidden;
+	position: absolute;
+	width: 100%;
+    height: 480px;
+    top: 0;
+    background-position: center;
+    background-size: cover;
+    animation: showBackView .5s ease-in 3.5s forwards,
+    	flipMsgCard 0.5s ease-in 3.5s forwards;
+   }
+  .gift-card-amount {
+    font-size: 22px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+  }
+
+ .gift-card-name {
+ 	font-size: 2rem;
+ }
+  .gift-card-message {
+    color: #000;
+    width: 100%;
+    max-width: 500px;
+    font-size: 18px;
+    text-align: center;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    font-size: 20px;
+  }
+}
+
+
+@media only screen and (min-width: 769px) {
+  .gift-cert-img-new {
+		padding: 1rem !important;
+		height: 80px;
+		width: auto;
+	}
+}
+
+.gift-cert-product-img{
+	height: 100px;
+	width: auto;
+}
+
+@media only screen and (max-width: 768px) {
+  .gift-cert-img-new {
+		height: 40px;
+		width: auto;
+		margin: 8px 1px;
+	}
+}
+
+
+#giftcardMessage {
+	height: 100px;
+}
+
+#SubscribeForm .input-group {
+	z-index: 1;
+}
+
+#greetingModal {
+	z-index: 9999;
+}

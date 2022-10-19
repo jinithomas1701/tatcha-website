@@ -1,0 +1,85 @@
+<isdecorate template="application/MenuFrame">
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isinclude template="components/header" />
+<isinclude template="bm/util/sorModules"/>
+
+<div id="changeAddress">
+    <isset name="client" value="${request.httpParameterMap.client.stringValue}" scope="page" />
+    <isset name="addressType" value="${request.httpParameterMap.addressType.stringValue}" scope="page" />
+    
+    <a id="backbutton" class="button button--right" href="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', pdict.listTypeParam, pdict.listID, 'client', client, 'action', 'view', 'section', addressType)}">
+         &#171; ${Resource.msg('forms.sorsubscriptions.backTo.label', 'sor_forms', null)}
+        <isif condition="${pdict.isSubscription}">
+            ${Resource.msg('forms.sorsubscriptions.subscriptionDetails.label', 'sor_forms', null)}
+        <iselse>
+            ${Resource.msg('forms.sorsubscriptions.orderDetails.label','sor_forms', null)}
+        </isif>
+    </a>
+    <div class="sor-module sor-module__subscription-details">
+        <div class="order-section">
+            <div class="content-section">
+
+                <form method="post" action="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', pdict.listTypeParam, pdict.listID, 'client', client, 'action', 'updateAddressSave', 'addressType', addressType)}">
+                    <table class="sor-table sor-module__subscription_table">
+                        <tr class="sor-module__filters-row">
+                            <td>
+                                <h3 class="order-section-title"> ${Resource.msg('forms.sorsubscriptions.changeaddress.label', 'sor_forms', null)}</h3>
+                            </td>
+                            <td>
+                            </td>
+                        </tr>
+                        <tr class="sor-table__member">
+                            <td class="sor-table__td">
+                                <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.changeaddress.firstName}" type="input"/>
+                            </td>
+                            <td class="sor-table__td">
+                                <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.changeaddress.lastName}" type="input"/>
+                            </td>
+                        </tr>
+                        <tr class="sor-table__member">
+                            <td class="sor-table__td">
+                                <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.changeaddress.address1}" type="input"/>
+                            </td>
+                            <td class="sor-table__td">
+                                <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.changeaddress.address2}" type="input"/>
+                            </td>
+                        </tr>
+                        <tr class="sor-table__member">
+                            <td class="sor-table__td">
+                                <isinputfield formfield="${pdict.CurrentForms.changeaddress.country}" type="select"/>
+                            </td>
+                            <td class="sor-table__td">
+                                <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.changeaddress.city}" type="input"/>
+                            </td>
+                        </tr>
+                        <tr class="sor-table__member">
+                            <td>
+                                <isinputfield formfield="${pdict.CurrentForms.changeaddress.states.state}" type="select"/>
+                            </td>
+                            <td class="sor-table__td">
+                                <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.changeaddress.postal}" type="input"/>
+                            </td>
+                        </tr>
+                        <tr class="sor-table__member">
+                            <td>
+                                <isinputfield placeholder="${true}" formfield="${pdict.CurrentForms.changeaddress.phone}" type="input"/>
+                            </td>
+                            <td class="sor-table__td">
+                            </td>
+                        </tr>
+                    </table>
+                    <input class="button confirm_btn button--right confirm_address_edit"
+                        type="submit" value="${Resource.msg('forms.sorsubscriptions.confirm.label', 'sor_forms', null)}" 
+                        name="${pdict.CurrentForms.cancelationfee.save.htmlName}"/>
+                </form>
+            </div>
+        </div>
+
+       
+    </div>
+</div>
+</isdecorate>
+<isinclude template="components/footer" />

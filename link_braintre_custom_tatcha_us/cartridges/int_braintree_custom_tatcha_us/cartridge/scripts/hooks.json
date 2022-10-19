@@ -1,0 +1,15 @@
+{
+  "hooks": [
+    {
+      "name": "app.payment.custom.processor.braintree_credit",
+      "script": "./hooks/payment/processor/braintreeCredit"
+    },
+    {
+        "name": "app.payment.form.processor.braintree_paypal",
+        "script": "./hooks/payment/processor/paypal_form_processor"
+    }, {
+      "name": "app.payment.form.processor.braintree_applepay",
+      "script": "./hooks/payment/processor/applepay_form_processor"
+    }
+  ]
+}

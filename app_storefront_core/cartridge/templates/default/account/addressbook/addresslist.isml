@@ -1,0 +1,78 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isset name="DecoratorTemplate" value="account/pt_account_bs" scope="page" />
+<isinclude template="util/modules.isml" />
+<iscomment>pwr = power review write</iscomment>
+
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.pwr.stringValue == 'true' || pdict.CurrentHttpParameterMap.source.stringValue == 'search' || pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart'}">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page" />
+</isif>
+<isdecorate template="${DecoratorTemplate}">
+<isset name="bctext2" value="${Resource.msg('account.addressbook.addresslist.header','account',null)}" scope="pdict" />
+
+<isscript>
+	var prefAddress = pdict.CurrentCustomer.profile.addressBook.preferredAddress;
+</isscript>
+<div class="my-account my-account-address-book">
+	<div class="container view-state">
+		<div class="compact-h1-group">
+			<h1 class="text-center"><isprint value="${Resource.msg('account.addressbook.addresslist.header','account',null)}" /></h1>
+			<p class="text-center">Manage your saved addresses.</p>
+		</div>
+		<div class="row">
+			<div class="col-md-6 col-lg-4 offset-lg-2">
+				<a href="${URLUtils.url('Address-Add')}" class="panel-clickable d-block d-sm-none add-address">
+					<div class="card card-panel data-group">
+						<div class="card-body">
+							<i class="fal fa-plus fa-2x"></i>
+							<p><isprint value="${Resource.msg('account.addressbook.addresslist.create','account',null)}" /></p>
+						</div>
+					</div>
+				</a>
+				
+				<div class="card card-panel data-group default-address">
+					<div class="card-heading">
+						<h5 class="panel-title">Default Address</h5>
+					</div>
+					<div class="card-body card-split d-flex justify-content-between">
+						<isif condition="${!empty(prefAddress)}">
+							<div class="card-body-main">
+								<isminiaddress p_address="${prefAddress}" />
+							</div>
+							<div class="cart-action">
+								<a href="#" class="icon-default icon-action" data-toggle="modal"
+									data-target="${'#myModal-' + pdict.CurrentCustomer.profile.addressBook.preferredAddress.UUID}"> 
+									<i class="fal fa-times fa-lg"></i>
+								</a>
+							</div>
+						<iselse>
+							<div class="panel-body-main">
+								<p><em>For faster checkout, create or select a default address.</em></p>
+							</div>
+						</isif>
+					</div>
+					<div class="card-footer">
+						<isif condition="${!empty(prefAddress)}">
+							<a href="${URLUtils.url('Address-Edit','AddressID', pdict.CurrentCustomer.profile.addressBook.preferredAddress.ID)}"
+								title="${Resource.msg('account.addressbook.addressinclude.edit.label','account',null)}"
+								class="btn btn-outline-secondary btn-sm edit-address btn-address-book">
+								<isprint value="${Resource.msg('global.edit','locale',null)}" /></a>
+						</isif>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-6 col-lg-4">
+				<a class="panel-clickable d-none d-sm-block add-address"
+					href="${URLUtils.url('Address-Add')}">
+					<div class="card card-panel data-group">
+						<div class="card-body">
+							<i class="fal fa-plus fa-3x"></i>
+							<p><isprint value="${Resource.msg('account.addressbook.addresslist.create','account',null)}" /></p>
+						</div>
+					</div>
+				</a>
+				<isinclude template="account/addressbook/addressinclude" />
+			</div>
+		</div>
+	</div> 
+</isdecorate>

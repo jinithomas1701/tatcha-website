@@ -1,0 +1,38 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<iscomment>This page must never be cached!! This page tries to avoid having too much logic or includes to avoid any followup errors!!</iscomment>
+	<iscomment>Include all important information globally , e.g. meta-data, link information, and javascript.</iscomment>
+	<isscript>
+		var pageContext = {
+			title: 'General Error',
+			type: 'error',
+			ns: 'error'
+		};
+	</isscript>
+	<isinclude template="components/header/htmlhead_bs"/>
+	<isinclude template="error/pt_error_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+</head>
+<body>
+	<isinclude template="components/header/header_bs"/>
+	
+		<main class="content content-basic" role="main" tabindex="-1">
+			<div class="container">
+				<isreplace/>
+			</div>
+		</main>
+		
+	<isinclude template="components/footer/footer_bs"/>
+	<isinclude template="error/pt_error_VARS"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<div class="promocode-container ${pdict.currentStage == 'placeOrder'?'d-none':''}">
+	<form action="${pdict.order.actionUrls.submitCouponCodeUrl}" class="promo-code-form" method="GET" name="promo-code-form">
+	    <span class="promocode-link" tabindex="0" aria-expanded="false" role="button" <isif condition="${pdict.order.totals.discounts.length > 0}">style="display: none;"</isif> aria-label="promo code"><i class="far fa-plus"></i> ${Resource.msg('text.coupon.add', 'checkout', null)}</span>
+	    <div class="form-row promocode-form" style="display: none;">
+	        <div class="form-group col-12 mb-0">
+	            <div class="input-group">
+	                <input type="text" class="form-control form-control-lg floating__input d-inline-block mr-1" aria-labelledby="enter promo code" placeholder="Promo code" id="promocode" name="couponCode">
+	                <span class="input-group-btn input-group-append">
+		                <button class="btn btn-input-group promo-button input-group-text" type="submit" style="display: inline-block;" aria-label="apply promo code">${Resource.msg('button.apply', 'checkout', null)}</button>
+		            </span>
+		            <label class="float-label" data-content="Promo Code" for="promocode"></label>
+	            </div>
+	        </div>
+	    </div>
+
+	    <isinclude template="checkout/checkoutCouponDisplay" />
+	    <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+
+	    <div class="alert-text coupon-missing-error" role="alert">
+	        <i class="fal fa-exclamation-circle mr-2"></i><span class="error-text">${Resource.msg('error.missing.coupon', 'checkout', null)}</span>
+	    </div>
+	    <div class="alert-text coupon-error-message" role="alert">
+	        <i class="fal fa-exclamation-circle mr-2"></i><span class="error-text"></span>
+	    </div>
+	</form>
+</div>
+
+<!-- GWP Modal HTML -->
+<isset name="successUrl" value="Checkout-Begin" scope="page"/>
+<isif condition="${!empty(pdict.currentStage)}">
+    <isset name="successUrl" value="${URLUtils.url('Checkout-Begin', 'stage', pdict.currentStage)}" scope="page"/>
+</isif>
+<isinclude template="cart/gwpModal/gwpProductModal"/>

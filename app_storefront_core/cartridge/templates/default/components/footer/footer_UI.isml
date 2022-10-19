@@ -1,0 +1,102 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<!--[if gte IE 9 | !IE]><!-->
+<script src="${URLUtils.staticURL('/lib/jquery/jquery-3.5.1.min.js')}" type="text/javascript"></script>
+<!--<![endif]-->
+
+<!--[if lte IE 8]>
+  <script src="${URLUtils.staticURL('/lib/jquery/jquery-1.11.1.min.js')}" type="text/javascript"></script>
+  <script src="//cdn.rawgit.com/weblinc/media-match/master/media.match.min.js" type="text/javascript"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/es5-shim/3.4.0/es5-shim.min.js"></script>
+<![endif]-->
+
+<!--[if IE 9]>
+  <script src="//cdn.rawgit.com/paulirish/matchMedia.js/master/matchMedia.js" type="text/javascript"></script>
+  <script src="//cdn.rawgit.com/paulirish/matchMedia.js/master/matchMedia.addListener.js" type="text/javascript"></script>
+<![endif]-->
+<isscript>
+ var geoLocation = require('app_storefront_core/cartridge/scripts/cart/GetCustomerIp');
+ var countryCode = geoLocation.getCountryCode();
+</isscript>
+<script src="${URLUtils.staticURL('/lib/bootstrap/bootstrap.min.js')}"></script>
+<script defer src="${URLUtils.staticURL('/lib/flickity/flickity.pkgd.min.js')}" ></script>
+
+<script src="${URLUtils.staticURL('/lib/lazyLoadImage.js')}" type="text/javascript"></script>
+<script src="${URLUtils.staticURL('/lib/header-bs3.js')}" type="text/javascript"></script>
+
+<iscomment>third-party add-ons</iscomment>
+<script src="${URLUtils.staticURL('/lib/jquery/jquery.validate.min.js')}" type="text/javascript"></script>
+<script type="text/javascript"><isinclude template="resources/appresources"/></script>
+<script type="text/javascript"><isinclude url="${URLUtils.url('Resources-LoadTransient')}"/></script>
+<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+<isif condition="${!('pageContext' in this) || empty(pageContext)}">
+	<isscript>pageContext = new Object();</isscript>
+</isif>
+<script>pageContext = <isprint value="${JSON.stringify(pageContext)}" encoding="off"/>;</script>
+<script>
+var meta = "${pdict.CurrentPageMetaData.description}";
+var keywords = "${pdict.CurrentPageMetaData.keywords}";
+</script>
+
+    <script type="text/javascript">
+
+        // back to top
+        $(document).ready(function(){
+        	
+        	var lastScrollTop = 0;
+        	var c, currentScrollTop = 0,
+            navbar = $('nav');
+        	
+            $(window).scroll(function () {
+            	
+            	 var window_scrollTop = $(window).scrollTop();
+                 var navbar_height = navbar.height();
+                
+                 currentScrollTop = window_scrollTop;
+                
+                 if (c < currentScrollTop && window_scrollTop > navbar_height + navbar_height) {
+                   navbar.addClass("scrollUp");
+                 } else if (c > currentScrollTop && !(window_scrollTop <= navbar_height)) {
+                   navbar.removeClass("scrollUp");
+                 }
+                 c = currentScrollTop;
+            	
+          	  	var st = $(this).scrollTop();
+          	  	
+          	  	
+          	    lastScrollTop = st;   
+                  
+              });
+            
+
+        });
+        
+
+        $('a.no-scroll').click(function(e) {
+            e.preventDefault();
+          });
+
+    </script>
+
+
+<isif condition="${!empty(countryCode) && (countryCode == 'US' || countryCode == 'CA')}">
+	<script type="text/javascript">
+	  $(document).on('focus click tap','input, textarea',function(){
+        $(this).attr("autocomplete",'disabled');
+      });
+	</script>
+</isif> 
+<isinclude url="${URLUtils.url('KlaviyoSfra-RenderKlaviyo',
+  'title', request.pageMetaData.title,
+  'pagecontexttype', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.type : null,
+  'pagecontexttitle', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.title : null,
+  'searchterm', dw.util.SecureEncoder.forJavaScriptInBlock(request.httpParameterMap.q.stringValue),
+  'searchresultscount', (!empty(pdict.ProductSearchResult) ? ''+pdict.ProductSearchResult.count : null),
+  'productid', (!empty(pdict.Product) ? pdict.Product.ID : null),
+  'pagecgid',  request.httpParameterMap.cgid.stringValue,
+  'orderno', (!empty(pdict.Order) ? pdict.Order.orderNo : null)
+)}"/>
+
+
+<iscomment> One Trust </iscomment>
+<iscontentasset aid="tatcha-onetrust-banner"/>

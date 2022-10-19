@@ -1,0 +1,274 @@
+@import "tatcha-variables-utils";
+// FORMS
+// This allows for no radius on select dropdown and fixes the arrow issue for no radius.
+select:not([multiple]) {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    background-position: right 50%;
+    background-repeat: no-repeat;
+    background-image: url(data:image/svg+xml,%3C%3Fxml%20version%3D%221.0%22%20encoding%3D%22utf-8%22%3F%3E%20%3C%21DOCTYPE%20svg%20PUBLIC%20%22-//W3C//DTD%20SVG%201.1//EN%22%20%22http%3A//www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd%22%3E%20%3Csvg%20version%3D%221.1%22%20id%3D%22Layer_1%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20xmlns%3Axlink%3D%22http%3A//www.w3.org/1999/xlink%22%20x%3D%220px%22%20y%3D%220px%22%20width%3D%2214px%22%20height%3D%2212px%22%20viewBox%3D%220%200%2014%2012%22%20enable-background%3D%22new%200%200%2014%2012%22%20xml%3Aspace%3D%22preserve%22%3E%20%3Cpolygon%20points%3D%223.862%2C7.931%200%2C4.069%207.725%2C4.069%20%22/%3E%3C/svg%3E);
+    @include media-breakpoint-down(xs) {
+    // @media (max-width: $screen-xs-max) {
+        margin-bottom: round(0.5 * $g-unit);
+        &:last-child { margin-bottom: 0; }
+    }
+
+}
+
+input, textarea, select, {
+	&:disabled, &:disabled::placeholder {
+		color: $text-muted;
+		background-image: none;
+	}
+}
+
+.checkbox.disabled label {
+    color: $text-muted;
+}
+
+@include placeholder {
+    font-style:italic;
+    font-weight: $font-weight-light;
+    font-size: floor($font-size-base * 0.75);
+    line-height: $font-size-base * 1.5;
+}
+
+.control-label, .form-label, .data-label {
+    font-size: floor(0.75 * $font-size-base);
+    text-transform: uppercase;
+    font-weight: normal;
+    .label-icon { position: relative; top: -1px; }
+}
+
+.control-label, .form-label, .data-label{ color: $gray-700; }
+.control-label.control-label-lg {
+    font-size: 16px;
+    font-weight: $font-weight-light;
+}
+
+.checkbox label {
+    font-size: 0.875 * $font-size-base;
+    text-transform: none;
+}
+
+
+input[type="radio"] {
+    margin-top: 2px;
+}
+
+.radio {
+    margin-left: $g-unit;
+    label {
+        text-transform: none;
+        font-size: 0.875 * $font-size-base;
+        color: $black;
+    }
+}
+
+.form-control {
+    //ios fix
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    //remove shadow
+    @include box-shadow(none);
+}
+
+.form-inline {
+    :not(.input-group) .form-control {
+        @include media-breakpoint-down(xs) {
+        // @media (max-width: $screen-xs-max) {
+            margin-bottom: $g-unit;
+        }
+    }
+}
+
+.form-horizontal {
+    .control-label {
+        @include media-breakpoint-down(xs) {
+        // @media (max-width: $screen-xs-max) {
+            margin-bottom: 0;
+        }
+        @include media-breakpoint-up(md) {
+        // @media (min-width: $screen-sm-min) {
+            padding-top: floor(0.75 * $g-unit)
+        }
+    }
+    input.form-control[readonly] {
+        @include media-breakpoint-down(xs) {
+        // @media (max-width: $screen-xs-max) {
+            padding: 0;
+            height: 1.75 * $g-unit;
+        }
+    }
+}
+
+.help-block { font-size: floor(0.875 * $font-size-base);}
+
+.form-short-md-lg {
+    @include media-breakpoint-up(lg) {
+    // @media (min-width: $screen-md-min) {
+        width: round(85%);
+    }
+}
+
+// Form Actions - container for links, etc inside forms
+.form-actions {
+    margin: $g-unit 0;
+}
+
+// overwrite help text
+.help-block {
+    color: $gray-800;
+}
+
+// for checkbox buttons
+label.btn-default {
+    &:hover, &:active, &:focus, &:active:focus {
+      @include button-variant($btn-default-color, $btn-default-bg, $btn-default-border);
+    }
+}
+label.btn-default.active {
+  @include button-variant($white, $black, $black);
+  &:hover, &:active, &:focus { @include button-variant($white, $black, $black); }
+}
+
+// input-sm fix
+select.input-sm { line-height: 1.5;padding-right: round(1.5 * $g-unit);}
+select.input-lg { line-height: 1.5;}
+
+// Input Group: Readonly with a cancel button
+.input-group-readonly {
+    width: 100%;
+    input {
+        width: 100%;
+    }
+    .input-group-btn {
+        .btn.btn-link {
+            color: $black;
+            text-decoration: none;
+            position: absolute;
+            right: -4px;
+            top: 0;
+        }
+    }
+}
+
+// Radio Block
+.radio-box-options-block  {
+    .radio-box-option {
+        border: 2px solid $border-default;
+        margin: 0 0 round(0.5 * $g-unit) 0;
+        position: relative;
+        .selected-icon {
+            position: absolute;
+            right: round(0.25 * $g-unit);
+            top: 0;
+            color: $primary;
+            display: none;
+        }
+        &.selected {
+            border-color: $primary;
+            .selected-icon {
+                display: block;
+            }
+        }
+        input {
+            position: absolute;
+            opacity: 0;
+            height: 100%;
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+        }
+        label {
+            padding: 4px 8px 6px;
+        }
+        .radio-text-block {
+            line-height: 1.2;
+        }
+    }   
+}
+
+.my-account-password-reset .radio-box-options-block input {
+    margin: -12px 0 0 -12px;
+}
+
+// Styled Checkbox
+.checkbox-square-style{
+    margin: 0;
+    padding: 0;
+
+    input[type="checkbox"] {
+        position: absolute;
+        visibility: hidden;
+    }
+    label {
+        display: block;
+        margin: 0;
+        position: relative;
+        font-size: 12px;
+        font-weight: $font-weight-normal;
+        text-transform: uppercase;
+        color: $gray-700;
+        height: 100%;
+        padding: 4px 0px 4px 24px;
+        cursor: pointer;
+        -webkit-transition: all 0.25s linear;
+        border: none;
+        background-color: transparent;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none;
+        box-shadow: none;
+        .check-square {
+            height: 16px;
+            width: 16px;
+            top: 10px;
+            left: 2px;
+            display: block;
+            position: absolute;
+            border: 2px solid $gray-700;
+            z-index: 5;
+            transition: border .25s linear;
+            -webkit-transition: border .25s linear;
+        }
+        .check-square:after {
+            border: 2px solid $white;
+            border-top: none;
+            border-right: none;
+            content: "";
+            height: 7px;
+            width: 12px;
+            left: 0;
+            top: 1px;
+            opacity: 0;
+            position: absolute;
+            transform: rotate(-45deg);
+        }
+    }
+    input[type=checkbox]:checked ~ label{
+        border-color: $primary;
+    }
+
+    input[type=checkbox]:checked ~ label .check-square {
+        background-color: $primary;
+        border-color: $primary;
+    }
+    input[type=checkbox]:checked ~ label .check-square::after {
+        opacity: 1;
+    }
+    input[type=checkbox]:disabled {
+        ~ label {
+            color: $gray-300;
+            border-color: $gray-100;
+                .check-dot{
+                border-color: $gray-300;
+            }
+        }
+    }
+
+}
+

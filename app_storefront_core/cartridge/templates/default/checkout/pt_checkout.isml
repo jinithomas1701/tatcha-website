@@ -1,0 +1,49 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'Checkout',
+			type: 'checkout',
+			ns: 'checkout'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<isinclude template="components/header/htmlhead"/>
+	<isinclude template="checkout/pt_checkout_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+	<isinclude template="components/header/checkoutheader"/>
+	<main class="checkout-post-bag" tabindex="-1">
+		<isreplace/>
+		<isinclude template="components/browsertoolscheck"/>
+	</main>
+	
+	<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isinclude template="util/modules"/>
+<isif condition="${dw.system.Site.current.getCustomPreferenceValue('enableGTM')}">
+	<isinclude template="googletagmanager/googletagmanager"/>
+</isif>
+
+<a id="back-to-top" href="#" class="btn btn-primary btn-circle back-to-top" role="button" aria-label="Back to Top"><i class="fal fa-chevron-up"></i></a>	
+
+<isinclude template="util/reporting/ReportUserRegistration.isml"/>
+<isinclude template="product/components/modalslegal"/>
+<isinclude template="components/footer/footer_UI"/>
+<isinclude template="checkout/pt_checkout_VARS"/>
+<isscript>
+session.custom.fedexRates = null;
+</isscript>
+</body>
+</html>

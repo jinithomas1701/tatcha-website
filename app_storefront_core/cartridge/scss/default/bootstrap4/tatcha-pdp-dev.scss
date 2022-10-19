@@ -1,0 +1,113 @@
+@import "tatcha-product-page-new";
+.product-detail-container {
+  .product-img-main {
+    .carousel-cell {
+      text-align: center;
+      width: 100%;
+
+      .video-thumbnail {
+        img {
+          position: absolute;
+          transform: translate(-50%, 40%);
+        }
+
+        svg {
+          position: absolute;
+          transform: translate(-50%, 200%);
+          color: $white;
+        }
+      }
+    }
+
+    @media (max-width:767px){
+      .flickity-prev-next-button {
+        display: block;
+        /*				&.previous {
+                            left: -20px;
+                        }
+
+                        &.next {
+                            right: -20px;
+                        }*/
+      }
+    }
+
+    @media (min-width:768px){
+      .flickity-prev-next-button {
+        display: block;
+        /*				&.previous {
+                            left: -35px;
+                        }
+
+                        &.next {
+                            right: -35px;
+                        }*/
+      }
+    }
+
+  }
+
+  .product-thumbnails-carousel {
+    flex-wrap: wrap;
+    display: flex;
+    .carousel-cell {
+      position: relative;
+      width: 59px;
+      height: 59px;
+      &:first-child {
+        padding-left: initial;
+        width: 59px;
+      }
+
+      .video-thumbnail {
+        img {
+          height: 49px;
+        }
+
+        svg {
+          width: 37px;
+          top: -4px;
+          left: 12px;
+        }
+      }
+
+      @include media-breakpoint-up(lg) {
+        &:first-child {
+          width: 90px;
+          padding-left: initial;
+        }
+        width: 90px;
+        height: 90px;
+        .video-thumbnail {
+          img {
+            height: 80px;
+          }
+
+          svg {
+            width: 60px;
+            top: 11px;
+            left: 16px;
+          }
+        }
+      }
+    }
+  }
+
+  .carousel-nav .carousel-cell.is-nav-selected a{
+    border-color: $black;
+  }
+
+  .product-rating-share-block {
+    display: flex !important;
+  }
+
+  .prd-share-block {
+    text-decoration: underline;
+  }
+
+  @media only screen and (max-width: 768px) {
+    .prd-share-rating-wrap {
+      display: none !important;
+    }
+  }
+}

@@ -1,0 +1,13 @@
+<isif condition="${pdict.braintree.googlepayButtonConfig}" >
+    <div class="braintree-cart-google-buttons-wrap js_braintree_googlepayButtonsWrap">
+        <div class="braintree-cart-google-button-wrap">
+            <div class="braintree-cart-google-button js_braintree_googlepay_button" data-braintree-config="${JSON.stringify(pdict.braintree.googlepayButtonConfig)}">
+                <div class="google-pay-button-with-text google-pay-button-black-with-text"><span class="text"></span><span class="logo"></span></div>
+            </div>
+            <div class="braintreeGooglepayLoader braintree-loader-container">
+                <i class="braintree-loader"></i>
+            </div>
+        </div>
+        <input type="hidden" id="braintreeGooglePayDeviceData" name="braintreeGooglePayDeviceDataInput" value=""/>
+    </div>
+</isif>

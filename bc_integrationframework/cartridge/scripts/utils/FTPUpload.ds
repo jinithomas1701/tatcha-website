@@ -1,0 +1,246 @@
+/**
+* Demandware Script File
+* 
+*
+* Copies files to a remote FTP-Location
+*
+*   @input HostURL : String (S)FTP-Service-URL.
+*   @input UserID : String The User-ID.
+*   @input Password : String The Password.
+*   @input FilePattern : String Input File pattern to search in remote folder(default is  "^[\\w\-]{1,}\\.xml$" (*.xml)).
+*   @input SourceFolder : String Remote folder of FTP Server.
+*   @input TargetFolder : String Local folder in which will placed files, relatively to IMPEX/.
+*   @input SecureFtp : String Type of connection (FTP / SFTP).
+*   @input ArchiveFile : String When file is uploaded, move to archive or keep it? ("Keep" / "Move to archive").
+*   @input Timeout : Number The timeout for this client, in milliseconds.
+*   @output ErrorMsg : String An Error message
+*	@output NoFilesFound: Boolean Whether or not the error was caused by no files being found
+*
+*/
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.io );
+importPackage( dw.util );
+
+/**
+ * The main function.
+ * 
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ * 
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+
+    var ftpClient : Object;
+	var copyResult : boolean = true;
+	
+	//Test mandatory paramater
+	if(!empty(pdict.HostURL) && !empty(pdict.SecureFtp) && !empty(pdict.ArchiveFile) && !empty(pdict.SourceFolder) && !empty(pdict.TargetFolder))
+	{
+		
+		var sftp : boolean = false;
+		if("FTP".equals(pdict.SecureFtp))
+		{
+			ftpClient = new FTPClient();
+		}
+		else
+		{
+			ftpClient = new SFTPClient();
+			sftp = true;
+		}
+		
+		//set connection timeout
+		if(ftpClient != null && pdict.Timeout != null && pdict.Timeout > 0)
+		{
+			ftpClient.setTimeout(pdict.Timeout);
+		}
+		
+		// Try to connect
+		if(!empty(pdict.UserID) && !empty(pdict.Password))
+		{
+			ftpClient.connect(pdict.HostURL, pdict.UserID, pdict.Password);
+		}
+		else
+		{
+			if(sftp)
+			{
+				pdict.ErrorMsg = "User-ID and Password are manadatory for SFTP-Connection.";
+				return PIPELET_ERROR;
+			}
+			else
+			{
+				ftpClient.connect(pdict.HostURL);
+			}
+		}
+		if(ftpClient.connected)
+		{
+			var filePattern : string;
+			if(!empty(pdict.FilePattern))
+			{
+			filePattern = pdict.FilePattern;
+			}
+			else
+			{
+				filePattern = "^[\\w\-]{1,}\\.xml$";
+		
+			}
+		
+			//Archive flag
+			var archiveFile : boolean = true;
+			if("Keep".equals(pdict.ArchiveFile))
+			{
+				archiveFile = false;
+			}
+	   	 	//Copy (and archive) files
+	   	 	var copyResult = copyFilesToTarget(ftpClient, pdict.SourceFolder, filePattern, pdict.TargetFolder, archiveFile);
+		}
+		else
+		{
+			pdict.ErrorMsg = "the connection couldn't be established.";
+			return PIPELET_ERROR;
+		}
+	}
+	else
+	{
+		pdict.ErrorMsg = "one or more mandatory parameters are missing.";
+		return PIPELET_ERROR;
+	}
+	if(ftpClient != null && ftpClient.connected)
+	{
+		ftpClient.disconnect();
+	}
+	
+	if(!copyResult.done )
+	{
+		pdict.NoFilesFound = copyResult.noFilesFound;
+		pdict.ErrorMsg = copyResult.message;
+		return PIPELET_ERROR;
+	}
+	
+	return PIPELET_NEXT;
+    
+   
+}
+/**
+*	Copy (and archive locally) files to the remote FTP-Target-Folder
+*	@param ftpClient	: Object 	FTP Client used
+*	@param sourceFolder : String 	source Folder
+*	@param filePattern 	: String 	The pattern for the filenames
+*	@param targetFolder	: String 	target FTP Folder
+*	@param archiveFile 	: Boolean 	Flag if filess should be archived after successful copying 
+*
+*	@returns Boolean If files were found at the specified location.
+**/
+function copyFilesToTarget(ftpClient : Object, 
+							sourceFolder : string, 
+							filePattern : string, 
+							targetFolder : string, 
+							archiveFile : boolean) : boolean
+{
+	
+	var targetFolderStr : string = targetFolder.charAt(0) == '/' ? targetFolder.substring(1) : targetFolder;
+	var sourceDirStr : string = sourceFolder.charAt(0).equals("/") ? sourceFolder + "/"  : "/" + sourceFolder;
+	
+	var fileList : Collection = getFileListingFromSource(sourceDirStr, filePattern);
+	
+	if(fileList != null && fileList.length > 0)
+	{
+		
+		var dirExists : boolean = ftpClient.cd(targetFolderStr);
+	
+		if(!dirExists)
+		{
+			ftpClient.mkdir(targetFolderStr);
+			ftpClient.cd(targetFolderStr);
+		}
+		
+		for(var i : Number = 0; i < fileList.length; i++)
+		{
+			var fileCopyResult = copyFileToTarget(ftpClient, fileList[i], archiveFile);
+			if (!fileCopyResult.done) {
+				return {'done': false, 'message' : 'error while transfering file : '+fileCopyResult.message};
+			}
+		}
+		
+		return {'done': true, 'message' : ''};
+	}
+	
+	return {'done': false, 'message' : 'File-List was empty.', 'noFilesFound': true};
+}
+/**
+*	get list of files which matches the file pattern
+*	@param sourceFolder	: String 	source Folder
+*	@param filePattern 	: String 	The pattern for the filenames
+*
+*	@returns Collection List of files which match the given pattern
+**/
+function getFileListingFromSource(sourceFolder : string, filePattern : string) : Collection
+{
+	var fileList : Collection = new ArrayList();
+	var theDir : File = new File("IMPEX/" + sourceFolder);
+	
+	var regExp : RegExp = new RegExp(filePattern);
+	
+	fileList.addAll(theDir.listFiles(function(file : File) 
+		{			
+			if (!empty(filePattern)) {
+				return regExp.test(file.name);
+			}
+			
+			return true;
+		}));
+	
+	return fileList;
+}
+/**
+*	Copy (and archive locally) a file to the remote FTP-Target-Folder
+*	@param ftpClient 	: Object 	FTP Client used
+*	@param file 		: File 		The file to copy
+*	@param archiveFile 	: Boolean 	Flag if files should be archived after successful copying 
+*
+**/
+function copyFileToTarget(ftpClient : Object, file : File, archiveFile : boolean) 
+{
+	
+	var fileCopied = ftpClient.putBinary(file.name, file);
+	if (!fileCopied) {
+		let msg = ftpClient.errorMessage || ftpClient.replyMessage || 'unknown error';
+		return {'done' : false, 'message' : msg};
+	}
+	if(archiveFile)
+	{
+		var archiveDirStr : string = file.fullPath.substring( 0, file.fullPath.lastIndexOf("/") ) + "/archive";
+		var archiveDir : File = new File(archiveDirStr);
+		if(!archiveDir.exists())
+		{
+			archiveDir.mkdir();
+		}
+		var theArchiveFile : File = new File(archiveDirStr + "/" + file.name);
+		copyFileToArchive(file, theArchiveFile);
+		file.remove();
+	}
+	
+	return {'done' : true, 'message' : ''};
+}
+/**
+*	Archive a file locally
+*	@param srFile : File The file to archive
+*	@param dtFile : File The archiv file
+*
+**/
+function copyFileToArchive(srFile : File, dtFile : File)
+{
+	var fReader : FileReader = new FileReader(srFile);
+	var fWriter : FileWriter = new FileWriter(dtFile);
+	var nextLine : string;
+	while((nextLine = fReader.readLine()) != null)
+	{
+		fWriter.writeLine(nextLine);
+	}
+	fReader.close();
+	fWriter.close();
+	dtFile.createNewFile();
+	
+}

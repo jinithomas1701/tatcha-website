@@ -1,0 +1,4 @@
+<!--- TEMPLATENAME: yotporeviewsresponse.isml --->
+<iscomment>This template renders the yotpo reviews html response</iscomment>
+<iscache type="relative" hour="24" />
+<isprint value="${pdict.yotpoReviewsHTML}" encoding="xmlcomment" >

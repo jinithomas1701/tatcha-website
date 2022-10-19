@@ -1,0 +1,37 @@
+.product-text {
+  color: white;
+  display: inline-block;
+  font-weight: bold;
+  padding-bottom: 12px;
+  text-shadow: 1px 1px 1px #333333;
+  padding-right: 1rem;
+}
+
+.product-text_container {
+  position: absolute;
+  bottom: 15%;
+  width: 100%;
+  font-size: 1.25rem;
+}
+
+.product_centered-text {
+  text-align: center;
+}
+a.producttile-button:hover {
+  text-decoration: none;
+}
+a.producttile-button {
+  cursor: pointer;
+  padding: 0 1rem;
+  border: 1px solid rgb(0, 112, 210);
+  border-radius: 0.25rem;
+  line-height: 1.875rem;
+  background-color: white;
+  color: rgb(0, 112, 210);
+  user-select: none;
+}
+
+.producttile-button:hover {
+  background-color: rgb(244, 246, 249);
+  color: rgb(0, 112, 210);
+}

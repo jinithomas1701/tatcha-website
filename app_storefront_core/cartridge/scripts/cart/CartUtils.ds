@@ -1,0 +1,162 @@
+var Site = require('dw/system/Site');
+var getzip = require('app_storefront_core/cartridge/scripts/cart/GetCustomerIp');
+importPackage( dw.system );
+importPackage( dw.customer );
+importPackage( dw.order );
+importPackage( dw.util );
+
+function CartUtils() {}
+
+CartUtils.getAddressList = function(basket, currentCustomer, includeLineItems) {	
+	function getAddressObject(addy, plist) {
+		var display = addy.ID;
+		var key = addy.ID;
+		var addyType = "customer";
+		if (!empty(plist)) {
+			addyType = plist.type;
+			var rsc = plist.type==ProductList.TYPE_WISH_LIST ? "wishlist" : "giftregistry"; 
+			display = dw.web.Resource.msgf("singleshipping."+rsc, 'checkout', null, plist.owner.profile.firstName);
+			key = plist.owner.profile.credentials.login+"??"+addy.ID; 
+		}
+		
+		return {
+			UUID : addy.UUID,	
+			ID: addy.ID,
+			key: key,
+            firstName: addy.firstName,
+            lastName: addy.lastName,
+            address1: addy.address1,
+            address2: addy.address2,
+            postalCode: addy.postalCode,
+            city: addy.city,
+            stateCode: addy.stateCode,
+            countryCode: addy.countryCode.value,
+            phone: addy.phone,            
+            type: addyType,
+            displayValue: display            
+		};
+	}
+		
+	var al = new ArrayList();
+		
+	if (empty(basket) || (empty(basket.productLineItems) && empty(basket.giftCertificateLineItems))) {
+		return al;
+	}
+	
+	if (currentCustomer.authenticated && currentCustomer.profile.addressBook.addresses.size() > 0) {
+		var addys = currentCustomer.profile.addressBook.addresses;
+		for(var i=0,len=addys.length;i<len;i++) {
+			al.add(getAddressObject(addys[i], null));
+		}
+	}	
+	if (!includeLineItems) {
+		return al;
+	}
+	
+	var lineItems = basket.productLineItems;
+	for(var i=0,len=lineItems.length;i<len;i++) {
+		var lineItem : ProductLineItem = lineItems[i];
+		// if no wish list or registry address items, 
+		// or the list owner is the customer, 
+		// or the addy is empty, check the next item
+		if (empty(lineItem.productListItem) 
+			|| empty(lineItem.productListItem.list)
+			|| currentCustomer == lineItem.productListItem.list.owner 
+			|| empty(lineItem.productListItem.list.shippingAddress)) {
+			continue;
+		}
+		
+		// finally...		
+		var plist = lineItem.productListItem.list;		
+		var addy : CustomerAddress = plist.shippingAddress;	
+		
+		// build object which can be converted to a json string using JSON.stringify()		
+		al.add(getAddressObject(addy, plist));		
+	}	
+	return al;
+};
+
+CartUtils.checkCartHasGiftWrap = function(basket) {
+ var hasGiftWrap = false;
+ var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+    var productLineItems = basket.productLineItems;
+ for (var q = 0; q < productLineItems.length; q++) {
+  var item = productLineItems[q];
+  if (item.productID === giftWrapId) {
+   hasGiftWrap = true;
+  }
+ }
+ return hasGiftWrap;
+}
+
+
+CartUtils.getProductListAddress = function(id : String, basket, currentCustomer) {
+	var addys = CartUtils.getAddressList(basket, currentCustomer);
+	if (id in addys) {
+		return addys[id];
+	}
+	for(var i=0,len=addys.length;i<len;i++) {
+		if (addys[i].id==id || addys[i].key==id) {
+			return addys[i];
+		}
+	}	
+	return {};
+}
+
+CartUtils.checkCartHasGiftWrap = function(basket) {
+	var hasGiftWrap = false;
+	var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+    var productLineItems = basket.productLineItems;
+	for (var q = 0; q < productLineItems.length; q++) {
+		var item = productLineItems[q];
+		if (item.productID === giftWrapId) {
+			hasGiftWrap = true;
+		}
+	}
+	return hasGiftWrap;
+}
+
+CartUtils.checkCarthasOnlyGiftCertificate = function(basket) {
+	var hasOnlyGiftCertificate = false;
+	var productLineItems = basket.productLineItems;
+	if(productLineItems.length === 0 && basket.giftCertificateLineItems && basket.giftCertificateLineItems.length > 0) {
+		hasOnlyGiftCertificate = true;
+	}
+	
+	return hasOnlyGiftCertificate;
+}
+
+CartUtils.hasAutoDeliveryProductInBag = function(basket) {
+	var hasADProduct = false;
+	var hasSORProductInCart = null;
+	if(Site.getCurrent().getCustomPreferenceValue('SorEnabled')){
+		hasSORProductInCart = session.custom && session.custom.hasSORProducts
+	}
+	if(hasSORProductInCart) {
+		hasADProduct = true;
+	}
+	return hasADProduct;
+}
+
+CartUtils.checkUserSavedAddress = function() {
+	var customer = session.customer;
+	var hasSavedAddress = false;
+	var countryCode = getzip.getCountryCode();
+	var enableADWarning = false;
+	if(customer.authenticated && customer.registered && customer.addressBook && customer.addressBook.addresses && customer.addressBook.addresses.length > 0) {
+		hasSavedAddress = true;
+	}
+
+	if(countryCode !== 'US' || !hasSavedAddress) {
+		enableADWarning = true;
+	}
+	return enableADWarning;
+}
+
+CartUtils.hasSavedInternationalShipping = function (shippingAddress) {
+	var hasInterNationalShipping = false;
+	if(shippingAddress.countryCode.value !== 'US') {
+		hasInterNationalShipping = true;
+	}
+	return hasInterNationalShipping;
+}

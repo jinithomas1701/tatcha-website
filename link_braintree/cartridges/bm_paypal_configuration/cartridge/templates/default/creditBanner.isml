@@ -1,0 +1,105 @@
+<div class="row">
+    <form class="col-6" id="creditbanner-config-form" action="${URLUtils.url('PaypalConfig-SaveCreditBanner')}"
+     data-banner-styles="${pdict.savedBanneConfigs}">
+        <div class="alert alert-success ${pdict.savedBSLocation ? 'show' : 'fade'}" id="credit-banner-alert-message" role="alert">
+            <isif condition="${pdict.savedBSLocation}">
+                <isset name="pageName" value="${ Resource.msgf('banner.configuration.option.' + pdict.savedBSLocation, 'paypalbmconfiguration', null) }" scope="page" />
+                 <h5>${Resource.msgf('banner.saved.title', 'paypalbmconfiguration', null, pageName)} </h5>
+            </isif>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <h3><span class="badge badge-secondary">${Resource.msgf('banner.configuration.tittle', 'paypalbmconfiguration', null)}</span></h3>
+                <select class="form-control" name="placement" id="placement">
+                    <isif condition="${pdict.bannerConfigs.cart}">
+                        <option value="cartCreditConfig">${Resource.msgf('banner.configuration.option.cart', 'paypalbmconfiguration', null)}</option>
+                    </isif>
+                    <isif condition="${pdict.bannerConfigs.pdp}">
+                        <option value="productCreditConfig">${Resource.msgf('banner.configuration.option.product', 'paypalbmconfiguration', null)}</option>
+                    </isif>
+                    <isif condition="${pdict.bannerConfigs.category}">
+                        <option value="categoryCreditConfig">${Resource.msgf('banner.configuration.option.category', 'paypalbmconfiguration', null)}</option>
+                    </isif>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="styleLayout">${Resource.msgf('banner.configuration.layout', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="layout" id="styleLayout">
+                    <option>${Resource.msgf('banner.layout.option.flex', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.layout.option.text', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="styleRatio">${Resource.msgf('banner.configuration.size', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="styleRatio" id="styleRatio">
+                    <option selected>1x1</option>
+                    <option>1x4</option>
+                    <option>8x1</option>
+                    <option>20x1</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="styleColor">${Resource.msgf('banner.configuration.color', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="styleColor" id="styleColor">
+                    <option selected>${Resource.msgf('banner.color.option.blue', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.color.option.gray', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.color.option.white', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.color.option.black', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+         <div class="form-row">
+            <div class="form-group col-6 ">
+                <label for="styleTextColor">${Resource.msgf('banner.configuration.textcolor', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="textColor" id="styleTextColor">
+                    <option>${Resource.msgf('banner.textcolor.option.black', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.textcolor.option.white', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.textcolor.option.monochrome', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.textcolor.option.grayscale', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-6">
+                <label for="styleLogoType">${Resource.msgf('banner.configuration.logotype', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="logoType" id="styleLogoType">
+                    <option>${Resource.msgf('banner.logotype.option.primary', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.logotype.option.alternative', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.logotype.option.inline', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.logotype.option.none', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+         <div class="form-row">
+            <div class="form-group col-6 ">
+                <label for="styleLogoPosition">${Resource.msgf('banner.configuration.logoposition', 'paypalbmconfiguration', null)}</label>
+                <select class="form-control" name="logoPosition" id="styleLogoPosition">
+                    <option>${Resource.msgf('banner.logoposition.option.left', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.logoposition.option.right', 'paypalbmconfiguration', null)}</option>
+                    <option>${Resource.msgf('banner.logoposition.option.top', 'paypalbmconfiguration', null)}</option>
+                </select>
+            </div>
+        </div>
+        </br>
+        <button type="submit" class="btn btn-primary">${Resource.msgf('banner.button.title', 'paypalbmconfiguration', null)}</button>
+    </form>
+    <div class="paypal-credit-banner col-6">
+        <div class="js_credit_message_pdp"
+            data-pp-message
+            data-pp-placement="cart"
+            data-pp-amount="150"
+            data-pp-style-layout
+            data-pp-style-color
+            data-pp-style-ratio
+            data-pp-style-logo-type
+            data-pp-style-text-color
+            data-pp-style-logo-position>
+        </div>
+    </div>
+</div>

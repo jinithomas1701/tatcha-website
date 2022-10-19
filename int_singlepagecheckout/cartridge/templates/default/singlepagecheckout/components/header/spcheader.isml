@@ -1,0 +1,32 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isscript>
+	var Site = require('dw/system/Site');
+	var headerText = Site.getCurrent().getCustomPreferenceValue('CheckoutHeaderText');
+</isscript>
+
+<iscomment> Full page loader</iscomment>
+<div class="loader loader-preventive loader-fullpage" style="display: none;">
+	<div class="loader-centering">
+		<div class="loader-animation"></div>
+		<div class="loader-text">Please wait</div>	
+	</div>
+</div>
+
+<header class="pt-2 pt-lg-3">
+   	<div class="text-center">
+       	<div class="d-lg-inline-block float-left goto-bag">
+          		<i class="fal fa-chevron-double-left mr-1"> </i><a href="${URLUtils.url('Cart-Show')}">Shopping bag</a>
+       	</div>
+       <div class="d-inline-block mx-auto tatcha-logo">
+       	<a href="${URLUtils.url('Home-Show')}" aria-label="tatcha-logo image">
+       		<img class="tatcha-logo" src="${URLUtils.staticURL('/images/bs4/tatcha-logo-nav.png')}" alt="Tatcha Official Site">
+       	</a>
+       </div>
+       <div class="d-none float-right d-lg-block header-contact-info">
+       	<isprint value="${headerText}" />
+       </div>
+  	</div>
+</header>  
+
+

@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${pdict.CurrentSession.customer.anonymous || pdict.CurrentSession.customer.externallyAuthenticated}">
+	
+	<iscomment>Login Unsuccessful Error Message</iscomment>
+	<isif condition="${!pdict.CurrentForms.oauthlogin.loginsucceeded.valid}">
+		<div class="error-form"><isprint value="${Resource.msgf('account.login.logininclude.oauthloginerror','account','')}" /></div>
+	</isif>
+
+	<form action="${URLUtils.httpsContinue()}" method="post" class="clearfix" id="${pdict.CurrentForms.oauthlogin.htmlName}">
+		<fieldset>
+
+			
+
+			<isif condition="${pdict.CurrentSession.customer.anonymous}">
+				<input type="image" alt="Login with Facebook"
+					 class="oAuthIcon btn btn-default btn-facebook btn-xs-sm-block"
+					 id='Facebook'
+					 name="${pdict.CurrentForms.oauthlogin.login.htmlName}"
+				 	 src="${URLUtils.staticURL('/images/Facebook.png')}"
+				 	 style="display: none"
+					 />
+			</isif>
+
+			
+
+			<input type="hidden" name="rememberme" id="rememberme" value="">
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+			<input type="hidden" name="OAuthProvider" id="OAuthProvider" value=""/>
+		</fieldset>
+	</form>
+</isif>

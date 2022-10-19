@@ -1,0 +1,16 @@
+.content-text-editor{
+    &.center{
+        text-align: center;
+    }
+    &.left{
+        text-align: left;
+    }
+    &.right{
+        text-align: right;
+    }
+
+	img{
+    	max-width: 100%;
+    }
+
+}

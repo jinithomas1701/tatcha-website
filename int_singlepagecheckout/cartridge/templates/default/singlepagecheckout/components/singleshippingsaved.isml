@@ -1,0 +1,159 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+var Site = require('dw/system/Site');
+var countriesList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('CountriesList'));
+var paymentInstruments =  (pdict.p_checkoutobj.paymentInfo && !empty(pdict.p_checkoutobj.paymentInfo.paymentInstruments)) ?
+		pdict.p_checkoutobj.paymentInfo.paymentInstruments: false;
+		
+var paymentTypeApplepay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'ApplePay') ? true : false;
+var paymentTypeAfterPay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI') ? true : false;
+var paymentTypePaypal = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'PayPal') ? true : false;
+var afterPayErrorStatus = !empty(request.httpParameterMap.get('afterpay')).stringValue ? request.httpParameterMap.get('afterpay').stringValue : null
+	if(!empty(afterPayErrorStatus)){
+		session.custom.isAfterPayFailed = true;
+	} else if(!empty(request.httpParameterMap.get('status')) && request.httpParameterMap.get('status').stringValue === 'SUCCESS') {
+		session.custom.isAfterPayFailed = false;
+	}
+</isscript>
+<isset name="checkoutObj" value="${pdict.p_checkoutobj}" scope="page" />
+<iscomment> Shipping Form Saved Address </iscomment>
+<div class="mb-0 contactCollapseItem" data-toggle="collapse" data-target="#contactCollapse" aria-controls="contactShipCollapse">
+	<span class="outer-section">
+		<h2 class="section-heading outer-section-inner" id="contact-section-heading" tabindex="-1">1. Contact &amp; Shipping
+			<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true && !paymentTypeApplepay && !paymentTypePaypal)}">
+				<a href="#" class="text-primary float-right edit-contact-section" tabindex="0" aria-label="Edit Contact &amp; Shipping">Edit</a>    		
+    		<iselse>
+    			<a href="#" class="text-primary float-right edit-contact-section d-none" tabindex="0" aria-label="Edit Contact &amp; Shipping">Edit</a>    		
+    		</isif>
+    		<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true &&  (paymentTypePaypal|| paymentTypeApplepay))}">
+    				<a href="${URLUtils.https('SinglePageCheckout-RenderShippingOnlyEdit')}" class="text-primary float-right edit-delivery-section" aria-label="Update Shipping Method">Edit</a>  
+    		</isif>
+		</h2>
+	</span>
+</div>
+
+<div id="contactCollapse" class="indent-container collapse show" aria-label="Contact Collapse" tabindex="-1" data-parent="#accordion" style="">
+<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == false)}">
+	<form action="${URLUtils.https('COShipping-SingleShipping')}" method="post" id="${pdict.CurrentForms.singleshipping.shippingAddress.htmlName}" class="savedaddress">		
+	<input type="hidden" id="isUserLoggedIn" name="isUserLoggedIn" value="true">
+	<isset name="defaultAddressID" value="${pdict.p_checkoutobj.customerInfo.defaultAddressID}" scope="page" />
+	<div class="saved-shipping-details radio-selector mb-4" style="<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true)}">display:none;<iselse></isif>">	      
+		<isloop items="${pdict.p_checkoutobj.customerInfo.addressBook}" var="address" status="status">
+		
+		<isscript>
+		var isDefaultAddress = false;
+		if(!empty(defaultAddressID) && (defaultAddressID == address.ID)) {
+			isDefaultAddress = true;
+		}
+		var addressObj = {			
+			UUID : address.UUID,	
+			ID: address.ID,
+            firstName: address.firstName,
+            lastName: address.lastName,
+            address1: address.address1,
+            address2: address.address2,
+            postalCode: address.postalCode,
+            city: address.city,
+            stateCode: address.stateCode,
+            countryCode: address.countryCode.value,
+            phone: address.phone,
+            isDefaultAddress: isDefaultAddress  
+		};		
+		</isscript>
+		<span class="outer-section" tabindex="0">
+			<div class="address-line-item outer-section-inner" tabindex="-1">
+				<div class="selector">
+					<isif condition="${pdict.p_checkoutobj.customerInfo.selectedAddressID == address.ID}"> 
+					<isset name="selectedCountry" value="${address.countryCode.value}" scope="page" />
+					<input type="radio" checked name="${pdict.CurrentForms.singleshipping.addressList.htmlName}" value="${address.ID}" id="${address.ID}" aria-label="Select for first shipping address" data-address='<isprint value="${JSON.stringify(addressObj).replace("'","^")}" encoding="on"/>'>
+					<iselse>
+					<input type="radio" name="${pdict.CurrentForms.singleshipping.addressList.htmlName}" value="${address.ID}" id="${address.ID}" aria-label="Select for first shipping address"  data-address='<isprint value="${JSON.stringify(addressObj).replace("'","^")}" encoding="on"/>'>					
+					</isif>
+	                <label class="address-select" for="${address.ID}">
+	                	<i class="fa fa-check-circle mr-4"></i>
+	                	<i class="fal fa-circle mr-4"></i>
+	                </label>
+	            </div>
+	            <div class="address-details">
+	            	<div><isprint value="${Resource.msgf('address.saved.dropdown.format.name', 'forms', null, address.firstName, address.lastName)}" /></div>
+	            	<div><isprint value="${Resource.msgf('address.saved.dropdown.format', 'forms', null, address.address1, address.city, address.stateCode, address.postalCode, address.countryCode)}" /></div>
+	            	<div><isprint value="${Resource.msgf('address.saved.dropdown.format.phone', 'forms', null, address.phone)}" /></div>
+	            </div>
+	            <div class="address-actions text-primary">
+	            	<isif condition="${pdict.p_checkoutobj.customerInfo.selectedAddressID != address.ID}"> 
+	            		<span class="outer-section" tabindex="0">
+	            			<span class="outer-section-inner" tabindex="-1"><a  data-address-id="${address.ID}" href="#" class="remove-shipping-address">Remove</a></span>
+	            		</span> 
+	            		<div class="d-inline-block px-2"> | </div>
+	            	</isif>
+
+	            	<span class="outer-section">
+	            		<span class="outer-section-inner" tabindex="-1">
+	            			<a  data-address-id="${address.ID}" role="button" data-address='<isprint value="${JSON.stringify(addressObj).replace("'","^")}" encoding="on"/>' href="#addressModal" data-toggle="modal" id="addressModalLabel" class="edit-shipping-address">Edit</a>
+	            		</span>
+	            	</span>
+	            </div>
+	          </div>
+	     </span>		
+		</isloop>	      
+
+	      <a href="#addressModal" class="text-primary add-address-link" aria-label="Add new address" data-toggle="modal">
+	      <i class="fal fa-plus-circle mr-2 mt-3"></i>
+	      <span class="ml-2">Add new address</span></a>
+	      
+	      <input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.firstName.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.firstName.htmlName}" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.firstName}">
+	      <input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.lastName.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.lastName.htmlName}" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.lastName}">
+	      <input type="hidden" id="country" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlName}"  value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.country}" >
+	      <input type="hidden" id="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address1}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.address1.htmlName}"  value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address1}" >
+		  <isif condition="${empty(pdict.p_checkoutobj.shippingInfo.shippingAddress.address2)}"> 
+			<input type="hidden" id="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address2}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.address2.htmlName}" value="" >
+		  <iselse>
+		  	<input type="hidden" id="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address2}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.address2.htmlName}" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address2}" >
+		  </isif>
+	      <input type="hidden" id="${pdict.p_checkoutobj.shippingInfo.shippingAddress.postal}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.postal.htmlName}" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.postal}" >
+	      <input type="hidden" id="stateText" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.state}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}" >
+	      <input type="hidden" id="state" value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.state}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}" >
+	      <input type="hidden" id="${pdict.p_checkoutobj.shippingInfo.shippingAddress.city}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.city.htmlName}"  value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.city}" >
+	      <input type="hidden" id="${pdict.p_checkoutobj.shippingInfo.shippingAddress.phone}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.phone.htmlName}"  value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.phone}" >
+	      <input type="hidden" id="addressBookId" name="singleshipping_shippingAddress_addressFields_id"  value="" >
+	</div>
+	
+	<iscomment>Delivery and Shipping </iscomment>	
+	<iscomment> Shipping Methods</iscomment>
+	<div class="delivery-container loggedin-space" style="<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true)}">display:none;<iselse></isif>">
+		<h2 class="section-title mt-4">Delivery and gift</h2>
+		<div id="shipping-methods">
+      <isscript>      
+      var stateCode = (pdict.p_checkoutobj.shippingInfo.shippingAddress.state)?pdict.p_checkoutobj.shippingInfo.shippingAddress.state:'';
+      var city = (pdict.p_checkoutobj.shippingInfo.shippingAddress.city)?pdict.p_checkoutobj.shippingInfo.shippingAddress.city:'';
+      var postalCode = (pdict.p_checkoutobj.shippingInfo.shippingAddress.postal)?pdict.p_checkoutobj.shippingInfo.shippingAddress.postal:'';
+      var address1 = (pdict.p_checkoutobj.shippingInfo.shippingAddress.address1)?pdict.p_checkoutobj.shippingInfo.shippingAddress.address1:'';
+      var address2 = (pdict.p_checkoutobj.shippingInfo.shippingAddress.address2)?pdict.p_checkoutobj.shippingInfo.shippingAddress.address2:'';
+      </isscript>
+			<isinclude url="${URLUtils.https('COShipping-UpdateShippingMethodList','countryCode',selectedCountry,'stateCode',stateCode,'city',city,'postalCode',postalCode,'address1',address1,'address2',address2)}"/>
+		</div>
+		<input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlName}"/>				
+		<input type="hidden" id="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlName}" name="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlName}"/>		
+		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+		<input id="customeremail" type="hidden" name="customeremail" value="">
+		<input  type="hidden" name="${pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.htmlName}" id="${pdict.CurrentForms.singleshipping.shippingAddress.shippingMethodID.htmlName}" value="" />		    
+		<input type="hidden" name="${pdict.CurrentForms.singleshipping.shippingAddress.save.htmlName}" value="true"/>
+
+		
+		<iscomment>Gift and warnings </iscomment>
+        <isspgiftwrapandwarnings p_checkoutobj="${checkoutObj}" />
+        
+        <input type="hidden" id="paymentInfoAvailable" name="paymentInfoAvailable" value="${checkoutObj.paymentInfoAvailable}">				
+		<isif condition="${!checkoutObj.paymentInfoAvailable}">
+			<button class="btn btn-primary shipping-submit" type="button" aria-label="Continue  to payment">Continue  to payment</button>
+		<iselse>
+        	<button class="btn btn-primary shipping-submit" type="button" aria-label="Save and Review">Save and Review</button>
+        </isif>		
+	</div>
+</form>
+</isif>	
+	<iscomment> Shipping Summary </iscomment>
+	<isspshippingsummary p_checkoutobj="${checkoutObj}" />	
+	
+       
+</div>

@@ -1,0 +1,28 @@
+<isscript>
+var Site = require('dw/system/Site');
+var provinceList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('provinceList'));
+</isscript>
+<isif condition="${!empty(pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlValue)}">
+	<isset name="selectedState" value="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields.states.state.htmlValue}" scope="page" />
+<iselse>
+	<isset name="selectedState" value="" scope="page" />
+</isif>
+
+<isif condition="${(pdict.CurrentForms.singleshipping.shippingAddress.addressFields.country.htmlValue == 'CA')}">
+	<isset name="style" value="required" scope="page" />
+<iselse>
+	<isset name="style" value="style='display:none'" scope="page" />
+</isif>
+<select id="stateNonUS" data-msg-required="${Resource.msg('singleshipping.state.required', 'checkout', null)}" class="form-control floating__input  form-control-lg pl-3" ${style}>
+	<isloop items="${provinceList}" alias="province">
+		<isif condition="${province.country == 'CA'}"> 
+			<isloop items="${province.states}" alias="pstate">
+				<isif condition="${selectedState == pstate.value}">
+					<option class="select-option" label="${pstate.label}" selected value="${pstate.value}">${pstate.label}</option>
+				<iselse>
+					<option class="select-option" label="${pstate.label}"  value="${pstate.value}">${pstate.label}</option>
+				</isif>
+			</isloop>
+		</isif>
+	</isloop>
+</select>

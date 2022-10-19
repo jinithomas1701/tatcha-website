@@ -1,0 +1,470 @@
+@import "bootstrap-custom-import";
+@import "tatcha-baseline";
+// Hide scroll menu
+div.scrollmenu {
+    display: none;
+}
+.floating__input {
+    padding: 1.8rem 1rem 0.6rem;
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
+}
+.order-confirm-login{
+    margin-bottom: -3px;
+}
+.order-confirm-page{
+    #extole_zone_confirmation{
+      img{
+          padding-bottom: 0 !important;
+          width: 100% !important;
+          height: 100% !important;
+          border-radius: 4px !important;
+      }
+    }
+    .floating__input:placeholder-shown:not([style*="display: none"]):not([style*="display:none"]):not([class*='d-none']) ~ .float-label::before {
+        top:0.2rem;
+    }
+    .floating__input:focus:not([style*="display: none"]):not([style*="display:none"]):not([class*='d-none']) ~ .float-label::before {
+        top:0.6rem;
+    }
+
+	.checkout-registration{
+		@media(min-width:768px){
+			width: 18.8rem;
+    		margin: auto;
+		}
+		.form-group {
+		    &.has-error {
+		        margin-bottom: 4rem;
+				.help-block {
+						display: none;
+					    color: $red;
+					    font-size: 12px;
+	 					line-height: 16px;
+					    padding-top: 6px ! important;
+					  }
+		    }
+		}
+		.form-check-input{
+			width: 16px;
+    		height: 16px
+		}
+	}
+
+    .order-confirm-background{
+        .shipping-container-linc{
+            .optin_title.customizable{
+                line-height: 1.5 !important;
+            }
+            .optin_description.customizable{
+                font-weight: 300!important;
+    			color: $black!important; 
+            }
+            .OptinWidget .option{
+                height: 44px !important;
+                .toggle_container{
+                    margin-top: 10px;
+                }
+                .label{
+                    height: 46px;
+                    .label_text{
+                        padding-bottom: 13px;
+                    }
+                }
+                .label_img{
+                    padding: 7px 12px 20px 0px;
+                }
+            }
+        }
+        .reg-customer{
+            .optin_title.customizable{
+                font-size: 24px !important;
+                font-family: "minion-pro";
+            }
+        }
+    }
+    .linc-optin-widget{
+        .optin_info_container{
+            display: block !important;
+            max-width: none !important;
+            width: auto !important;
+            text-align: center !important;
+            margin-bottom: 5px !important;
+        }
+        .optin_options{
+            margin:0rem  auto 0rem !important;
+            background-color: $white !important;
+            display: block !important;
+            color: $text-black;
+			@media(min-width:768px){
+				width: 18.8rem !important;
+			}
+        }
+        .optin_title.customizable{
+            font-size: 1.125rem !important;
+            font-weight: 400 !important;
+            font-family: 'minion-pro';
+			text-transform: none;
+        }
+        .optin_description.customizable{
+            font-size: 1rem !important;
+            color: $text-black;
+            margin-top:1rem;
+        }
+
+    }
+
+    .order-summary{
+        hr{
+            border-color: $black;
+
+        }
+        .estimated-total{
+            font-weight: 600;
+        }
+    }
+    .mobile-form-container{
+        background: url('../assets/welcome-email-3 2@2x.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    color:$black;
+    padding: 0;
+    @include media-breakpoint-up(md){
+        padding:0 15px;
+    }
+    @include media-breakpoint-up(xl){
+        padding:0 4rem;
+    }
+    .shipping-delivery-payment-details{
+        .title{
+            font-weight: 600;
+            font-size: rem-calc(14);
+            @include media-breakpoint-up(lg){
+                font-size: rem-calc(16);
+            }
+            padding-top: 2rem;
+            padding-bottom: 0.5rem;
+        }
+    }
+    .order-title{
+        font-weight: 600;
+        font-size: rem-calc(14);
+        @include media-breakpoint-up(lg){
+            font-size: rem-calc(16);
+        }
+    }
+    .product-list-items {
+        max-height: 220px;
+        @include media-breakpoint-up(md){
+            max-height: 260px;
+        }
+
+        overflow-y: auto;
+        .product-item {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+            .product-img {
+                width: rem-calc(75);
+                border-radius: 4px;
+                display: inline-block;
+                margin-right: 0.5rem;
+                vertical-align: top;
+                @include media-breakpoint-up(md) {
+                    width: rem-calc(90);
+                }
+
+            }
+
+            .product-content {
+                display: inline-block;
+                // max-width: 180px;
+
+                .product-name {
+                    font-weight: $font-weight-bold;
+                }
+
+                .product-size {
+                    text-transform: capitalize;
+                    font-size: rem-calc(14);
+                    @include media-breakpoint-up(lg){
+                        font-size: rem-calc(16);
+                    }
+                }
+            }
+
+            .product-qty {
+                width: 50px;
+                float: right;
+                margin-right: 2rem;
+                @include media-breakpoint-up(xl) {
+                    margin-right: 1rem;
+                }
+                @include media-breakpoint-up(lg) {
+                    margin-right: 1rem;
+                }
+            }
+
+            .price {
+                float: right;
+
+                vertical-align: top;
+                width: 80px;
+                text-align: right;
+                @include media-breakpoint-up(md) {
+                    width: 90px;
+                }
+
+                .stike.price-unadjusted {
+                    text-decoration: line-through;
+                    color: #869196;
+                }
+            }
+        }
+    }
+
+    .cancel-links{
+        a{
+            color:$black;
+            font-size: 14px;
+            text-transform: uppercase;
+            color:$black;
+        }
+        span{
+            padding: 0 0.5rem;
+            color:$black;
+        }
+    }
+
+    .order-questions{
+        vertical-align: middle;
+        a{
+            color:$text-black;
+            text-decoration: underline;
+            margin-top: 1rem;
+            text-underline-offset: 2px;
+        }
+        .title{
+            color:$black;
+            font-family: 'minion-pro';
+            font-size: rem-calc(18);
+            @include media-breakpoint-up(lg){
+                font-size: rem-calc(28);
+            }
+        }
+    }
+
+    .creating-heading{
+
+        font-weight: $font-weight-bold;
+        margin-bottom: 1rem;
+        width:80%;
+        margin: 0 auto;
+
+        color:$black;
+        @include media-breakpoint-up(md){
+            color:$black;
+            font-size: 18px;
+            width:unset;
+            margin:unset;
+            padding-top: unset;
+        }
+    }
+    
+    .benefits-title{
+        font-weight: $font-weight-bold;
+    }
+    .benefits-list{
+        padding-left: 18px;
+        line-height: 1.7;
+    }
+    .benefits-container{
+        width:80%;
+        margin:0 auto;
+        @include media-breakpoint-up(md){
+            width:unset;
+            margin:unset;
+        }
+    }
+    .signup-form{
+        width:80%;
+        margin:0 auto;
+
+        @include media-breakpoint-up(md){
+            width:unset;
+            margin:unset;
+        }
+        label{
+            font-size: 12px;
+            font-weight: $font-weight-bold;
+            color:$black;
+            span{
+                font-weight: $font-weight-normal;
+                font-size: 10px;
+            }
+            .email{
+                font-weight: $font-weight-normal;
+                font-size: 12px;
+            }
+        }
+        input[type=password]{
+            border-radius: 4px;
+        }
+        input[type=text]{
+            border-radius: 4px;
+        }
+
+        button{
+            font-size: 12px;
+            padding: 0.5rem 1.5rem;
+        }
+    }
+    .order-confirm-details{
+        .title{
+            font-size:rem-calc(28);
+            text-transform: capitalize;
+            margin-top:2.5rem;
+            margin-bottom:1rem;
+            text-align: center;
+            font-family: 'minion-pro';
+            line-height: 44px;
+            @include media-breakpoint-up(md){
+                font-size:rem-calc(38);
+                text-align: left;
+            }
+        }
+        .order-number{
+            font-weight: 400;
+            font-size:18px;
+            margin-bottom: 1rem;
+            text-align: center;
+            @include media-breakpoint-up(md){
+                font-size:20px;
+                text-align: left;
+            }
+        }
+        .email-text{
+            text-align: center;
+
+            @include media-breakpoint-up(md){
+                text-align: left;
+                border: none;
+            }
+            padding-bottom: 1rem;
+
+
+        }
+
+    }
+    .order-confirm-background{
+        background: #EEEEF6;
+        .creating-heading{
+            font-size: rem-calc(18);
+            font-family: 'minion-pro';
+            font-weight: 400;
+        }
+        margin: 1rem;
+        @include media-breakpoint-up(lg){
+            margin: 0;
+        }
+        .order-account-submit{
+            position: absolute;
+            right: 1rem;
+            top:0.4rem;
+            cursor: pointer;
+        }
+        @include  media-breakpoint-up(lg){
+            width: 100%;
+        }
+    }
+    .order-confirm-banner{
+        position: relative;
+        margin: 1rem;
+        img{
+            border-radius: rem-calc(4);
+        }
+        @include media-breakpoint-up(lg){
+            margin: 0;
+        }
+        .anchor-style-reset{
+            color:$text-black;
+            text-decoration: none;
+            &:hover{
+              color:$text-black;
+              text-decoration: none;
+            }
+        }
+        .confirm-skin-care-wrap{
+            //height: 320px;
+            display: block;
+            width: 100%;
+            .promo-img{
+                width: 100%;
+                height: 100%;
+            }
+            .skincare-detail-wrap{
+                position: absolute;
+                width: 80%;
+                top: 36px;
+                left: 50%;
+                text-align: center;
+                transform: translateX(-50%);
+                .skincare-header{
+                    line-height: 28px;
+                    font-weight: 400;
+                    font-size: 24px;
+                    font-family: 'minion-pro';
+                }
+                .skincare-body{
+                    line-height: 24px;
+                    font-weight: 400;
+                    font-size: 16px;
+                }
+                .skincare-button{
+                    line-height: 24px;
+                    font-weight: 400;
+                }
+            }
+        }
+        .content{
+            position: absolute;
+            left:50%;
+            transform: translateX(-50%);
+            text-align: center;
+            padding: 8%;
+            width:100%;
+            font-size: 0.875rem;
+            &.black{
+                color:$black;
+                a{
+                    color:$black;
+                }
+            }
+            &.white{
+                color:$white;
+                a{
+                    color:$white;
+                }
+            }
+            .title{
+                text-transform: uppercase;
+                font-weight: $font-weight-bold;
+
+            }
+        }
+    }
+
+    .merc-disc .success-text {
+        border-bottom: 1px solid #9ea7b0;
+        color: #28a745;
+    }
+}
+    #thankyouNote{
+        .thankyou-close-button{
+			border-radius: 10px;
+			right: 20px;
+			top: 19px;
+			height:20px;
+			width:20px;
+        }
+    }

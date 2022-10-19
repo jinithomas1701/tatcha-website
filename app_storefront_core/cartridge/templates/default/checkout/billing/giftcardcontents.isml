@@ -1,0 +1,104 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment> TEMPLATENAME: giftcardcontents.isml </iscomment>
+<isinclude template="util/modules"/>
+
+
+<!-- Payment using gift card starts here -->
+<isset name="gcApplicable" value="${'false'}" scope="page"/>
+<iscomment>SmartOrderRefill modification</iscomment>
+<isif condition="${dw.order.PaymentMgr.getPaymentMethod(dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE).isActive() && !pdict.CurrentSession.custom.HasSORProducts && !pdict.CurrentSession.custom.hasSORProducts }">
+    <isset name="gcApplicable" value="${'true'}" scope="page"/>
+</isif>
+
+<isset name="gcPITotal" value="${0}" scope="pdict"/>
+<isset name="OrderTotal" value="${pdict.Basket.totalGrossPrice.value}" scope="pdict"/>
+<isif condition="${gcApplicable == 'true'}">
+<iscomment>only provide gift certificate redemption, if the basket doesn't contain any gift certificates</iscomment>
+	<isif condition="${pdict.Basket.giftCertificateLineItems.size() == 0}">
+	<div class="panel-section checkout-gift-card-block" id="checkout-gift-card-block">
+	    <isif condition="${pdict.Basket.giftCertificatePaymentInstruments.size() == 0}">
+		<h3>${Resource.msg('checkout.giftcard','checkout',null)}</h3>
+		<div class="use-giftcard">
+			<button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-target="#giftCardModal">
+				${Resource.msg('checkout.usegiftcard','checkout',null)}
+			</button>
+		</div>
+		</isif>
+        <div class="redemption giftcert">
+            <iscomment>render gift cert redeemed success message for each gift certificate payment instrument</iscomment>
+            <isset name="gcPITotal" value="${0}" scope="pdict"/>
+            <isif condition="${pdict.Basket.giftCertificatePaymentInstruments.size() > 0}">
+                <isloop items="${pdict.Basket.giftCertificatePaymentInstruments}" var="giftCertPI">
+                    <isset name="gcPITotal" value="${pdict.gcPITotal + giftCertPI.paymentTransaction.amount}" scope="pdict"/>
+                    <div class="alert alert-success alert-giftcard-applied " id="gc-${giftCertPI.getGiftCertificateCode()}">
+                         <div class="giftcard-applied-line">
+                         	$${Resource.msgf('billing.giftcertredeemed', 'checkout', null, parseFloat(giftCertPI.paymentTransaction.amount).toFixed(2))}
+                       	</div>
+						<div class="giftcard-undo">                                    
+							<a id="rgc-${giftCertPI.getGiftCertificateCode()} removeGiftcard" class="remove" href="${URLUtils.https('COBilling-RemoveGiftCertificate', 'giftCertificateID', giftCertPI.getGiftCertificateCode(),'format','old')}">					                                 
+                                ${Resource.msg('global.undo','locale',null)}
+                            </a>
+                        </div>
+                    </div>
+                </isloop>
+                
+                <isscript>
+                 	var app = require('app_storefront_controllers/cartridge/scripts/app');
+                 	var cartModel = app.getModel('Cart').get();
+                 	var balanceAmount = cartModel.getNonGiftCertificateAmount();
+             	</isscript>
+             	<isif condition="${!empty(balanceAmount) && balanceAmount.value > 0}">
+             			<div class="redemption-remaining-msg">
+                         	<isif condition="${pdict.CurrentCustomer.authenticated && !empty(pdict.ApplicableCreditCards)}">
+                         		${Resource.msgf('billing.giftcertWithCreditCard', 'checkout', null, balanceAmount.value)}
+                         	<iselse>
+                         		${Resource.msgf('billing.giftcertbalance', 'checkout', null, balanceAmount.value)}
+                         	</isif>
+                     	</div>
+             	</isif>
+
+                <isif condition="${pdict.Basket.totalNetPrice!=null && pdict.Basket.totalNetPrice.value-pdict.gcPITotal<=0}">
+                    <isset name="OrderTotal" value="${pdict.Basket.totalGrossPrice.value-pdict.gcPITotal}" scope="pdict"/>
+                </isif>
+            </isif>
+        </div>
+	</div>			
+<!-- Gift card model start -->
+<div class="modal fade modal-primary modal-tatcha-gift-info" id="giftCardModal" tabindex="-1" role="dialog" aria-labelledby="giftCardModal">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close giftcard-close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+        <h4 class="modal-title"><strong>${Resource.msg('checkout.giftcard','checkout',null)}</strong></h4>
+      </div>
+      <form>
+        <div class="modal-body">
+          <div class="alert alert-default alert-giftcard-balance" role="alert" style="display: none;">This card has <strong>$100.00</strong> available.</div>
+          <div class="alert alert-danger checkout-alert" role="alert" style="display: none;">Checkout Errors here.</div>
+          <div class="balance error"></div>
+          <div class="giftcert-error error"></div>
+          <isscript>
+			var attributes = {
+				autocomplete: "off"
+			};
+		  </isscript>
+          <isinputfield formfield="${pdict.CurrentForms.billing.giftCertCode}" type="input" rowclass="form-group" attributes="${attributes}" />
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default btn-sm giftcard-close" data-dismiss="modal">${Resource.msg('global.cancel','locale',null)}</button>
+
+           <button class="simple cancel btn btn-default btn-sm giftcard-check" id="check-giftcert" disabled="true" type="submit" name="${pdict.CurrentForms.billing.checkBalance.htmlName}" value="${Resource.msg('global.checkbalance','locale',null)}">
+                <span>${Resource.msg('global.checkbalance','locale',null)}</span>
+           </button>
+          <button class="apply cancel btn btn-primary btn-sm giftcard-apply" id="add-giftcert" disabled="true" type="submit" name="${pdict.CurrentForms.billing.redeemGiftCert.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
+					<span>${Resource.msg('global.apply','locale',null)}</span>
+           </button>							        
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+</isif>
+</isif>
+<!-- Gift card model Ends -->										
+<!-- Payment using gift card ends here -->

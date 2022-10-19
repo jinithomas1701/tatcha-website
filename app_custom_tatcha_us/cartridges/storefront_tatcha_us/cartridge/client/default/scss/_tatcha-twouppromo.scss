@@ -1,0 +1,59 @@
+.twouppromo-container{
+  .twouppromo-card{
+    @media (max-width: 767.98px){
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+
+  .promo-img{
+    border-radius: rem-calc(8);
+    width: auto;
+    height: auto;
+  }
+  .card-details-container{
+    position: absolute;
+    width: rem-calc(171);
+    top: rem-calc(15);
+	left: rem-calc(15)!important;
+    @include media-breakpoint-up(lg){
+      width: rem-calc(243);
+      top: rem-calc(30);
+      left: rem-calc(45)!important;
+    }
+	@media (min-width: 768px) and (max-width:912px) {
+        left: rem-calc(30)!important;
+    }
+    .card-name{
+      font-size:  1.125rem;
+      font-weight: 400;
+      font-family: 'minion-pro';
+      line-height: 1.5rem;
+
+      @include media-breakpoint-up(lg){
+        font-size:  1.25rem;
+        margin-bottom: rem-calc(8);
+        line-height: 1.75rem;
+      }
+
+    }
+    .card-content{
+      font-size:  rem-calc(14);
+      line-height: rem-calc(20);
+      @include media-breakpoint-up(lg){
+        font-size: rem-calc(16);
+        line-height: rem-calc(24);
+      }
+    }
+  }
+
+}
+
+.anchor-style-reset{
+  color:$text-black;
+  text-decoration: none;
+  &:hover{
+    color:$text-black;
+    text-decoration: none;
+  }
+}

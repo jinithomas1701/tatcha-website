@@ -1,0 +1,84 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+</isscript>
+
+<isdecorate template="util/pt_empty">
+
+    <form method="post" action="${request.isHttpSecure() ? URLUtils.https('Braintree-EditDefaultShippinAddressHandle').toString() : URLUtils.http('Braintree-EditDefaultShippinAddressHandle').toString()}" id="braintreePaypalEditDefaultShippingAddress" name="${pdict.CurrentForms.profile.address.htmlName}" class="checkout-billing address form-horizontal">
+        <fieldset>
+
+            <div class="dialog-required"> <span class="required-indicator">&#8226; <em>${Resource.msg('global.requiredfield','locale',null)}</em></span></div>
+
+            <isif condition="${pdict.CurrentCustomer.authenticated && pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">
+                <div class="select-address">
+                    <div class="form-row">
+                        <label for="${pdict.CurrentForms.billing.addressList.htmlName}">${Resource.msg('braintree.paypal.editdefaultshippingaddress.selectaddress','locale',null)}</label>
+                        <isscript>
+                            var customerAddresses = (function() {
+                                var result = [];
+                                var bookAddresses = customer.profile.addressBook.addresses;
+                                for(let i = 0; i < bookAddresses.length; i++) {
+                                    let item = bookAddresses[i];
+                                    result.push({
+                                        firstname: item.firstName,
+                                        lastname: item.lastName,
+                                        address1: item.address1,
+                                        address2: item.address2,
+                                        postal: item.postalCode,
+                                        city: item.city,
+                                        states_state: item.stateCode,
+                                        country: item.countryCode.value,
+                                        phone: item.phone
+                                    });
+                                }
+                                return result;
+                            })();
+                        </isscript>
+                        <div class="field-wrapper">
+                            <select id="braintreePaypalSelectSavedAddress">
+                                <option selected="selected" value="">${Resource.msg('braintree.paypal.editdefaultshippingaddress.selectaddress.optiondefault','locale',null)}</option>
+                                <isloop items="${customerAddresses}" var="item">
+                                    <option value='${JSON.stringify(item).replace("'",'^')}'>${Resource.msgf('braintree.paypal.editdefaultshippingaddress.selectaddress.optionname', 'locale', null, item.firstname, item.lastname, item.address1, item.address2, item.postal, item.city,  item.states_state, item.country)}</option>
+                                </isloop>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </isif>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.firstname}" type="input"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.lastname}" type="input"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.address1}" type="input"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.address2}" type="input"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.country}" type="select"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.states.state}" type="select"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.city}" type="input"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.postal}" type="input"/>
+
+            <isinputfield formfield="${pdict.CurrentForms.profile.address.phone}" type="input"/>
+
+            <div class="form-row form-row-button">
+                <button class="apply-button" type="submit" name="${pdict.CurrentForms.profile.address.edit.htmlName}" value="${Resource.msg('braintree.paypal.editdefaultshippingaddress.button.submit','locale',null)}">
+                    ${Resource.msg('braintree.paypal.editdefaultshippingaddress.button.submit','locale',null)}
+                </button>
+                <button class="cancel cancel-button" type="submit" name="${pdict.CurrentForms.profile.address.cancel.htmlName}" value="${Resource.msg('global.cancel','locale',null)}">
+                    ${Resource.msg('global.cancel','locale',null)}
+                </button>
+            </div>
+
+            <input type="hidden" name="${pdict.CurrentForms.profile.secureKeyHtmlName}" value="${pdict.CurrentForms.profile.secureKeyValue}"/>
+
+        </fieldset>
+    </form>
+
+</isdecorate>

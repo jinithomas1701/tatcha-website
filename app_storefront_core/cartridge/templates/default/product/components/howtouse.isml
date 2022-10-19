@@ -1,0 +1,177 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Prints how to use. This has video container.
+</iscomment>
+<isscript>
+importScript("int_tatcha_dis:common/GetImageUrl.ds");
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+var isSkinTypeVariant = ProductUtils.isSkinTypeVariant(pdict.Product);
+var howToUseContent = ProductUtils.getHowToUseContent(pdict.Product,true);
+var suggestedRoutine = ProductUtils.getSuggestedRoutine(pdict.Product,isSkinTypeVariant);
+</isscript>
+
+		<iscomment> At least suggested usage should be there for the template to be rendered </iscomment>
+		<isif condition="${!empty(howToUseContent.suggestedUsage) || !empty(howToUseContent.dosage) || !empty(howToUseContent.texture)}">		
+		<h2 class="section-anchor">${Resource.msg('global.product.howtouse.heading', 'locale', null)}</h2>
+		<div class="product-suggested-usage">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-8 col-md-offset-2 offset-md-2">
+					<isif condition="${!empty(howToUseContent.suggestedUsage)}">
+						<iscomment> check if how to use is set</iscomment>
+						<h2>${Resource.msg('global.product.howtouse.heading1', 'locale', null)}</h2>
+						<isif condition="${!empty(howToUseContent.howToUse) }">
+							<iscomment> checking video source </iscomment>
+							<isif condition="${empty(howToUseContent.howToUseVideoSource.value) || howToUseContent.howToUseVideoSource.value == 'youtube'}">
+							
+							<div class="product-howto-media" id="howtouse-video-container">
+								<iframe class="youtube-video-frame" allowfullscreen="" title="how-to-use-vedio" frameborder="0" src="https://www.youtube.com/embed/${howToUseContent.howToUse}?rel=0">
+								</iframe>
+							</div>
+							<iselseif condition="${howToUseContent.howToUseVideoSource.value == 'vimeo'}" >
+								<div class="product-howto-media" id="howtouse-video-container">
+									<iframe class="youtube-video-frame" title="how-to-use-vedio" frameborder="0" src="https://player.vimeo.com/video/${howToUseContent.howToUse}"
+									webkitallowfullscreen mozallowfullscreen allowfullscreen>
+									</iframe>
+								</div>
+							</iselseif>
+							
+							</isif>
+						</isif>
+						<p><isprint value="${howToUseContent.suggestedUsage}" encoding="off" /></p>
+					</isif>
+					</div>
+				</div>
+				<div class="row">
+					<div class="usage-block">
+					<isif condition="${!empty(howToUseContent.dosage) }">	
+						<div class="usage-centering-unit">
+							<h2>${Resource.msg('global.product.howtouse.heading2', 'locale', null)}</h2>
+							<isif condition="${!empty(howToUseContent.dosageImage) }">							
+								<img class="img-fluid lazyImage" width="360px" alt="dosage" data-src="${howToUseContent.dosageImage.httpURL}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+							</isif>
+							<p><isprint value="${howToUseContent.dosage}"></p>
+						</div>
+					</isif>
+					<isif condition="${!empty(howToUseContent.texture) }">	
+						<div class="usage-centering-unit">
+							<h2>${Resource.msg('global.product.howtouse.heading3', 'locale', null)}</h2>
+							<isif condition="${!empty(howToUseContent.textureImage) }">	
+								<img class="img-fluid lazyImage" width="360px" alt="texture" data-src="${howToUseContent.textureImage.httpURL}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+							</isif>
+							<p><isprint value="${howToUseContent.texture}"></p>
+						</div>
+					</isif>	
+					</div>
+				</div>
+			</div>
+		</div>
+		</isif>		
+		
+
+		<iscomment> Suggested Routine </iscomment>	
+		<isif condition="${!empty(suggestedRoutine) && !empty(suggestedRoutine.recProducts) && suggestedRoutine.recProducts.size() > 1}">			
+			<div class="product-suggested-routine">
+			<div class="container">
+				<div class="row">
+					<div class="col-xs-12 col-12">
+						<h2>${Resource.msg('global.product.suggestedRoutine.heading', 'locale', null)}</h2>												
+						<div class="routine-step-block">
+							<isset name="mainProduct" value="${pdict.Product}" scope="pdict"/>
+							
+							<isloop items="${suggestedRoutine.recProducts}" var="rec"  end="${suggestedRoutine.recProductShortDesc.size()}" status="smStatus">
+								<isset name="Product" value="${rec}" scope="pdict"/>
+								<div class="routine-step product-list-unit carousel-cell" data-index="${smStatus.index}">
+							    	<div class="product-img-block">
+										<isif condition="${pdict.Product.master && pdict.CurrentVariationModel}">
+										    <isset name="imageProduct" value="${pdict.CurrentVariationModel}" scope="page"/>
+										<iselseif condition="${pdict.Product.variant && !empty(pdict.Product.getVariationModel())}">
+										    <isset name="imageProduct" value="${pdict.Product.getVariationModel()}" scope="page"/>
+										<iselse/>
+										    <isset name="imageProduct" value="${pdict.Product}" scope="page"/>
+										</isif>
+										<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+											<isset name="imageUrl" value="${getImageUrl(imageProduct,'medium')}" scope="page"/>
+										<iselse/>
+											<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+										</isif>										
+																	    	
+										<img alt="${pdict.Product.name}" class="img-responsive img-fluid product-img lazyImage" data-src="${imageUrl}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+									</div>
+									<h6>${Resource.msg('global.product.suggestedRoutine.step'+(smStatus.index+1), 'locale', null)}</h6>
+									<h3 class="product-name">
+										<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}"><isprint value="${pdict.Product.name.substring(0,48)}"/>
+											<span class="product-subtitle">
+												<isif condition="${!empty(pdict.Product) && !empty(pdict.Product.custom.secondaryName)}">
+													<isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/>
+												</isif>
+											</span>
+										</a>
+									</h3>
+									
+									<iscomment>Rating</iscomment>
+									<isinclude template="product/components/carousel_rating" />				
+									
+									<div class="product-price">
+										<isset name="showSpecialPrice" value="false" scope="page" />
+										<isinclude template="product/components/pricing.isml"/>
+									</div>
+									<isscript>
+										let available = null;
+										if(pdict.Product) {
+											let avm = pdict.Product.availabilityModel;
+											available = avm.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK
+											&& avm.inventoryRecord != null
+											&& avm.inventoryRecord.stockLevel.available;
+										}
+										var productPrice = 0;
+										var PriceModel = pdict.Product.getPriceModel();
+										if(PriceModel) {
+											productPrice = PriceModel.getPrice().value;
+										}
+										var comingSoonMsg = (pdict.Product && pdict.Product.custom.oosProductStatus.value) ? pdict.Product.custom.oosProductStatus.value:"";
+									
+										// Added for mParticle and other analytics 
+										var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+										var productInfo = mParticleUtil.getProductInfo(pdict.Product);										
+										
+									</isscript>
+									<div class="product-cta">
+										<isif condition="${(comingSoonMsg == 'comingsoon')}">
+											<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}"><button class="btn btn-default btn-sm">${Resource.msg('global.comingsoon', 'locale', null)}</button></a>
+									 	<iselse/>
+											<isif condition="${available == true}"> 
+												<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+												<input type="hidden" class="input-text" name="Quantity" value="1"/>
+												<input type="hidden" name="cartAction"  value="add" />
+												<input type="hidden" name="pid" value="${pdict.Product.ID}" />
+												<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+												<input type="hidden" name="unitPrice" id="unitPrice" value="${productPrice}" />
+												<input type="hidden" name="page" value="bag" />
+												<button class="srAddToBag btn btn-default btn-sm p-page-suggested-ritual" data-product-info="${JSON.stringify(productInfo)}" data-buttonid="p-page-suggested-ritual" data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">${Resource.msg('global.addtocart', 'locale', null)}</button>										
+												</form>
+											<iselse>
+												<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" style="display: block;">
+													<button class="btn btn-default btn-sm">${Resource.msg('global.outofstock', 'locale', null)}</button>
+												</a>
+											</isif>
+										</isif>							
+									</div>
+									<p class="product-one-liner">
+									<isif condition="${!empty(suggestedRoutine.recProductShortDesc) && suggestedRoutine.recProductShortDesc.size() > 0}">
+										<isif condition="${!empty(suggestedRoutine.recProductShortDesc[suggestedRoutine.recProductShortDesc.size() - 1])}">
+											<isprint value="${suggestedRoutine.recProductShortDesc[suggestedRoutine.recProductShortDesc.size() - 1]}"/>
+										</isif>
+									</isif>									
+									</p>
+							    </div>																				
+							</isloop>
+							<iscomment>Restore the Product instance</iscomment>
+							<isset name="Product" value="${pdict.mainProduct}" scope="pdict"/>													
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>		
+		</isif>
+					

@@ -1,0 +1,163 @@
+{
+  "name": "Panel Section",
+  "description": "Shows Panel section",
+  "group": "assets",
+  "attribute_definition_groups": [
+  	{
+  	  "id": "componenttype",
+  	  "name": "Component Type",
+  	  "description": "Type of panel component",
+  	  "attribute_definitions": [
+  	  	{
+  	  	  "id": "ispanelproduct",
+  	  	  "name": "Pannel Full width Product",
+  	  	  "type": "boolean",
+  	  	  "required": false
+  	  	},
+  	  	{
+  	  	  "id": "ispanelquotation",
+  	  	  "name": "Pannel Full width Quotation",
+  	  	  "type": "boolean",
+  	  	  "required": false
+  	  	},
+  	  	{
+  	  	  "id": "ispanelinformation",
+  	  	  "name": "Pannel Full width Information",
+  	  	  "type": "boolean",
+  	  	  "required": false
+  	  	},
+  	  	{
+  	  	  "id": "ispanelfeature",
+  	  	  "name": "Pannel Full width Feature",
+  	  	  "type": "boolean",
+  	  	  "required": false
+  	  	}
+  	  ]
+  	},
+    {
+      "id": "images",
+      "name": "Image Content",
+      "description": "The image content to show in this component",
+      "attribute_definitions": [
+	   {
+	      "id": "desktopLayout",
+	      "name": "Desktop Layout",
+	      "description": "Desktop Layout",
+	      "type": "enum",
+	      "values": [
+	        "Image Left - Text Right",
+        	"Text Left - Image Right"
+	      ],
+	      "required": true,
+	      "default_value": "Image Left - Text Right"
+	    },
+        {
+          "id": "desktopImage",
+          "name": "Desktop Image",
+          "type": "image",
+          "required": true
+        },
+        {
+          "id": "imageAlt",
+          "name": "Image Alt",
+          "type": "string",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "commonfields",
+      "name": "Common Fields",
+      "description": "The common fields to show a full width panel component",
+      "attribute_definitions": [
+      	{  
+          "id": "url",
+          "name": "URL (CTA | Link)",
+          "type": "url",
+          "required": true
+        },
+        {
+          "id": "overline",
+          "name": "Overline",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "mainHeading",
+          "name": "Main Heading",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "body",
+          "name": "Body",
+          "type": "string",
+          "required": true
+        },
+        {
+          "id": "buttonText",
+          "name": "Button Text | Link Text",
+          "type": "string",
+          "required": false
+        },
+        {
+          "id": "bgColor",
+          "name": "Box Color",
+          "description": "Box Color.",
+          "type": "string",
+          "required": false,
+          "default_value": "#fff"
+        }
+      ]
+    },
+    {
+    	"id": "productPannel",
+	    "name": "Product panel",
+	    "description": "Fields for product panel",
+	    "attribute_definitions": [
+	    {
+          "id": "product",
+          "name": "Product",
+          "type": "product",
+          "required": false
+	    }
+	    ]
+	},    
+    {
+      "id": "margins",
+      "name": "Margins",
+      "description": "The margins for this component",
+      "attribute_definitions": [
+      {
+          "id": "topMargin",
+          "name": "Top Margin",
+          "description": "Top Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        },
+        {
+          "id": "bottomMargin",
+          "name": "Bottom Margin",
+          "description": "Bottom Margin.",
+          "type": "enum",
+          "values": [
+            "none",
+            "small",
+            "medium",
+            "large"
+          ],
+          "required": true,
+          "default_value": "none"
+        }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

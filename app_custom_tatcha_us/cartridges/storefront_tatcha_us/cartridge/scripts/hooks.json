@@ -1,0 +1,16 @@
+{
+	"hooks": [
+		{
+			"name": "dw.order.custom.calculate",
+			"script": "./hooks/cart/calculate.js"
+		},
+        {
+            "name": "dw.order.custom.calculateTax",
+            "script": "./hooks/cart/calculate.js"
+        },
+		{
+            "name": "app.payment.processor.basic_gift_certificate",
+            "script": "./hooks/payment/processor/basic_gift_certificate.js"
+        }
+	]
+}

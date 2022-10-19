@@ -1,0 +1,22 @@
+/**
+*
+*  	@input Pid : String
+*   @input Email : String
+*
+*/
+importPackage( dw.system );
+
+
+function execute( args : PipelineDictionary ) : Number
+{
+	/**************************************************/
+	/* Create Custom Object - Coming soon */
+	/**************************************************/
+
+	var co : dw.object.CustomObject = dw.object.CustomObjectMgr.createCustomObject("comingSoon", dw.util.UUIDUtils.createUUID());
+
+	co.custom.comingSoonPid = args.Pid;
+	co.custom.comingSoonEmail = args.Email;
+	
+    return PIPELET_NEXT;
+}

@@ -1,0 +1,41 @@
+
+$screen-sm:                  768px !default;
+$screen-sm-min:              $screen-sm !default;
+
+$screen-md:                  992px !default;
+$screen-md-min:              $screen-md !default;
+
+$screen-lg:                  1200px !default;
+$screen-lg-min:              $screen-lg !default;
+
+$text-black:             #1A232D;
+$gray-000:               #000 !default; //
+$gray-900:               $text-black !default; //
+$gray-800:               #343C40 !default; //
+$gray-700:               #4B535C !default; //
+$gray-600:               #869196 !default; //
+$gray-500:               #AEB8BD !default; // Tatcha Extra
+$gray-400:               #9EA7B0 !default; // Tatcha Extra
+$gray-300:               #DFE3E6 !default; // Tatcha Extra
+$gray-200:               #E9EDF0 !default; //
+$gray-100:               #F0F4F7 !default; // Tatcha Extra
+
+$gray-base:              $gray-000 !default; // Black
+$gray-darker:            $gray-900 !default; // 900
+$gray-dark:              $gray-800 !default; // 800
+$gray:                   $gray-700 !default; // 700
+$gray-light:             $gray-600 !default; // 600
+$gray-lighter:           $gray-200 !default; // 200
+
+
+$font-size-base:          16px !default;
+
+$g-unit: $font-size-base !default;
+
+$font-weight-light: 200 !default;
+$font-weight-normal: 300 !default;
+$font-weight-bold: 600 !default;
+$background-gray: $gray-100;
+
+$tatcha-luminous: #4D186E; // Actual Luminous Pantone 2725
+$brand-primary: $tatcha-luminous !default; // #337ab7

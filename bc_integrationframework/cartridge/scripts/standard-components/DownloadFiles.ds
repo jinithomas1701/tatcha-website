@@ -1,0 +1,480 @@
+/**
+* Demandware Script File
+* 
+*
+* Copies files from a remote FTP-Location
+*
+*   @input ServerUrl : String (S)FTP-Service-URL.
+*   @input UserID : String The User-ID.
+*   @input Password : String The Password.
+*   @input FilePattern : String Input File pattern to search in remote folder(default is  "^[\\w\-]{1,}\\.xml$" (*.xml)).
+*   @input TargetRootFolder : String Local root folder
+*   @input TargetFolder : String Local folder in which will placed files, relatively to pdict.TargetRootFolder.
+*   @input ServerType : String Type of connection (FTP / SFTP).
+*   @input DeleteFile : String When file is uploaded, delete or keep it? ("Delete" / "Keep on server").
+*   @input ExtractArchive : Boolean Defines if files should be extracted after download and being recognized as ZIP file
+*   @input ScanRecursively : Boolean Defines if all directories should be found
+*   @input CreateReport : Boolean Defines if report of downloaded files should be created
+*   @input CurrentWorkflowComponentInstance : Object
+*   @input Status : Object Status object
+*   @input StartAt : Number Defines the position of starting file
+*   @output ErrorMsg : String An Error message
+*   @output StatusUpdate : Object Updated status object
+*   @output FinishedAt : Number Defines the position of last downloaded file
+*   @output Finished : Boolean Defines the script is finished and shouldn't be re-executed from pipeline
+*
+*/
+importPackage( dw.system );
+importPackage( dw.net );
+importPackage( dw.io );
+importPackage( dw.util );
+
+var TransferClient = require('/bc_library/cartridge/scripts/remote/TransferClient.ds').TransferClient;
+
+var MEGABYTE 				: Number = 1048576; // 1024 * 1024
+var cvLogger 				: Logger = Logger;
+
+var SERVER_TYPE 			: String = "";
+var SERVER_URL 				: String = "";
+var SERVER_USER 			: String = "";
+var SERVER_PASS 			: String = "";
+var SERVER_MAX_RECONNECTS 	: Number = 200;
+var SERVER_TRANSFER_CLIENT 	: Object = null;
+
+//file size download limit 200MB
+var FILE_SIZE_DOWNLOAD_LIMIT: Number = 200 * MEGABYTE;
+var FILE_DELETE 			: Boolean = false;
+var FILE_ARCHIVE 			: Boolean = false;
+var FILE_PATTERN 			: String = "^[\\w\-]{1,}\\.xml$";
+var FILE_EXTRACT_ARCHIVE	: Boolean = false;
+
+var FOLDER_ROOT				: String = File.IMPEX;
+var FOLDER_SCAN_RECURSIVELY	: Boolean = false;
+var FOLDER_TARGET			: String = "";
+
+var REPORT					: Boolean = false;
+var REPORT_FILE_WRITER		: FileWriter = null;
+var REPORT_DIR				: String = File.TEMP + File.SEPARATOR + "DownloadFilesReport" + File.SEPARATOR;
+
+var REMOTE_FOLDER_ARCHIVE_NAME		: String = 'archive';
+var REMOTE_FOLDER_REPORT_NAME		: String = '.report';
+var REMOTE_FOLDER_ARCHIVE_PATH		: String = "";
+
+var CREATED_ARCHIVE_DIRS 	: List = new ArrayList();
+
+var START_AT				: Number = 0;
+var FINISHED_AT				: Number = 0;
+var CURRENT_POS				: Number = 0;
+var FINISHED				: Boolean = true;
+var STARTED					: Number = (new Date()).getTime();
+var TIMEOUT					: Number = 600000; //10 mins
+
+/**
+ * The main function.
+ * 
+ * @param pdict : PipelineDictionary The pipeline dictionary.
+ * 
+ * @returns Number If the given directory or the result is empty, PIPELET_ERROR is returned. Otherwise PIPELET_NEXT.
+ */
+function execute (pdict : PipelineDictionary) : Number
+{
+	var copyResult : Number = 0;
+	
+	//start and end points for file download resume
+	START_AT = !empty(pdict.StartAt) || pdict.StartAt > 0 ? pdict.StartAt : CURRENT_POS;
+	pdict.Finished = FINISHED;
+	
+	pdict.StatusUpdate = pdict.Status;
+	
+	if (!empty(pdict.CurrentWorkflowComponentInstance)) {
+		cvLogger = pdict.CurrentWorkflowComponentInstance;
+	}
+	
+	try {
+		//Test mandatory paramater
+		if (!empty(pdict.ServerUrl) && !empty(pdict.ServerType) && !empty(pdict.DeleteFile) && !empty(pdict.TargetFolder)) {
+			SERVER_TYPE = pdict.ServerType;
+			SERVER_URL = pdict.ServerUrl;
+			SERVER_USER = pdict.UserID;
+			SERVER_PASS = pdict.Password;
+			
+			if (!empty(pdict.FilePattern)) {
+				FILE_PATTERN = pdict.FilePattern;
+			}
+			var FileUtils = require("bc_library/cartridge/scripts/io/libFileUtils").FileUtils;
+			
+			try {
+			    FILE_PATTERN = FileUtils.checkFilePatternForPlaceholders(FILE_PATTERN);
+			} catch (e) {
+			    pdict.ErrorMsg = e.message;
+
+			    return PIPELET_ERROR;
+			}
+			
+			if (pdict.DeleteFile == "DELETE") {
+				FILE_DELETE = true;
+				START_AT = 0;
+			}
+			
+			if (pdict.DeleteFile == "MOVE_TO_ARCHIVE") {
+				FILE_ARCHIVE = true;
+				START_AT = 0;
+			}
+			
+			if (!empty(pdict.TargetRootFolder)) {
+				FOLDER_ROOT = pdict.TargetRootFolder;
+			}
+			FINISHED_AT = START_AT;
+			FOLDER_SCAN_RECURSIVELY = !!pdict.ScanRecursively;
+			FILE_EXTRACT_ARCHIVE = !!pdict.ExtractArchive;
+			FOLDER_TARGET = pdict.TargetFolder;
+			
+			REPORT = !!pdict.CreateReport;
+			
+			serverConnect();
+			
+			if (FILE_ARCHIVE) {
+				//create archive folder ../REMOTE_FOLDER_ARCHIVE_NAME
+				var paths : ArrayList = new ArrayList(SERVER_TRANSFER_CLIENT.urlObject.path.split(File.SEPARATOR));
+				//insert archive folder between base bolder and the rest
+				if (paths.size() >= 2) {
+					paths.addAt(paths.size() - 2, REMOTE_FOLDER_ARCHIVE_NAME);
+					REMOTE_FOLDER_ARCHIVE_PATH = paths.join(File.SEPARATOR);
+				} else if (paths.size() == 1) {
+					//root
+					REMOTE_FOLDER_ARCHIVE_PATH = SERVER_TRANSFER_CLIENT.urlObject.path + REMOTE_FOLDER_ARCHIVE_NAME + File.SEPARATOR;
+				}
+				
+				//create dirs
+				mkDirs(REMOTE_FOLDER_ARCHIVE_PATH);
+			}
+			
+			if (REPORT) {
+				//create report folder REMOTE_FOLDER_REPORT_NAME
+				SERVER_TRANSFER_CLIENT.mkdir(SERVER_TRANSFER_CLIENT.urlObject.path + REMOTE_FOLDER_REPORT_NAME + File.SEPARATOR);
+				
+				//create dir in TEMP
+				var reportDir : File = new File(REPORT_DIR);
+				reportDir.mkdirs();
+				
+				//create new file for report logging
+				var reportFile : File = new File(REPORT_DIR + StringUtils.formatCalendar(new Calendar(), "yyyMMddHHmmss") + "_download_report.txt");
+				reportFile.createNewFile();
+				REPORT_FILE_WRITER = new FileWriter(reportFile);
+				
+				//first line is the path where report should be uploaded
+				REPORT_FILE_WRITER.writeLine("Base Path: " + SERVER_TRANSFER_CLIENT.urlObject.path);
+				
+				if (FILE_ARCHIVE) {
+					REPORT_FILE_WRITER.writeLine("Archive Path: " + REMOTE_FOLDER_ARCHIVE_PATH);
+				}
+				
+				//just separation
+				REPORT_FILE_WRITER.writeLine("");
+			}
+			
+			//begin transfer
+	   	 	copyResult = downloadFiles(SERVER_TRANSFER_CLIENT.urlObject.path);
+			
+			if (REPORT) {
+				REPORT_FILE_WRITER.close();
+				
+				//upload reports to FTP 
+				uploadReports();
+			}	   	 	
+	   	 	serverDisconnect();
+	   	 	
+	   	 	pdict.FinishedAt = FINISHED_AT;
+			pdict.Finished = FINISHED;
+			
+		} else {
+			pdict.ErrorMsg = "one or more mandatory parameters are missing.";
+			return PIPELET_ERROR;
+		}
+		
+		if (copyResult == 0) {
+			pdict.StatusUpdate['noFilesFound'] = true;
+			return PIPELET_NEXT;
+		}
+		
+	} catch (e) {
+		pdict.ErrorMsg = e.toString();
+		return PIPELET_ERROR;
+	}
+	
+	return PIPELET_NEXT;
+}
+
+/**
+*	Upload generated reports to base category defined in report file first line
+*
+**/
+function uploadReports () {
+	
+	var fileList : List = new ArrayList(),
+		theDir : File = new File(REPORT_DIR),
+		fileReader : FileReader = null,
+		firstLine : String = "",
+		remoteFile : String = "",
+		transferSuccessful : Boolean = false;
+		
+	fileList.addAll(theDir.listFiles());
+	
+	if (!empty(fileList)) {
+		for each (var file : File in fileList) {
+			fileReader = new FileReader(file, "UTF-8");
+			firstLine = fileReader.readLine();
+			remoteFile = firstLine ? firstLine.replace("Base Path: ", "") : null;
+			fileReader.close();
+			
+			if (remoteFile != firstLine) {
+				//add .report folder name to base path
+				remoteFile += REMOTE_FOLDER_REPORT_NAME + File.SEPARATOR + file.name;
+				
+				//upload file
+				transferSuccessful = SERVER_TRANSFER_CLIENT.putBinary(remoteFile, file);
+				if (!transferSuccessful && SERVER_MAX_RECONNECTS > 0) {
+					//connection lost, try again
+					serverReconnect();
+					transferSuccessful = SERVER_TRANSFER_CLIENT.putBinary(remoteFile, file);
+				}
+				
+				//remove file from TEMP only if transfer was successful
+				if (transferSuccessful) {
+					file.remove();
+				}
+			}
+		}	
+	}
+}
+
+/**
+*	Creates dirs based on given path
+*	@param path		: String 	path to final dir
+*	
+**/
+function mkDirs (path : String) {
+	var dirs : ArrayList = new ArrayList(path.split(File.SEPARATOR));
+	var initDir : String = File.SEPARATOR;
+	for each (var dir in dirs) {
+		if (!empty(dir)) {
+			initDir += dir + File.SEPARATOR;
+			SERVER_TRANSFER_CLIENT.mkdir(initDir);
+		}
+	}
+}
+
+/**
+*	Copy (and delete) a file from a remote FTP-Folder locally
+*	@param targetFolder : String 	target FTP Folder
+*	@param fileName 	: String 	The file to copy
+*
+**/
+function copyFileToTargetFolder (fullFileName : String) 
+{
+	if (CURRENT_POS >= START_AT) {
+		
+		//make path relative, not absolute
+		var relativeFileName = SERVER_TRANSFER_CLIENT.urlObject.path;
+		if (SERVER_TRANSFER_CLIENT.urlObject.path != "/") {
+			relativeFileName = fullFileName.replace(SERVER_TRANSFER_CLIENT.urlObject.path, "");
+		}
+		var remoteDirs : ArrayList = new ArrayList(relativeFileName.split(File.SEPARATOR));
+		var fileName : String = remoteDirs[remoteDirs.size() - 1];
+		var remoteDirsList : List = remoteDirs.slice(0, remoteDirs.size() - 1);
+		var targetDirStr : string = FOLDER_TARGET.charAt(0).equals(File.SEPARATOR) ? FOLDER_TARGET  : File.SEPARATOR + FOLDER_TARGET + remoteDirsList.join(File.SEPARATOR);
+		
+		var theDir : File = new File(FOLDER_ROOT + File.SEPARATOR + targetDirStr);
+		theDir.mkdirs();
+		
+		var theFile : File = new File(theDir.fullPath + File.SEPARATOR + fileName);
+		if (!theFile.exists()) {
+			theFile.createNewFile();
+		}
+		
+		cvLogger.debug('Downloading file from ' + fullFileName + " to " + theFile.fullPath);
+		var client = SERVER_TRANSFER_CLIENT;
+		var serverErrorMessage : String = 'Unknown remote server error.';
+		var transferSuccessful  : Boolean = getBinary(fullFileName, theFile);
+		
+		if (!transferSuccessful && SERVER_MAX_RECONNECTS > 0) {
+			serverErrorMessage = getErrorMessage( serverErrorMessage );
+			//connection lost, try again
+			serverReconnect();
+			transferSuccessful = getBinary(fullFileName, theFile);
+		}
+		
+		if (transferSuccessful) {
+			if (FILE_EXTRACT_ARCHIVE && fileName.match(/\.[zZ][iI][pP]$/)) {
+				var rootDirectory : File = new File(theDir.fullPath);
+				theFile.unzip(rootDirectory);
+				theFile.remove();
+			}
+			
+			if (FILE_DELETE) {
+				cvLogger.debug('Deleting file on server: ' + fullFileName);
+				SERVER_TRANSFER_CLIENT.del(fullFileName);
+			} 
+			else if (FILE_ARCHIVE) {
+				
+				var archivePath : String = REMOTE_FOLDER_ARCHIVE_PATH + remoteDirsList.join(File.SEPARATOR) +  File.SEPARATOR;
+				/*
+					check if category exists in CREATED_ARCHIVE_DIRS and if not create new, this is for performance, because FTP doesn't allow to
+					check if dir exists
+				*/
+				if (!CREATED_ARCHIVE_DIRS.contains(archivePath)) {
+					mkDirs(archivePath);
+					CREATED_ARCHIVE_DIRS.add(archivePath);
+				}
+				
+				//move to archive by renaming file
+				//check if rename successful, if not, remove file from archive and rename again
+				if (!SERVER_TRANSFER_CLIENT.rename(fullFileName, archivePath + theFile.name)) {
+					var deleteFileFromServerPath : String = archivePath + theFile.name;
+					SERVER_TRANSFER_CLIENT.del(deleteFileFromServerPath);
+					if ( !SERVER_TRANSFER_CLIENT.rename(fullFileName, archivePath + theFile.name) ) {
+						throw new Error( "Archiving file " + theFile + " not possible." );
+					};
+				}
+			}
+			
+			if (REPORT) {
+				if (FILE_DELETE) {
+					REPORT_FILE_WRITER.writeLine("Deleted: " + relativeFileName);
+				} 
+				else if (FILE_ARCHIVE) {
+					REPORT_FILE_WRITER.writeLine("Archived: " + relativeFileName);
+				} 
+				else {
+					REPORT_FILE_WRITER.writeLine("Copied: " + relativeFileName);
+				}
+			}
+			
+			FINISHED_AT += 1;
+			
+		} else {
+			theFile.remove();	
+			serverErrorMessage = getErrorMessage(serverErrorMessage);
+			throw new Error( serverErrorMessage );
+		}
+	}
+}
+
+/*
+*	Connects to server
+*	@return void	
+*/
+function serverConnect () 
+{
+	SERVER_TRANSFER_CLIENT = new TransferClient(SERVER_TYPE, SERVER_URL, SERVER_USER, SERVER_PASS);
+}
+
+/*
+*	Disconnects from server
+*	@return void	
+*/
+function serverDisconnect () 
+{
+	if (SERVER_TRANSFER_CLIENT != null) {
+		SERVER_TRANSFER_CLIENT.disconnect();
+	}
+}
+
+/*
+*	Reconnects to server
+*	@return void	
+*/
+function serverReconnect () 
+{
+	SERVER_MAX_RECONNECTS--;
+	serverDisconnect();
+	serverConnect();
+}
+
+/*
+*	Scan folders rerusively and downloads only files matching regexp
+*	@param path	: String	initial path in server
+*
+*	@return Number Number of downloaded files
+*/
+
+function downloadFiles (path : String) : Number
+{
+	var totalFiles : Number = 0;
+	var fileInfoList : Array = SERVER_TRANSFER_CLIENT.list(path);
+	var regExp : RegExp = new RegExp(FILE_PATTERN);
+	
+	if (!empty(fileInfoList) && fileInfoList.length > 0) {
+		for (var i = 0, size = fileInfoList.length; i < size; i++) {
+			
+			//interupt file download if reached timeout
+			if ((new Date()).getTime() - STARTED > TIMEOUT) {
+				FINISHED = false;
+				break;
+			}
+			
+			var listItem : FTPFileInfo = fileInfoList[i];
+			
+			if (listItem instanceof FTPFileInfo || listItem instanceof SFTPFileInfo || listItem instanceof WebDAVFileInfo ) {
+				var remotePath : String = ((path != File.SEPARATOR) ? path + File.SEPARATOR : File.SEPARATOR) + listItem.name;
+				remotePath = remotePath.replace("//", "/");				
+
+				if (FOLDER_SCAN_RECURSIVELY && listItem.directory == true && listItem.name != REMOTE_FOLDER_REPORT_NAME && listItem.name != "." && listItem.name != "..") {
+					totalFiles += downloadFiles(remotePath);
+				} else if (listItem.directory == false) {
+					//creating new obj so name could have path
+					
+					if (regExp.test(listItem.name)) {
+						var fileSize : Number = listItem.size;
+						if (fileSize > FILE_SIZE_DOWNLOAD_LIMIT) {
+							cvLogger.debug('FTP download file size limit of 200 MB exceeded for ' + fileInfo.name + '. Actual size is ' + (fileSize/MEGABYTE).toFixed(2) + ' MB.');	
+						} else {
+							copyFileToTargetFolder(remotePath);
+							CURRENT_POS += 1;
+						}
+					}
+					totalFiles++;
+				}
+			}
+		}
+	}
+	
+	return totalFiles;
+}
+
+/**
+* Gets the client error message.
+* 
+* @param defaultMessage - String The message that should be returned if no other can be determined.
+*
+* @return Identified error message or the defaultMessage
+*/ 
+function getErrorMessage( defaultMessage : String ) : string {
+	var result : String = defaultMessage;
+	if ( SERVER_TRANSFER_CLIENT.systemClient ) {
+		if ( 'errorMessage' in SERVER_TRANSFER_CLIENT.systemClient ) {
+			result = SERVER_TRANSFER_CLIENT.systemClient.errorMessage;
+		} else if ( 'replyMessage' in SERVER_TRANSFER_CLIENT.systemClient ) {
+			result = SERVER_TRANSFER_CLIENT.systemClient.replyMessage;
+		}
+	}
+	return result;
+}
+
+/**
+* Creates copy (in binary mode) of file in remote server and stores it on local server
+* 
+* @param fullFileName - String  The path relative to SERVER_TRANSFER_CLIENT rootUrl on the remote server, including the file name.
+* @param theFile - dw.io.File The local file where the received binary data should be stored.
+*
+* @return Boolean  true if succeeded, otherwise false.
+*/ 
+function getBinary(fullFileName, theFile){
+	var  transferSuccessful = false;
+	if (SERVER_TRANSFER_CLIENT.serverType == "WEBDAV"){
+		transferSuccessful = SERVER_TRANSFER_CLIENT.getBinary(fullFileName, theFile, FILE_SIZE_DOWNLOAD_LIMIT);
+	} else {
+		transferSuccessful = SERVER_TRANSFER_CLIENT.getBinary(fullFileName, theFile);
+	}
+	return transferSuccessful;
+}

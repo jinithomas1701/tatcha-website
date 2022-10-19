@@ -1,0 +1,58 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+*
+* Puropose:	It is an transactional script file, which marks desired orders as Status Cancel.
+*			It reads an XML file, configured as an input parameter, iterates over it to extract 
+*			all the included orders. Along with marking the order as Cancel, it also puts the 
+*			Cancel Code and Cancel Description.
+*
+*@input fileName : String cancellation xml file path
+*/
+importPackage( dw.system );
+importPackage( dw.order );
+importPackage( dw.io );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var filePath : String = args.fileName;
+	var sourceFile : File = new File(File.IMPEX + File.SEPARATOR  + "src" +filePath);
+	
+	var fileReader : FileReader = new FileReader(sourceFile, "UTF-8");
+	var xmlStreamReader : XMLStreamReader = new XMLStreamReader(fileReader);
+	
+	if(xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT && "orders" == xmlStreamReader.getLocalName()){
+		while (xmlStreamReader.hasNext()){
+	  		if (xmlStreamReader.next() == XMLStreamConstants.START_ELEMENT){
+		    	var localElementName : String = xmlStreamReader.getLocalName();
+		    	if (localElementName == "order"){
+			      // read single "order" as XML
+			      var myOrder : XML = xmlStreamReader.readXMLObject();
+				  // read myOrder
+				  var orderId : String = myOrder.attribute("order-no");
+				  var myOrderObj : Order = OrderMgr.getOrder(orderId);
+				  
+				  if(!empty(myOrderObj)) {
+					var cancelCode : String = myOrder["cancel-code"];
+				  	cancelCode = cancelCode.toString();
+					
+					var cancelDescription : String = myOrder["cancel-description"];
+					cancelDescription = cancelDescription.toString();
+					
+					myOrderObj.setStatus(Order.ORDER_STATUS_CANCELLED);
+					myOrderObj.setCancelCode(cancelCode);
+					myOrderObj.setCancelDescription(cancelDescription);
+
+				  }			  
+			    }
+	  		}
+		}
+	}else{
+		// TODO: confirm from Tarun.
+	}
+	
+	xmlStreamReader.close();
+	fileReader.close();
+
+   return PIPELET_NEXT;
+}

@@ -1,0 +1,5 @@
+{
+	"init" : ["./cartridge/scripts/yotpo/serviceregistry/AuthenticationServiceRegistry.js",
+			"./cartridge/scripts/yotpo/serviceregistry/ExportOrderServiceRegistry.js",
+			"./cartridge/scripts/yotpo/serviceregistry/ImportReviewServiceRegistry.js"]
+}

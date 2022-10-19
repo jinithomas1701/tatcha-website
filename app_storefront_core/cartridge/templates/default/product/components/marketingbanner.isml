@@ -1,0 +1,8 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+var marketingBanner = "productpage-global-marketing-banner";
+// TODO: Check if there is any product specific banner present. Format productpage-ProductID-marketing-banner
+</isscript>
+<div class="product-marketing-banner">
+	<isinclude url="${URLUtils.url('Page-Include', 'cid', 'productpage-global-marketing-banner')}"/>
+</div>

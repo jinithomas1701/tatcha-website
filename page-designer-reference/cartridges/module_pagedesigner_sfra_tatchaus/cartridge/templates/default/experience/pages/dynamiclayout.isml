@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="${pdict.decorator}">
+	<isscript>
+	    var assets = require('*/cartridge/scripts/assets.js');
+	    assets.addCss('/css/layout.css');
+	    assets.addCss('/css/pagedesigner-bootstrap.min.css');
+	</isscript>
+
+	<!--- the page markup --->
+	<div class="container px-2 page-designer-reference">
+	    <div id="${pdict.page.ID}" class="row mx-n2">
+	        <isprint value="${pdict.regions.main.setClassName("col-12 px-2").render()}" encoding="off"/>
+	    </div>
+	</div>
+</isdecorate>

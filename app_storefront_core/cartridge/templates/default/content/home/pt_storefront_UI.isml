@@ -1,0 +1,20 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>Backward compatibility</iscomment> 
+<isset name="CurrentRequest" scope="pdict" value="${request}">
+<isset name="CurrentSession" scope="pdict" value="${session}">
+<isset name="CurrentCustomer" scope="pdict" value="${customer}">
+<isset name="CurrentHttpParameterMap" scope="pdict" value="${request.httpParameterMap}">
+<isset name="URLUtils" scope="page" value="${new Object()}">
+<iscomment>
+SG relies on continueUrl usage, but we can't add while  rendering with the Template Class
+
+Hence we create our own URLUtils, which proxy all but the continueUrl functions
+</iscomment> 
+<isscript>
+    for (var property in dw.web.URLUtils) {
+        URLUtils[property] = dw.web.URLUtils[property]   
+    }
+    URLUtils.httpContinue = function() {return dw.web.URLUtils.http('Home-Show')};
+    URLUtils.httpsContinue = function() {return dw.web.URLUtils.https('Home-Show')};
+    URLUtils.continueUrl = function() {return dw.web.URLUtils.url('Home-Show')};
+</isscript>

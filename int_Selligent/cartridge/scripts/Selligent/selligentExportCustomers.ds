@@ -1,0 +1,118 @@
+/**
+* Demandware Script File
+*/
+importPackage( dw.system );
+importPackage( dw.io );
+importPackage( dw.util );
+importPackage( dw.customer );
+importScript("Selligent/selligentJsonSerializer.ds");
+importScript("Selligent/selligentExportBase.ds");
+
+/**
+* Export customers from DW
+*
+* @param {String} Export file name
+* @param {Date} Last export date
+* @returns a boolean if the file has been created 
+*/
+function exportCustomers(exportFileName : String, lastExportDate : Date) : Boolean
+{
+	var customers : SeekableIterator;
+	var writer : FileWriter;
+	try
+	{
+		var fielsToExport : Array = getFieldsToExport("customer");
+		var customUUID : String = getCustomObjectID("customer");	
+		var range : Number = getRange("customer");
+		var countRange : Number = 0;
+		var currentFileName : String = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+		var exportFile = new File(currentFileName); 
+		var fileCreated : Boolean = false;
+		var counter : Number = 0;
+		var json : String = "";
+		var profile : Profile;
+		var endOfExportFile : File;
+		
+		if (customUUID === "")
+			customers = dw.customer.CustomerMgr.searchProfiles('creationDate >= {0} or lastModified >= {0}', "creationDate ASC", lastExportDate);
+		else
+			customers = dw.customer.CustomerMgr.searchProfiles('UUID = {0}', "", customUUID );
+		
+		while (customers.hasNext()) 
+		{
+			counter++;
+			if(!fileCreated)
+			{
+				writer = new FileWriter(exportFile, false);
+				fileCreated = true;
+			}
+			profile = customers.next();
+			json = exportCustomer(profile, fielsToExport);
+			writer.writeLine(json);
+			if(counter >= range)
+			{
+				writer.close();
+				currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+				exportFile.renameTo(new File(currentFileName));
+				countRange++;
+				currentFileName = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+				exportFile = new File(currentFileName); 
+				fileCreated = false;
+				counter = 0;
+			}
+		}
+		if(counter > 0)
+		{
+			writer.close();
+			currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+			exportFile.renameTo(new File(currentFileName));
+		}
+		endOfExportFile = new File(File.IMPEX + "/Selligent/customerEndOfExport.txt");
+		writer = new FileWriter(endOfExportFile, false);
+		return fileCreated;
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to export customer: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/customer_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+	finally 
+	{
+		if (customers) customers.close();
+		if (writer) writer.close();
+	} 
+}
+
+/**
+* Export a customer(profile) 
+*
+* @param {Profile} The customer profile
+* @param {Array} The list of properties to export
+* @returns customer (profile) in json.   
+*/
+function exportCustomer(profile : Profile, fieldsToExport : Array) : String
+{
+	try
+	{
+		var customerData = exportObject(profile, fieldsToExport);
+		var json = serialize(customerData);
+		return json;
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to export customer: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/customer_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+}

@@ -1,0 +1,6 @@
+<div class="summary-details gift-summary ${shippingModel.giftMessage ? '' : 'd-none'}">
+    <span class="summary-section-label d-inline-block">${Resource.msg('heading.gift.message', 'checkout', null)}</span>
+    <span class="gift-message-summary">
+        <i> ${shippingModel.giftMessage ? shippingModel.giftMessage : ''} </i>
+    </span>
+</div>

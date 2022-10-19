@@ -1,0 +1,114 @@
+<!--- TEMPLATENAME: osf_smartorderrefill_report.isml --->
+<isdecorate template="application/MenuFrame">
+<iscomment>
+Property of OSF Global Services, Inc., (widiv its brand OSF Commerce). OSF remains dive sole owner of all right, title and interest in dive software.
+Do not copy, sell, reverse engineer or odiverwise attempt to derive or obtain information about dive functioning, manufacture or operation diverein.
+</iscomment>
+<isinclude template="bm/util/sorModules" />
+<isinclude template="components/header" />
+
+<div class="page-container">
+
+    <isinclude template="bm/sorMainMenu" />
+
+    <form action="${dw.web.URLUtils.https('SmartOrderRefillReport-HandleSummaryFormFilter')}" method="post" id="ordersummary-form">
+        <div class="sor-filter__container flex">
+            <div class="sor-filter__row">
+                <div class="sor-filter-input">
+                    <fieldset id="date_from">
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.reportDateStart}" type="input" rowclass="datepickerFrom" autocomplete="off">
+                    </fieldset>
+                </div>
+                <div class="sor-filter-input">
+                    <fieldset id="date_to">
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.reportDateEnd}" type="input" rowclass="datepickerTo" autocomplete="off">
+                    </fieldset>
+                </div>
+                <div class="sor-filter-input text-input">
+                    <fieldset><isinputfield formfield="${pdict.CurrentForms.osfsorreport.customerEmail}" type="input"></fieldset>
+                </div>
+                <div class="sor-filter-input text-input">
+                    <fieldset><isinputfield formfield="${pdict.CurrentForms.osfsorreport.orderProduct}" type="input"></fieldset>
+                </div>
+
+                <div class="sor-filter-checkbox">
+                    <fieldset>
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.ordersScheduled}" type="checkbox">
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.ordersCanceled}" type="checkbox">
+                    </fieldset>
+                </div>
+                <div class="sor-filter-checkbox">
+                    <fieldset>
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.ordersProcessed}" type="checkbox">
+                        <isinputfield formfield="${pdict.CurrentForms.osfsorreport.ordersOther}" type="checkbox">
+                    </fieldset>
+                </div>
+                <div class="sor-filter-buttons orders">
+                    <button class="button blue" type="submit" value="filter" name="${pdict.CurrentForms.osfsorreport.filter.htmlName}">${Resource.msg('forms.sorsubscriptions.sorFilter.label','sor_forms',null)}</button>
+                    <button class="button white" type="button" value="Reset" id="reset-button">${Resource.msg('forms.sorsubscriptions.sorFilterClear.label','sor_forms',null)}</button>
+                    <button class="button blue" type="submit" value="export" name="${pdict.CurrentForms.osfsorreport.export.htmlName}">${Resource.msg('forms.sorsubscriptions.sorExport.label','sor_forms',null)}</button>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <isif condition="${pdict.OrderPagingModel && !pdict.OrderPagingModel.empty}">
+        <div class="sor-filter-table__container flex">
+            <div class="sor-filter-table">
+                <div class="sor-filter-table__row-header">
+                    <div class="sor-filter-table__customer">${Resource.msg('report.tableheader.customer','sor_smartorderrefill',null)}</div> 
+                    <div class="sor-filter-table__order-date">${Resource.msg('report.tableheader.orderdate','sor_smartorderrefill',null)}</div>
+                    <div class="sor-filter-table__status">${Resource.msg('report.tableheader.status','sor_smartorderrefill',null)}</div>
+                    <div class="sor-filter-table__id">${Resource.msg('report.tableheader.subscriptionid','sor_smartorderrefill',null)}</div>
+                    <div class="sor-filter-table__items">
+                        <div class="sor-filter-table__items-id">
+                            ${Resource.msg('report.tableheader.productid','sor_smartorderrefill',null)}
+                        </div>
+                        <div class="sor-filter-table__items-name">
+                            ${Resource.msg('report.tableheader.productname','sor_smartorderrefill',null)}    
+                        </div>
+                        <div class="sor-filter-table__items-price">
+                            ${Resource.msg('report.tableheader.productprice','sor_smartorderrefill',null)}    
+                        </div>
+                    </div>
+                </div>
+                <isloop items="${pdict.OrderPagingModel.getPageElements()}" var="order" status="orderloopstate">
+                    
+                    <div data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'action', 'view', 'oid', order.ID, 'client', order.customerNo)}"
+                        class="sor-filter-table__row orderSummary sor-order-summary">
+
+                        <div class="sor-filter-table__customer"><isprint value="${dw.customer.CustomerMgr.getCustomerByCustomerNumber(order.customerNo).getProfile().getEmail()}"></div>
+                        <div class="sor-filter-table__order-date"><isprint value="${order.ID.split(order.subscriptionID + '-')[1].split('.')[0]}"></div>
+                        <div class="sor-filter-table__status"><isprint value="${order.status}"></div>
+                        <div class="sor-filter-table__id"><isprint value="${order.subscriptionID}"></div>
+                        <div class="sor-filter-table__items">
+                            <isloop items="${order.products}" var="productItem">
+                                <div class="sor-filter-table__items-wrap">
+                                    <div class="sor-filter-table__items-id"><isprint value="${productItem.ID}"></div>
+                                    <div class="sor-filter-table__items-name"><isprint value="${dw.catalog.ProductMgr.getProduct(productItem.ID).getName()}">(<isprint value="${productItem.quantity}">)</div>
+                                    <div class="sor-filter-table__items-price"><isprint value="${new dw.value.Money(productItem.price, productItem.currencyCode)}" /></div>
+                                </div>
+                            </isloop>
+                        </div> 
+                        
+                    </div>
+                    
+                </isloop> 
+            </div>
+
+            <div class="sor-filter-table__footer">
+                <div class="total-amount">
+                    <isloop items="${Object.keys(pdict.totalAmount)}" var="currencyCode" status="orderloopstate">
+                        ${Resource.msg('forms.sorsubscriptions.totalamount','sor_forms',null)}:&nbsp;<sdivong class="total-currencies"><span><isprint value="${new dw.value.Money(pdict.totalAmount[currencyCode].toFixed(2), currencyCode)}" /></span></sdivong><br>
+                    </isloop>
+                </div>
+                <isreportspagingbar pageurl="${URLUtils.https('SmartOrderRefillReport-HandleSummaryPagination')}" pagingmodel="${pdict.OrderPagingModel}"/>
+            </div>
+
+        </div>
+    </isif> 
+</div>
+
+</isdecorate>
+
+<isinclude template="components/footer" />

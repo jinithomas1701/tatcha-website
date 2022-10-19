@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	importScript('search/ProductGridUtils.ds');
+</isscript>
+<iscomment><!--Display the remaining products as list--></iscomment>
+<isset name="startRow" value="${0}" scope="page" />
+<isset name="endRow" value="${2}" scope="page"/>
+<isset name="indexIncrement" value="${0}" scope="page"/>
+<isloop items="${pdict.pagingmodel.pageElements}" var="LoopProductHit" status="loopstate">
+	<isset name="index" value="${loopstate.index + indexIncrement}" scope="page"/>	
+	<isif condition="${(startRow == index)}"> 
+		<div class="row product-list-row">
+		<isset name="startRow" value="${(startRow + 3)}" scope="page"/>
+	</isif>	
+	
+			<iscomment> : Promotion needs to be displayed only for category hits.</iscomment>
+			<isif condition="${!pdict.ProductSearchResult.isRefinedByAttribute() && pdict.pagingmodel.currentPage == 0}">
+				<isif condition="${(index == 2) && !empty(pdict.ProductSearchResult.category) && !empty(pdict.ProductSearchResult.category.custom.categoryPromoBanner) }">
+					<div class="col-sm-4 product-list-col">
+						<div class="product-list-unit">
+					<isset name="startRow" value="${(startRow + 3)}" scope="page"/>
+					<isset name="endRow" value="${(endRow + 3)}" scope="page"/>
+					<isset name="indexIncrement" value="${(indexIncrement + 1)}" scope="page"/>
+							<isprint value="${pdict.ProductSearchResult.category.custom.categoryPromoBanner}" encoding="off" />
+					    </div>
+					</div>
+					</div>
+					<div class="row product-list-row">
+				</isif>				
+			</isif>
+
+			<div class="col-sm-4 product-list-col">
+				<iscomment><!--display a tile per product--></iscomment>
+				<isset name="minimalView" value="false" scope="page" />
+				<isset name="giftPage" value="true" scope="page" />
+				<isobject object="${LoopProductHit}" view="searchhit">
+					<iscomment><!-- Self contained product information. Can be cached separately even if search finds this product in different categories or positions within the grid  --></iscomment>
+					<isinclude url="${ProductGridUtils.buildHitTileGiftURL(LoopProductHit, pdict.CurrentHttpParameterMap.cgid.value, giftPage)}"/>
+				</isobject>
+			</div>
+			
+			
+				
+	<isif condition="${(endRow == index) || (index == (pdict.pagingmodel.getEnd()+indexIncrement))}"> 
+		</div>
+		<isset name="endRow" value="${endRow+3}" scope="page" />
+	</isif>	
+</isloop>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll')}">
+	<isif condition="${pdict.pagingmodel.currentPage != pdict.pagingmodel.maxPage }">
+		<div class="infinite-scroll-placeholder" data-loading-state="unloaded" data-grid-url="${decodeURI(pdict.pagingmodel.appendPaging ( pdict.ProductSearchResult.url('Search-Show'), (pdict.pagingmodel.currentPage + 1) * pdict.pagingmodel.pageSize).append('format','page-element').append('ad', minimalView))}" ></div>
+	</isif>
+</isif>

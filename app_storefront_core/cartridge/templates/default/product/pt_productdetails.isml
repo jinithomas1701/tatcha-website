@@ -1,0 +1,170 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: (pdict.Product.name || 'Product Detail'),
+			type: 'product',
+			ns:'product'
+		};
+		var Site = require('dw/system/Site');
+		var giftBuilderSKU = Site.getCurrent().getCustomPreferenceValue('giftBuilderSKU');
+		
+		var isAutomatEnabled = false;
+		isAutomatEnabled = Site.getCurrent().getCustomPreferenceValue('AUTOMAT_IsEnabled');
+	</isscript>
+	
+	<isinclude template="util/modules"/>
+	<isinclude template="components/header/htmlhead_bs"/>
+	<isinclude template="product/productogtags"/>
+	<isinclude template="product/pt_productdetails_UI"/>
+	
+	
+		<link rel="stylesheet" href="${URLUtils.staticURL('/css/bootstrap4/tatcha-pdp-dev.css')}"/>
+
+	
+	<iscomment> Field for checking p-page version </iscomment>
+	
+
+	<link rel="canonical" href="${URLUtils.https('Product-Show','pid', pdict.Product.ID)}"/>
+
+	<link rel="preload" as="image" href="${getImageUrl(pdict.product, 'large',0)}">
+	<isif condition="${'enableReviewsRatings' in pdict.Product.custom}">
+		<isif condition="${pdict.Product.custom.enableReviewsRatings}">	
+
+		</isif>
+	</isif>
+	<style>
+	.product-carousel{
+		min-height: 360px;
+		min-width:360px;
+	}
+	
+	@media(min-width: 320px) and (max-width: 359px){
+		.product-carousel{
+			min-height: 320px;
+			min-width:320px;
+		}
+	}
+	.product-detail-container-spec .image-container{
+		min-height: 280px;
+	}
+	.product-detail-container-spec .carousel-image {
+		min-height: 280px;
+	}
+	
+	.product-detail-container-spec .product-suggested-routine .product-list-unit .product-img-block .product-img{
+		height: 130px;
+	    width: 130px;
+	}
+	
+
+	@media (max-width:1023px){
+		.product-detail-container-spec .product-suggested-routine .product-list-unit .product-img-block .product-img{
+			height: 100px;
+	  	 	width: 100px;
+			
+		}
+	}
+	</style>
+</head>
+<body>
+
+	<isinclude template="components/header/header_bs"/>
+	<isscript>
+	var referrer = request.httpParameterMap.referrer.value;
+	var compare_category = request.httpParameterMap && request.httpParameterMap.compare_category ? request.httpParameterMap.compare_category.value : null;
+	var clientID ='';
+	clientID = Site.getCurrent().getCustomPreferenceValue('AUTOMAT_Client_ID');
+	</isscript>
+	
+	<input type="hidden" id="clientID" value="${clientID}" />
+	
+	<isif condition="${(referrer == 'ritualfinder')}">
+		<div class="container-fluid breadcrumb-container">
+			<ol id="myaccount-breadcrumb" class="breadcrumb container">
+		  		<li>
+		  			<a href="javascript:history.back()">
+		  				<i class="fal fa-angle-double-left"></i>
+		  				${Resource.msg('global.ritualfinder','locale',null)}
+		  			</a>
+		  		</li>
+			</ol>
+		</div>
+	</isif>
+	
+	<isif condition="${compare_category !== null}">
+		<div class="container-fluid breadcrumb-container">
+			<ol id="myaccount-breadcrumb" class="breadcrumb container">
+		  		<li>
+		  			<a href="${URLUtils.url('Compare-Show', 'category', compare_category)}">
+		  				<i class="fal fa-angle-double-left"></i>
+		  				${Resource.msg('global.compareback','locale',null)}
+		  			</a>
+		  		</li>
+			</ol>
+		</div>
+	</isif>
+
+	<isset name="giftSKU" value="${giftBuilderSKU}" scope="pdict" />
+	<isif condition="${pdict.Product.ID == pdict.giftSKU}">	
+		<main id="main" role="main" class="product product-detail-container product-create-set" itemscope itemtype="http://schema.org/Product" tabindex="-1">
+			<isinclude template="components/browsertoolscheck"/>
+			<div class="product-transaction">
+				<div id="primary" class="container">
+					<isreplace/>
+				</div>
+				<!-- /product-content -->
+				
+					<isinclude template="product/components/productv1/productcontentblocks_v1"/>	
+				
+			</div>
+		</main>
+	<iselse/>
+		<main id="main" role="main" class="product product-detail-container product-detail-container-spec"  itemscope itemtype="http://schema.org/Product" tabindex="-1">
+			<isinclude template="components/browsertoolscheck"/>
+			<div class="product-transaction">
+				<div id="primary" class="container">			
+					<isreplace/>
+				</div><!-- /primary-content -->
+			</div>
+			<!-- /product-content -->
+			
+				<isinclude template="product/components/productv1/productcontentblocks_v1"/>	
+			
+				
+		</main> <!-- /pt_product-details -->		
+	</isif>
+
+	<iscomment>Modals</iscomment>
+	<isset name="pageName" value="pdp" scope="page" />
+	<isinclude template="product/components/modals"/>	
+	<isinclude template="components/footer/footer_bs"/>
+	<script>
+	//2. This code loads the IFrame Player API code asynchronously.
+	var tag = document.createElement('script');
+	
+	tag.src = "https://www.youtube.com/iframe_api";
+	var firstScriptTag = document.getElementsByTagName('script')[0];
+	firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+	
+	//for vimeo api player
+	var vimeoTag = document.createElement('script');
+	vimeoTag.src = "https://player.vimeo.com/api/player.js";
+	vimeoTag.defer = true;
+	var vimeoScriptTag = document.getElementsByTagName('script')[0];
+	vimeoScriptTag.parentNode.insertBefore(vimeoTag, vimeoScriptTag);
+</script>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+	<isinclude template="product/pt_productdetails_VARS"/>
+	
+</body>
+</html>

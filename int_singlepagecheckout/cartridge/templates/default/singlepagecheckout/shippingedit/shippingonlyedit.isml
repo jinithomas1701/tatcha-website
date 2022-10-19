@@ -1,0 +1,29 @@
+<!--- TEMPLATENAME: singlepagecheckout.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="singlepagecheckout/pt_singlepagecheckout">
+	<isinclude template="singlepagecheckout/modules"/> 
+	<iscomment>TODO:Report </iscomment>	
+	<isscript>
+	    var singlePageCheckoutUtils = require('int_singlepagecheckout/cartridge/scripts/util/SinglePageCheckoutUtils');
+	    var checkoutObj = singlePageCheckoutUtils.getCheckoutSummary();
+	    var Site = require('dw/system/Site');
+		var headerText = Site.getCurrent().getCustomPreferenceValue('CheckoutHeaderText');
+	</isscript>	
+	<div class="container">
+		<input type="hidden" id="renderShippingEdit" value="${URLUtils.url('COShipping-Start','checkoutState','shipping','checkoutMode','edit')}"/>
+		<input type="hidden" id="renderBillingEdit" value="${URLUtils.url('COBilling-Start','checkoutState','billing','checkoutMode','edit')}"/>		
+		<div class="row no-gutters" id="checkout-container">	      	
+	    	<isspcshippingonly p_checkoutobj="${checkoutObj}" p_responsecode="${(pdict.responseCode)?pdict.responseCode:''}" p_responsemsg="${(pdict.responseMsg)?pdict.responseMsg:''}"/>
+	    </div>
+	</div>
+	 <div class="checkout-footer d-block py-4 text-center">
+              <div class="siteseal mx-auto text-center my-3"><span id="siteseal"><script async type="text/javascript" src="https://seal.godaddy.com/getSeal?sealID=hUvANrxHeSE0RTFCA9i6MYZkszJcvUCh3uz5uDZyC53zjLEEJnJDWO7cmcsJ"></script></span></div>
+           <div class="mb-3 d-lg-none"> <isprint value="${headerText}"/></div>
+     </div>
+</isdecorate>
+
+<iscomment> DEBUG MODE </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('singlePageCheckoutDebugMode')}" >
+	<div style="display:none;"><textarea><isprint value="${JSON.stringify(checkoutObj)}" /></textarea></div>
+</isif>
+

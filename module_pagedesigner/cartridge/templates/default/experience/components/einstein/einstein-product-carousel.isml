@@ -1,0 +1,21 @@
+<iscache type="relative" hour="24"/>
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/einstein-recommendations.js');
+</isscript>
+
+<isif condition="${pdict.title}">
+<div class="container">
+<h3 class="outline-global section-heading text-center ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''} col-md-12 col-lg-10 col-xl-8 ml-auto mr-auto" style="font-weight: 400;font-size: 1.75rem;" >${pdict.title}</h3>
+</div>
+</isif>
+<div class="container product-merchandise-cross-sell product-cms-carousel m-top ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+        <div class="col-lg-12 col-xxl-10 mr-auto ml-auto product-merchandise-carousel p-0 carousel-inner einstein-realtime-recommendations"
+             data-recommender="${pdict.recommender}"
+             data-template="assets/producttile"
+             data-product-load-url="${pdict.productLoadUrl}"
+             data-limit="${pdict.limit}">
+        </div>
+</div>

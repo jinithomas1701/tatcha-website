@@ -1,0 +1,30 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<iscomment>Pricing and afterpay </iscomment>
+<div class="product-price-block d-lg-block">
+	<isset name="isImageSearchDetailPage" value="false" scope="page" />
+	<isinclude template="product/components/productpagepricing_v1"/>
+</div>
+	
+<iscomment>
+reviews
+=============================================================
+</iscomment>
+			
+<isif condition="${'enableReviewsRatings' in pdict.Product.custom}">
+	<isif condition="${pdict.Product.custom.enableReviewsRatings && !isQuickView}">
+		<div class="product-rating-share-block  prd-rating-share-block prd-share-hidden">
+			<isyotpoproductbottomlinewidget product="${pdict.Product}" />
+			<isscript>
+				var YotpoUtils = require('int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+				var currentLocaleID = YotpoUtils.getCurrentLocale(request);
+				var isBottomLineEnabled = YotpoUtils.isBottomLineEnabledForCurrentLocale(currentLocaleID);
+			</isscript>
+			<isif condition="${isBottomLineEnabled}">
+				<span style="padding-left: 16px; padding-right: 16px; padding-top: 2px;" class="separator d-inline-block"> | </span>
+				<div id="extole_zone_product" class="prd-share-block"> </div>
+			</isif>
+		</div>
+	</isif>	
+</isif>		

@@ -1,0 +1,51 @@
+<!--- TEMPLATENAME: rsc_gpds_tag.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<!-- Search data -->
+<isif condition="${(!empty(session.custom.searchParam) && (!empty(session.custom.productCount) ||(session.custom.productCount === 0)))}">
+	<script type="text/javascript">
+		$(document).ready(function() {
+				setTimeout(function(){ 
+					adc.logRSCCustomEvent('Search',
+					mParticle.EventType.Other,
+			       	{
+						'searchTerm': "<isprint value="${session.custom.searchParam}" encoding="htmlcontent"/>",
+						'searchResultsCount': "<isprint value="${session.custom.productCount}" style="INTEGER" encoding="off"/>"
+					});
+				}, 0);
+		});
+	</script>
+	<isscript>	
+		session.custom.searchParam = null;
+	</isscript>
+</isif>
+
+<isscript>
+	if(session.privacy.loginEventRSC) {
+		session.privacy.loginEventRSC = false;
+	}
+	if(session.privacy.registrationEventRSC) {
+		session.privacy.registrationEventRSC = false;
+	}
+	if(session.privacy.emailUpdated) {
+		session.privacy.emailUpdated = false;
+	}
+	if(session.privacy.addressAddEditEvent) {
+	    session.privacy.addressAddEditEvent = false;
+	}
+	if(session.privacy.phoneUpdated) {
+		session.privacy.phoneUpdated = false;
+	}
+	if(session.privacy.facebookLoginEventRSC) {
+		session.privacy.facebookLoginEventRSC = false;
+	}
+	if(session.privacy.facebookLoginFailedEvent) {
+		session.privacy.facebookLoginFailedEvent = false;
+	}
+	if(session.privacy.wishlistPids) {
+		session.privacy.wishlistPids = '';
+	}
+	if(session.privacy.subscriptionProds){
+		session.privacy.subscriptionProds = '';
+	}
+</isscript>

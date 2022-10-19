@@ -1,0 +1,35 @@
+<script>
+    window.sor_resources  = {};
+    window.sor_resources.removeProd_header = "${Resource.msg('club.vieworder.remove.header', 'sor_smartorderrefill', null)}";
+    window.sor_resources.removeProd_message = "${Resource.msg('club.vieworder.remove.message', 'sor_smartorderrefill', null)}";
+
+    window.sor_resources.cancelRenewal_header = "${Resource.msg('club.subscription.cancel_renewal.header', 'sor_smartorderrefill', null)}";
+    window.sor_resources.cancelRenewal_message = "${Resource.msg('club.vieworder.cancel_renewal.message', 'sor_smartorderrefill', null)}";
+
+    window.sor_resources.pause_order_header = "${Resource.msg('club.subscription.pause_order.header', 'sor_smartorderrefill', null)}";
+    window.sor_resources.pause_order_message = "${Resource.msg('club.subscription.pause_order.message', 'sor_smartorderrefill', null)}";
+
+    window.sor_resources.skip_order_header = "${Resource.msg('club.subscription.skiporder.header', 'sor_smartorderrefill', null)}";
+    window.sor_resources.skip_order_message = "${Resource.msg('club.subscription.skiporder.message', 'sor_smartorderrefill', null)}";
+    window.sor_resources.skip_order_lastorder = "${Resource.msg('club.subscription.skiporder.lastorder', 'sor_smartorderrefill', null)}";
+
+    window.sor_resources.cancel_subscription_header = "${Resource.msg('club.vieworder.cance_subscription.header', 'sor_smartorderrefill', null)}";
+    window.sor_resources.cancel_subscription_message = "${Resource.msg('club.vieworder.cance_subscription.message', 'sor_smartorderrefill', null)}";
+
+    window.sor_resources.pause_subscription_header = "${Resource.msg('club.vieworder.pause_subscription.header', 'sor_smartorderrefill', null)}";
+    window.sor_resources.pause_subscription_message = "${Resource.msg('club.vieworder.pause_subscription.message', 'sor_smartorderrefill', null)}";
+
+    window.sor_resources.reactivate_subscription_header = "${Resource.msg('club.vieworder.reactivate_subscription.header', 'sor_smartorderrefill', null)}";
+    window.sor_resources.reactivate_subscription_message = "${Resource.msg('club.vieworder.reactivate_subscription.message', 'sor_smartorderrefill', null)}";
+    window.sor_resources.reactivate_subscription_remainperiod = "${Resource.msg('club.vieworder.reactivate_subscription.remainingperiod', 'sor_smartorderrefill', null)}";
+    window.sor_resources.reactivate_subscription_oneyear = "${Resource.msg('club.vieworder.reactivate_subscription.oneyear', 'sor_smartorderrefill', null)}";
+    
+    window.sor_resources.addproduct_header = "${Resource.msg('club.vieworder.addproduct.header', 'sor_smartorderrefill', null)}";
+
+    window.sor_resources.yes="${Resource.msg('club.vieworder.dialog.button.yes', 'sor_smartorderrefill', null)}";
+    window.sor_resources.no="${Resource.msg('club.vieworder.dialog.button.no', 'sor_smartorderrefill', null)}";
+    window.sor_resources.ok="${Resource.msg('club.vieworder.dialog.button.ok', 'sor_smartorderrefill', null)}";
+    window.sor_resources.save="${Resource.msg('club.subscription.save', 'sor_smartorderrefill', null)}";
+    window.sor_resources.cancel="${Resource.msg('club.subscription.cancel', 'sor_smartorderrefill', null)}";
+
+</script>

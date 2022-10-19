@@ -1,0 +1,8 @@
+{
+    "hooks": [
+        {
+            "name": "app.experience.editmode",
+            "script": "./cartridge/experience/hooks.js"
+        }
+    ]
+}

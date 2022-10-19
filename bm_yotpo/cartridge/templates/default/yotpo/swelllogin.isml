@@ -1,0 +1,90 @@
+<!--- TEMPLATENAME: yotposwell.isml --->
+<isdecorate template="application/MenuFrame"> 
+<iscontent type="text/html" charset="UTF-8">
+<isinclude template="inc/Modules">
+
+<isset name="TOP_URL" value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', "site-prefs")}" scope="PAGE"> 
+<isbreadcrumb name1="Site Preferences" url1="${TOP_URL}" name2="Yotpo Swell Login"> 
+
+<isinclude template="includes/yotpoincludes"/>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+    <tr>
+        <td class="table_title" nowrap="nowrap">${Resource.msg('yotpo.bm.swell.page.heading', 'yotpobm', null)}</td>
+    </tr>
+    <tr>
+        <td class="w e s"><img src="/on/demandware.static/Sites-Site/-/default/vba83cb034914f777a67f77a53dfa9a782920a624/images/space.gif" width="1" height="2" alt="" border="0"></td>
+    </tr>
+    <tr>
+        <td valign="top" class="table_title_description w e s">
+            <p>${Resource.msg('yotpo.bm.swell.page.description.head', 'yotpobm', null)}</p>
+            <p>${Resource.msg('yotpo.bm.swell.page.description.detail', 'yotpobm', null)}</p>
+        </td>
+    </tr>
+</table>
+<div id="C">
+    <table class="infobox w e s" cellpadding="0" cellspacing="0"
+        width="100%">
+        <tbody>
+            <tr>
+                <td class="table_header w e s" colspan="3" width="100%">${Resource.msg('yotpo.bm.swell.heading', 'yotpobm', null)}</td>
+            </tr>
+            <tr>
+                <td colspan="2" class="infobox_item_search"><img
+                    src="/on/demandware.static/Sites-Site/-/default/v1405880443613/images/space.gif"
+                    width="1" height="1" alt=""></td>
+            </tr>
+            <tr>
+                <td colspan="2" class="infobox_item_search">
+                    <table cellspacing="0" cellpadding="0" border="0">
+                        <tbody>
+                            <tr>
+                                <td class="infobox_item_search" nowrap="nowrap">${Resource.msg('yotpo.bm.swell.select', 'yotpobm', null)}:&nbsp;</td>
+                                <td class="infobox_item_search">
+                                    <select class="locale-id-select">
+                                        <isset name="yotpoConfigsFound" value="false" scope="page" />
+
+                                        <isloop items="${pdict.YotpoConfigs}" var="config">
+                                            <isset name="yotpoConfigsFound" value="true" scope="page" />
+                                            <option data-guid="${config.custom.swellGUID || ''}" data-api-key="${config.custom.swellAPIKey || ''}">${config.custom.localeID}</option>
+                                        </isloop>
+                                    </select>
+                                </td>
+                                <td class="infobox_item_search">
+                                    <span class="error-text ${ yotpoConfigsFound == 'true' ? 'hidden' : ''}">${Resource.msg('yotpo.bm.swell.no.configs', 'yotpobm', null)}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="infobox_item_search" nowrap="nowrap">${Resource.msg('yotpo.bm.swell.guid', 'yotpobm', null)}:&nbsp;</td>
+                                <td class="infobox_item_search"><input type="text" class="infobox_item_search guid-input" readonly></td>
+                                <td class="infobox_item_search">
+                                    <span class="guid-error error-text hidden">${Resource.msg('yotpo.bm.swell.guid.missing.error', 'yotpobm', null)}</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="infobox_item_search" nowrap="nowrap">${Resource.msg('yotpo.bm.swell.api.key', 'yotpobm', null)}:&nbsp;</td>
+                                <td class="infobox_item_search"><input type="text" class="infobox_item_search api-key-input" readonly></td>
+                                <td class="infobox_item_search">
+                                    <span class="api-key-error error-text hidden">${Resource.msg('yotpo.bm.swell.api.key.missing.error', 'yotpobm', null)}</span>
+                                </td>
+                            </tr>
+                            <td class="infobox_item_search">
+                                <table cellspacing="4" cellpadding="0">
+                                    <tbody>
+                                        <tr>
+                                            <td class="button">
+                                                <input name="swell-login" type="button" value="${Resource.msg('yotpo.bm.swell.login', 'yotpobm', null)}"
+                                                    class="button swell-login-btn">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</isdecorate>

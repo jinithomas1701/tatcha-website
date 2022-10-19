@@ -1,0 +1,3 @@
+<div class="product-hit-tile">
+	<isinclude template="product/producthittilev1" />
+</div>

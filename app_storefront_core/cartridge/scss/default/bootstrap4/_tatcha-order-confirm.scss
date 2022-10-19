@@ -1,0 +1,203 @@
+.order-confirm-page{
+    .mobile-form-container{
+        background: url('../assets/welcome-email-3 2@2x.png');
+        background-size: cover;
+        background-repeat: no-repeat;
+    }
+    color:$black;
+    @include media-breakpoint-up(md){
+        padding:0 15px;
+    }
+    @include media-breakpoint-up(xl){
+        padding:0 4rem;
+    }
+
+
+
+.float-label::before {
+  min-width:250px;
+}
+.floating__input:placeholder-shown:not([style*="display: none"]):not([style*="display:none"]):not([class*='d-none']) ~ .float-label::before {
+	font-size: 13px;
+	
+}
+
+.float-label::before,
+.floating__input:focus:not([style*="display: none"]):not([style*="display:none"]):not([class*='d-none']) ~ .float-label::before {
+  	font-size: 14px;	
+}
+.floating__input:focus:not([style*="display: none"]):not([style*="display:none"]):not([calss*='d-none']) ~ .float-label::before {
+	font-size: 14px;
+	
+}
+    .cancel-links{
+        a{
+            color:$black;
+            font-size: 14px;
+            text-transform: uppercase;
+            color:$black;
+        }
+        span{
+            padding: 0 0.5rem;
+            color:$black;
+        }
+    }
+    .shipping-updates-container{
+        .vr{
+            border-left: 1px solid $gray-200;
+            height: 100%;
+            vertical-align: middle;
+            margin: 0rem 1rem;
+        }
+        .order-questions{
+            vertical-align: middle;
+            a{
+                color:$black;
+                text-decoration: underline;
+            }
+            .title{
+                color:$black;
+                font-weight: $font-weight-bold;   
+            }
+        }
+        .shipping-title{
+            color:$black;
+            font-weight: $font-weight-bold;
+        }
+    }
+    .creating-heading{
+        
+        font-weight: $font-weight-bold;
+        margin-bottom: 1rem;
+        width:80%;
+        margin: 0 auto;
+        padding-top:2rem;
+        color:$black;
+        @include media-breakpoint-up(md){
+            color:$black;
+            font-size: 18px;
+            width:unset;
+            margin:unset;
+            padding-top: unset;
+        }
+    }
+    .benefits-title{
+        font-weight: $font-weight-bold;
+    }
+    .benefits-list{
+        padding-left: 18px;
+        line-height: 1.7;
+    }
+    .benefits-container{
+        width:80%;
+        margin:0 auto;
+        @include media-breakpoint-up(md){
+            width:unset;
+        margin:unset;
+        }
+    }
+    .signup-form{
+        width:80%;
+        margin:0 auto;
+        
+        @include media-breakpoint-up(md){
+        width:unset;
+        margin:unset;
+        }
+        label{
+            font-size: 12px;
+            font-weight: $font-weight-bold;
+            color:$black;
+            span{
+                font-weight: $font-weight-normal;
+                font-size: 10px;
+            }
+            .email{
+                font-weight: $font-weight-normal;
+                font-size: 12px;
+            }
+			&.float-label{
+				text-transform: capitalize;
+			}
+        }
+		.form-check-label{
+			margin-top:3px;
+		}
+        input[type=password]{
+            border-radius: 4px;
+        }
+        input[type=text]{
+            border-radius: 4px;
+        }
+        
+        button{
+            font-size: 12px;
+            padding: 0.5rem 1.5rem;
+        }
+    }
+    .order-confirm-details{
+        
+        .title{
+            font-size:18px;
+            text-transform: uppercase;
+            margin-top:2rem;
+            margin-bottom:1rem;
+            text-align: center;
+            @include media-breakpoint-up(md){
+                font-size:20px;
+                text-align: left;
+            }
+        }
+        .order-number{
+            font-weight: $font-weight-bold;
+            font-size:18px;
+            margin-bottom: 1rem;
+            text-align: center;
+            @include media-breakpoint-up(md){
+                font-size:20px;
+                text-align: left;
+            }
+        }
+        .email-text{
+            text-align: center;
+            border-bottom: 1px solid $gray-200;
+            @include media-breakpoint-up(md){
+                text-align: left;
+                border: none;
+            }
+            padding-bottom: 1rem;
+            
+
+        }
+
+    }
+    .order-confirm-banner{
+        position: relative;
+        .content{
+         position: absolute;
+         left:50%;
+        transform: translateX(-50%);
+        text-align: center;
+        padding: 8%;
+        width:100%;
+        font-size: 0.875rem;
+        &.black{
+            color:$black;
+            a{
+                color:$black;
+            }
+        }
+        &.white{
+            color:$white;
+            a{
+                color:$white;
+            }
+        }
+        .title{
+            text-transform: uppercase;
+            font-weight: $font-weight-bold;
+            
+        }
+      }
+    }
+}

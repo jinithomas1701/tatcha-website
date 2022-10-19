@@ -1,0 +1,48 @@
+<iscomment>TODO - AUTO DELIVERY change
+    <div class="col-md-6 mt-lg-0 col-lg-12">
+        <a href="${URLUtils.url('Checkout-Begin')}" class="checkout-btn ml-md-2 ml-lg-0  btn btn-primary btn-block mb-3 cart-checkout-btn" type="button" value="${Resource.msg('global.checkout','locale',null)}" id=""  name="${pdict.CurrentForms.cart.checkoutCart.htmlName}"
+           data-sorproducts="${HasRefillProducts}"
+           data-userexists="${pdict.CurrentCustomer.authenticated}">
+            <i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+        </a>
+        <button type="submit" value="${Resource.msg('global.checkout','locale',null)}" id="cart-checkout-button" style="display:none;" name="${pdict.CurrentForms.cart.checkoutCart.htmlName}" data-sorproducts="${session.custom.HasSORProducts}" data-userexists="${pdict.CurrentCustomer.authenticated}"></button>
+    </div></iscomment>
+
+<div class="col-md-6 mt-lg-0 col-lg-12">
+	<isset name="checkoutURL" value="${URLUtils.url('Checkout-Begin','cartRequest','true', 'stage', 'shipping')}" scope="page" />
+	<isif condition="${customer.authenticated && customer.registered && !empty(customer.profile.addressBook.preferredAddress)}">
+		<isset name="checkoutURL" value="${URLUtils.https('Checkout-Begin', 'cartRequest','true', 'stage', 'shipping', 'type', 'expresscheckout')}" scope="page" />
+	</isif>
+    <button class="checkout-btn ml-md-2 ml-lg-0 btn btn-primary btn-block mb-3 cart-checkout-btn" <isif condition="${!enableCheckout}"> disabled </isif>  data-action="${checkoutURL}" type="submit" value="${Resource.msg('global.checkout','locale',null)}" id="" name="${pdict.CurrentForms.cart.checkoutCart.htmlName}">            <i class="fas fa-lock"></i><span style="padding-left: 5px;">${Resource.msg('global.checkout','locale',null)}</span>
+    </button>
+</div>
+
+<isif condition="${enableCheckout}">
+    <isif condition="${!(session.custom.HasSORProducts === true || session.custom.hasSORProducts === true) }">
+        <div class="d-flex flex-row justify-content-between w-100">
+            <div class="w-75"><hr class="seperator"/></div>
+            <div class="w-100 text-center checkout-with">Or checkout with</div>
+            <div class="w-75"><hr class="seperator"/></div>
+        </div>
+    </isif>
+
+    <div class="row cart-checkout-buttons-wrap w-100 no-gutters" style="height: auto;justify-content: space-between;margin-bottom: 1rem;display: flex;padding-top: 1rem;" id="other-payment">
+        <div class="d-flex w-100 payment-options-wrap" style="align-item:center; height:45px">
+            <div class="cart-checkout-buttons ${(pdict.afterPayEligible == true && !pdict.hasRefillProducts && !pdict.hasOnlyGiftCertificate)? '' : 'd-none'}" id="cart-afterpay-button">
+                <iscomment>AfterPay Express </iscomment>
+                <isinclude template="afterpay/afterpayButton" />
+            </div>
+
+            <div class="cart-checkout-buttons ${(!pdict.hasRefillProducts)? '' : 'd-none'}" id="cart-paypal-button">
+                <isinclude template="braintree/cart/paypalButton"/>
+            </div>
+        </div>
+        <div class="row no-gutters w-100 cart-applepay-button ${(!pdict.hasRefillProducts && !pdict.hasOnlyGiftCertificate)? '' : 'd-none'}" style="margin-bottom: .5rem; margin-top: 1rem;">
+            <isinclude template="braintree/checkout/applepayCheckoutButton"/>
+        </div>
+
+    </div>
+</isif>
+
+
+

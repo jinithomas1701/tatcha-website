@@ -1,0 +1,10 @@
+<iscontent type="text/html " charset="UTF-8"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<tr>
+    <td>
+        <h1 style="width:400px;margin: 0 auto 20px;font-family:'Open Sans', sans-serif;color: #7798ab;font-size: 46px;font-weight: bold;text-align: center;padding: 20px 0;border-bottom: 2px solid #c3dbc5;">${pdict.subject}</h1>
+    </td>
+</tr>

@@ -1,0 +1,27 @@
+<isset name="submittedPaymentMethod" value="${pdict.CurrentHttpParameterMap.paymentMethod.submitted ? pdict.CurrentHttpParameterMap.paymentMethod.stringValue : ''}" scope="page" />
+<isset name="braintreePaymentInstruments" value="${pdict.braintreePaymentInstruments}" scope="page" />
+
+<tr style="display:${(isSearchByOrderNo || isSearchByTransaction) ? 'none' : 'block'}" id="braintree_search_transaction_by_payment_method">
+    <td class="infobox_item_search" colspan="2">
+        <form action="${URLUtils.https('BraintreeAdmin-Orders')}" method="post">
+            <table style="width:inherit">
+                <tr>
+                    <td class="infobox_item_search braintree_order_search_title" nowrap="nowrap"><span>${Resource.msg('search.paymentmethod', 'braintreebm', null)}</span>&nbsp;</td>
+                    <td class="infobox_item_search">
+                        <select id="paymentMethod" name="paymentMethod" class="inputfield_en">
+                            <option value="">${Resource.msg('forms.select', 'braintreebm', null)}</option>
+
+                        <isloop items="${braintreePaymentInstruments}" var="braintreePaymentMethod">
+                            <option value="${braintreePaymentMethod.ID}" ${submittedPaymentMethod == braintreePaymentMethod.ID ? "selected" : ""}>
+                            ${Resource.msgf('forms.method', 'braintreebm', null, braintreePaymentMethod.name)}
+                        </option>
+                    </isloop>
+                        </select>
+                    </td>
+                    <td class="infobox_item_search">&nbsp;</td>
+                    <td class="infobox_item_search"><button name="simpleSearch" value="true" class="button">${Resource.msg('search.submitbutton', 'braintreebm', null)}</button></td>
+                </tr>
+            </table>
+        </form>
+    </td>
+</tr>

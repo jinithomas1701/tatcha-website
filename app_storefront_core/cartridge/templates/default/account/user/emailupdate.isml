@@ -1,0 +1,398 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<link rel="stylesheet" href="${URLUtils.staticURL('/css/intlTelInput.css')}">
+<isdecorate template="account/pt_account_bs"> 
+<isinclude template="util/modules.isml" />
+<isscript>	
+	var CustomerMgr =require('dw/customer/CustomerMgr');
+ 	var customer= session.customer;
+ 	var updateSuccess = session.custom.updatePref;
+ 	var isnewsletter = customer.profile.custom.newsletterSubscription;
+ 	var customerMobile = customer.profile.phoneMobile;
+ 	var countryCode = customer.profile.custom.countryCode
+ 	var isVerfiedPhone = customer.profile.custom.isVerifiedPhone;
+</isscript>
+
+<div class="compact-h1-group">
+	<h1 class="text-center email-text-preference">${Resource.msg('global.emailandtextpref','locale',null)}</h1>
+	<p class="text-center">Manage your text(SMS) and email preferences</p>
+</div>
+
+<div class="container view-state my-account-phone-add text-message-container">
+	<div class="row">
+		<div class="col-lg-6">
+			<div class="card data-group">
+				<div class="card-header">
+				    <h4 class="card-header-inner">${Resource.msg('account.user.phone.title','account',null)}</h4>
+				</div>
+				<div class="card-body">
+					<isif condition="${!empty(customerMobile) && isVerfiedPhone}">
+						<div class="border border-success alert-phone-update text-center" role="alert">
+							<div class="alert-icon">
+								<span class="fa-layers fa-fw">
+									<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+									<i class="fal fa-check fa-inverse" data-fa-transform="shrink-3"></i>
+								</span>
+							</div>
+							<div class="alert-text text-success">${Resource.msg('account.user.phone.textprefupdated','account',null)}</div>
+						</div>
+						<div class="state-edit-phone">
+							<p class="edit-phone-default-text" style="line-height: 1.2;">${Resource.msg('account.user.phone.addphonetext','account',null)}</p>
+							<div class="card-text">
+							<dl class="row">
+								<dt class="col-4 text-md-right text-sm-left pr-0">${Resource.msg('account.user.phone.phonetext','account',null)}</dt>
+								<dd class="col-md-8 col-sm-12">
+									<isprint value="${countryCode}" /> <isprint value="${customerMobile}" />
+								</dd>
+								<div class="text-center edit-action-wrap">
+									<button class="btn btn-outline-secondary delete-phone" data-toggle="modal" data-target="#modalDeletePhone">${Resource.msg('account.user.phone.delete','account',null)}</button>
+									<button class="btn btn-outline-secondary btn-edit-phone" data-dial="<isprint value="${countryCode}" />">${Resource.msg('account.user.phone.edit','account',null)}</button>
+								</div>
+							</dl>
+							</div>
+						</div>
+					<iselseif condition="${!empty(customerMobile) && !isVerfiedPhone}">
+						<div class="alert alert-danger alert-verify text-center num-verify-notification" role="alert" style="display:none;">
+							<div class="alert-icon">
+								<span class="fa-layers fa-fw">
+									<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+									<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+								</span>
+							</div>
+							<div class="alert-text text-danger">
+								${Resource.msg('account.user.phone.verifytext','account',null)}<br />
+								<a class="edit-phone-continue" href="#">
+									${Resource.msg('account.user.phone.verifynow','account',null)}
+								</a>
+							</div>
+						</div>
+						<div class="state-edit-phone">
+							<dl class="dl-horizontal">
+								<dt class="data-label">${Resource.msg('account.user.phone.phonetext','account',null)}</dt>
+								<dd class="data-value">
+									<isprint value="${countryCode}" /> <isprint value="${customerMobile}" />
+								</dd>
+								<div class="text-center edit-action-wrap">
+									<button class="btn btn-outline-secondary delete-phone" data-toggle="modal" data-target="#modalDeletePhone">${Resource.msg('account.user.phone.delete','account',null)}</button>
+									<button class="btn btn-outline-secondary btn-edit-phone" data-dial="<isprint value="${countryCode}" />">${Resource.msg('account.user.phone.edit','account',null)}</button>
+								</div>
+							</dl>
+						</div>
+					<iselseif condition="${empty(customerMobile)}">
+						<div class="state-add-phone">
+							<p style="line-height: 1.2;"><em>${Resource.msg('account.user.phone.addphonetext1','account',null)}</em></p>
+							<p style="line-height: 1.2;">${Resource.msg('account.user.phone.addphonetext2','account',null)}</p>
+							<div class="text-center">
+								<a data-toggle="modal" data-target="#addPhone" class="btn btn-outline-secondary btn-add-phone">${Resource.msg('account.user.phone.addphone','account',null)}</a>
+							</div>
+						</div>
+					</isif>
+				</div>
+			</div>
+		</div>
+		<div class="col-lg-6 account-email-update">
+			 <isif condition="${(updateSuccess != null)}">
+				<div class="border border-success text-success preference-border" role="alert">Your preferences have been updated.</div>
+			</isif>
+			
+			<div class="card data-group">
+				<div class="card-header">
+					<h4 class="card-header-inner">${Resource.msg('global.emailprefupdate','locale',null)}</h4>
+				</div>
+				<isif condition= "${(isnewsletter === true)}">
+					<div class="card-body">
+						<isscript>
+						var field = pdict.CurrentForms.subscribe.newsletterFrequency;
+						var value = session.customer.profile.custom.newsletterFrequency;
+						var options = pdict.CurrentForms.subscribe.newsletterFrequency.options;
+						</isscript>
+						<p>You are currently receiving: <strong><isprint value="${value}" /></strong></p>
+						<form action="${URLUtils.https('Account-EditSubscribtion')}" method="post" id="SubscribeForm">
+							<isinputfield formfield="${}" type="radio" />
+							<div class="form-group email-text-form-group">
+								<isloop items="${options}" var="option">
+									<div class="radio">
+										<label>
+											<input type="radio" name="${field.htmlName}" id="${option.value}" value="${option.value}" 
+												<isif condition="${option.value == value}"> checked=""</isif>>
+													<isprint value="${option.label}" />
+										</label>
+									</div>
+								</isloop>
+							</div>
+							<div class="m-btm text-center">
+								<button type="submit" class="btn btn-outline-secondary edit-save" value="${Resource.msg('global.update','locale',null)}" id="${pdict.CurrentForms.subscribe.updatepref.htmlName}" name="${pdict.CurrentForms.subscribe.updatepref.htmlName}">
+									${Resource.msg('global.update','locale',null)}
+								</button>
+							</div>
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+						</form>
+					</div>
+		
+					<div class="panel-heading m-top-xl ml-3">
+					    <h5 class="panel-title">${Resource.msg('global.unsubscribe','locale',null)}</h5>
+					</div>
+					<div class="panel-body" style="padding-top:0 !important;">
+						<p>${Resource.msg('global.removenewsletter','locale',null)}</p>
+						<div class="m-btm text-center">
+							<button class="btn btn-outline-secondary" data-toggle="modal" data-target="#unsubscribe">${Resource.msg('global.unsubscribe','locale',null)}</button>
+						</div>
+					</div>
+				<iselse>
+					<div class="email-sub-state">
+						<div class="panel-body">
+							<div class="border border-success text-success alert-email-unsub" role="alert" style="display:none;">You have been unsubscribed.</div>
+							<h5 class="email-sub-text">Sign Up for Our Newsletter</h5>
+							<p style="line-height: 1.2;">Join our email list to receive early access to new treasures.</p>
+							<div class="text-center m-btm">
+								<form action="${URLUtils.url('Account-EditSubscribtion')}" method="post" id="SubscribeForm">
+									<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+									<input type="hidden" name="${pdict.CurrentForms.subscribe.email.htmlName}" value="${customer.profile.email}"/>								
+									<button class="btn btn-primary btn-lg sign-up-email-update" id="${pdict.CurrentForms.subscribe.subscribe.htmlName}" name="${pdict.CurrentForms.subscribe.subscribe.htmlName}">
+										${Resource.msg('global.signmeup','locale',null)}
+									</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</isif>
+			</div>
+		</div>
+	</div>
+</div><!-- /.container -->
+
+<div class="modal fade modal-primary modal-display" id="addPhone" tabindex="-1" role="dialog" aria-labelledby="modalAddPhone">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content phone-capture">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center phone-capture-add-state phone-add-title" style="font-size: 20px;font-weight: 600;">
+					${Resource.msg('account.user.phone.addyourphone','account',null)}
+				</h4>
+				<h4 class="modal-title text-center phone-capture-edit-state phone-edit-title" style="font-size: 20px;font-weight: 600;display:none;">
+					${Resource.msg('account.user.phone.editphone','account',null)}
+				</h4>
+			</div>
+			<div class="modal-body" style="min-height: 145px;">
+				<div class="alert alert-danger alert-verify alert-password-incorrect" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+							<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-danger">${Resource.msg('account.user.phone.passwordincorrrect','account',null)}</div>
+				</div>
+				<p class="text-center" style="line-height: 1.2;">${Resource.msg('account.user.phone.addphonetext','account',null)}</p>
+				<div class="row">
+					<isscript>
+						var phoneNumber =  !empty(customerMobile) ? customerMobile : "";
+					</isscript>
+					<div class="col-md-10 offset-md-1 col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
+						<div class="form-group phone-capture-add-state">
+	    					<label for="customer_phone" class="control-label phone-title">Phone</label>
+	    					<input id="customer_phone" type="tel" class="form-control form-control-lg" value="<isprint value="${phoneNumber}" />" >
+	    					<span class="help-block phone-missing-text" style="display: none;">
+	    						${Resource.msg('account.user.phone.validphone','account',null)}
+	    					</span>
+							<div style="display:none;">
+							   <isinputfield formfield="${pdict.CurrentForms.profile.customer.countryCode}" type="text"  />
+					        </div>
+						</div>
+						<div class="form-group phone-capture-edit-state" style="display:none;">
+							<label for="phoneEdit" class="control-label">Phone</label>
+							<input id="phoneEdit" type="phone" class="form-control" value="+1-415-555-1212">
+							<span class="help-block phone-missing-text" style="display: none;">
+								${Resource.msg('account.user.phone.validphone','account',null)}
+							</span>
+						</div>
+						<div class="form-group form-group-password">
+							<isscript>
+								var attributes = {
+									autocomplete: "off",
+									'data-msg-required': Resource.msg('validate.password', 'forms', null)
+								};
+							</isscript>
+							<input id="current-password" placeholder=" " type="password" class="form-control form-control-lg floating__input">
+							<label for="current-password" class="control-label float-label" data-content="${Resource.msg('account.user.phone.enterpassword','account',null)}">
+								
+							</label>
+							<span class="help-block" style="display: none;">
+								${Resource.msg('account.user.phone.reenterpassword','account',null)}
+							</span>
+							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+						</div>
+					</div>
+				</div>
+				<p class="text-center" style="line-height: 1.2;font-size: 14px;">
+					${Resource.msg('account.user.phone.sentverificationtext','account',null)}
+				</p>
+			</div>
+			<div class="modal-footer">
+				<div class="row d-flex justify-content-between">
+					<div class="col-xs-6 pl-0 cancel-footer">
+						<a class="btn btn-outline-secondary rounded btn-block" href="#" data-dismiss="modal" aria-label="Close">
+							${Resource.msg('account.user.phone.cancel','account',null)}
+						</a>
+					</div>
+					<div class="col-xs-6 pr-0 continue-footer">
+						<button type="button" id="accountAddPhoneBtn" class="btn btn-primary rounded btn-block btn-phone-continue">
+							${Resource.msg('account.user.phone.continue','account',null)}
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-content phone-verify" style="display: none;">
+			<div class="modal-header">
+				<button type="button" class="close cancel-phone-verify" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">
+					${Resource.msg('account.user.phone.verifyyourphone','account',null)}
+				</h4>
+			</div>
+			<div class="modal-body">
+				<div class="alert alert-success text-center alert-resend" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+							<i class="fal fa-redo fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-success">
+						${Resource.msg('account.user.phone.codesent','account',null)}
+					</div>
+				</div>
+				<div class="alert alert-danger alert-incorrect-code" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+							<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text text-danger">${Resource.msg('account.user.phone.numberincorrect','account',null)}</div>
+				</div>
+				<p class="text-center">${Resource.msg('account.user.phone.codesent1','account',null)} <strong id="registeredNumber"></strong>${Resource.msg('account.user.phone.codesent2','account',null)}</p>
+				<div class="row">
+					<div class="col-xl-6 offset-xl-3">
+						<form class="text-center">
+							<div class="form-group">
+		    					<div class="input-group">
+		    						<div class="input-group-append">
+		    							<span class="input-group-text">
+			    							<i class="fa fa-lg fa-mobile-alt"></i>
+			    							<i class="fal fa-arrow-right"></i>
+		    							</span>
+		    						</div>
+		    						<input id="verification" class="form-control" style="height: 42px;">
+		    					</div>
+		    					<span class="help-block" style="display: none;">${Resource.msg('account.user.phone.fieldrequired','account',null)}</span>
+							</div>
+						</form>
+						<p class="text-center">
+							<a href="#" class="btn-account-phone-resend" data-dial="<isprint value="${countryCode}" />" data-type="sms" data-phone="<isprint value="${customerMobile}" />">${Resource.msg('account.user.phone.textagain','account',null)}</a> or <a href="#" data-type="call" data-dial="<isprint value="${countryCode}" />" class="btn-account-phone-resend" data-phone="<isprint value="${customerMobile}" />">${Resource.msg('account.user.phone.callagain','account',null)}</a>.
+						</p>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<div class="row">
+					<div class="col-xs-6 col-sm-6">
+						<a class="btn btn-outline-secondary rounded btn-block cancel-phone-verify" data-dismiss="modal" aria-label="Close">${Resource.msg('account.user.phone.cancel','account',null)}</a>
+					</div>
+					<div class="col-xs-6 col-sm-6">
+						<button type="button" id="account-phone-verify" class="btn btn-primary rounded btn-block btn-phone-verify">${Resource.msg('account.user.phone.verify','account',null)}</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="modal-content phone-confirm" style="display: none;">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center" style="font-size: 20px;font-weight: 600;">${Resource.msg('account.user.phone.thankyou','account',null)}</h4>
+			</div>
+			<div class="modal-body">
+				<p class="text-center" style="line-height: 1.2;">${Resource.msg('account.user.phone.phoneverified','account',null)}</p>
+			</div>
+			<div class="modal-footer">
+				<div class="text-center">
+					<a class="btn btn-primary text-white btn-phone-ok" data-dismiss="modal" aria-label="Close">${Resource.msg('account.user.phone.ok','account',null)}</a>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<input type="hidden" id="AddProfilePhoneNumber" value="${URLUtils.url('Twilio-SendVerificationCode')}" />
+<input type="hidden" id="verifyPhoneNumber" value="${URLUtils.url('Twilio-VerifyPasswordResetCode')}" />
+<input type="hidden" id="deletePhoneNumber" value="${URLUtils.url('Twilio-DeletePhoneNumber')}" />
+
+<div class="modal fade modal-primary modal-display" id="modalDeletePhone" tabindex="-1" role="dialog" aria-labelledby="modalDeletePhone">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content confirm-phone-delete">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times-circle"></i></button>
+				<h4 class="modal-title text-center delete-phone-title" style="font-size: 20px;font-weight: 600;">${Resource.msg('account.user.phone.confirmdelete','account',null)}</h4>
+			</div>
+			<form>
+				<div class="modal-body" style="min-height: 145px;">
+					<div class="alert alert-danger alert-verify alert-password-incorrect" role="alert" style="display: none;">
+						<div class="alert-icon">
+							<span class="fa-layers fa-fw">
+								<i class="fa fa-circle text-danger" data-fa-transform="grow-12"></i>
+								<i class="fa fa-exclamation fa-inverse" data-fa-transform="shrink-3"></i>
+							</span>
+						</div>
+						<div class="alert-text text-danger password-incorrect">${Resource.msg('account.user.phone.passwordincorrrect','account',null)}</div>
+					</div>
+					<p class="text-center" style="line-height: 1.2;font-size: 18px;"><strong>${Resource.msg('account.user.phone.passwordconfirm','account',null)}</strong></p>
+					<div class="row">
+						<div class="offset-1 col-md-10 offset-md-1 col-lg-8 offset-lg-2 col-xl-6 offset-xl-3">
+							<div class="form-group form-group-password">
+								<input id="delete-current-password" type="password" class="form-control form-control-lg floating__input" placeholder=" ">
+								<label for="delete-current-password" class="control-label float-label" data-content="Enter Your Password"></label>
+								<span class="help-block" style="display: none;">${Resource.msg('account.user.phone.reenterpassword','account',null)}</span>
+							</div>
+						</div>
+					</div>
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+				</div>
+				<div class="modal-footer">
+					<div class="row d-flex justify-content-between">
+						<div class="col-6 col-sm-6 cancel-footer">
+							<a class="btn btn-outline-dark rounded btn-block" href="#" data-dismiss="modal">${Resource.msg('account.user.phone.cancel','account',null)}</a>
+						</div>
+						<div class="col-6 col-sm-6 continue-footer">
+							<button class="btn btn-primary rounded btn-block btn-phone-delete-continue">${Resource.msg('account.user.phone.deletephone','account',null)}</a>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+	
+<div class="modal fade modal-primary modal-unsubscribe in" id="unsubscribe" tabindex="-1" role="dialog" aria-labelledby="modalUnsubscribe" style="display: none; padding-right: 17px;">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+				<h4 class="modal-title text-center unsubscribe-title">${Resource.msg('global.unsubsciptionmsg','locale',null)}</h4>
+			</div>
+			<div class="modal-body">
+				<p class="text-center m-top">${Resource.msg('global.unsubsciptionconfirm','locale',null)}</p>
+			</div>
+			<div class="modal-footer">
+				<div class="text-center unsubscribe-button-footer">
+					<form action="${URLUtils.url('Account-EditSubscribtion')}" method="post" id="SubscribeForm">
+						<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+						<button type="button" class="btn btn-outline-secondary rounded" data-dismiss="modal">${Resource.msg('global.cancel','locale',null)}</button>
+						<button type="submit" class="btn btn-primary rounded susbscribe-open" data-toggle="modal" value="${Resource.msg('global.unsubscribe','locale',null)}" id="${pdict.CurrentForms.subscribe.unsubscribe.htmlName}" name="${pdict.CurrentForms.subscribe.unsubscribe.htmlName}">
+							${Resource.msg('global.unsubscribe','locale',null)}
+						</button>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	
+</isdecorate>

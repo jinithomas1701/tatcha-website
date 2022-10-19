@@ -1,0 +1,82 @@
+<iscache type="relative" hour="24"/>
+<isscript>
+	var selectedBaseClass = '';
+	
+	if(pdict.ispanelquotation) {
+		selectedBaseClass = 'panel-fullwidth-quotation';
+	} else if(pdict.ispanelinformation) {
+		selectedBaseClass = 'panel-fullwidth-info';
+	} else if(pdict.ispanelfeature) {
+		selectedBaseClass = 'panel-fullwidth-feature';
+	} else if(pdict.ispanelproduct) {
+		selectedBaseClass = 'panel-fullwidth-product';
+	}
+
+</isscript>
+
+<div style="background-color: ${pdict.bgColor}" class="panel-fullwidth ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''} <isprint value="${selectedBaseClass}" />  row no-gutters m-top t-large <isif condition="${pdict.desktopLayout === 'Text Left - Image Right'}">flex-row-reverse</isif>">
+	
+	<div class="col-12 col-md-6 panel-image">
+		<img src="${pdict.desktopImage.src.desktop}" width="768" height="512"/>
+	</div>
+	<div class="col-12 col-md-6">
+		<div class="text-container">
+			<isif condition="${pdict.ispanelproduct}">
+			
+			<iselseif condition="${pdict.ispanelquotation}" />
+				<isif condition="${!empty(pdict.mainHeading)}">
+					<div class="quotation">
+						“<isprint value="${pdict.mainHeading}" />”
+					</div>
+				</isif>
+				<isif condition="${!empty(pdict.body)}">
+					<div class="author">
+						<span>—</span>
+						<span><isprint value="${pdict.body}" /></span>
+					</div>
+				</isif>
+			<iselseif condition="${pdict.ispanelinformation}" />
+				<isif condition="${!empty(pdict.mainHeading)}">
+					<h2 class="heading">
+						<isprint value="${pdict.mainHeading}" />
+					</h2>
+				</isif>
+				
+				<isif condition="${!empty(pdict.body)}">
+					<p>
+						<isprint value="${pdict.body}" />
+					</p>
+				</isif>
+				
+				<isif condition="${!empty(pdict.buttonText)}">
+					<div class="btn btn-link p-0">
+						<isprint value="${pdict.buttonText}" />
+					</div>
+				</isif>
+			<iselseif condition="${pdict.ispanelfeature}" >
+				<h2>
+					<isif condition="${!empty(pdict.overline)}">
+						<div class="pre-header">
+							<isprint value="${pdict.overline}" />
+						</div>
+					</isif>
+					<isif condition="${!empty(pdict.mainHeading)}">
+						<div class="title">
+							<isprint value="${pdict.mainHeading}" />
+						</div>
+					</isif>
+				</h2>
+				<isif condition="${!empty(pdict.body)}">
+					<p>
+						<isprint value="${pdict.body}" />
+					</p>
+				</isif>
+				<isif condition="${!empty(pdict.buttonText)}">
+					<div class="btn btn-outline-dark">
+						<isprint value="${pdict.buttonText}" />
+					</div>
+				</isif>
+			</isif>
+		</div>
+	</div>
+</div>

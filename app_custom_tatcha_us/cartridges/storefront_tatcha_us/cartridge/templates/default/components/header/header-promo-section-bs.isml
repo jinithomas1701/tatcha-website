@@ -1,0 +1,16 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+  Renders any HTML content asset. This template is supposed to be included by another
+  template. The enclosing template would define caching attributes.
+  Currently content assets are static, thus caching of content assets is possible.
+</iscomment>
+
+<iscomment>make sure we have an asset at all</iscomment>
+
+<div class="tatcha-mini-bar">
+	<div class="container-fluid">
+    	<div class="row no-gutters">
+	      	<isslot id="rotating-promo-slot" description="Rotating promo banner content" context="global" />
+   		</div>
+  	</div>
+</div>

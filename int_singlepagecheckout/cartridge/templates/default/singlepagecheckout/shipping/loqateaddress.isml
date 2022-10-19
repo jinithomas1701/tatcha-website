@@ -1,0 +1,54 @@
+<div class="modal fade" id="addressSuggestionModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog suggested-address" role="document">
+        <div class="modal-content">
+            <div class="modal-body">
+                <button type="button" class="close" data-dismiss="modal">
+					<i class="fal fa-times"></i>
+                </button>
+                <div class="locate-header">Confirm your address</div>
+                <p>We couldn’t verify the exact address you entered, but did find a close match. Please make sure your mailing address is correct to ensure accurate delivery.</p>
+                <div class="suggested-address-title">Suggested Address:</div>
+                <div class="suggested-address-container">
+                    <div>
+                        <input type="radio" checked="" class="d-none address-radio" name="selectAddress" value="suggestedAddress" id="selectedAddress">
+                        <label for="selectedAddress">
+                            <i class="fal fa-circle"></i>
+                            <i class="fas fa-check-circle"></i>
+                        </label>
+
+                    </div>
+                    <div>
+                        <div id="suggested-address1"></div>
+                        <div id="suggested-locality"></div>
+                    </div>
+                </div>
+                <div>
+					Address entered:
+					</div>
+                <div class="entered-address-container">
+                    <div>
+                        <input type="radio" class="d-none address-radio" name="selectAddress" value="enteredAddress" id="enteredAddress">
+                        <label for="enteredAddress">
+                            <i class="fal fa-circle"></i>
+                            <i class="fas fa-check-circle"></i>
+                        </label>
+
+                    </div>
+                    <div>
+                        <div id="entered-address1"></div>
+                        <div id="entered-locality"></div>
+                        <div class="alert-text address-warning" role="alert">
+                            <i class="fal fa-exclamation-circle"></i>Proceeding with this address might result in inaccurate delivery.</div>
+                    </div>
+                </div>
+                <input type="hidden" id="addressOriginForm" name="addressOriginForm" val="" />
+                <input type="hidden" id="loqateSuggestedAddress" name="loqateSuggestedAddress" value=""/>
+                <div class="modal-footer d-block">
+                    <button type="button" class="btn btn-block btn-primary save-button save-loqate-suggested-address" data-dismiss="modal">Save &amp; Continue</button>
+                    <a class="edit-link btn-block btn-link" data-dismiss="modal">Edit Address</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>

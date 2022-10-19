@@ -1,0 +1,226 @@
+<isdecorate template="common/layout/cart">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addCss('/css/tatcha-bag-page.css');
+        assets.addJs('/js/cart.js');
+
+        var pageContext = {
+            title: 'Cart',
+            type: 'Cart',
+            ns: 'cart'
+        };
+    </isscript>
+
+    <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
+        <isinclude template="reporting/reportingUrls" />
+    </isif>
+
+    <isinclude template="util/modules" />
+    <isinclude template="util/reporting/ReportBasket.isml" />
+    <isset name="imagesize" value="${(empty(pdict.CurrentHttpParameterMap.imagesize.stringValue) ? 'medium' : pdict.CurrentHttpParameterMap.imagesize.stringValue)}" scope="page"/>
+
+    <isset name="checkoutStep" value="0"  scope="page"/>
+    <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp')}">
+        <isset name="store" value="${dw.catalog.StoreMgr.getStore(pdict.CurrentSession.custom.storeId)}" scope="page" />
+    </isif>
+    <isset name="enableCheckout" value="${true}" scope="page" />
+    <isset name="giftWrapEnabled" value="${pdict.giftWrapEnabled}" scope="page"/>
+    <isscript>
+        var TagManagerUtils = require('*/cartridge/scripts/util/GoogleTagManager.js');
+        importScript("app_storefront_core:cart/CartUtils.ds");
+        var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+		var Tatcha = require('*/cartridge/scripts/util/Tatcha.ds');
+        <!-- GTM for cart page view -->
+        if (pdict.Basket !== null) {
+            var gtmData = TagManagerUtils.getCartPageDataLayer();
+            var cartAmount : dw.value.Money = pdict.Basket.getAdjustedMerchandizeTotalPrice(false).add(pdict.Basket.giftCertificateTotalPrice);
+            var productId = "";
+            var pliIt : dw.util.Iterator = pdict.Basket.productLineItems.iterator();
+            while (pliIt.hasNext()) {
+                var pli : dw.order.ProductLineItem = pliIt.next();
+                productId += pli.productID;
+                if(pliIt.hasNext()) {
+                    productId += ',';
+                }
+            }
+
+            gtmData.cart = cartAmount.value;
+            gtmData.prodID = productId;
+        }
+        if (!empty(gtmData)) {
+            var gtmCartPageView = JSON.stringify(gtmData);
+        }
+
+        try {
+            var hasAutoDeliveryProduct = CartUtils.hasAutoDeliveryProductInBag(pdict.Basket);
+            var usersCountry = Tatcha.isInternationalUser();
+            var showAdWarning = hasAutoDeliveryProduct && usersCountry;
+        }catch(e) {
+
+        }
+    </isscript>
+    <script>
+        try {
+            if (!window.dataLayer) {
+                window.dataLayer = [];
+            }
+            dataLayer.push(<isprint value="${gtmCartPageView}" encoding="off"/>);
+            //dataLayer.push({'event': 'tatcha_cart_view'});
+        } catch (e) {
+
+        }
+    </script>
+    <!-- Main Cart page Content -->
+    <div style="display:none">
+    </div>
+
+    <isslot id="cart-banner" description="Banner for Cart page"	context="global" />
+    <isscript>
+        var giftproductId = dw.system.Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID');
+        var giftproduct = dw.catalog.ProductMgr.getProduct(giftproductId);
+    </isscript>
+    <isif condition="${pdict.items.length === 0 && pdict.giftCertificateItems.length === 0}">
+        <isinclude template="cart/emptyCart"/>
+
+        <iselse/>
+
+        <iscomment>prevent checkout if any product price is N/A or if invalid coupons</iscomment>
+        <isif condition="${pdict.BasketStatus != null && pdict.BasketStatus.error}">
+            <div class="alert alert-danger bag-alert">
+                <i class="fa fa-exclamation-triangle fa-2x pull-left"></i>
+                <isif condition="${pdict.BasketStatus.code != null && pdict.BasketStatus.code=='CouponError'}">
+                    ${Resource.msg('cart.cartcouponinvalid','checkout',null)}
+                    <iselseif condition="${pdict.BasketStatus.code != null && pdict.BasketStatus.code=='TaxError'}">
+                        ${Resource.msg('cart.taxinvalid','checkout',null)} <a href="${URLUtils.url('Page-Show', 'cid', 'contact-us')}">contact us</a>.
+                        <iselse/>
+                        <isprint value="${pdict.BasketStatus.code}" />
+                        ${Resource.msg('cart.carterror','checkout',null)}
+                </isif>
+            </div>
+        </isif>
+
+        <iscomment>show the basket when we have data</iscomment>
+            <iscomment>This button is hidden but required to ensure that update cart is called whenever the "enter" key is pressed in an input field</iscomment>
+            <button class="visually-hidden" type="submit" value="${pdict.CurrentForms.cart.addCoupon.htmlName}" name="${pdict.CurrentForms.cart.addCoupon.htmlName}"></button>
+            <button class="visually-hidden" type="submit" value="${pdict.CurrentForms.cart.updateCart.htmlName}" name="${pdict.CurrentForms.cart.updateCart.htmlName}"></button>
+        <div class="container">
+            <div class="container-fluid bag-page cart-page p-md-3" id="cart-table">
+                <div class="w-100 shoping-bag-heading">
+                    <div class="container-fluid">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-10 offset-md-1 col-lg-6 offset-lg-0 bag-left-column p-0">
+                        <div class="col-lg-12 bag-common">
+                            <isinclude template="cart/cartProductContainer">
+                        </div>
+                    </div>
+    <div class="shop-bag-shadow col-lg-6" id="cart-summary">
+        <div class="col-md-10 offset-md-1 col-lg-12 offset-lg-0 p-0 bag-summary-wrap">
+            <isinclude template="checkout/cart/summary.isml"/>
+        </div>
+    </div>
+    <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+    </div>
+    </div>
+
+    <div class="cart-product-recommendations">
+        <isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnCartWithProduct')}">
+            <isslot id="einstein-cart-footer" description="Einstein Footer for Cart page" context="global" context-object="${pdict.Basket}" />
+            <iselse>
+                <isslot id="cart-footer" description="Footer for Cart page" context="global" />
+        </isif>
+    </div>
+    </isif>
+    </div>
+    </div>
+
+    <!-- Modal Popup --><iscomment>
+    <div class="modal fade modal-primary modal-tatcha-postal-estimate" id="estimateModal" tabindex="-1" role="dialog" aria-labelledby="modalEstimate" style="display: none;">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fal fa-times"></i></button>
+                    <h4 class="modal-title"><strong>Estimate Tax</strong></h4>
+                </div>
+
+                <form action="${URLUtils.url('COShipping-EstimateShippingMethod')}" method="post" id="${pdict.CurrentForms.singleshipping.shippingAddress.htmlName}">
+                    <div class="modal-body">
+                        <isscript>
+                            var Site = require('dw/system/Site');
+                            var countriesList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('CountriesList'));
+                            var defaultshippment = pdict.Basket.getDefaultShipment().getShippingAddress();
+                            var countryValue = 'US';
+                            var postalCode = defaultshippment.postalCode;
+                        </isscript>
+                        <label class="control-label" for="country">Estimates for U.S. only. Final cost determined at checkout.</label>
+                        <div class="form-group">
+                            <p></p>
+                            <select type="hidden" class="form-control country" name="countryCode" id="countryCode" style="display:none">
+                                <isloop items="${countriesList}" alias="country">
+                                    <option value="${country.value}" <isif condition="${(countryValue == country.value)}">selected</isif>>
+                                    <isprint value="${country.label}" />
+                                    </option>
+                                </isloop>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label" for="zipCode">${Resource.msg('resource.zipcode','forms',null)}</label>
+                            <input class="form-control required number validatepostal" minlength="5" id="postalCode" name="postalCode" type="tel" maxlength="5" value="${postalCode}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" class="btn btn-default btn-reset" id=close-estimate >Cancel</button>
+                        <button type="submit" class= "btn btn-primary update-tax" id="dialogApplyBtn" name="${pdict.CurrentForms.shippingaddress.apply.htmlName}"  value="${Resource.msg('global.apply', 'locale', null)}">${Resource.msg('global.apply', 'locale', null)}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <!-- Modal Popup End -->
+    </div></iscomment>
+    <div class="bag-page">
+        <iscomment>out of stock pop up</iscomment>
+        <div class="modal modal-primary modal-out-of-stock" id="outOfStockModal" role="dialog" style="display: none;">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <i class="fal fa-times"></i></button>
+                        <h4 class="modal-title"><strong>${Resource.msg('global.outofstock','locale',null)}</strong></h4>
+                    </div>
+                    <div class="modal-body">
+                        ${Resource.msg('cart.outofstockmsg','checkout',null)}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal Popup -->
+    <div class="modal fade modal-primary modal-tatcha-sor-info" id="sorModal" role="dialog" style="display: none;" tabindex="-1" aria-labelledby="sorHeading" aria-modal="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <i class="fal fa-times"></i></button>
+                    <h4 class="modal-title" id="sorHeading"><strong>${Resource.msg('cart.deliverypopup.title','checkout',null)}</strong></h4>
+                </div>
+                <div class="modal-body">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Popup End -->
+
+    <isscript>
+        session.custom.maxQtyError = null;
+    </isscript>
+</isdecorate>
+
+<isif condition="${!empty(pdict.CurrentHttpParameterMap.edit) && pdict.CurrentHttpParameterMap.edit == 'true'}">
+    <isinclude url="${URLUtils.url('KlaviyoSfra-RenderKlaviyoAddToCart')}"/>
+</isif>

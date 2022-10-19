@@ -1,0 +1,275 @@
+
+	<isscript>
+		var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+		var TagManagerUtils = require('~/cartridge/scripts/util/GoogleTagManager.js');
+		var compareEnabled = false;
+		var productList;
+		if (!empty(pdict.CurrentHttpParameterMap.cgid.value)) {
+			compareEnabled = ProductUtils.isCompareEnabled(pdict.CurrentHttpParameterMap.cgid.value);
+			productList = ProductUtils.getCompareProductList(pdict.CurrentHttpParameterMap.cgid.value);
+		}
+
+		<!-- GTM for category page view -->
+		var gtmData = TagManagerUtils.getCategoryPageDataLayer();
+		if (!empty(gtmData)) {
+		  var gtmCategoryView = JSON.stringify(gtmData);
+		}
+		var Site = require('dw/system/Site');
+		var categoryHeaderFont = (pdict.ProductSearchResult.category != null && !empty(pdict.ProductSearchResult.category.custom.catHeaderFontColor)) ? pdict.ProductSearchResult.category.custom.catHeaderFontColor : Site.getCurrent().getCustomPreferenceValue('defaultCatHeaderFontColor');
+		var lincWidgetData = {};
+		lincWidgetData.pageCategory = gtmData.catID;
+		if(customer.authenticated){
+			lincWidgetData.shopperEmail = customer.profile.email;
+		}
+	</isscript>
+
+	<script>
+	    try {
+	    	if (!window.dataLayer) {
+				window.dataLayer = [];
+			}
+	    	dataLayer.push(<isprint value="${gtmCategoryView}" encoding="off"/>);
+	    	dataLayer.push({'event': 'tatcha_category_view'});
+
+	    } catch (e) {
+
+	    }
+	</script>
+
+	<iscomment>
+		Use the decorator template based on the requested output. If
+		a partial page was requested an empty decorator is used.
+		The default decorator for the product hits page is
+		search/pt_productsearchresult.
+	</iscomment>
+
+	<iscomment> Changed Cache settings for Predictive sort </iscomment>
+	<iscache hour="2" varyby="price_promotion" if="${!pdict.ProductSearchResult.personalizedSort}"/>
+
+	<isinclude template="util/modules"/>
+
+	<iscomment>
+		Configured as default template for the product search results.
+		Displays a global slot with static html and the product search
+		result grid.
+	</iscomment>
+
+	<iscomment>create reporting event</iscomment>
+	<isinclude template="util/reporting/ReportSearch.isml"/>
+
+	<iscomment>
+		Render promotional content at the top of search results as global slot.
+		This content is only displayed if the search result is refined by a category.
+		If the search result is not refined by a category a global default is displayed.
+	</iscomment>
+	<isif condition="${!empty(pdict.ProductSearchResult.searchPhrase)}">
+		<isif condition="${!empty(pdict.ProductSearchResult.category) && !empty(pdict.ProductSearchResult.category.displayName)}">
+			<div class="header-standard">
+				<div class="container" style="color:${categoryHeaderFont}">
+						<h1 class="demo-normal"><isprint value="${StringUtils.pad(pdict.ProductSearchResult.category.displayName,24)}"></h1>
+						<isif condition="${!empty(pdict.ProductSearchResult.category.description)}">
+							<p><isprint value="${StringUtils.pad(pdict.ProductSearchResult.category.description,92)}"></p>
+						</isif>
+				</div>
+			</div>
+		</isif>
+	</isif>
+
+	<iscomment> Add to bag error container </iscomment>
+	<div class="container">
+		<div class="alert alert-danger page-alert m-top" role="alert" style="display: none;">Add to Bag Errors can go here.</div>
+	</div>
+
+	<isif condition="${(!(pdict.ProductPagingModel == null) && !pdict.ProductPagingModel.empty) || (pdict.ContentSearchResult.count > 0)}">
+		<isif condition="${empty(pdict.ProductSearchResult.searchPhrase)}">
+			<div class="d-xl-flex justify-content-between container">
+				<div class="header-standard-v1 text-center text-xl-left"  style="color:black;">
+						<isif condition="${!empty(pdict.ProductSearchResult.category) && !empty(pdict.ProductSearchResult.category.displayName)}">
+							<h1 class="demo-normal text-center text-lg-left d-inline-block float-xl-left category-heading"><isprint value="${StringUtils.pad(pdict.ProductSearchResult.category.displayName,24)}"></h1>
+							<span class="d-block d-sm-inline">(${Resource.msgf('search.products.count','search',null,pdict.ProductSearchResult.count)})</span>
+						<iselse>
+							<h1 class="demo-normal text-center text-lg-left d-inline-block float-xl-left category-heading">${Resource.msg('search.header','search',null)}</h1>
+						</isif>
+				</div>
+
+				<div class="d-md-block d-xl-block demo-normal categoryFilter mt-3">
+					<div class="product-list-view-options">
+						<div class="view-option-group-row d-flex justify-content-center">
+
+							<iscomment>Filter Options</iscomment>
+							<isinclude template="search/components/tatchaproductsearchrefinebar_v1"/>
+
+							<iscomment>sort by</iscomment>
+							<isproductsortingoptions_v1 productsearchmodel="${pdict.ProductSearchResult}" pagingmodel="${pdict.ProductPagingModel}" uniqueid="grid-sort-header"/>
+
+							<isif condition="${compareEnabled && !empty(productList)}">
+								<button class="compare-show btn btn-md btn-primary ml-2 ml-md-3 rounded" aria-label="Compare ${pdict.ProductSearchResult.category.displayName} products">Compare</button>
+							</isif>
+						</div>
+					</div>
+					<isif condition="${compareEnabled && !empty(productList)}">
+						<button class="compare-show-mobile btn btn-md btn-primary col-12 rounded mb-2" aria-label="Compare ${pdict.ProductSearchResult.category.displayName} products">Compare</button>
+					</isif>
+					<div class="clear-filters-mobile d-lg-none text-center" style="display:none">
+						<button class="btn btn-sm btn-link">Clear Filters</button>
+					</div>
+				</div>
+			</div>
+		</isif>
+	</isif>
+
+	<isif condition="${!empty(pdict.ProductSearchResult.searchPhrase)}">
+		<div class="container">
+			<div class="search-message">
+				<isif condition="${!empty(pdict.ProductSearchResult.getSearchPhraseSuggestions() && pdict.ProductSearchResult.getSearchPhraseSuggestions().suggestedPhrases) && pdict.ProductSearchResult.getSearchPhraseSuggestions().suggestedPhrases.next().phrase !== pdict.ProductSearchResult.searchPhrase}">
+						<p class="lead state-fuzzy lead-search" style="">${Resource.msg('search.nohits.message','search',null)} <strong><isprint value="${pdict.ProductSearchResult.searchPhrase}"/></strong> ${Resource.msg('search.results.label','search',null)} <strong><isprint value="${pdict.ProductSearchResult.getSearchPhraseSuggestions().suggestedPhrases.next().phrase}"/></strong>.</p>
+				<iselse>
+					<p class="lead state-normal lead-search">${Resource.msg('search.results.label','search',null)} <strong><isprint value="${pdict.ProductSearchResult.searchPhrase}"/></strong></p>
+				</isif>
+			</div>
+		</div>
+	</isif>
+
+	<iscomment> Category Banner</iscomment>
+	<isif condition="${empty(pdict.ProductSearchResult.searchPhrase)}">
+			<isif condition="${!empty(pdict.ProductSearchResult.category)}">
+					<isslot id="cat-banner" context="category" description="Category Banner" context-object="${pdict.ProductSearchResult.category}"/>
+			<iselse/>
+
+					<isif condition="${pdict.SearchPromo != null}">
+						<isif condition="${'body' in pdict.SearchPromo.custom && pdict.SearchPromo.custom.body != null}">
+						<div class="container product-list-promo-banner demo-normal content-slot slot-grid-header mt-4" >
+							<div class="contentasset"><!-- dwMarker="content" dwContentID="${pdict.SearchPromo.UUID}" -->
+								<isprint value="${pdict.SearchPromo.custom.body}" encoding="off"/>
+							</div> <!-- End contentasset -->
+						</div>
+						</isif>
+					<iselse/>
+					<div class="container product-list-promo-banner demo-normal content-slot slot-grid-header mt-4" >
+						<isslot id="search-result-banner" description="Promotional Search Result Banner" context="global"/>
+					</div>
+					</isif>
+
+			</isif>
+
+	</isif>
+
+
+	<isif condition="${!pdict.ProductSearchResult.refinedSearch && !empty(pdict.ContentSearchResult) && pdict.ContentSearchResult.count > 0}">
+
+		<div class="search-result-bookmarks" style="display:none;">
+			${Resource.msg('topcontenthits.yoursearch','search',null)}
+			<a href="${'#results-products'}" class="first">${Resource.msg('search.producthits.productsfound', 'search', null)}</a>
+			<a href="${'#results-content'}">${Resource.msg('topcontenthits.goto', 'search', null)}</a>
+		</div>
+
+		<h1 class="content-header" id="results-products" style="display:none;">${Resource.msgf('search.producthits.productsfoundcount','search',null,pdict.ProductSearchResult.count)}</h1>
+
+	</isif>
+
+	<isif condition="${(!(pdict.ProductPagingModel == null) && !pdict.ProductPagingModel.empty) || (pdict.ContentSearchResult.count > 0)}">
+		<iscomment>render compare controls if we present in a category context</iscomment>
+		<isinclude template="util/yotpomodules.isml" />
+		<isyotpocategorybottomlineheader />
+
+		<iscomment> Product Grid </iscomment>
+		<isif condition="${!empty(pdict.ProductSearchResult.category)}">
+			<isset name="searchResultsCss" value="" scope="page" />
+		<iselse>
+			<isset name="searchResultsCss" value="search-products" scope="page" />
+
+		</isif>
+
+		<div class="container search-tabs">
+			<!-- Nav tabs -->
+			<isif condition="${empty(pdict.CurrentHttpParameterMap.cgid.value)}">
+				<ul class="nav nav-tabs nav-pills nav-tabs-anchored d-flex justify-content-center" role="tablist">
+					<isif condition="${pdict.ProductSearchResult.count > 0}">
+						<li role="presentation" class="tab-section-anchor nav-item">
+							<a href="#searchProducts" aria-controls="reviews" role="tab" data-toggle="tab" class="active">
+								${Resource.msgf('search.producthits.productsfoundcount','search',null,pdict.ProductSearchResult.count)}
+							</a>
+						</li>
+					</isif>
+					<isif condition="${pdict.ContentSearchResult.count > 0}">
+						<li role="presentation" class="tab-section-anchor nav-item">
+							<a href="#searchContent" aria-controls="questions" role="tab" data-toggle="tab">
+								${Resource.msgf('topcontenthits.articlesfound','search',null,pdict.ContentSearchResult.count)}
+							</a>
+						</li>
+					</isif>
+				</ul>
+			</isif>
+		<!-- Tab panes -->
+		<div class="tab-content">
+			<div role="tabpanel" class="tab-pane active" id="searchProducts" aria-label="Product List">
+				<div class="w-100 categoryProducts">
+				<div class="product-list-row">
+					<div class="row search-products search-result-content ${searchResultsCss}" style="overflow: hidden; padding-top:5px;padding-bottom:8px;">
+						<isset name="categoryName" value="" scope="page" />
+						<isset name="currentPromoPoition" value="${0}" scope="page" />
+						<isset name="initialPromoPoition" value="${3}" scope="page" />
+						<isslot id="catPromoBanner" context="category" context-object="${pdict.ProductSearchResult.category}" description="Category Promo Banner"/>
+						<isproductgridv1 pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}"/>
+					</div>
+				</div>
+				</div>
+			</div>
+			<div role="tabpanel" class="tab-pane <isif condition=${pdict.ProductSearchResult.count ===0}> active</isif>" id="searchContent">
+				<isif condition="${!pdict.ProductSearchResult.refinedSearch && !empty(pdict.ContentSearchResult)}">
+					<div class="container search-content content">
+						<div class="search-content-list">
+							<div class="search-blog-list">
+								<isinclude template="search/contenthits"/>
+							</div>
+						</div>
+					</div>
+				</isif>
+			</div>
+
+			<iscomment> Search page promo </iscomment>
+			<isif condition="${empty(pdict.ProductSearchResult.category)}">
+				<isinclude template="search/searchpromo" />
+			</isif>
+		</div>
+
+		<isif condition="${compareEnabled && !empty(productList)}">
+			<isinclude template="search/components/categorycomparewidget"/>
+		</isif>
+
+		<isif condition="${!empty(pdict.ProductSearchResult.category)}">
+			<input type="hidden" id="categoryValue" value="${pdict.ProductSearchResult.category.displayName}" >
+			<isif condition="${!empty(pdict.ProductSearchResult.category.custom.categoryDescription)}">
+				<div class="container wd100 mt-5 pt-md-3 text-center">
+					<div class="row justify-content-center">
+						<div class="col-md-8 col-lg-6 category-seo-container">
+
+							<div class="footer-seo footer-seo--toggle-active" data-footer-seo="container">
+								<div class="footer-seo__more" data-footer-seo="show-more-wrapper">
+									<isprint value="${pdict.ProductSearchResult.category.custom.categoryDescription}" encoding="off"/>
+								</div>
+								<div class="footer-seo__less" data-footer-seo="show-less-wrapper">
+
+								</div>
+								<a class="footer-seo__toggle-link text-capitalize btn btn-link mb-4" data-footer-seo="toggle-link" href="javascript:void(0)">
+									<span class="footer-seo__toggle-more">Show All</span>
+									<span class="footer-seo__toggle-less">Close</span>
+								</a>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</isif>
+		</isif>
+	<iselse/>
+
+		<iscomment>display no results</iscomment>
+		<div class="no-results">
+			${Resource.msg('productresultarea.noresults','search',null)}
+		</div>
+
+	</isif>
+
+	<iscomment>Render promotional content at the bottom of search results as global slot</iscomment>
+	<div class="search-promo" style="display:none;"><isslot id="search-promo" description="Promotional Content at the bottom of Search Results" context="global"/></div>

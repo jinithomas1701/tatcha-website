@@ -1,0 +1,43 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isif condition="${pdict.isSubscription && pdict.currentCreditCard}" >
+    <isset name="credit" value="${pdict.currentCreditCard}" scope="page"  />
+    <div class="payment-section__card">
+        <div class="payment-section__card--item">
+            <p class="title-order">${dw.web.Resource.msg('smartorderrefill.paymentview.cardNumber','smartorderrefill',null)}</p>
+            <span>${credit.number}</span>
+        </div>
+        <div class="payment-section__card--item">
+            <p class="title-order">${dw.web.Resource.msg('smartorderrefill.paymentview.cardType','smartorderrefill',null)}</p>
+            <span>${credit.type}</span>
+        </div>
+    </div>
+    <div class="payment-section__card">
+        <isif condition="${credit.expMonth && credit.expYear}" >
+            <div class="payment-section__card--item">
+                <p class="title-order">${dw.web.Resource.msg('smartorderrefill.paymentview.expirationMonth','smartorderrefill',null)}</p>
+                <span><isprint value="${credit.expMonth}" /></span>
+            </div>
+            <div class="payment-section__card--item">
+                <p class="title-order">${dw.web.Resource.msg('smartorderrefill.paymentview.expirationYear','smartorderrefill',null)}</p>
+                <span><isprint value="${credit.expYear}" /></span>
+            </div>
+        <iselse/>
+            <isset name="expDate" value="${credit.cardExpirationDate}" scope="page" />
+            <div class="payment-section__card--item">
+                <p class="title-order">${dw.web.Resource.msg('smartorderrefill.paymentview.expirationMonth','smartorderrefill',null)}</p>
+                <span> <isprint value="${expDate.getMonth() + 1}" style="INTEGER" /> </span>
+            </div>
+            <div class="payment-section__card--item">
+                <p class="title-order">${dw.web.Resource.msg('smartorderrefill.paymentview.expirationYear','smartorderrefill',null)}</p>
+                <span> <isprint value="${expDate.getFullYear().toString()}" style="INTEGER" /> </span>
+            </div>
+        </isif>
+    </div>
+    <isif condition="${!pdict.isPaused}" >
+        <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', pdict.ProductList.ID, 'action', 'updateCreditCard')}" class="update-card sorlink">${dw.web.Resource.msg('smartorderrefill.paymentview.updatecreditcard.name', 'smartorderrefill', null)}</span>
+    </isif>
+</isif>

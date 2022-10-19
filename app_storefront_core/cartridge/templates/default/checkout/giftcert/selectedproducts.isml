@@ -1,0 +1,31 @@
+<isscript>
+var totalPrice = 0;
+var selectedProductList = [];
+</isscript>
+<isset name="gCounter" value="0" scope="page"/>
+<isloop items="${pdict.selectedProducts}" var="rec" status="pStatus">
+	<isset name="selectedGiftProduct" value="${rec}" scope="pdict"/>
+	<isset name="PriceModel" value="${pdict.selectedGiftProduct.getPriceModel()}" scope="page"/>
+	<isinclude template="checkout/giftcert/selecteditem"/>
+	<isscript>
+		totalPrice += PriceModel.price;
+		gCounter++;
+		selectedProductList.push(pdict.selectedGiftProduct.ID);
+	</isscript>
+</isloop>
+<isif condition="${gCounter < pdict.limit}">
+	<isscript>
+		var emptySlots = [];
+		for(var i = 0; i < (pdict.limit-gCounter); i++) { 
+			emptySlots.push(i);
+		}
+	</isscript>
+	<isloop items="${emptySlots}" var="slot" status="slotStatus">
+		<div class="selection-item-cell">
+			<a href="#recommendList" class="vertical-middle anchor-link" aria-label="Recommend List Item Empty Slot ${slotStatus.index + 1}">
+				<i class="fal fa-plus fa-2x select-icon"></i>
+			</a>
+		</div>
+	</isloop>
+</isif>
+

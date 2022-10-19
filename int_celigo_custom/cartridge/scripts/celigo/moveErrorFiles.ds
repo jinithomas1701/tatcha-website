@@ -1,0 +1,30 @@
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+* 
+* Purpose: 	This script file moves a file, configured as as input parameter, to a separate folder.  
+*			The input file is being processed by a pipelet/script file placed before in the pipeline.
+*			If the file errored out, by any reason, the file is moved to separate directory, "erroredFiles" 
+*			within the parent directory; so that the errored out files can be later corrected and replaced
+*			in the parent folder to be processed by the Job.
+*
+*@input filePath : String
+*/
+importPackage( dw.system );
+importPackage( dw.io );
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var filePath : String = args.filePath;
+	var lastSeparatorIndex : Number = filePath.lastIndexOf("/");
+	
+	var sourceFile : File = new File(File.IMPEX + File.SEPARATOR  + "src" + filePath);
+	var destinationDir : File = new File(File.IMPEX + File.SEPARATOR  + "src" + filePath.substring(0, lastSeparatorIndex) + "/erroredFiles");
+   
+   	if(!destinationDir.isDirectory()){
+   		destinationDir.mkdir();
+   	}
+   	
+   	var destinationFile : File = new File(File.IMPEX + File.SEPARATOR  + "src" + filePath.substring(0, lastSeparatorIndex) + "/erroredFiles" + filePath.substring(lastSeparatorIndex));
+   	sourceFile.renameTo(destinationFile)
+   return PIPELET_NEXT;
+}

@@ -1,0 +1,97 @@
+<isinclude template="components/header" />
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<div class="sor-table">
+    <div class="order-info">
+        <h2 class="sor-module__name-title">${pdict.currentCustomer.profile.firstName}  ${pdict.currentCustomer.profile.lastName}</h2>
+        <h4 class="sor-module__name-email">${pdict.currentCustomer.profile.email}</h4>
+        <isloop items="${pdict.ProductList.products}" var="prod">
+             <isset name="product" value="${dw.catalog.ProductMgr.getProduct(prod.ID)}" scope="page"/>
+             <isif condition="${product != null && product.getImage('large',0) != null}">
+			 	 <isset name="imageUrl" value="${getImageUrl(product,'medium')}" scope="page"/>
+				 <isset name="imageAlt" value="${getImageAlt(product)}" scope="page"/>
+				 <isset name="imageTitle" value="${getImageTitle(product)}" scope="page"/>
+			 <iselse/>									
+				 <isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagesmall.png')}" scope="page"/>										
+			 </isif>
+             <div class="orderSection-img">
+                <img itemprop="image" class="primary-image" src="${imageUrl}"
+                    alt="${product.name}" title="${product.name}" />
+                <div class="img-info">
+                    <div class="product-name">
+                        x${prod.quantity} &nbsp; <strong>
+                            ${product.name}</strong>
+                    </div>
+                    <div class="refill-interval">
+                        ${Resource.msg('smartorderrefill.vieworder.refillinterval', 'smartorderrefill', null)}:&nbsp;
+                        <strong> ${prod.interval}
+                            ${Resource.msg('smartorderrefill.periodicity.' + prod.periodicity, 'smartorderrefill', null)}
+                        </strong>
+                    </div>
+                    <div class="refill-interval">
+                        <isif condition="${prod.commitment > prod.commitmentDone}" >
+                            ${Resource.msg('smartorderrefill.subscription.commitment', 'smartorderrefill', null)}: 
+                            <strong>${prod.commitmentDone}/${prod.commitment}</strong>
+                        </isif>
+                    </div>
+                </div>
+            </div>
+        </isloop>
+
+        <div class="sor-module__subscription-date">
+            ${Resource.msg('smartorderrefill.order.orderdate', 'smartorderrefill', null)}: <strong>${pdict.ProductList.createdAt.toLocaleDateString("en-US")}</strong> 
+        </div>
+
+        <div class="action-buttons">
+            <p class="detail-button">
+                <a class="button details blue" href="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 
+                    'oid', pdict.ProductList.ID, 'client', pdict.ProductList.customerNo, 'action', 'view')}">
+                    <isprint value="${Resource.msg('smartorderrefill.order.details', 'smartorderrefill', null)}" />
+                </a>
+            </p>
+            
+
+            
+            <span data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'oid', pdict.ProductList.ID, 'action', pdict.ProductList.constructor.STATUS_CANCELED, 'client', pdict.ProductList.customerNo)}"
+                    class="button order skip orange-invert">
+                <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAUCAYAAACNiR0NAAAACXBIWXMAAAsTAAALEwEAmpwYAAAFHGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4gPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxNDUgNzkuMTYzNDk5LCAyMDE4LzA4LzEzLTE2OjQwOjIyICAgICAgICAiPiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPiA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtbG5zOmRjPSJodHRwOi8vcHVybC5vcmcvZGMvZWxlbWVudHMvMS4xLyIgeG1sbnM6cGhvdG9zaG9wPSJodHRwOi8vbnMuYWRvYmUuY29tL3Bob3Rvc2hvcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RFdnQ9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZUV2ZW50IyIgeG1wOkNyZWF0b3JUb29sPSJBZG9iZSBQaG90b3Nob3AgQ0MgMjAxOSAoV2luZG93cykiIHhtcDpDcmVhdGVEYXRlPSIyMDE5LTAyLTIwVDIzOjU1OjA2KzAyOjAwIiB4bXA6TW9kaWZ5RGF0ZT0iMjAxOS0wMi0yMFQyMzo1NTozNiswMjowMCIgeG1wOk1ldGFkYXRhRGF0ZT0iMjAxOS0wMi0yMFQyMzo1NTozNiswMjowMCIgZGM6Zm9ybWF0PSJpbWFnZS9wbmciIHBob3Rvc2hvcDpDb2xvck1vZGU9IjMiIHBob3Rvc2hvcDpJQ0NQcm9maWxlPSJzUkdCIElFQzYxOTY2LTIuMSIgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDphM2NmOWE3ZC1hMGY1LTM3NDgtODYwZS0xZGM5ZTEzOTU0OTEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6YTNjZjlhN2QtYTBmNS0zNzQ4LTg2MGUtMWRjOWUxMzk1NDkxIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6YTNjZjlhN2QtYTBmNS0zNzQ4LTg2MGUtMWRjOWUxMzk1NDkxIj4gPHhtcE1NOkhpc3Rvcnk+IDxyZGY6U2VxPiA8cmRmOmxpIHN0RXZ0OmFjdGlvbj0iY3JlYXRlZCIgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDphM2NmOWE3ZC1hMGY1LTM3NDgtODYwZS0xZGM5ZTEzOTU0OTEiIHN0RXZ0OndoZW49IjIwMTktMDItMjBUMjM6NTU6MDYrMDI6MDAiIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkFkb2JlIFBob3Rvc2hvcCBDQyAyMDE5IChXaW5kb3dzKSIvPiA8L3JkZjpTZXE+IDwveG1wTU06SGlzdG9yeT4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz44kjwfAAAApElEQVQ4jbWVMQ7EIAwE0X0hz+AZUer8J1+mp8xcEVsiUTBY59uW9QALmJREQAZ2YEmTAhapyc+BAzi5VIB1AraKF6k92pUpTFWBzYBt4ml1AjnJkt/0Cu3AVLvmUDqGG3QAK2j+XHn0jFVAFqzyzH2iwJzQE7Yl8/C80DHMAe3CPlMz/KLQLTtgY+gA5rs2RF5sop8ef2gOse1LDHENtjGEfAFfi3nQ6uEe6SwAAAAASUVORK5CYII=">
+                <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzLjMzMSAyMy4zMzEiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDIzLjMzMSAyMy4zMzE7IiB4bWw6c3BhY2U9InByZXNlcnZlIiB3aWR0aD0iMTZweCIgaGVpZ2h0PSIxNnB4Ij4KPGc+Cgk8cGF0aCBkPSJNMTYuMDQzLDExLjY2N0wyMi42MDksNS4xYzAuOTYzLTAuOTYzLDAuOTYzLTIuNTM5LDAtMy41MDJsLTAuODc1LTAuODc1ICAgYy0wLjk2My0wLjk2NC0yLjUzOS0wLjk2NC0zLjUwMiwwTDExLjY2Niw3LjI5TDUuMDk5LDAuNzIzYy0wLjk2Mi0wLjk2My0yLjUzOC0wLjk2My0zLjUwMSwwTDAuNzIyLDEuNTk4ICAgYy0wLjk2MiwwLjk2My0wLjk2MiwyLjUzOSwwLDMuNTAybDYuNTY2LDYuNTY2bC02LjU2Niw2LjU2N2MtMC45NjIsMC45NjMtMC45NjIsMi41MzksMCwzLjUwMWwwLjg3NiwwLjg3NSAgIGMwLjk2MywwLjk2MywyLjUzOSwwLjk2MywzLjUwMSwwbDYuNTY3LTYuNTY1bDYuNTY2LDYuNTY1YzAuOTYzLDAuOTYzLDIuNTM5LDAuOTYzLDMuNTAyLDBsMC44NzUtMC44NzUgICBjMC45NjMtMC45NjMsMC45NjMtMi41MzksMC0zLjUwMUwxNi4wNDMsMTEuNjY3eiIgZmlsbD0iI2Y1NmE0NyIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />                    
+                <isprint value="${Resource.msg('smartorderrefill.order.cancel', 'smartorderrefill', null)}"/>
+            </span>
+            <isif condition="${!pdict.preferences.SorPauseSubscription}">
+                
+                <isif condition="${pdict.isPaused}" >
+                    <span data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'oid', pdict.ProductList.ID, 'action', 'reactivate', 'client', pdict.ProductList.customerNo)}"
+                        class="button order reactivate blue-invert sorlink">
+                        <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzMi4xNTMgMjMyLjE1MyIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjMyLjE1MyAyMzIuMTUzOyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCI+CjxnIGlkPSJQbGF5Ij4KCTxwYXRoIHN0eWxlPSJmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDsiIGQ9Ik0yMDMuNzkxLDk5LjYyOEw0OS4zMDcsMi4yOTRjLTQuNTY3LTIuNzE5LTEwLjIzOC0yLjI2Ni0xNC41MjEtMi4yNjYgICBjLTE3LjEzMiwwLTE3LjA1NiwxMy4yMjctMTcuMDU2LDE2LjU3OHYxOTguOTRjMCwyLjgzMy0wLjA3NSwxNi41NzksMTcuMDU2LDE2LjU3OWM0LjI4MywwLDkuOTU1LDAuNDUxLDE0LjUyMS0yLjI2NyAgIGwxNTQuNDgzLTk3LjMzM2MxMi42OC03LjU0NSwxMC40ODktMTYuNDQ5LDEwLjQ4OS0xNi40NDlTMjE2LjQ3MSwxMDcuMTcyLDIwMy43OTEsOTkuNjI4eiIgZmlsbD0iIzRlOTdlMiIvPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+CjxnPgo8L2c+Cjwvc3ZnPgo=" />
+                        <img class="reactivateImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAvUlEQVRIib3VvQ3CMBRF4WMEBRPASlSwQTbgbwJakADRQcli0EE2oLxUEY4IFrGfc0pbul/5oIskOUmFpJmkQQ5gok8PSUtJQ0tgo++eFlAv8DcGjsBN0ioWCgE+dIiF/gGSoDZAFBQDNEHrX1AK4EN74N4EWQBVIw+aS3LWgA+dgCIXUCsHUAIL4ArQNx7eAWfn3Kt6tAAahy2A4HAKUAJb4BIajgFaDbcBoob/AZKGa3VxMqujP81y9HP2BtNtskhL/YWwAAAAAElFTkSuQmCC">
+                        <span>
+                            <isprint value="${Resource.msg('smartorderrefill.order.reactivate', 'smartorderrefill', null)}"/>
+                        </span>
+                    </span>
+                <iselse>
+                    <span data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', 'oid', pdict.ProductList.ID, 'action', pdict.ProductList.constructor.STATUS_PAUSED, 'client', pdict.ProductList.customerNo)}" 
+                            class="button order pause sorlink blue-invert sorshowmodal">
+                        <img src="data:image/svg+xml;utf8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iaXNvLTg4NTktMSI/Pgo8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMTguMS4xLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogNi4wMCBCdWlsZCAwKSAgLS0+CjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgdmVyc2lvbj0iMS4xIiBpZD0iQ2FwYV8xIiB4PSIwcHgiIHk9IjBweCIgdmlld0JveD0iMCAwIDIzMi42NzkgMjMyLjY3OSIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAwIDAgMjMyLjY3OSAyMzIuNjc5OyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCI+CjxnIGlkPSJQYXVzZSI+Cgk8cGF0aCBzdHlsZT0iZmlsbC1ydWxlOmV2ZW5vZGQ7Y2xpcC1ydWxlOmV2ZW5vZGQ7IiBkPSJNODAuNTQzLDBIMzUuNzk3Yy05Ljg4NSwwLTE3Ljg5OCw4LjAxNC0xNy44OTgsMTcuODk4djE5Ni44ODMgICBjMCw5Ljg4NSw4LjAxMywxNy44OTgsMTcuODk4LDE3Ljg5OGg0NC43NDZjOS44ODUsMCwxNy44OTgtOC4wMTMsMTcuODk4LTE3Ljg5OFYxNy44OThDOTguNDQsOC4wMTQsOTAuNDI3LDAsODAuNTQzLDB6IE0xOTYuODgyLDAgICBoLTQ0Ljc0NmMtOS44ODYsMC0xNy44OTksOC4wMTQtMTcuODk5LDE3Ljg5OHYxOTYuODgzYzAsOS44ODUsOC4wMTMsMTcuODk4LDE3Ljg5OSwxNy44OThoNDQuNzQ2ICAgYzkuODg1LDAsMTcuODk4LTguMDEzLDE3Ljg5OC0xNy44OThWMTcuODk4QzIxNC43ODEsOC4wMTQsMjA2Ljc2NywwLDE5Ni44ODIsMHoiIGZpbGw9IiMyNjk4ZTgiLz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8Zz4KPC9nPgo8L3N2Zz4K" />
+                        <img class="pauseImg" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAX0lEQVRIie2VuxHAMAjFhDfwMvH+bZZhhJcmuXODnc85FaooxIkOWIwBSDJgA2rgObCbmd74SGqa067tJ345d6JLemowD/0ys76SgQxkIAMZyEAf8BuuB/PQ/+fpr+QAblZouYOT2ZwAAAAASUVORK5CYII="/>
+                        <span><isprint value="${Resource.msg('smartorderrefill.order.pause', 'smartorderrefill', null)}"/></span>
+                    </span>
+                </isif>   
+            </isif>
+
+            <p class="close-button" id="close-button">
+                <span class="button order closeOrder close-btn orange-invert"> Close
+                </span>
+            </p>
+            
+            
+         </div>
+    </div>
+</div>
+
+<isinclude template="components/footer" />

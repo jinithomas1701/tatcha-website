@@ -1,0 +1,56 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type = "relative" hour = "24">
+<isset name="DecoratorTemplate" value="content/press/pt_press" scope="page"/>
+<isdecorate template="${DecoratorTemplate}">
+<isscript>
+    var pressContent = dw.content.ContentMgr.getFolder('Press').getContent();
+    var pressList : dw.util.ArrayList = [];
+    if (pressContent && pressContent.getLength() > 0) {
+    	pressList = new dw.util.ArrayList(pressContent);
+    }
+</isscript>
+
+<main class="content content-press" tabindex="-1">
+	<div class="container">
+		<div class="content-header">
+			<h1>${Resource.msg('press.home.title','content',null)}</h1>
+		</div>
+		<isloop iterator = "${pressList}" var = "press">
+			<isif condition="${press.ID !== 'press-home' && press.onlineFlag !== false}">
+				<isscript>
+					var productData;
+					if (!empty(press.custom.pressSourceProducts)) {
+						productData = dw.catalog.ProductMgr.getProduct(press.custom.pressSourceProducts);
+					}
+				</isscript>
+				<div class="press-block">
+					<div class="row">
+						<div class="col-md-2">
+							<h2 class="press-source"> <isprint value="${press.custom.pressSource}" /> </h2>
+						</div>
+						<div class="col-md-8">
+							<blockquote>
+								<p> <isprint value="${press.custom.pressSourceTitle}" /> </p>
+								<footer> <isprint value="${press.custom.pressSourceAuthor}" /> </footer>
+							</blockquote>
+							<div class="press-external-link"><a href="<isprint value="${press.custom.pressSourceLink}"/>" target="_blank"><span class="text">${Resource.msg('press.home.readmore','content',null)}</span> <i class="fal fa-external-link-square fa-sm icon"></i></a></div>
+						</div>
+						<div class="col-md-2">
+							<div class="press-shop-link">
+								<a href="#">
+									<div class="shop-text">${Resource.msg('press.home.shop','content',null)}</div>
+									<div class="product-name">
+										<a href="${URLUtils.http('Product-Show', 'pid', productData.ID)}">
+											<isprint value="${productData.name}" />
+										</a>
+									</div>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</isif>
+		</isloop>
+	</div>
+</main>
+</isdecorate>

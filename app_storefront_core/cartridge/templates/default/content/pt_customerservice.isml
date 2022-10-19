@@ -1,0 +1,44 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Customer Service',
+			type: 'customerservice',
+			ns:'account'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<iscomment>This page must be cachable. It inherits the caching attributes by the decorated template.</iscomment>
+
+	<isinclude template="components/header/htmlhead_bs"/>
+	<isinclude template="content/pt_customerservice_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+	
+	<isinclude template="components/header/header_bs"/>
+	
+	<main role="main" tabindex="-1">
+		<isreplace/>
+		<isinclude template="components/browsertoolscheck"/>
+	</main>
+		
+	<isinclude template="components/footer/footer_bs"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+	<isinclude template="content/pt_customerservice_VARS"/>
+
+</body>
+</html>

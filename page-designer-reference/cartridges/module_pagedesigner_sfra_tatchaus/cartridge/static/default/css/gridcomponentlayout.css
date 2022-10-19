@@ -1,0 +1,65 @@
+.gridcomponentlayout-text_container {
+  text-align: center;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.gridcomponentlayout-text {
+  padding-right: 0.75rem;
+  padding-left: 0.75rem;
+  display: inline-block;
+  line-height: 1.25;
+
+  background-color: rgb(250, 250, 249);
+  color: rgb(22, 50, 92);
+}
+
+.gridcomponentlayout-text_heading {
+  font-weight: bold;
+  font-size: 4vw;
+}
+
+@media (min-width: 768px) and (max-width: 1199.98px) {
+  .gridcomponentlayout-text_heading {
+    font-size: 2.5vw;
+  }
+}
+
+@media (min-width: 1200px) {
+  .gridcomponentlayout-text_heading {
+    font-size: 30px;
+  }
+}
+
+.gridcomponentlayout-region {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  /*replicating gutters negative margin*/
+  left: -0.5rem;
+  right: -0.5rem;
+}
+
+.gridcomponentlayout-container:before {
+  /* each child component is 2 by 3, we have 2 by 3 children */
+  /* width/height = 2/3 * 2/3 = 4/9 */
+  padding-top: calc(9 / 4 * 100%);
+}
+
+/* we want to have 3 rows plus gutters */
+.gridcomponentlayout-region .gridcomponentlayout-component {
+  height: calc(33.33% - 2 * 0.5rem);
+  position: relative;
+}
+
+@media (min-width: 768px) {
+  .gridcomponentlayout-container:before {
+    /* each child component is 2 by 3, we have 3 by 2 children */
+    /* width/height = 2/3 * 3/2 = 1/1 */
+    padding-top: calc(1 / 1 * 100%);
+  }
+  .gridcomponentlayout-region .gridcomponentlayout-component {
+    /* we want to have 2 rows plus gutters */
+    height: calc(50% - 2 * 0.5rem);
+  }
+}

@@ -1,0 +1,28 @@
+<iscache type="relative" hour="24"/>
+<script>
+//2. This code loads the IFrame Player API code asynchronously.
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+//for vimeo api player
+var vimeoTag = document.createElement('script');
+vimeoTag.src = "https://player.vimeo.com/api/player.js";
+vimeoTag.defer = true;
+var vimeoScriptTag = document.getElementsByTagName('script')[0];
+vimeoScriptTag.parentNode.insertBefore(vimeoTag, vimeoScriptTag);
+</script>
+<div class="container-fluid container-fluid-max container-flush">
+<isif condition="${!empty(pdict.videourl)}"> 
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> class="video-container ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}" >
+	<isif condition="${!empty(pdict.videoplayer) && (pdict.videoplayer.equals('youtube'))}">		
+		<iframe class = "full-width-video-frame" src="${pdict.videourl}" allowfullscreen title="${pdict.videotitle}" frameborder="0" > </iframe>
+	<iselseif condition="${!empty(pdict.videoplayer) && (pdict.videoplayer.equals('vimeo'))}" >
+		<iframe class="full-width-video-frame" src="${pdict.videourl}" webkitallowfullscreen mozallowfullscreen allowfullscreen title="${pdict.videotitle}" frameborder="0"> </iframe>
+	</iselseif>
+	</isif>
+</div>
+</isif>
+</div>

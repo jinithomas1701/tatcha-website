@@ -1,0 +1,23 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var prefs = BraintreeHelper.getPrefs();
+    var paypalPaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.paypalMethodName); 
+    if(Site.getCurrent().getCustomPreferenceValue('SorEnabled')){
+	  var HasSORProducts = session.custom.hasSORProducts;
+	}
+  
+</isscript>
+
+<isif condition="${HasSORProducts != true}">
+	<isif condition="${!request.custom.braintreeClientToken}">
+	    <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+	</isif>
+	
+	<isif condition="${prefs.BRAINTREE_PAYPAL_Visibility_Express_Button_On_Cart}" >
+	    <div class="btn-paypal">
+	    	<div class="braintree-paypal-buttons-wrap braintree-cart-paypal-buttons-wrap">
+	    		<isinclude template="braintree/cart/paypalButton"/>
+	    	</div>
+	    </div>
+	</isif>
+</isif>

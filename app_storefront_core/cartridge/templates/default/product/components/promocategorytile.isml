@@ -1,0 +1,21 @@
+<isif condition="${!empty(pdict.index)}"> 
+
+	<isif condition="${!empty(session.custom.catPromoBannerAssetsArray)}">
+	
+		<isset name="catPromoBannerAssetsArray" value="${session.custom.catPromoBannerAssetsArray.split('&&')}" scope="page" />
+			
+		<isif condition="${!empty(catPromoBannerAssetsArray) && (pdict.index < catPromoBannerAssetsArray.length)}">
+			<div class="col-sm-6 col-md-6 col-lg-4 col-xl-3 product-list-col <isif condition="${pdict.isFirstItem}">prd-tile-wrap </isif>" <isif condition="${pdict.isFirstItem}">data-prd-page="${pdict.gridPage}"</isif>>
+				<div class="product-list-unit-v2 product-list-unit-promo">
+					<isprint value="${catPromoBannerAssetsArray[pdict.index]}" encoding="off" />
+				 </div>
+			</div>
+		</isif>
+		
+		<isif condition="${!empty(catPromoBannerAssetsArray) && pdict.last}">
+			<isset name="catPromoBannerAssetsArray" value="" scope="session" />
+		</isif>
+		
+	</isif>
+	
+</isif>

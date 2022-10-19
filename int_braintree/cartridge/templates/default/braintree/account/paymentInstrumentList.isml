@@ -1,0 +1,11 @@
+<div class="braintree-account-cards">
+    <isinclude template="braintree/account/creditCardsList" />
+</div>
+
+<div class="braintree-account-paypalAccounts">
+    <isinclude template="braintree/account/paypalAccountsList" />
+</div>
+
+<div class="braintree-account-paypalAccounts">
+    <isinclude template="braintree/account/venmoAccountsList" />
+</div>

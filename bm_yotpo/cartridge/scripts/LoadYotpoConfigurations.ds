@@ -1,0 +1,27 @@
+/**
+* LoadYotpoConfigurations.ds
+*
+* The scripts load yotpo configurations to be displayed in BM.
+*
+* @output YotpoConfigs : dw.util.List The Yotpo configurations
+*
+*/
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{
+    var CommonModel = require('int_yotpo/cartridge/scripts/yotpo/model/common/CommonModel');
+    var YotpoLogger = require('int_yotpo/cartridge/scripts/yotpo/utils/YotpoLogger');
+    var configs : List;
+
+    try{ 
+        configs = CommonModel.loadAllYotpoConfigurations();
+    } catch(e) {
+        YotpoLogger.logMessage('Some error occured while processing request. Exception is: ' + e, 'error', 'LoadYotpoConfigurations.ds');
+        return PIPELET_ERROR;
+    }
+
+    args.YotpoConfigs = configs;
+
+    return PIPELET_NEXT;
+}

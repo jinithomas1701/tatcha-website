@@ -1,0 +1,186 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${(pdict.cache != null) ? pdict.cache : true}">
+	<iscache type="relative" hour="24" varyby="price_promotion"/>
+</isif>
+<isset name="Product" value="${pdict.product}" scope="page"/>
+<isset name="ParentProduct" value="${pdict.parentProduct}" scope="page"/>
+<isif condition="${!empty(Product)}">
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	image = Product.getImage('large', 0);
+	var productUrl = URLUtils.url('Product-Show', 'pid', Product.ID);
+	var productPrice = 0;
+	var PriceModel = Product.getPriceModel();
+	if(PriceModel) {
+		productPrice = PriceModel.getPrice().value;
+	}
+	
+	// Added for mParticle and other analytics 
+	var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+	var productInfo = mParticleUtil.getProductInfo(Product);
+	
+</isscript>
+</isif>
+
+<isif condition="${!empty(Product)}">
+	<isinclude template="product/components/availability"/>
+	<isif condition="${availabilityClass == 'in-stock-msg'}">
+		<div class="row">
+		<div class="col-sm-12 col-md-12">
+			<div class="product-use-with upsell-use-with d-none d-md-block">
+				<div class="row">						
+					<div class="col-sm-4" class="upsell-product-image">
+						<isif condition="${pdict.Product.master && pdict.CurrentVariationModel}">
+						    <isset name="imageProduct" value="${pdict.CurrentVariationModel}" scope="page"/>
+						<iselseif condition="${pdict.Product.variant && !empty(pdict.Product.getVariationModel())}">
+						    <isset name="imageProduct" value="${pdict.Product.getVariationModel()}" scope="page"/>
+						<iselse/>
+						    <isset name="imageProduct" value="${pdict.Product}" scope="page"/>
+						</isif>
+	
+						<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+							<isset name="imageUrl" value="${getImageUrl(imageProduct,'medium')}" scope="page"/>
+							<isset name="imageAlt" value="${getImageAlt(imageProduct)}" scope="page"/>
+							<isset name="imageTitle" value="${getImageTitle(imageProduct)}" scope="page"/>
+						<iselse/>
+							<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+							<isset name="imageAlt" value="${pdict.Product.name}" scope="page"/>
+							<isset name="imageTitle" value="${pdict.Product.name}" scope="page"/>
+						</isif>
+						<isif condition="${imageTitle.charAt(0) == ','}">
+							<isset name="imageTitle" value="${pdict.Product.name + imageTitle}" scope="page"/>
+						</isif>					
+						<a href="${productUrl}" class="product-img-block" title="${Product.name}">
+							<img class="img-responsive img-fluid" title="${imageTitle}" src="${imageUrl}" alt="image - ${imageAlt}">
+						</a>
+					</div>
+					<div class="col-sm-8">
+						<div class="product-use-with-details upsell-product">
+							<h2 class="upsell-product-header">${Resource.msg('product.useitwith','product',null)}</h2>
+							<h3 class="product-name upsell-product-name">
+								<a href="${productUrl}" title="${Resource.msgf('product.label','product',null, Product.name)}">
+									<isprint value="${Product.name.substring(0,48)}"/>
+									<isif condition="${pdict.Product.custom.secondaryName}"> 
+										<span class="product-subtitle upsell-product-subtitle"><isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/></span>
+									</isif>
+								</a>
+							</h3>
+							
+							<iscomment>Upsell product reason</iscomment> 
+							<isif condition="${pdict.Product.custom.why}">
+							 	<span class="upsell-product-reason-why"><isprint value="${Resource.msg('product.why','product',null)}"/></span>
+							 	<isprint value="${pdict.Product.custom.why}"/>
+							</isif>
+							
+							<div class="product-price-size upsell-product-price-size">
+								<span class="upsell-product-price"><isinclude template="product/components/pricing"/></span>
+								<span class="separator upsell-product-seperator">|</span>
+								<span class="product-size upsell-product-size"><isprint value="${Product.custom.size.replace("|","/")}"/></span>
+						    </div>		
+								<div class="cta-row upsell-add-to-bag">
+									<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+									<input type="hidden" class="input-text" name="Quantity" id="Quantity" size="2" maxlength="3" value="1"/>
+									<input type="hidden" name="cartAction" id="cartAction" value="add" />
+									<input type="hidden" name="pid" id="pid" value="${Product.ID}" />
+									<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+									<input type="hidden" name="unitPrice" id="unitPrice" value="${productPrice}" />
+									<input type="hidden" name="page" value="bag" />
+									<div class="product-cta">
+									<a href="#" data-buttonid="p-page-use-it-with" data-product-info="${JSON.stringify(productInfo)}" class="btn btn-default btn-sm upsell-btn-useitwith useitwith mparticle-product">${dw.web.Resource.msg('global.addtocart','locale','Add to Cart')}</a>
+									</div>
+									</form>
+									
+									<isset name="upsellProductTotal" value="${Product.priceModel.price.add(ParentProduct.priceModel.price)}" scope="page" />
+									<a href="#" class="upsell-product-add-to-cart btn-link" id="upsell-add-to-cart" data-pid="${Product.ID}" data-parentpid="${ParentProduct.ID}">
+										<isprint value="${Resource.msg('product.addboth','product',null)}" /> 
+										<isprint value="${upsellProductTotal}" formatter="*#0" />
+									</a>
+								</div>
+								<div class="alert alert-danger add-to-bag-alert" role="alert" style="display: none;">Contextual Add to Bag Errors here.</div>								
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			
+			<iscomment>use-it-with for mobile </iscomment>
+			<div class="product-use-with upsell-use-with d-md-none">
+				<div class="row">						
+					<div class="col-sm-4" class="upsell-product-image">
+					<h2 class="upsell-product-header">${Resource.msg('product.useitwith','product',null)}</h2>
+						<isif condition="${pdict.Product.master && pdict.CurrentVariationModel}">
+						    <isset name="imageProduct" value="${pdict.CurrentVariationModel}" scope="page"/>
+						<iselseif condition="${pdict.Product.variant && !empty(pdict.Product.getVariationModel())}">
+						    <isset name="imageProduct" value="${pdict.Product.getVariationModel()}" scope="page"/>
+						<iselse/>
+						    <isset name="imageProduct" value="${pdict.Product}" scope="page"/>
+						</isif>
+	
+						<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+							<isset name="imageUrl" value="${getImageUrl(imageProduct,'medium')}" scope="page"/>
+							<isset name="imageAlt" value="${getImageAlt(imageProduct)}" scope="page"/>
+							<isset name="imageTitle" value="${getImageTitle(imageProduct)}" scope="page"/>
+						<iselse/>
+							<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+							<isset name="imageAlt" value="${pdict.Product.name}" scope="page"/>
+							<isset name="imageTitle" value="${pdict.Product.name}" scope="page"/>
+						</isif>
+						<isif condition="${imageTitle.charAt(0) == ','}">
+							<isset name="imageTitle" value="${pdict.Product.name + imageTitle}" scope="page"/>
+						</isif>					
+						<a href="${productUrl}" class="product-img-block" title="${Product.name}">
+							<img class="img-responsive img-fluid" title="${imageTitle}" src="${imageUrl}" alt="image - ${imageAlt}">
+						</a>
+					</div>
+					<div class="col-sm-8">
+						<div class="product-use-with-details upsell-product">
+							<h3 class="product-name upsell-product-name">
+								<a href="${productUrl}" title="${Resource.msgf('product.label','product',null, Product.name)}">
+									<isprint value="${Product.name.substring(0,48)}"/>
+									<isif condition="${pdict.Product.custom.secondaryName}"> 
+										<span class="product-subtitle upsell-product-subtitle"><isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/></span>
+									</isif>
+								</a>
+							</h3>
+							
+							<iscomment>Upsell product reason</iscomment> 
+							<isif condition="${pdict.Product.custom.why}">
+							 	<span class="upsell-product-reason-why"><isprint value="${Resource.msg('product.why','product',null)}"/></span>
+							 	<isprint value="${pdict.Product.custom.why}"/>
+							</isif>
+							
+							<div class="product-price-size upsell-product-price-size">
+								<span class="upsell-product-price"><isinclude template="product/components/pricing"/></span>
+								<span class="separator upsell-product-seperator">|</span>
+								<span class="product-size upsell-product-size"><isprint value="${Product.custom.size.replace("|","/")}"/></span>
+						    </div>		
+								<div class="cta-row upsell-add-to-bag-mobile">
+									<form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm">
+									<input type="hidden" class="input-text" name="Quantity" id="Quantity" size="2" maxlength="3" value="1"/>
+									<input type="hidden" name="cartAction" id="cartAction" value="add" />
+									<input type="hidden" name="pid" id="pid" value="${Product.ID}" />
+									<input type="hidden" name="pageInfo" id="pageInfo" value="addToBag" />
+									<input type="hidden" name="unitPrice" id="unitPrice" value="${productPrice}" />
+									<input type="hidden" name="page" value="bag" />
+									<div class="product-cta">
+									<a href="#" data-buttonid="p-page-use-it-with" data-product-info="${JSON.stringify(productInfo)}" class="btn btn-default btn-sm upsell-btn-useitwith useitwith">${dw.web.Resource.msg('global.addtocart','locale','Add to Cart')}</a>
+									</div>
+									</form>
+								</div>
+								<div class="upsell-add-to-bag-mobile">
+									<isset name="upsellProductTotal" value="${Product.priceModel.price.add(ParentProduct.priceModel.price)}" scope="page" />
+									<a href="#" class="upsell-product-add-to-cart btn-link" id="upsell-add-to-cart" data-pid="${Product.ID}" data-parentpid="${ParentProduct.ID}">
+										<isprint value="${Resource.msg('product.addboth','product',null)}" /> 
+										<isprint value="${upsellProductTotal}" formatter="*#0" />
+									</a>
+								</div>
+								<div class="alert alert-danger add-to-bag-alert" role="alert" style="display: none;">Contextual Add to Bag Errors here.</div>								
+						</div>
+					</div>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	</isif>
+</isif>

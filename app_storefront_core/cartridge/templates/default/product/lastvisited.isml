@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isinclude template="util/modules"/>
+
+<isif condition="${!empty(pdict.LastVisitedProducts)}">
+	<div class="row">
+		<div class="col-xs-12">
+			<div class="tatcha-slider slider-merch-container">
+				<div class="slider-heading">
+					<h2 class="slider-title">
+						${Resource.msg('cart.lastvisited.header','checkout',null)}
+					</h2>
+				</div>
+				<div class="slick-wrapper slick-merch">
+					<isloop items="${pdict.LastVisitedProducts}" var="product" begin="0" end="2">
+						<div class="slider-slide">
+							<isinclude url="${URLUtils.url('Product-HitTile','pid',product.ID,'showswatches','false','showpricing','false','showpromotion','true','showrating','false')}">
+						</div>
+					</isloop>
+				</div>
+			</div>
+		</div>
+	</div>
+</isif>

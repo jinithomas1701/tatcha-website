@@ -1,0 +1,54 @@
+
+.btn-single-measure{
+    height:45px;
+    font-size: 14px;
+    padding: 0 8px 0 8px;
+    @include media-breakpoint-up(md) {
+        padding: 0 35px 0 35px;
+      }
+}
+
+.btn-single-measure-long{
+    height:45px;
+    font-size: 14px;
+    margin: 0 5px 0 5px;
+    padding: 0 5px 0 5px;
+    @include media-breakpoint-up(md) {
+        padding: 0 15px 0 15px;
+      }
+}
+
+
+.btn-measure{
+    padding-top: 5px;  
+    text-align: center; 
+}
+
+.modal-header-measure{
+    border-bottom: none;
+    padding: 15px 0 10px 0;
+  }
+
+.modal-title-measure{
+    margin:0 auto;
+    padding-top:25px;
+    font-size: 18px;
+}
+
+.modal-body-measure{
+  padding: 10px 0 10px 0;
+  margin: 0 35px 0 35px;
+  @include placeholder {
+    font-style: normal;
+    font-weight: $font-weight-normal;
+    font-size: 16px;
+  }
+}
+
+.btn-measure{
+    padding-bottom: 25px;
+}
+
+.form-control-measure{
+    font-size: $font-size-base;
+}

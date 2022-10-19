@@ -1,0 +1,292 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<div class="product-hit-tile">
+	<iscomment> Yotpo Modules </iscomment>
+	<isinclude template="util/yotpomodules" />
+	<isif condition="${(pdict.cache != null) ? pdict.cache : true}">
+		<iscache type="relative" hour="24" varyby="price_promotion"/>
+	</isif>
+	<isset name="Product" value="${pdict.product}" scope="page"/>
+	<isset name="cgid" value="${pdict.cgid}" scope="page" />
+
+	<isif condition="${!empty(Product)}">
+		<isset name="productURL" value="${pdict.urls.product}" scope="page" />
+		<div class="product-tile product-list-unit-v2" id="${Product.uuid}" data-itemid="${Product.id}" data-matchbox-item="${Product.id}" data-name="${Product.productName}"><!-- dwMarker="product" dwContentID="${Product.UUID}" -->
+
+			<isif condition="${!empty(Product.marketingFlag) && Product.marketingFlag !== ''}">
+				<div class="product-marketing-flag-block">
+					<div class="product-marketing-flag-inner">
+						<span class="product-marketing-flag">
+							<isprint value="${Product.marketingFlag}" encoding="off"/>
+						</span>
+					</div>
+				</div>
+			</isif>
+
+			<div class="position-relative">
+				<div class="product-list-unit-tools clearfix">
+					<isinclude url="${pdict.urls.tileIconViewUrl}" />
+				</div>
+				<a class="thumb-link product-view-link" href="${productURL}" data-matchbox-click="${Product.id}" data-id="${Product.id}" aria-label="${Resource.msgf('product.label','product',null, Product.productName + ', ' + Product.secondaryName)}" title="${Resource.msgf('product.label','product',null, Product.productName)}">
+					<div class="product-img-block quickview-enabled"><!-- dwMarker="product" dwContentID="${Product.UUID}" -->
+                        <isset name="imageUrl" value="${Product.images.large[0].categoryItemImageURL}" scope="page"/>
+                        <isset name="imageAlt" value="${Product.images.large[0].alt}" scope="page"/>
+                        <isset name="imageTitle" value="${Product.images.large[0].title}" scope="page"/>
+                        <isif condition="${pdict.enablelazyLoad}">
+                            <img class="img-fluid product-img lazyImage" width="500" height="500" src="${URLUtils.staticURL('/images/loader.gif')}" data-src="${imageUrl}" alt="${imageAlt}"/>
+                        <iselse/>
+                            <img class="img-fluid product-img" width="500" height="500" src="${imageUrl}" data-src="${imageUrl}" alt="${imageAlt}"/>
+                        </isif>
+					</div>
+					<h2 class="product-name name-link">
+						<isif condition="${!empty(Product.productName)}"><isprint value="${Product.productName.substring(0,48)}"/></isif>
+						<span class="product-subtitle">
+						<isif condition="${Product.secondaryName.length > 0}">
+							<isprint value="${Product.secondaryName}" encoding="on"/>
+						</isif>
+						</span>
+					</h2>
+				</a>
+			</div>
+            <div class="product-tile__footer">
+                <a class="product-view-link reviews-ratings-link" href="${productURL}#reviews" aria-label="${pdict.display.ratingLink}" tabindex="-1">
+                    <div class="product-rating-summary d-flex justify-content-center" >
+                        <isif condition="${pdict.display.showRating && !Product.productSet}">
+                            <div id="yotpoSRDiv" data-sr-yotpo="${pdict.display.showRating}" style="display:none;"> </div>
+                            <div id="yotpoPSEnabledDiv" data-ps-yotpo="${!Product.productSet}" style="display:none;"> </div>
+                            <isyotpocategorybottomlinewidgetsfra product="${Product}" />
+                        </isif>
+                    </div>
+                </a>
+
+                <div class="product-price-variant-block" style="display: none;">
+                    <isif condition="${pdict.display.showPricing}">
+                        <isinclude template="product/components/valuepricingSFRA"/>
+                    <iselse>
+                        <span class ="product-price">
+                        <span class= "price-sales">
+                            &nbsp
+                            &nbsp
+                        </span>
+                        </span>
+                    </isif>
+                </div>
+
+                <isif condition="${pdict.display.showVarient}">
+                    <isset name="showValuePrice" value="${false}" scope="page" />
+                    <isset name="hasVariantDisplay" value="${false}" scope="page" />
+                    <div class="variant-option product-variant-content" data-cgid="${cgid}">
+                        <isif condition="${Product.variationAttributes && Product.variationAttributes.length > 0}">
+                            <isloop items="${Product.variationAttributes}" var="attr">
+                                <isif condition="${attr.values.length > 1}">
+                                    <isset name="hasVariantDisplay" value="${true}" scope="page" />
+                                    <isif condition="${attr.attributeId == 'color'}">
+                                        <div class="color-variant d-flex justify-content-center mt-2">
+                                            <isloop items="${attr.values}" var="attrValue" status="attrStatus">
+                                                <isif condition="${!showValuePrice && attrValue && attrValue.displayValue == 'Gift Set'}"><isset name="showValuePrice" value="${true}" scope="page" /></isif>
+                                                <span class="color-img mr-2 variant-selection ${attrValue.selected ? 'selected' : ''}" href="${attrValue.url}" data-compare="${pdict.display.showCompare}">
+                                                    <img src="${attrValue.image}" alt="color - ${attrValue.displayValue}"/>
+                                                </span>
+                                            </isloop>
+                                        </div>
+                                    <iselseif condition="${attr.attributeId == 'size'}">
+                                        <div class="product-variant-container">
+                                            <div class="btn-group dropup btn-block product-variant mt-2">
+                                                <select class="form-control size-form" name="product-variation-size" aria-label="${Product.productName + ' Size'}">
+                                                    <isloop items="${attr.values}" var="attrValue" status="attrStatus">
+                                                        <isif condition="${!showValuePrice && attrValue && attrValue.displayValue == 'Gift Set'}"><isset name="showValuePrice" value="${true}" scope="page" /></isif>
+                                                        <option class="dropdown-item variant-selection" ${attrValue.selected ? 'selected' : ''} href="${attrValue.url}" data-compare="${pdict.display.showCompare}">${attrValue.displayValue}</option>
+                                                    </isloop>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </isif>
+                                <iselseif condition="${attr.values.length == 1 && !(attr.attributeId == 'size')}" >
+                                    <isset name="hasVariantDisplay" value="${true}" scope="page" />
+                                    <div class="variant-option">
+                                        <isloop items="${attr.values}" var="attrValue" status="attrStatus">
+                                            <isif condition="${!showValuePrice && attrValue && attrValue.displayValue == 'Gift Set'}"><isset name="showValuePrice" value="${true}" scope="page" /></isif>
+                                            <div class="product-variant-container">
+                                                <span class="size-form"><isprint value="${attrValue.displayValue}" /></span>
+                                            </div>
+                                        </isloop>
+                                    </div>
+                                </isif>
+                            </isloop>
+                        </isif>
+                        <isif condition="${(!hasVariantDisplay || showValuePrice ) && !empty(Product.specialPrice)}">
+                            <div class="variant-option">
+                                <div class="product-variant-container">
+                                    <span class="size-form">${Resource.msgf('product.pricing.specialPrice','product',null, Product.specialPrice)}</span>
+                                </div>
+                            </div>
+                        </isif>
+                    </div>
+                </isif>
+
+                <div style="display: none">
+                    <isif condition="${pdict.display.showPromotion}">
+                        <isif condition="${Product.promotions}">
+                            <div class="product-promo">
+                                <isloop items="${promos}" alias="promo" status="promoloopstate">
+                                    <div class="promotional-message">
+                                        <isprint value="${promo.calloutMsg}" encoding="off"/>
+                                    </div>
+                                </isloop>
+                            </div>
+                        </isif>
+                    </isif>
+                </div>
+
+                <isif condition="${pdict.display.showSwatches}">
+
+                    <isif condition="${Product.variationAttributes && Product.variationAttributes.length > 0}">
+                        <isloop items="${Product.variationAttributes[0].values}" var="swatch" status="loopState">
+                            <isif condition="${loopState.count < 4
+                                            && swatch.images != null
+                                            && swatch.images.swatch[0] != null
+                                            && swatch.images.swatch[0].url != null}">
+                                <a href="${swatch.url}">
+                                    <span>
+                                        <img class="swatch swatch-circle"
+                                            data-index="${loopState.count-1}"
+                                            style="background-image: url(${swatch.images.swatch[0].url})"
+                                            src="${swatch.images.swatch[0].url}"
+                                            alt="${swatch.images.swatch[0].alt}"/>
+                                    </span>
+                                </a>
+                            <iselse/>
+                                <span>
+                                    <a href="${pdict.urls.product}">...</a>
+                                </span>
+                                <isbreak>
+                            </isif>
+                        </isloop>
+                    </isif>
+
+                    <isif condition="${!empty(selectableColors) && selectableColors.size() > 1 && !empty(colorVarAttr)}">
+                        <div class="product-swatches">
+                            <iscomment>render a link to the palette and hide the actual palette if there are more than five colors contained</iscomment>
+                            <isif condition="${selectableColors.size() > 5}">
+                                <a class="product-swatches-all">${Resource.msg('productresultarea.viewallcolors','search',null)} (<isprint value="${selectableColors.size()}"/>)</a>
+                            </isif>
+
+                            <iscomment>render the palette, the first swatch is always preselected</iscomment>
+                            <ul class="swatch-list<isif condition="${selectableColors.size() > 5}"> swatch-toggle</isif>">
+                                <isloop items="${selectableColors}" var="colorValue" status="varloop">
+                                    <iscomment>Determine the swatch and the thumbnail for this color</iscomment>
+                                    <isset name="colorSwatch" value="${colorValue.getImage('swatch')}" scope="page"/>
+                                    <isset name="colorThumbnail" value="${colorValue.getImage('medium')}" scope="page"/>
+
+                                    <iscomment>If images couldn't be determined, display a "no image" thumbnail</iscomment>
+                                    <isif condition="${!empty(colorSwatch)}">
+                                        <isset name="swatchUrl" value="${colorSwatch.getURL()}" scope="page"/>
+                                        <isset name="swatchAlt" value="${colorSwatch.alt}" scope="page"/>
+                                        <isset name="swatchTitle" value="${colorSwatch.title}" scope="page"/>
+                                    <iselse/>
+                                        <isset name="swatchUrl" value="${URLUtils.staticURL('/images/noimagesmall.png')}" scope="page"/>
+                                        <isset name="swatchAlt" value="${colorValue.displayValue}" scope="page"/>
+                                        <isset name="swatchTitle" value="${colorValue.displayValue}" scope="page"/>
+                                    </isif>
+                                    <isif condition="${!empty(colorThumbnail)}">
+                                        <isset name="thumbnailUrl" value="${colorThumbnail.getURL()}" scope="page"/>
+                                        <isset name="thumbnailAlt" value="${colorThumbnail.alt}" scope="page"/>
+                                        <isset name="thumbnailTitle" value="${colorThumbnail.title}" scope="page"/>
+                                    <iselse/>
+                                        <isset name="thumbnailUrl" value="${URLUtils.staticURL('/images/noimagesmall.png')}" scope="page"/>
+                                        <isset name="thumbnailAlt" value="${colorValue.displayValue}" scope="page"/>
+                                        <isset name="thumbnailTitle" value="${colorValue.displayValue}" scope="page"/>
+                                    </isif>
+                                    <isif condition="${!empty(selectedColor)}">
+                                        <isset name="preselectCurrentSwatch" value="${colorValue.value == selectedColor.value}" scope="page"/>
+                                    <iselse/>
+                                        <isset name="preselectCurrentSwatch" value="${varloop.first}" scope="page"/>
+                                    </isif>
+
+                                    <iscomment>build the proper URL and append the search query parameters</iscomment>
+                                    <isset name="swatchproductUrl" value="${Product.variationModel.url('Product-Show', colorVarAttr, colorValue.value)}" scope="page"/>
+                                    <isif condition="${!empty(Product.productSearch)}">
+                                        <isset name="swatchproductUrl" value="${Product.productSearch.url(swatchproductUrl)}" scope="page"/>
+                                    </isif>
+
+                                    <iscomment>render a single swatch, the url to the proper product detail page is contained in the href of the swatch link</iscomment>
+                                    <li>
+                                        <a href="${swatchproductUrl}" class="swatch ${(preselectCurrentSwatch) ? 'selected' : ''}" title="${swatchTitle}">
+                                            <img class="swatch-image" src="${swatchUrl}" alt="${swatchAlt}"  data-thumb='{"src":"${thumbnailUrl}","alt":"${thumbnailAlt}","title":"${thumbnailTitle}"}'/>
+                                        </a>
+                                    </li>
+                                </isloop>
+                            </ul><!-- .swatch-list -->
+                        </div><!-- .product-swatches -->
+                    </isif>
+                </isif>
+
+                <iscomment>Add to Cart</iscomment>
+                <isif condition="${Product.id == pdict.display.giftBuilderSKU && !Product.giftSetId}">
+                    <div class="product-cta-block">
+                        <div class="product-cta">
+                            <a title="Add Product to Cart" href="${URLUtils.http('Product-Show', 'pid', Product.id)}"><button class="btn btn-default btn-block btn-sm btn-round" tabindex="0"  data-productname="<isprint value="${Product.productName}"/>" data-pid="<isprint value="${Product.id}"/>">${Resource.msg('global.addtocart', 'locale', null)}</button></a>
+                        </div>
+                    </div>
+                </isif>
+
+                <isif condition="${Product.giftSetId}">
+                    <div class="product-cta-block mt-2">
+                        <div class="product-cta demo-normal">
+                            <a title="Create A Set" href="${URLUtils.http('Page-Show', 'cid', Product.giftSetId)}"><button class="btn btn-sm btn-outline-dark btn-block" tabindex="-1" data-productname="<isprint value="${Product.productName}"/>" data-pid="<isprint value="${Product.id}"/>">${Resource.msg('global.createset', 'locale', null)}</button></a>
+                        </div>
+                    </div>
+                </isif>
+
+                <isif condition="${!pdict.display.giftItem && !Product.giftSetId}">
+                    <isif condition="${(Product.oosProductStatus == 'comingsoon')}">
+                        <div class="product-cta-block mt-2">
+                            <div class="product-cta demo-normal">
+                                <a href="${productURL}" class="btn btn-sm btn-outline-dark btn-block plp-list">${Resource.msg('global.comingsoon.button', 'locale', null)}</a>
+                            </div>
+                        </div>
+                    <iselse/>
+                        <isif condition="${Product.available}">
+                            <form action="${URLUtils.url('Cart-AddProduct')}" method="post" id="${pdict.CurrentForms.product.addtocart.dynamicHtmlName}" class="pdpForm" style="margin-bottom: 0em;">
+                                <input type="hidden" class="input-text" name="Quantity" id="Quantity-<isprint value="${Product.id}" />" size="2" maxlength="3" value="1"/>
+                                <input type="hidden" name="cartAction" id="cartAction-<isprint value="${Product.id}" />" value="add" />
+                                <input type="hidden" name="pid" id="pid" value="${Product.id}" />
+                                <input type="hidden" name="productname" id="pid" value="${Product.productName}" />
+                                <input type="hidden" name="page" id="page-<isprint value="${Product.id}" />" value="bag" />
+                                <input type="hidden" name="pageInfo" id="pageInfo-<isprint value="${Product.id}" />" value="addToBag" />
+
+                                <div class="product-cta-block mt-2">
+                                    <div class="product-cta demo-normal">
+                                        <isif condition="${pdict.display.disableBtn}">
+                                            <a class="btn btn-sm btn-outline-dark btn-block plp-list-quick-view disabled" href="#">${Resource.msg('global.addtocart', 'locale', null)}</a>
+                                        <iselse/>
+                                            <button role="button" title="Add Product to Cart" class="btn btn-sm btn-outline-dark btn-block plp-list-quick-view <isif condition="${!pdict.display.showQuickview}">add-to-cart<iselse>product-quick-view</isif>" aria-label="${'Add product to bag '+ Product.productName +'-'+ Product.secondaryName}" data-matchbox-addtocart="${Product.id}" data-product-info="${JSON.stringify(pdict.display.productInfo)}" data-url="${productURL}">${Resource.msg('global.addtocart', 'locale', null)} - <isprint value="${Product.price.sales.formatted}" formatter="*#0"/></button>
+                                        </isif>
+                                    </div>
+                                </div>
+                            </form>
+                        <iselse>
+                            <div class="product-cta-block mt-2">
+                                <div class="product-cta demo-normal">
+                                    <isif condition="${(Product.oosProductStatus == 'comingsoon')}">
+                                        <a href="${productURL}" class="btn btn-sm btn-outline-dark btn-block plp-list disabled">${Resource.msg('global.comingsoon.button', 'locale', null)}</a>
+                                    <iselse>
+                                        <a href="${productURL}" class="btn btn-sm btn-outline-dark btn-block plp-list disabled" aria-disabled="true" tabindex="-1">${Resource.msg('global.outofstock', 'locale', null)}</a>
+                                    </isif>
+                                </div>
+                            </div>
+                        </isif>
+                    </isif>
+                <iselse>
+                    <isif condition="${!(Product.id == pdict.display.giftBuilderSKU) && !Product.giftSetId}">
+                        <div class="product-cta-block mt-2">
+                            <div class="product-cta demo-normal">
+                                <a title="Add Product to Cart" aria-label="${'Add product to bag '+ Product.productName }" class="btn btn-sm btn-outline-dark btn-block" data-url="${productURL}" href="${productURL}">${Resource.msg('global.addtocart', 'locale', null)}</a>
+                            </div>
+                        </div>
+                    </isif>
+                </isif>
+            </div>
+		</div><!--  END: .product-tile -->
+	</isif>
+</div>

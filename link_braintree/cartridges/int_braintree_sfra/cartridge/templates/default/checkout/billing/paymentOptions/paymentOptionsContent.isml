@@ -1,0 +1,30 @@
+<isinclude template="braintree/checkout/clientSideJsAndCss" />
+<div class="braintree-billing-payment-wrap"
+    data-billing-form-fields-names="${JSON.stringify(pdict.braintree.sfraBillingFormFieldsNames)}"
+>
+</div>
+<isloop items="${pdict.order.billing.payment.applicablePaymentMethods}" var="paymentOption" status="loopSate">
+    <isif condition="${paymentOption.ID === 'CREDIT_CARD'}">
+        <isinclude template="braintree/checkout/creditcardContent" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'PayPal'}">
+        <isinclude template="braintree/checkout/paypalContent" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'ApplePay'}">
+        <isinclude template="braintree/checkout/applepayContent" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'Venmo'}">
+        <isinclude template="braintree/checkout/venmoContent" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'GooglePay'}">
+        <isinclude template="braintree/checkout/googlepayContent" />
+    </isif>
+    <isif condition="${paymentOption.ID === 'SRC'}">
+        <isinclude template="braintree/checkout/srcContent" />
+    </isif>
+</isloop>
+<isif condition="${pdict.braintree.isActiveLpmPaymentOptions}">
+    <isloop items="${pdict.braintree.lpmPaymentOptions}" var="lpmPaymentOption" status="loopSate">
+        <isinclude template="braintree/checkout/lpmContent" />
+    </isloop>
+</isif>

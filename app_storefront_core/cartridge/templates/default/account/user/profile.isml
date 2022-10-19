@@ -1,0 +1,95 @@
+<!--- TEMPLATENAME: profile.isml --->
+<isscript>
+	var StringHelper = require('~/cartridge/scripts/util/StringHelpers');
+	var Site = require('dw/system/Site');
+	var skinTypes = JSON.parse(Site.getCurrent().getCustomPreferenceValue('skinTypeOption'));
+	var customerSkinType = null;
+	if(customer.profile.custom.skinType.value){
+		for(var skinType in skinTypes) {
+			if((customer.profile.custom.skinType.value) == (skinTypes[skinType].value)){
+				customerSkinType = skinTypes[skinType].label;
+			}
+		}
+	}
+</isscript>
+<div class="account-summary account-step account-step-summary" 
+	<isif condition="${session.custom.errorForm}"> style="display: none"</isif>>
+	<div class="compact-h1-group">
+		<h1 class="text-center">${Resource.msg('account.user.registration.editaccount','account',null)}</h1>
+		<p class="text-center">Manage your account information and password.</p>
+	</div>
+	<isif condition="${pdict.isProfileUpdated}">
+		<div class="alert alert-success text-center empty-state" role="alert" style="" tabindex="0" id="profile-update-notification">
+			<div class="alert-icon">
+				<span class="fa-layers fa-fw">
+					<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+					<i class="fal fa-check fa-inverse" data-fa-transform="shrink-3"></i>
+				</span>
+			</div>
+			<div class="alert-text text-success">${Resource.msg('account.user.profile.update','account',null)}</div>
+		</div>
+	</isif>
+	<div class="card data-group">
+		<div class="card-header data-heading clearfix">
+		    <h4 class="card-header-inner">${Resource.msg('account.user.profile.account','account',null)}</h4>
+		</div>
+		<div class="card-body">
+			<isif condition="${pdict.CurrentSession.customer.externallyAuthenticated}">
+				<div class="alert alert-default text-center">${Resource.msg('account.user.profile.fbnotification','account',null)}</div>
+			</isif>
+			<div class="card-text">
+			<dl class="row" role="presentation">
+				<dt class="col-4 text-md-right text-sm-left pr-0" role="presentation">${Resource.msg('account.user.profile.email','account',null)}</dt>
+				<dd class="col-md-8 col-sm-12 d-flex justify-content-between" role="presentation">
+					<isprint value="${customer.profile.email}" />
+					<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+						<a href="javascript:void(0);" class="inline-action edit-email account-switch-section" data-section="email">${Resource.msg('account.edit','account',null)}</a>
+					</isif>
+				</dd>
+				<isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+					<dt class="col-4 text-md-right text-sm-left pr-0" role="presentation">${Resource.msg('account.user.profile.password','account',null)}</dt>
+					<dd class="col-md-8 col-sm-12" role="presentation">
+						<a href="javascript:void(0);" class="edit-password account-switch-section" data-section="password">${Resource.msg('account.user.registration.logininfo','account',null)}</a>
+					</dd>
+				</isif>
+			</dl>
+			</div>
+		</div>
+	</div>						
+	<div class="card data-group">
+		<div class="card-header d-flex justify-content-between">
+		    <h4 class="card-header-inner">${Resource.msg('account.user.profile.info','account',null)}</h4>
+		    <a href="javascript:void(0);" class="panel-action edit-profile account-switch-section" data-section="profile">${Resource.msg('global.edit','locale',null)}</a>
+		</div>
+		<div class="card-body showEmpty">
+			<div class="card-text">
+			<dl class="row" role="presentation">
+				<dt class="col-4 text-md-right text-sm-left pr-0" role="presentation">${Resource.msg('account.user.profile.name','account',null)}</dt>
+				<dd class="col-md-8 col-sm-12" role="presentation">
+					<isprint value="${customer.profile.firstName + ' ' + customer.profile.lastName}" />
+				</dd>
+				<dt class="col-4 text-md-right text-sm-left pr-0" role="presentation">${Resource.msg('account.user.profile.skintype','account',null)}</dt>
+				<dd class="col-md-8 col-sm-12" role="presentation">
+					<isif condition="${!empty(customerSkinType)}">
+						<isprint value="${customerSkinType}" />
+					<iselse>
+						<span class="empty-state">
+							<a href="javascript:void(0)" class="account-switch-section account-switch-spec" data-section="profile">${Resource.msg('account.skintype.emptystate','account',null)}</a>
+						</span>
+					</isif> 
+				</dd>
+				<dt class="col-4 text-md-right text-sm-left pr-0" role="presentation">${Resource.msg('account.user.profile.birthday','account',null)}</dt>
+				<dd class="col-md-8 col-sm-12" role="presentation">
+					<isif condition="${!empty(customer.profile.birthday)}">
+						<isprint value="${customer.profile.birthday}" formatter="MMMMM d" timezone="utc"/>
+					<iselse>
+						<span class="empty-state">
+							<a href="javascript:void(0)" class="account-switch-section account-switch-spec" data-section="profile">${Resource.msg('account.birthday.emptystate','account',null)}</a>
+						</span>
+					</isif>
+				</dd>
+			</dl>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,8 @@
+<iscontent type="text/plain" charset="UTF-8" compact="false">The workflow with ID "${pdict.CurrentWorkflowScheduleInstance.custom.workflowScheduleDefinitionID}" finished with status "${pdict.Status}" on Site "${dw.system.Site.current.ID}".
+
+The components finished with the following statuses:
+
+<isloop var="workflowComponentInstance" items="${pdict.CurrentWorkflowScheduleInstance.getWorkflowComponentInstances()}">${workflowComponentInstance.custom.workflowComponentDefinitionName}: ${workflowComponentInstance.custom.status.value}<isif condition="${'notificationMode' in pdict.CurrentWorkflowScheduleInstance.custom && pdict.CurrentWorkflowScheduleInstance.custom.notificationMode === 'verbose'}">
+<isloop var="statusMessage" items="${workflowComponentInstance.custom.statusMessages}">${statusMessage}
+</isloop></isif>
+</isloop>

@@ -1,0 +1,25 @@
+<isif condition="${pdict.braintree && (pdict.braintree.payPalButtonConfig || pdict.braintree.paypalBillingAgreementFlow)}">
+    <div class="braintree-cart-paypal-buttons-wrap"
+        data-paypal-checkout-form-fields="${JSON.stringify(pdict.braintree.sfraCheckoutFormFields)}"
+    >
+        <isif condition="${pdict.braintree.paypalBillingAgreementFlow}">
+            <div class="braintree-cart-paypal-button braintree-static-paypal-button" 
+                data-checkout-from-cart-url="${pdict.braintree.checkoutFromCartUrl}"
+                data-paypal-account-data="${JSON.stringify(pdict.braintree.braintreePaypalAccountData)}"
+                data-paypal-placeorder-url="${pdict.braintree.payPalButtonConfig.redirectUrl}"
+            >
+                <img alt="Check out with PayPal" src="${pdict.braintree.staticImageLink}">
+            </div>
+            <iselse>
+                <div class="js_braintree_paypal_cart_button braitnree-cart-paypal-button"
+                    data-braintree-config="${JSON.stringify(pdict.braintree.payPalButtonConfig)}"></div>
+        </isif>
+        <div class="braintreePayPalLoader braintree-loader-container">
+            <i class="braintree-loader"></i>
+        </div>
+        <input type="hidden" name="braintreePaypalRiskData" />
+        <input type="hidden" name="braintreePaypalShippingAddress">
+
+        <input type="hidden" id="csrf_token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+    </div>
+</isif>

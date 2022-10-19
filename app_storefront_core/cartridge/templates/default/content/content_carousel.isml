@@ -1,0 +1,93 @@
+			<h2 class="flickity-product-carousel__title">
+	            <isif condition="${'carouselHeading' in pdict.Content.custom && !empty(pdict.Content.custom.carouselHeading)}">
+					<isprint value="${pdict.Content.custom.carouselHeading}" encoding="off"/>
+				<iselse>
+					${Resource.msg('blog.post.default-carousel-heading','content',null)}
+				</isif>
+			</h2>
+            <div class="carousel product-merchandise-carousel product-carousel-spec flickity-product-carousel" data-flickity='{ "cellAlign": "left","wrapAround":true ,"contain": true, "imagesLoaded": true, "percentPosition": false, "freeScroll": true, "pageDots": true, "groupCells": true, "arrowShape": { "x0": 10, "x1": 60, "y1": 50, "x2": 65, "y2": 45, "x3": 20 } }'>
+               <isloop items="${productList}" var="product" status="Status">
+                  <isif condition="${!product.isOnline()}">
+                     <iscontinue>
+                  </isif>
+                  <div class="carousel-cell carousel-product-list-item">
+                     <div class="product-list-unit">
+                        <isset name="Product" value="${product}" scope="pdict"/>
+                      	<a href="${URLUtils.http('Product-Show', 'pid', product.ID)}" style="display: block;">
+	                        <div class="product-img-block mr-0 ml-0">
+	                           <iscomment>If image couldn't be determined, display a "no image" medium.</iscomment>
+	                           <isif condition="${getImageUrl(product, 'medium')}">
+	                              <isset name="thumbnailUrl" value="${getImageUrl(product, 'medium')}" scope="page"/>
+	                              <isset name="thumbnailAlt" value="${product.name}" scope="page"/>
+	                              <isset name="thumbnailTitle" value="${product.name}" scope="page"/>
+	                              <iselse/>
+	                              <isset name="thumbnailUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+	                              <isset name="thumbnailAlt" value="${Product.name}" scope="page"/>
+	                              <isset name="thumbnailTitle" value="${Product.name}" scope="page"/>
+	                           </isif>
+	                           <img class="img-responsive product-img lazyImage img-fluid" data-src="${thumbnailUrl}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" alt="${thumbnailAlt}"/>
+	                        </div>
+	                        <div class="suggested-routine-content">
+		                        <h3 class="product-name">
+		                              <isprint value="${product.name}"/>
+		                           <isif condition="${pdict.Product.custom.secondaryName}">
+		                              <span class="product-subtitle">
+		                                 <isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/>
+		                              </span>
+		                           </isif>
+		                        </h3>
+	                        </div>
+                        </a>
+                        
+                        <iscomment> Product Rating </iscomment>
+                        <div class="carousel-rating-container-height">
+							<isinclude template="product/components/carousel_rating" />
+                        </div>
+                        
+                        <div class="price-block product-price">
+                           <isif condition = "${pdict.Product.ID != giftBuilderSku && pdict.Product.ID != 'EGIFTCARD'}">
+                              <isinclude template="product/components/valuepricing"/>
+                           	<iselse>
+		  			  			<span class ="product-price">
+		  			  			<span class= "price-sales">
+		  			  				&nbsp
+		  			  			</span>
+		  			  			</span>
+  			  				</iselse>
+                           </isif>
+                        </div>
+                        <isset name="PriceModel" value="${pdict.Product.getPriceModel()}" scope="page"/>
+                        <isscript>
+							let avm = pdict.Product.availabilityModel;
+							let available = avm.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK
+							&& avm.inventoryRecord != null
+							&& avm.inventoryRecord.stockLevel.available;                        
+                           var productPrice = 0;
+                           if(PriceModel) {
+                           		productPrice = PriceModel.getPrice();
+                           }
+                           
+                            // Added for mParticle and other analytics 
+                            var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+							var productInfo = mParticleUtil.getProductInfo(pdict.Product);
+							
+                        </isscript>
+                        <div class="product-cta">
+                           <isif condition = "${pdict.Product.ID == giftBuilderSku}">
+                              <a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}">
+                                 <button class="btn btn-outline-dark" tabindex="0" data-pid="
+                                 <isprint value="${product.ID}"/>
+                                 ">${Resource.msg('global.addtocart', 'locale', null)}</button>
+                              </a>
+                            <iselseif condition="${pdict.Product.ID == 'EGIFTCARD'}"> 	
+						 		<a href="/giftcertpurchase"><button class="btn btn-outline-dark" tabindex="0"  data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">${Resource.msg('global.addtocart', 'locale', null)}</button></a>					
+					 		<iselseif condition="${available == true}"> 					
+								<button class="btn btn-outline-dark carousel-add-to-cart" data-product-info="${JSON.stringify(productInfo)}" tabindex="0" data-price="<isprint value="${productPrice}"/>" data-pid="<isprint value="${product.ID}"/>" data-productname="<isprint value="${product.name}"/>">${Resource.msg('global.addtocart', 'locale', null)}</button>
+							<iselse>                              
+								<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}"><button class="btn btn-outline-dark" tabindex="0" data-pid="<isprint value="${product.ID}"/>"  data-productname="<isprint value="${product.name}"/>">${Resource.msg('global.outofstock', 'locale', null)}</button></a>					
+                           </isif>
+                        </div>
+                     </div>
+                  </div>
+               </isloop>
+            </div>

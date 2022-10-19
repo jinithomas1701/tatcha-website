@@ -1,0 +1,193 @@
+/**
+* Export Products
+*/
+importPackage( dw.system );
+importPackage( dw.io );
+importPackage( dw.util );
+importPackage( dw.catalog );
+importPackage( dw.customer );
+importPackage( dw.object );
+importScript("Selligent/selligentExportBase.ds");
+importScript("Selligent/selligentJsonSerializer.ds");
+
+/**
+* Export products from DW
+*
+* @param {String} Export file name
+* @param {Date} Last export date
+* @returns a boolean if the file has been created 
+*/
+function exportProducts(exportFileName : String, lastExportDate : Date) :Boolean
+{
+	var products : SeekableIterator;
+	var writer : FileWriter;
+	try
+	{
+		var fielsToExport : Array = getFieldsToExport("product");
+		var customAttributes : Array = getCustomAttributes();
+		var customID : String = getCustomObjectID("product");
+		var range : Number = getRange("product");
+		var countRange : Number = 0;
+		var pictureType : String = getPictureType();
+		var currentFileName : String = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+		var exportFile = new File(currentFileName); 
+		var fileCreated : Boolean = false;
+		var counter : Number = 0;
+		var product : Product;
+		var json : String = "";
+		var endOfExportFile : File;
+		
+		if (customID === "")
+		{
+			products = dw.catalog.ProductMgr.queryAllSiteProducts();
+			while (products.hasNext()) 
+			{
+				product = products.next();
+				if(product.creationDate >= lastExportDate || product.lastModified >= lastExportDate)
+				{ 
+					counter++;
+					if(!fileCreated)
+					{
+						writer = new FileWriter(exportFile, false);
+						fileCreated = true;
+					}
+					json = exportProduct(product, fielsToExport, customAttributes);
+					writer.writeLine(json);
+					if(counter >= range)
+					{
+						writer.close();
+						currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+						exportFile.renameTo(new File(currentFileName));
+						countRange++;
+						currentFileName = File.IMPEX + "/Selligent/" + "tmp" + exportFileName + countRange.toFixed() + ".json";
+						exportFile = new File(currentFileName); 
+						fileCreated = false;
+						counter = 0;
+					}
+				}				
+			}	
+		}
+		else
+		{
+			product = dw.catalog.ProductMgr.getProduct(customID);
+			if (product != null)
+			{
+				counter++;
+				if(!fileCreated)
+				{
+					writer = new FileWriter(exportFile, false);
+					fileCreated = true;
+				}
+				json = exportProduct(product, fielsToExport, customAttributes);
+				writer.writeLine(json);
+			}
+		}
+		
+		if(counter > 0)
+		{
+			writer.close();
+			currentFileName = File.IMPEX + "/Selligent/" + exportFileName + countRange.toFixed() + ".json";
+			exportFile.renameTo(new File(currentFileName));
+		}
+		endOfExportFile = new File(File.IMPEX + "/Selligent/productEndOfExport.txt");
+		writer = new FileWriter(endOfExportFile, false);
+		return fileCreated;
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to export product: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/product_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+	finally 
+	{
+		if (products) products.close();
+		if (writer) writer.close();
+	}
+}
+
+/**
+* Export a product 
+*
+* @param {Product} The product
+* @param {Array} The list of properties to export
+* @param {Array} An array with customeAttributes of the product
+* @returns the product in json.   
+*/
+function exportProduct(product : Product, fieldsToExport : Array, customAttributes : Array) : String
+{
+	var attributes : Iterator;
+	try
+	{
+		var productData = exportObject(product, fieldsToExport);
+		if(customAttributes != null && customAttributes.length > 0)
+		{
+			var index : Number = 0;
+			attributes = product.variationModel.productVariationAttributes.iterator();
+			while(attributes.hasNext())
+			{
+				var attribute : ProductVariationAttribute = attributes.next();
+				if(attribute != null)
+				{
+					for each(var customAttribute : String in customAttributes)
+					{
+						if(attribute.getAttributeID() == customAttribute && product.variationModel.getSelectedValue(attribute) != null)
+						{
+							if(productData.CustomAttributes == null)
+								productData.CustomAttributes = new Array();
+							productData.CustomAttributes[index] = customAttribute;
+							index++;
+							productData.CustomAttributes[index] = product.variationModel.getSelectedValue(attribute).displayValue;
+							index++;
+						}
+					}
+				}
+			}
+		}
+		return serialize(productData);
+	}
+	catch(e) 
+	{
+		var exportErrorFile : File;
+		var writerError : FileWriter;
+		Logger.error("Unable to export product: "+e.message);
+		exportErrorFile = new File(File.IMPEX + "/log/product_exportError.json"); 			 
+		writerError = new FileWriter(exportErrorFile, false);
+		writerError.write(e.message);
+		writerError.close();
+		throw e;
+	}
+}
+
+
+/**
+* Returns the custom attribues list for a product to export from the config file
+*
+* @returns an array with custom attribues
+*/
+function getCustomAttributes() : Array
+{
+	var configFile : File = new File(File.IMPEX + "/Selligent/product_config.txt");
+	var customAttributes : ArrayList = null;
+	if (configFile.exists())
+	{
+		var reader : FileReader = new FileReader(configFile);
+		var lines : Array = reader.readLines();
+		var line: String = null;
+		
+		reader.close();		
+		for each(line in lines)
+		{
+			if(line.indexOf("CustomAttributes=") == 0)
+				customAttributes = line.replace("CustomAttributes=","").split(",");
+		} 
+		
+	}
+	return customAttributes;
+}
+

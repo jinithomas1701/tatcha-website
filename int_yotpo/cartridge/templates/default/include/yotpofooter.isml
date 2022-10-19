@@ -1,0 +1,4 @@
+<isset name="site" value="${dw.system.Site.getCurrent()}" scope="page" />
+<isif condition="${site.preferences.custom.yotpoCartridgeEnabled && site.preferences.custom.yotpoSwellLoyaltyEnabled}">
+    <isinclude url="${URLUtils.url('Yotpo-IncludeSwellTracking')}"/>
+</isif>

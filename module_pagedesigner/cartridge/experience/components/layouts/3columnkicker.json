@@ -1,0 +1,106 @@
+{
+  "name": "Three Card Panel",
+  "group": "layouts",
+  "attribute_definition_groups": [
+      {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margin Options for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": [
+      {
+        "id":"column1",
+        "name":"Column 1",
+        "max_components":1,
+        "component_type_exclusions": [
+	      { "type_id": "assets.productcarouseltile" },
+	      { "type_id": "assets.contentheader" },
+	      { "type_id": "assets.homepagemarquee" },
+	      { "type_id": "assets.htmlblock" },
+	      { "type_id": "assets.productcarouseltile" },
+	      { "type_id": "assets.sectionheadline" },
+	      { "type_id": "assets.shoplinks" },
+	      { "type_id": "assets.simpleproductcarousel" },	
+	      { "type_id": "assets.contentpagemarqueeblock" },	            
+	      { "type_id": "layouts.productcarousel" },
+	      { "type_id": "einstein.noanchorgrid" },
+	      { "type_id": "einstein.categoryrecommendation" },
+	      { "type_id": "einstein.noanchorrecommendation" },
+	      { "type_id": "einstein.productrecommendation" }
+        ]
+      },
+      {
+        "id":"column2",
+        "name":"Column 2",
+        "max_components":1,
+        "component_type_exclusions": [
+	      { "type_id": "assets.productcarouseltile" },
+	      { "type_id": "assets.contentheader" },
+	      { "type_id": "assets.homepagemarquee" },
+	      { "type_id": "assets.htmlblock" },
+	      { "type_id": "assets.productcarouseltile" },
+	      { "type_id": "assets.sectionheadline" },
+	      { "type_id": "assets.shoplinks" },
+	      { "type_id": "assets.simpleproductcarousel" },	
+	      { "type_id": "assets.contentpagemarqueeblock" },	      
+	      { "type_id": "layouts.productcarousel" },
+	      { "type_id": "einstein.noanchorgrid" },
+	      { "type_id": "einstein.categoryrecommendation" },
+	      { "type_id": "einstein.noanchorrecommendation" },
+	      { "type_id": "einstein.productrecommendation" }
+        ]
+      },
+      {
+        "id":"column3",
+        "name":"Column 3",
+        "max_components":1,
+        "component_type_exclusions": [
+	      { "type_id": "assets.productcarouseltile" },
+	      { "type_id": "assets.contentheader" },
+	      { "type_id": "assets.homepagemarquee" },
+	      { "type_id": "assets.htmlblock" },
+	      { "type_id": "assets.productcarouseltile" },
+	      { "type_id": "assets.sectionheadline" },
+	      { "type_id": "assets.shoplinks" },
+	      { "type_id": "assets.simpleproductcarousel" },
+	      { "type_id": "assets.contentpagemarqueeblock" },	      	      
+	      { "type_id": "layouts.productcarousel" },
+	      { "type_id": "einstein.noanchorgrid" },
+	      { "type_id": "einstein.categoryrecommendation" },
+	      { "type_id": "einstein.noanchorrecommendation" },
+	      { "type_id": "einstein.productrecommendation" }
+        ]
+      }
+  ]
+}

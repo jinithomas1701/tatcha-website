@@ -1,0 +1,26 @@
+<isinclude template="util/modulesafterpay.isml"/>
+<div class="row braintree-minicart-buttons-wrap minicart-payment-buttons"
+     data-checkout-form-fields="${JSON.stringify(pdict.braintree.sfraCheckoutFormFields)}"
+     data-checkout-from-cart-url="${pdict.braintree.checkoutFromCartUrl}"
+     data-checkout-placeorder-url="${pdict.braintree.placeOrdeUrl}">
+
+        <isif condition="${!pdict.hasOnlyGiftCertificate && !pdict.hasRefillProducts}">
+            <div class="minicart-payment-btn-afterpay minicart-payment-btn-common ${pdict.afterPayEligible == true? '': 'd-none'}">
+                 <iscomment> Afterpay Express</iscomment>
+                <isinclude template="afterpay/afterpayExpressButtonMiniBag" />
+            </div>
+        </isif>
+        <div class="minicart-payment-btn-paypal minicart-payment-btn-common">
+            <div class="braintree-minicart-paypal-buttons-wrap ">
+                <div class="braintree-paypal-buttons-wrap">
+                <isinclude template="braintree/cart/paypalButton"/>
+                </div>
+            </div>
+        </div>
+        <isinclude template="braintree/cart/applepayButton"/>
+    <input type="hidden" id="csrf_token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+</div>
+<iscomment>Afterpay message</iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled') && dw.system.Site.getCurrent().getCustomPreferenceValue('enableAfterpay')}">
+	<isafterpaythreshold totalprice="${pdict&&pdict.totals ? pdict.totals.subTotalIncludingOrderDiscount.replace(/\$|,/g, '').trim() : ''}" classname="minicart-afterpay-message"/>
+</isif>

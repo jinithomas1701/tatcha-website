@@ -1,0 +1,325 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	var stepCount = 0;
+    var pearlSKU = 'MED-PEARL-EYE';
+    var Tatcha = require('~/cartridge/scripts/util/Tatcha.ds');
+</isscript>
+<isloop items="${pdict.rec_products}" var="rec" status="resStat">
+
+	<iscomment>Minimalist RDK only</iscomment>
+    <isscript>
+        var filterName = '';
+        if(!empty(rec.filterName)){ 
+        	filterName = rec.filterName.replace(/\s/g, ""); 
+        }
+        
+        if(filterName.indexOf('+') >= 0) {
+        	filterName = filterName.replace(/\+/g, "");
+        }
+        var stepTarget = '#step'+pdict.usage_time+resStat.index;
+        var stepName = 'step'+pdict.usage_time+resStat.index;
+        
+        // Added for mParticle and other analytics 
+		var productInfo = {};
+		
+		productInfo = { 
+			sku: rec.ID,
+			productname: rec.productDetails.name,			
+			masterSku: rec.masterID,
+			variant: rec.variant,
+			category: rec.primaryCategory
+		};
+       
+    </isscript>
+    
+        <isif condition="${rec.name === 'RDK' && rec.display === true}">
+        <div class="results-panel panel panel-callout rec-prd-list-item rdk-item product-list-col" data-index="${stepCount.toFixed()}" data-itemid="${rec.ID}" data-id="${rec.ID}" data-prd-name="${rec.name}" data-display="${rec.display}" data-type="${rec.type}" data-filter="${filterName}" data-time="${rec.usageTime}" data-selected="${rec.selected}" data-url="${URLUtils.https('Product-Show', 'pid', rec.ID)}" data-instock="${rec.productDetails? rec.productDetails.inStock : ''}">
+            <button type="button" class="product-hide" data-id="${rec.ID}"><i class="fal fa-times" data-pid="${rec.ID}"></i></button>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="product-img-col">
+                        <img class="product-img img-fluid" alt="Product Tile Image" src="${rec.productDetails.tileImage}" data-ppage-image="${rec.productDetails.tileImage}">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="product-info-col">
+                        <h2 class="step-name">Get Started with Tatcha</h2>
+                        <h3 class="product-name" data-product-name="${rec.productDetails.name}">
+							<isprint value="${rec.productDetails.name}" />
+							<span class="product-subtitle">
+								<isprint value="${rec.productDetails.secondaryName}" />
+							</span>
+						</h3>
+                        <p class="product-description">
+                            <isprint value="${StringUtils.pad(rec.productDetails.description,250)}" />
+                        </p>
+                        <div class="cta-row">
+                            <a class="btn btn-default btn-round btn-sm gtm_ritual_builder_more_info more-info" aria-label="More information about ${rec.productDetails.name}" data-pid="${rec.ID}" href="${URLUtils.url('Product-Show', 'pid', rec.ID, 'referrer', 'ritualfinder')}">More Info</a>
+                        </div>
+
+                        <div class="product-price">
+                            <isprint value="${dw.value.Money(rec.productDetails.price, session.getCurrency().getCurrencyCode())}" formatter="*#0" />
+                            <isif condition="${rec.productDetails.specialPrice}">
+                                <span class="product-price-value">($<isprint value="${rec.productDetails.specialPrice}" /> value)</span>
+                            </isif>
+                        </div>
+
+                        <div class="cta-row clearfix">
+                            <div class="add-to-bag-col">
+                                <isif condition="${rec.productDetails.inStock == true}">
+                                	<isscript>
+                                       productInfo.price = rec.productDetails.price;
+                                    </isscript>
+                                	
+                                    <isif condition="${rec.ID != pearlSKU}">
+                                        <isscript>
+                                        var price = (rec.productDetails.specialPrice) ? rec.productDetails.specialPrice : rec.productDetails.price;
+                                        </isscript>
+                                        <a class="btn btn-primary btn-round btn-add-to-bag ritual-add-to-cart mparticle-product" data-product-info="${JSON.stringify(productInfo)}" aria-label="Add to Bag - Pearl" href="javascript:;" 
+                                            data-pid="${rec.ID}" data-productname="${rec.productDetails.name}" data-price="${price.value}">Add to Bag</a>
+                                    <iselse/>
+                                        <a class="btn btn-primary btn-round btn-add-to-bag product-quick-view mparticle-product" data-product-info="${JSON.stringify(productInfo)}" aria-label="Add to bag" href="javascript:;" data-url="${rec.productDetails.url}">Add to Bag</a>
+                                    </isif>
+                                <iselse>
+                                    <a class="btn btn-default btn-round btn-add-to-bag" aria-label="Out of stock" href="${URLUtils.url('Product-Show', 'pid', rec.ID, 'referrer', 'ritualfinder')}" data-url="${rec.productDetails.url}">Out of stock</a>                        
+                                </isif>                             
+                            </div>
+                            <div class="wishlist-col wishlist-btn-container">
+                                <isif condition="${session.customer.authenticated}">
+                                    <isscript>
+                                        var isWishListItem = Tatcha.isWishlistItem(rec.ID);
+                                    </isscript>
+                                    <button aria-label="Add product ${rec.productDetails.name} to wishlist" data-pid="${rec.ID}" <isif condition="${isWishListItem == true}">style="display: none"</isif>
+                                        class="no-scroll btn btn-default btn-round btn-wishlist wishlist-off wishlist-additem" 
+                                        data-url="${URLUtils.https('Wishlist-AddItemJson', 'pid', rec.ID)}"
+                                        data-toggle="tooltip" data-placement="top" data-original-title="Add to Wishlist">
+                                        <span class="fa-layers fa-fw fa-sm">
+                                            <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                            <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+                                        </span>
+                                    </button>
+                                    <button aria-label="Remove product ${rec.productDetails.name} from wishlist" data-pid="${rec.ID}" <isif condition="${isWishListItem != true}">style="display: none"</isif>
+                                        class="no-scroll btn btn-default btn-round btn-wishlist wishlist-on wishlist-active wishlist-removeitem" 
+                                        data-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', rec.ID)}"
+                                        data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from Wishlist">
+                                        <span class="fa-layers fa-fw fa-sm">
+                                            <i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                            <i class="fa fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                        </span>
+                                    </button>
+                                <iselse/>
+                                    <button aria-label="Please login to add product to wishlist" data-pid="${rec.ID}" data-toggle="modal" data-target="#loginModal"
+                                        class="wishlist-login-btn no-scroll btn btn-default btn-round btn-wishlist wishlist-off">
+                                        <span class="fa-layers fa-fw fa-sm">
+                                            <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                            <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                        </span>
+                                    </button>
+                                </isif>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </isif>
+    
+   <iscomment> Product Results</iscomment>
+   <isif condition="${rec.name !== 'RDK'}">
+     <isif condition="${rec.display === true}">
+     	<isscript>
+        	stepCount++;
+        </isscript>
+        <isset name="displayProduct" value="style='display:block;'" scope="page" />
+      <iselse>
+      	<isset name="displayProduct" value="style='display:none;'" scope="page" />
+     </isif>
+
+     <isif condition="${((stepCount%2) == 0)}">
+     	<div class="results-panel rec-prd-list-item results-panel-even panel product-list-col" data-index="${stepCount.toFixed()}" <isprint encoding="off" value="${displayProduct}" />data-prd-name="${rec.name}" data-itemid="${rec.ID}" data-id="${rec.ID}" data-display="${rec.display}" data-type="${rec.type}" data-filter="${filterName}" data-selected="${rec.selected}" data-url="${URLUtils.https('Product-Show', 'pid', rec.ID)}" data-time="${rec.usageTime}" data-instock="${rec.productDetails? rec.productDetails.inStock : ''}">     		
+      <iselse>
+        <div class="results-panel rec-prd-list-item results-panel-odd panel product-list-col" data-index="${stepCount.toFixed()}" <isprint encoding="off" value="${displayProduct}" />data-prd-name="${rec.name}" data-itemid="${rec.ID}" data-id="${rec.ID}" data-display="${rec.display}" data-type="${rec.type}" data-filter="${filterName}" data-selected="${rec.selected}" data-url="${URLUtils.https('Product-Show', 'pid', rec.ID)}" data-time="${rec.usageTime}" data-instock="${rec.productDetails? rec.productDetails.inStock: ''}">        	
+     </isif>
+        <button type="button" class="product-hide gtm_ritual_finder_prd_remove focus-outline-purple" aria-label="remove product" data-pid="${rec.ID}"><i class="fal fa-times gtm_ritual_finder_prd_remove"></i></button>
+        
+        <div class="row product-row product-row-trigger collapsed" style="cursor: pointer;" data-toggle="collapse" data-target='<isprint encoding="off" value="${stepTarget}" />' aria-expanded="false" aria-controls='<isprint encoding="off" value="${stepName}" />'>
+            <div class="col-lg-6 <isif condition=" ${!(stepCount % 2)} ">order-lg-6</isif> product-img-col">
+                <img class="product-img-lifestyle img-fluid lazyImage" alt="Product Image" data-src="${rec.productDetails.image}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" data-ppage-image="${rec.productDetails.tileImage}">
+                <div class="product-label-list">
+                    <isif condition="${rec.label.length > 0}">
+                        <isloop items="${rec.label}" var="label">
+                            <span class="product-label"><isprint value="${label}" /></span>
+                        </isloop>
+                    </isif>
+                </div>
+            </div>
+            <div class="col-lg-6 <isif condition=" ${!(stepCount % 2)} ">order-lg-1</isif> product-info-col">
+            	<isif condition="${rec.selected}">
+                    <span class="product-selected">My Treasure</span>
+                </isif>
+                <div class="product-info">
+                    <div class="step-info clearfix">
+                        <h2 class="step-block">
+							<span class="step-number"><isprint value="${stepCount}" style="INTEGER"/></span>
+							<span class="step-action"><isprint value="${rec.name}" /></span>
+						</h2>
+                    </div>
+                    <div class="product-name-row">
+                        <h3 class="product-name" data-product-name="${rec.productDetails.name}">
+							<isprint value="${rec.productDetails.name}" />
+						</h3>
+                        <i class="fa fa-chevron-circle-down caret-rotator caret-icon"></i>
+                    </div>
+                </div>
+
+                <div class="product-info product-info-extended d-none d-lg-block">
+                    <p class="product-description">
+                        <isprint value="${StringUtils.pad(rec.productDetails.description,250)}" />
+                    </p>
+                    <div class="cta-row">
+                        <a class="btn btn-default btn-round btn-sm gtm_ritual_builder_more_info more-info focus-outline-purple" aria-label="More information about ${rec.productDetails.name}"  data-pid="${rec.ID}" href="${URLUtils.url('Product-Show', 'pid', rec.ID, 'referrer', 'ritualfinder')}">More Info</a>
+                    </div>
+
+                    <div class="product-price">
+                        <isprint value="${dw.value.Money(rec.productDetails.price, session.getCurrency().getCurrencyCode())}" formatter="*#0" />
+
+                        <isif condition="${!empty(rec.productDetails.specialPrice)}">
+                            <span class="product-price-value">($<isprint value="${rec.productDetails.specialPrice}" /> value)</span>
+                        </isif>
+                    </div>
+
+                    <div class="cta-row clearfix">
+                        <div class="add-to-bag-col">
+                            <isif condition="${rec.productDetails.inStock == true}">
+                                <isscript>
+                                   productInfo.price = rec.productDetails.price;
+                                </isscript>
+                                <isif condition="${rec.ID != pearlSKU}">
+                                    <isscript>
+                                    var price = (rec.productDetails.specialPrice) ? rec.productDetails.specialPrice : rec.productDetails.price;
+                                    </isscript>
+                                    <a class="btn btn-primary btn-round btn-add-to-bag ritual-add-to-cart focus-outline-purple mparticle-product" data-product-info="${JSON.stringify(productInfo)}" aria-label="Add to Bag Desk - Pearl " href="javascript:;" 
+                                        data-pid="${rec.ID}" data-productname="${rec.productDetails.name}" data-price="${price.value}">Add to Bag</a>
+                                <iselse/>
+                                    <a class="btn btn-primary btn-round btn-add-to-bag product-quick-view focus-outline-purple mparticle-product" data-product-info="${JSON.stringify(productInfo)}" aria-label="Add to Bag - Desk" href="javascript:;" data-url="${rec.productDetails.url}">Add to Bag</a>
+                                </isif>
+                            <iselse>
+                                <a class="btn btn-default btn-round btn-add-to-bag focus-outline-purple" aria-label="Out of Stock - Desk" href="${URLUtils.url('Product-Show', 'pid', rec.ID, 'referrer', 'ritualfinder')}" data-url="${URLUtils.url('Product-Show', 'pid', rec.ID, 'referrer', 'ritualfinder')}">Out of Stock</a>
+                            </isif>
+                        </div>
+                        <div class="wishlist-col wishlist-btn-container">
+                            <isif condition="${session.customer.authenticated}">
+                                <isscript>
+                                    var isWishListItem = Tatcha.isWishlistItem(rec.ID);
+                                </isscript>
+                                <button aria-label="Add product ${rec.productDetails.name} to wishlist" data-pid="${rec.ID}" <isif condition="${isWishListItem == true}">style="display: none"</isif>
+                                    class="no-scroll btn btn-default btn-round btn-wishlist wishlist-off wishlist-additem focus-outline-purple" 
+                                    data-url="${URLUtils.https('Wishlist-AddItemJson', 'pid', rec.ID)}"
+                                    data-toggle="tooltip" data-placement="top" data-original-title="Add to Wishlist">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                        <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                        <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+                                    </span>
+                                </button>
+                                <button aria-label="Remove product ${rec.productDetails.name} from wishlist" data-pid="${rec.ID}" <isif condition="${isWishListItem != true}">style="display: none"</isif>
+                                    class="no-scroll btn btn-default btn-round btn-wishlist wishlist-on wishlist-active wishlist-removeitem focus-outline-purple" 
+                                    data-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', rec.ID)}"
+                                    data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from Wishlist">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                        <i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                        <i class="fa fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                    </span>
+                                </button>
+                            <iselse/>
+                                <button aria-label="Please login to add product to wishlist" data-pid="${rec.ID}" data-toggle="modal" data-target="#loginModal"
+                                    class="wishlist-login-btn no-scroll btn btn-default btn-round btn-wishlist wishlist-off focus-outline-purple">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                        <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                        <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                    </span>
+                                </button>
+                            </isif>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row product-row collapse d-lg-none d-xl-none" id='<isprint encoding="off" value="${stepName}" />'>
+            <div class="col-sm-12">
+                <div class="product-info product-info-extended">
+                    <p class="product-description">
+                        <isprint value="${StringUtils.pad(rec.productDetails.description,250)}" />
+                    </p>
+                    <div class="cta-row">
+                        <a class="btn btn-default btn-round btn-sm gtm_ritual_builder_more_info more-info" aria-label="More information about ${rec.productDetails.name}"  data-pid="${rec.ID}" href="${URLUtils.url('Product-Show', 'pid', rec.ID, 'referrer', 'ritualfinder')}">More Info</a>
+                    </div>
+
+                    <div class="product-price">
+                        <isprint value="${dw.value.Money(rec.productDetails.price, session.getCurrency().getCurrencyCode())}" formatter="*#0" />
+                        <isif condition="${!empty(rec.productDetails.specialPrice)}">
+                            <span class="product-price-value">($<isprint value="${rec.productDetails.specialPrice}" /> value)</span>
+                        </isif>
+                    </div>
+
+                    <div class="cta-row clearfix">
+                        <div class="add-to-bag-col">
+                            <isscript>
+                               productInfo.price = rec.productDetails.price;
+                            </isscript>
+                            <isif condition="${rec.productDetails.inStock == true}">
+                            <isif condition="${rec.ID != pearlSKU}">
+                                    <isscript>
+                                    var price = (rec.productDetails.specialPrice) ? rec.productDetails.specialPrice : rec.productDetails.price;
+                                    </isscript>
+                                    <a class="btn btn-primary btn-round btn-add-to-bag ritual-add-to-cart" data-product-info="${JSON.stringify(productInfo)}" aria-label="Add to bag - Pearl Mob" href="javascript:;" 
+                                        data-pid="${rec.ID}" data-productname="${rec.productDetails.name}" data-price="${price.value}">Add to Bag</a>
+                                <iselse/>
+                                    <a class="btn btn-primary btn-round btn-add-to-bag product-quick-view" data-product-info="${JSON.stringify(productInfo)}" aria-label="Add to Bag" href="javascript:;" data-url="${rec.productDetails.url}">Add to Bag</a>
+                                </isif>
+                            <iselse>
+                            <a class="btn btn-default btn-round btn-add-to-bag" aria-label="Out of Stock - Mob" href="${URLUtils.url('Product-Show', 'pid', rec.ID, 'referrer', 'ritualfinder')}" data-url="${rec.productDetails.url}">Out of stock</a>                        
+                            </isif> 
+                        </div>
+                        <div class="wishlist-col wishlist-btn-container">
+                            <isif condition="${session.customer.authenticated}">
+                                <isscript>
+                                    var isWishListItem = Tatcha.isWishlistItem(rec.ID);
+                                </isscript>
+                                <button aria-label="Add product ${rec.productDetails.name} to wishlist" data-pid="${rec.ID}" <isif condition="${isWishListItem == true}">style="display: none"</isif>
+                                    class="no-scroll btn btn-default btn-round btn-wishlist wishlist-off wishlist-additem" 
+                                    data-url="${URLUtils.https('Wishlist-AddItemJson', 'pid', rec.ID)}"
+                                    data-toggle="tooltip" data-placement="top" data-original-title="Add to Wishlist">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                        <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                        <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+                                    </span>
+                                </button>
+                                <button aria-label="Remove product ${rec.productDetails.name} from wishlist" data-pid="${rec.ID}" <isif condition="${isWishListItem != true}">style="display: none"</isif>
+                                    class="no-scroll btn btn-default btn-round btn-wishlist wishlist-on wishlist-active wishlist-removeitem" 
+                                    data-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', rec.ID)}"
+                                    data-toggle="tooltip" data-placement="top" title="" data-original-title="Remove from Wishlist">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                        <i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                        <i class="fa fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                    </span>
+                                </button>
+                            <iselse/>
+                                <button aria-label="Please login to add product to wishlist" data-pid="${rec.ID}" data-toggle="modal" data-target="#loginModal"
+                                    class="wishlist-login-btn no-scroll btn btn-default btn-round btn-wishlist wishlist-off">
+                                    <span class="fa-layers fa-fw fa-sm">
+                                        <i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+                                        <i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-5"></i>
+                                    </span>
+                                </button>
+                            </isif>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </isif>   
+
+</isloop>

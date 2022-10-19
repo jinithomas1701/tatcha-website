@@ -1,0 +1,53 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+	<iscomment> Shipping Summary </iscomment>
+	<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true)}">
+		<div class="contact-info-submitted"> 
+		
+			<isif condition="${pdict.p_checkoutobj.orderType === 'giftcard' && pdict.p_checkoutobj.checkoutState === 'review'}">
+				<div class="contact-email" style="margin-bottom:1rem;"><isprint value="${pdict.p_checkoutobj.customerInfo.customerEmail}" /></div>
+			</isif>
+			
+			<isif condition="${pdict.p_checkoutobj.orderType !== 'giftcard'}">
+				<div class="contact-email"><isprint value="${pdict.p_checkoutobj.customerInfo.customerEmail}" /></div>
+			</isif>
+			
+			<isif condition="${pdict.p_checkoutobj.orderType !== 'giftcard'}">
+				<div class="row no-gutters space-around my-3">
+					<div class="col-md-6">
+						<div class="shipping-title">Shipping information</div>
+						<div><isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.firstName}" /> <isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.lastName}" /></div>
+						<div><isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address1}" /></div>
+						<isif condition="${!empty(pdict.p_checkoutobj.shippingInfo.shippingAddress.address2)}"> 
+			                <div><isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.address2}" /></div>
+			            </isif> 
+			            <div><isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.city}" />, <isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.state}" />, <isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.postal}" /></div>
+			            <div><isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.country}" /></div>
+			            <isif condition="${!empty(pdict.p_checkoutobj.shippingInfo.shippingAddress.phone) && (pdict.p_checkoutobj.shippingInfo.shippingAddress.phone!='0000000000')}">
+			            	<div><isprint value="${pdict.p_checkoutobj.shippingInfo.shippingAddress.phone}" /></div>
+			             </isif>
+					</div>
+					<div class="col-md-6 mt-3 mt-md-0">
+						<div class="delivery-title">Delivery and gift</div>
+						<div>
+							<isprint value="${pdict.p_checkoutobj.shippingInfo.shippingMethodName}" /> -
+							<isif condition="${!empty(pdict.p_checkoutobj.shippingInfo.shippingPrice)}"> 
+								$<isprint value="${pdict.p_checkoutobj.shippingInfo.shippingPrice}" />
+							<iselse>
+								Free
+							</isif>
+						</div>
+						<isif condition="${!empty(pdict.p_checkoutobj.shippingInfo.estimatedDate) && dw.system.Site.getCurrent().preferences.custom.showShippingEstimate}"> 
+							<div>Estimated Arrival: <isprint value="${pdict.p_checkoutobj.shippingInfo.estimatedDate}" formatter="MM/dd" timezone="utc"/>	</div>					
+						</isif>
+						
+						<isif condition="${!empty(pdict.p_checkoutobj.shippingInfo.giftMessage)}"> 
+			            <div class="mt-2">
+			            	<span>Gift message: </span>
+			            	<i><isprint value="${pdict.p_checkoutobj.shippingInfo.giftMessage}" /></i>
+			            </div>
+			            </isif>
+					</div>
+				</div>
+			</isif>
+		</div>		
+	</isif>	

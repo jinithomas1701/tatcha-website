@@ -1,0 +1,135 @@
+{
+   "VERSION": "2.3.0",
+   "PRODUCTS": [
+      {
+         "Name": "Affiliate ASSISTANT",
+         "ID": "42",
+         "Code": "AFLC"
+      },
+      {
+         "Name": "BlogLINK",
+         "ID": "3",
+         "Code": "DWWPI"
+      },
+      {
+         "Name": "Click Checkout cartridge",
+         "ID": "43",
+         "Code": "OCKC"
+      },
+      {
+         "Name": "Customer BEHAVIOR TRACKER",
+         "ID": "4",
+         "Code": "GTM"
+      },
+      {
+         "Name": "eGift Card",
+         "ID": "52",
+         "Code": "EGC"
+      },
+      {
+         "Name": "FastOMS",
+         "ID": "39",
+         "Code": "LOMS"
+      },
+      {
+         "Name": "Gift configurator",
+         "ID": "51",
+         "Code": "DWGC"
+      },
+      {
+         "Name": "Guided Product Finder",
+         "ID": "50",
+         "Code": "DWQZA"
+      },
+      {
+         "Name": "Integrator for Mercado Pago",
+         "ID": "45",
+         "Code": "DWIMP"
+      },
+      {
+         "Name": "Integrator for Webpay",
+         "ID": "44",
+         "Code": "DWIWPY"
+      },
+      {
+         "Name": "Performance Monitoring Tool",
+         "ID": "54",
+         "Code": "PMT"
+      },
+      {
+         "Name": "POINTS TO CART",
+         "ID": "38",
+         "Code": "LOYCA"
+      },
+      {
+         "Name": "Product Feed for Facebook",
+         "ID": "55",
+         "Code": "PFFF"
+      },
+      {
+         "Name": "Product Feed for Google",
+         "ID": "56",
+         "Code": "PFFG"
+      },
+      {
+         "Name": "One Page CHECKOUT",
+         "ID": "5",
+         "Code": "DWOPC"
+      },
+      {
+         "Name": "OSF CartUP",
+         "ID": "6",
+         "Code": "CAB"
+      },
+      {
+         "Name": "OSF Integrator for CANADA POST",
+         "ID": "7",
+         "Code": "DWCP"
+      },
+      {
+         "Name": "OSF LOCALIZATION TOOL",
+         "ID": "8",
+         "Code": "DWLT"
+      },
+      {
+         "Name": "RCI OMS Pro",
+         "ID": "46",
+         "Code": "RCIOMS"
+      },
+      {
+         "Name": "Smart ORDER REFILL",
+         "ID": "9",
+         "Code": "DWORC"
+      },
+      {
+         "Name": "Store Locator",
+         "ID": "47",
+         "Code": "DWSL"
+      },
+      {
+         "Name": "OSF UnifyCOMMERCE Data Integration Connector",
+         "ID": "36",
+         "Code": "UCDI"
+      },
+      {
+         "Name": "OSF UnifyCOMMERCE Order on Behalf",
+         "ID": "41",
+         "Code": "UCSS"
+      },
+      {
+         "Name": "OSF UnifyCOMMERCE Community Integratio",
+         "ID": "32",
+         "Code": "UCCI"
+      },
+      {
+         "Name": "OSF UnifyCOMMERCE Marketing Cloud Connector",
+         "ID": "18",
+         "Code": "UCMC"
+      },
+      {
+         "Name": "VideoLIB",
+         "ID": "49",
+         "Code": "VLIB"
+      }
+   ]
+}

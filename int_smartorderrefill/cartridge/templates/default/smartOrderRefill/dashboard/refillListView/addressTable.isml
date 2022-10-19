@@ -1,0 +1,31 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="order-section" >
+    <div class="content-section full-width"> 
+        <table class="table table-borderless">
+            <tr><th class="data-label">Ship To</th>
+            <td> <p>
+            <isprint value="${addressObject.fullName}" /><br>
+            <isprint value="${addressObject.address1}" /> <br>
+            <isif condition="${!empty(addressObject.address2)}"> <isprint value="${addressObject.address2}" /> <br></isif>
+            <isprint value="${addressObject.city}"/>, <isprint value="${addressObject.stateCode}" /> <isprint value="${addressObject.postalCode}" /> <br>
+            <isprint value="${addressObject.countryCode.value.toUpperCase()}" /><br>
+            <isprint value="${(addressObject.phone) ? addressObject.phone : ''}" />
+            </p> 
+	        <isif condition="${!pdict.isPaused}" >
+		        <span id="ad-edit-shipping" data-url="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'addressType', addressObject.type, pdict.listTypeParam, pdict.ProductList.ID, 'action', 'updateAddress')}" class="changeaddress sorlink btn btn-outline-secondary btn-md ">${dw.web.Resource.msg('smartorderrefill.addressview.changeaddress','smartorderrefill',null)}</span>
+	        </isif>
+        </td></tr>
+        </table>
+    </div>
+    
+    <div class="modal fade modal-primary modal-tatcha-add-address ad-tatcha-address-modal ad-modal" id="addressModal" style="display: none;">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			</div>
+		</div>
+	</div>
+</div>

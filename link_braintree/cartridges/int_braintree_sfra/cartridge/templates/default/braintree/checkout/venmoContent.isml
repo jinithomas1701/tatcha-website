@@ -1,0 +1,52 @@
+<isset name="braintreeVenmoPaymentMethodNonce" value="${pdict.braintree.venmoConfig.braintreePaymentMethodNonce}" scope="page" />
+<isset name="braintreeVenmoUserId" value="${pdict.braintree.venmoConfig.braintreeVenmoUserId || 'Venmo'}" scope="page" />
+
+<div class="tab-pane venmo-content js_braintree_venmoContent" id="venmo-content" role="tabpanel" data-paypal-is-hide-continue-button="${pdict.braintree.venmoConfig.isNeedHideContinueButton}">
+    <fieldset class="payment-form-fields">
+        <input type="hidden" class="form-control" name="isBraintree" value="true" disabled="disabled" />
+        <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="Venmo" />
+
+        <isif condition="${customer.authenticated && !empty(pdict.braintree.venmoConfig.customerVenmoPaymentInstruments) && empty(braintreeVenmoPaymentMethodNonce)}">
+            <div class="form-group">
+                <label class="form-control-label" for="braintreeVenmoAccountsList">${Resource.msg('braintree.checkout.venmoaccountlist.label','locale',null)}</label>
+                <select name="braintreeVenmoAccountList" id="braintreeVenmoAccountsList" class="form-control">
+                    <option id="newVenmoAccount" value="newaccount" <isif condition="${pdict.braintree.venmoConfig.newAccountSelected}">selected="selected"</isif>>${Resource.msg('braintree.checkout.venmoaccountlist.newaccount','locale',null)}</option>
+                    <isloop items="${pdict.braintree.venmoConfig.customerVenmoPaymentInstruments}" var="instrument">
+                        <option value="${instrument.UUID}" data-default="${instrument.custom.braintreeDefaultCard}" data-id="${instrument.UUID}" <isif condition="${instrument.custom.braintreeDefaultCard}">selected="selected" </isif>>
+                            ${Resource.msgf('braintree.checkout.venmoaccountlist.option', 'locale', null, instrument.custom.braintreeVenmoUserId)}
+                        </option>
+                    </isloop>
+                </select>
+            </div>
+        </isif>
+
+        <div class="form-group js_braintree_used_venmo_account ${!empty(braintreeVenmoPaymentMethodNonce) ? 'used-venmo-account' : 'used-venmo-account-hide'}">
+            <label class="form-control-label" for="braintreeVenmoAccount">${Resource.msg('braintree.checkout.venmoaccountselected.label','locale',null)}</label>
+            <select id="braintreeVenmoAccount" class="form-control no-disable" disabled="disabled">
+                <option selected="selected">
+                    ${Resource.msgf('braintree.checkout.venmoaccountlist.option', 'locale', null, braintreeVenmoUserId)}
+                </option>
+            </select>
+        </div>
+        <input id="braintreeVenmoUserId" type="hidden" name="braintreeVenmoUserId" value="${braintreeVenmoUserId}"/>
+
+        <div class="braintree-billingpage-venmo-buttons-wrap js_braintree_venmoButtonsWrap">
+            <div class="braintree-billingpage-venmo-button-wrap">
+                <div class="braintree-billingpage-venmo-button js_braintree_venmo_button" data-user-email data-is-valid-stage="false" data-braintree-config="${JSON.stringify(pdict.braintree.venmoButtonConfig)}">
+                    <div class="braintree-venmo-pay-button" data-is-hide-venmo-button="${pdict.braintree.venmoConfig.isNeedHideVenmoButton}"></div>
+                </div>
+            </div>
+        </div>
+
+        <isif condition="${customer.authenticated && pdict.braintree.prefs.vaultMode}">
+            <div id="braintreeSaveVenmoAccountContainer" class="form-group custom-control custom-checkbox">
+                <input class="custom-control-input" name="braintreeSaveVenmoAccount" id="braintreeSaveVenmoAccount" type="checkbox" checked="checked" value="true" />
+                <label class="custom-control-label" for="braintreeSaveVenmoAccount"><span>${Resource.msg('braintree.checkout.venmo.saveaccount', 'locale', null)}</span></label>
+            </div>
+        </isif>
+
+        <input type="hidden" id="braintreeVenmoNonce" name="braintreeVenmoNonce" value="${braintreeVenmoPaymentMethodNonce}"/>
+        <input type="hidden" id="braintreeVenmoDeviceData" name="braintreeVenmoRiskData" value=""/>
+        <input type="hidden" id="braintreeVenmoBilling" name="braintreeVenmoBilling"/>
+    </fieldset>
+</div>

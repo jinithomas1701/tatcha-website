@@ -1,0 +1,62 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'Cart',
+			type: 'Cart',
+			ns: 'cart'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableCSSLazyload')}">
+		<isinclude template="components/header/htmlhead_bag_bs"/>
+		<iselse>
+			<isinclude template="components/header/htmlhead_bs"/>
+	</isif>
+
+	<isinclude template="checkout/cart/pt_cart_UI"/>
+	<link rel="canonical" href="${URLUtils.https('Cart-Show')}"/>
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/bootstrap4/tatcha-bag-dev.css')}"/>
+	<iscomment>Add template-specific header information here.</iscomment>
+</head>
+
+<body>
+	<isinclude template="components/header/header_bs"/>
+	<isscript>
+	var referrer = request.httpParameterMap.referrer.value;
+	</isscript>
+	<isif condition="${(referrer == 'ritualfinder')}">
+		<div class="container-fluid breadcrumb-container">
+			<ol id="myaccount-breadcrumb" class="breadcrumb container">
+		  		<li>
+		  			<a href="javascript:history.back()">
+		  				<i class="fal fa-angle-double-left"></i>
+		  				${Resource.msg('global.ritualfinder','locale',null)}
+		  			</a>
+		  		</li>
+			</ol>
+		</div>
+	</isif>
+	
+	<main role="main" class="checkout checkout-bag checkout-cart" tabindex="-1">
+		<div style="min-height: 650px" class="bag-page">
+			<isreplace/>
+			<isinclude template="components/browsertoolscheck"/>
+		</div>
+	</main>
+	
+	<isset name="pageName" value="cart" scope="page" />
+	<isinclude template="product/components/modals"/>
+	<isinclude template="components/footer/footer_bs"/>
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+	
+	<isinclude template="checkout/cart/pt_cart_VARS"/>
+</body>
+</html>

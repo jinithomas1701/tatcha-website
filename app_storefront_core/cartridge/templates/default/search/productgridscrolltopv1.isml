@@ -1,0 +1,85 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	importScript('search/ProductGridUtils.ds');
+	
+	//Get the promounit positions 
+	var promoPositionsList = [];
+	var noOfPromoUnits = pdict.NoOfPromoUnits?Number(pdict.NoOfPromoUnits):Number(0);
+	if(!empty(pdict.ProductSearchResult) && !empty(pdict.ProductSearchResult.category)) {
+		var promoPositions = pdict.ProductSearchResult.category.custom.categoryPromoBannerPositions;
+		if(typeof(promoPositions) != 'undefined' && !empty(promoPositions)) {
+			promoPositionsList = promoPositions.split(',');	
+		}	
+	}
+	var gridPage = '';
+</isscript>
+
+<iscomment><!--Display the remaining products as list--></iscomment>
+
+<iscomment><!--display a tile per product--></iscomment>
+<isset name="minimalView" value="false" scope="page" />
+
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableInfiniteScroll')}">
+	<isif condition="${pdict.pagingmodel.currentPage != pdict.pagingmodel.start }">
+		<isscript>
+			gridPage = (pdict.pagingmodel.currentPage + 1);
+		</isscript>
+		<div class="infinite-scroll-placeholder-top" data-loading-state="unloaded" data-grid-page="${pdict.pagingmodel.currentPage + 1}" data-grid-url="${decodeURI(pdict.pagingmodel.appendPaging ( pdict.ProductSearchResult.url('Search-Show'), (pdict.pagingmodel.currentPage - 1) * pdict.pagingmodel.pageSize).append('format','page-element').append('ad', minimalView).append('scrollToTop','top'))}" ></div>
+	<iselse>
+		<isscript>
+			gridPage = (pdict.pagingmodel.currentPage + 1);
+		</isscript>
+		<div class="infinite-scroll-placeholder-top" data-grid-page="${pdict.pagingmodel.currentPage + 1}" ></div>
+	</isif>
+</isif>
+<isif condition="${pdict.pagingmodel.start <= 0}">
+	<isset name="promoBannerPosition" value="${1}" scope="page"/>
+<iselse>
+	<isset name="promoBannerPosition" value="${pdict.pagingmodel.start + 1}" scope="page"/>	
+</isif>
+	<isloop items="${pdict.pagingmodel.pageElements}" var="LoopProductHit" status="loopstate">
+			<isscript>
+				var isFirstItem = false;
+				
+				if(loopstate.first && !empty(gridPage)) {
+					isFirstItem = true;
+				} else {
+					isFirstItem = false;
+				}
+			</isscript>
+		    <isif condition="${!pdict.ProductSearchResult.isRefinedByAttribute() && promoPositionsList.length > 0 && !empty(pdict.ProductSearchResult.category) }">
+			 	<isloop items="${promoPositionsList}" var="positionList" status="positionStatus" >
+					<isif condition="${(session.custom.catPromoBannerAssetsArray[positionStatus.index] != null) && (typeof(session.custom.catPromoBannerAssetsArray[positionStatus.index]) != 'undefined') && (Number(promoBannerPosition).toFixed() == positionList)}">
+				    	<div class="col-sm-6 col-md-6 col-lg-4 col-xl-3 product-list-col <isif condition="${isFirstItem}">prd-tile-wrap </isif>" <isif condition="${isFirstItem}">data-prd-page="${gridPage}"</isif>>
+						<div class="product-list-unit-v2 product-list-unit-promo">
+								<isprint value="${session.custom.catPromoBannerAssetsArray[positionStatus.index]}" encoding="off" />
+						 </div>
+						</div>
+					</isif>
+				</isloop>					
+			</isif>		  
+			<isset name="promoBannerPosition" value="${(promoBannerPosition + 1)}" scope="page"/>
+			<isset name="noOfPromoUnits" value="${(noOfPromoUnits + 1)}" scope="page"/>		
+			
+			<div class="col-sm-6 col-md-6 col-lg-4 col-xl-3 product-list-col <isif condition="${isFirstItem}">prd-tile-wrap </isif>" <isif condition="${isFirstItem}">data-prd-page="${gridPage}"</isif>  >
+				<isscript>
+					var isUpdatedProductTile = true;
+				</isscript>
+				<isobject object="${LoopProductHit}" view="searchhit">
+					<iscomment><!-- Self contained product information. Can be cached separately even if search finds this product in different categories or positions within the grid  --></iscomment>
+					<isinclude url="${ProductGridUtils.buildHitTileURL(LoopProductHit, pdict.CurrentHttpParameterMap.cgid.value,minimalView, isUpdatedProductTile)}"/>
+				</isobject>
+			</div>
+		</isloop>
+		<isset name="promoBannerPosition" value="${(promoBannerPosition + 1)}" scope="page"/>
+
+<script>
+	var plpImages = document.querySelectorAll('.lazyImage');
+	if(window.lazyLoad !== undefined) {
+		window.lazyLoad(plpImages, {
+		     root: null,
+		     rootMargin: "0px",
+		     threshold: .25
+		});
+	}
+</script>

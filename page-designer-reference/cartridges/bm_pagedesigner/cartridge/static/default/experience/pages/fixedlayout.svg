@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="512px" height="448px" viewBox="0 0 512 448" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 51 (57462) - http://www.bohemiancoding.com/sketch -->
+    <title>layout_2</title>
+    <desc>Created with Sketch.</desc>
+    <defs></defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="layout_2" fill-rule="nonzero">
+            <path d="M0,0 L0,320 L512,320 L512,0 L0,0 Z M480,288 L32,288 L32,32 L480,32 L480,288 Z M336,352 L176,352 L160,416 L128,448 L384,448 L352,416 L336,352 Z" id="Shape" fill="#E6E6E6"></path>
+            <rect id="Rectangle-Copy" fill="#C8D1E3" x="48" y="88" width="130" height="40"></rect>
+            <rect id="Rectangle-Copy-6" fill="#C8D1E3" x="44" y="192" width="96" height="40"></rect>
+            <rect id="Rectangle-Copy-7" fill="#C8D1E3" x="152" y="192" width="96" height="40"></rect>
+            <rect id="Rectangle-Copy-9" fill="#C8D1E3" x="260" y="192" width="96" height="40"></rect>
+            <rect id="Rectangle-Copy-8" fill="#C8D1E3" x="368" y="192" width="96" height="40"></rect>
+            <rect id="Rectangle-Copy-4" fill="#C8D1E3" x="48" y="140" width="206" height="40"></rect>
+            <rect id="Rectangle-Copy-5" fill="#C8D1E3" x="266" y="140" width="198" height="40"></rect>
+            <rect id="Rectangle-Copy-2" fill="#C8D1E3" x="191" y="88" width="130" height="40"></rect>
+            <rect id="Rectangle-Copy-3" fill="#C8D1E3" x="334" y="88" width="130" height="40"></rect>
+            <rect id="Rectangle-Copy" fill="#C8D1E3" x="48" y="56" width="416" height="20"></rect>
+            <rect id="Rectangle-Copy-Copy" fill="#C8D1E3" x="44" y="244" width="416" height="20"></rect>
+        </g>
+    </g>
+</svg>

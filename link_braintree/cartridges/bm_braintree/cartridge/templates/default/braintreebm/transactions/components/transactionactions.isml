@@ -1,0 +1,34 @@
+<isif condition="${(transaction.status == 'SUBMITTED_FOR_SETTLEMENT')}">
+    <li>
+        <span class="js_braintree_action" data-id="${transaction.legacyId}" data-amount="${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, transaction.amount.value, currency)}" data-updatepayment="${transaction.isDataUpdateRequired}" data-action="void" data-title="${Resource.msgf('transaction.void.header', 'braintreebm', null, transaction.legacyId)}">${Resource.msg('transaction.actions.void', 'braintreebm', null)}</span>
+    </li>
+    <isif condition="${transaction.isAbleToCaptureByNewTransaction}">
+        <li>
+            <span class="js_braintree_action" data-action="newsettle" data-title="${Resource.msgf('transaction.newsettle.title', 'braintreebm', null, order.orderNo)}">${Resource.msg('transaction.actions.settle', 'braintreebm', null)}</span>
+        </li>
+    </isif>
+</isif>
+<isif condition="${transaction.status == 'SETTLING' || transaction.status == 'SETTLED'}">
+    <isif condition="${transaction.isAbleToRefund}">
+        <li>
+            <span class="js_braintree_action" data-action="refund" data-title="${Resource.msg('transaction.refund.title', 'braintreebm', null)}">${Resource.msg('transaction.actions.refund', 'braintreebm', null)}</span>
+        </li>
+     </isif>
+     <isif condition="${transaction.isAbleToCaptureByNewTransaction}">
+        <li>
+            <span class="js_braintree_action" data-action="newsettle" data-title="${Resource.msgf('transaction.newsettle.title', 'braintreebm', null, order.orderNo)}">${Resource.msg('transaction.actions.settle', 'braintreebm', null)}</span>
+        </li>
+    </isif>
+</isif>
+<isif condition="${transaction.status == 'AUTHORIZED' || transaction.status === 'SETTLEMENT_PENDING'}">
+    <isif condition="${transaction.isAbleToCapture}">
+        <li>
+            <span class="js_braintree_action" data-action="capture" data-title="${Resource.msg('transaction.settle.title', 'braintreebm', null)}">${Resource.msg('transaction.actions.settle', 'braintreebm', null)}</span>
+        </li>
+    </isif>
+    <isif condition="${transaction.status !== 'SETTLEMENT_PENDING'}">
+        <li>
+            <span class="js_braintree_action" data-id="${transaction.legacyId}" data-amount="${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, transaction.amount.value, currency)}" data-updatepayment="${transaction.isDataUpdateRequired}" data-action="void" data-title="${Resource.msgf('transaction.void.header', 'braintreebm', null, transaction.legacyId)}">${Resource.msg('transaction.actions.void', 'braintreebm', null)}</span>
+        </li>
+    </isif>
+</isif>

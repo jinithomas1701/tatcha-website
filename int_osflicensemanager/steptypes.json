@@ -1,0 +1,52 @@
+{
+    "step-types": {
+        "script-module-step": [
+            {
+                "@type-id": "custom.OSFLicenseValidate",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "true",
+                "@supports-organization-context": "false",
+                "description": "Validate OSF product licenses",
+                "module": "int_osflicensemanager/cartridge/scripts/utils/licenseJobs.js",
+                "function": "ValidateLicenses",
+                "transactional": "false",
+                "timeout-in-seconds": "900",
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when the step finished successfully."
+                        }
+                    ]
+                }
+            },
+            {
+                "@type-id": "custom.OSFLicenseEmailNotifications",
+                "@supports-parallel-execution": "true",
+                "@supports-site-context": "false",
+                "@supports-organization-context": "true",
+                "description": "Send license notification emails",
+                "module": "int_osflicensemanager/cartridge/scripts/utils/licenseJobs.js",
+                "function": "SendEmails",
+                "transactional": "false",
+                "timeout-in-seconds": "900",
+                "status-codes": {
+                    "status": [
+                        {
+                            "@code": "ERROR",
+                            "description": "Used when the step failed with an error."
+                        },
+                        {
+                            "@code": "OK",
+                            "description": "Used when the step finished successfully."
+                        }
+                    ]
+                }
+            }
+        ]
+    }
+}

@@ -1,0 +1,42 @@
+<isscript>
+	var  custIp = require('app_storefront_core/cartridge/scripts/cart/GetCustomerIp');
+	var  maccaContries = {"nz":"nz","au":"au"};
+	var countryCode = custIp.getCountryCode();
+	var maccaCountry = countryCode ? countryCode.toLowerCase() : null;
+	session.custom.fedexRates = null;
+	var lastPipeline = !empty(session.clickStream.last) ? session.clickStream.last.pipelineName : 'Home-Show';
+</isscript>
+<isinclude template="util/modules"/>
+<isif condition = "${maccaContries[maccaCountry] && !request.httpCookies['dw_cookies_meccapopup']}">
+	<iscontentasset aid="mecca-modal"/>
+</isif>
+
+<iscomment>RDMP-3452: Klaviyo_tag-RenderKlaviyo</iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('klaviyo_enabled')}">
+	<isinclude template="klaviyo/klaviyoTag">
+</isif>
+
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableMparticleProfileAPI')}">
+	<isinclude template="components/optimizedatalayer" />
+</isif>
+
+<isif condition="${pdict.CurrentSession.custom.userType}">
+
+<script>
+	try {
+		if (!window.dataLayer) {
+			window.dataLayer = [];
+		}
+
+		dataLayer
+				.push({
+					'userType' : '<isprint value="${pdict.CurrentSession.custom.userType}" encoding="off"/>'
+				});
+	} catch (e) {
+
+	}
+</script> 
+
+<input type="hidden" id="userType" value='<isprint value="${pdict.CurrentSession.custom.userType}" encoding="off"/>'/>
+
+</isif>

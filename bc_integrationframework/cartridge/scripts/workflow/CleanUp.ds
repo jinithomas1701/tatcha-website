@@ -1,0 +1,103 @@
+/**
+ * Performs the cleanup for the integration framework.
+ * 
+ * @input WorkflowMaximumObjectAgeBeforeDeletion : Number The maximum age of an custom object in the integration framework
+ *                                                       before deletion.
+ * @input CurrentWorkflowComponentInstance : Object The current workflow component instance.
+ * @input IsJobSchedule : Boolean Was the call initiated by a scheduled Job or as part of a Workflow?
+ * @output HasWarnings : Boolean True if warnings occured during execution.
+ */
+
+importPackage(dw.system);
+importPackage(dw.util);
+importPackage(dw.object);
+
+importScript('bc_integrationframework:workflow/libWorkflow.ds');
+
+/**
+ * The main function.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Number} PIPELET_NEXT or in case of an exception PIPELINE_ERROR.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+	var workflowMaximumObjectAgeBeforeDeletion : Number = pdict.WorkflowMaximumObjectAgeBeforeDeletion;
+	var currentWorkflowComponentInstance : Logger = Logger;
+	if ( !empty( pdict.CurrentWorkflowComponentInstance ) ) {
+		currentWorkflowComponentInstance = pdict.CurrentWorkflowComponentInstance;
+	}
+	
+	var calendar : Calendar = new Calendar();
+	calendar.setTimeZone(System.getInstanceTimeZone());
+	calendar.setTime(new Date());
+	calendar.add(Calendar.DAY_OF_YEAR, workflowMaximumObjectAgeBeforeDeletion * -1);
+	
+	var date : Date = calendar.getTime();
+	
+	var libWorkflow : Object = new LibWorkflow();
+	
+	// It is garuanteed, that the workflow instance is always older than its component instances, because the workflow
+	// instance is touched at the very end of a workflow run - after all component instances are run.
+	// Of course if somebody edited the objects in the custom object editor this fails, but nobody should do that!
+	var oldWorkflowScheduleInstances : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowScheduleInstance', 'lastModified < {0}', null, date);
+	for each (var workflowScheduleInstance : CustomObject in oldWorkflowScheduleInstances) {
+		var workflowScheduleInstanceWrapper : Object = libWorkflow.createWrapperObject(workflowScheduleInstance);
+		var status : String = workflowScheduleInstanceWrapper.getStatus();
+		
+		if (status == 'WAITING' || status == 'RUNNING') {
+			
+			var workflowScheduleInstanceMessage : String = 'The WorkflowScheduleInstance "' + workflowScheduleInstance.custom.ID + '" is still running. It will not be deleted.';
+			currentWorkflowComponentInstance.warn(workflowScheduleInstanceMessage);
+			pdict.HasWarnings = true;
+			
+		} else {
+			var oldWorkflowComponentInstances : ArrayList = workflowScheduleInstanceWrapper.getWorkflowComponentInstances();
+			
+			for each (var workflowComponentInstanceWrapper : Object in oldWorkflowComponentInstances) {
+				CustomObjectMgr.remove(workflowComponentInstanceWrapper.object);
+			}
+			
+			CustomObjectMgr.remove(workflowScheduleInstance);
+		}
+	}
+
+	
+	// All component instance without workflow instances are removed. This should never happen, but to be sure,
+	// this is tested.
+	var oldWorkflowComponentInstances : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowComponentInstance', 'lastModified < {0}', null, date);
+	for each (var workflowComponentInstance : CustomObject in oldWorkflowComponentInstances) {
+		var workflowScheduleInstance : CustomObject = CustomObjectMgr.getCustomObject('WorkflowScheduleInstance', workflowComponentInstance.custom.workflowScheduleInstanceID);
+		
+		if (empty(workflowScheduleInstance)) {
+			
+			var workflowComponentInstanceMessage : String = 'The WorkflowComponentInstance "' + workflowComponentInstance.custom.ID + '" had no relating WorkflowScheduleInstance. So it is deleted.';
+			currentWorkflowComponentInstance.warn(workflowComponentInstanceMessage);
+			pdict.HasWarnings = true;
+			
+			CustomObjectMgr.remove(workflowComponentInstance);
+		}
+	}
+	
+	// It is tested if there are relations which objects are deleted. This should never happen.
+	var relations : SeekableIterator = CustomObjectMgr.getAllCustomObjects('WorkflowScheduleDefinitionWorkflowComponentDefinitionRelation');
+	for each (var relation : CustomObject in relations) {
+		var workflowScheduleDefinition : CustomObject = CustomObjectMgr.getCustomObject('WorkflowScheduleDefinition', relation.custom.workflowScheduleDefinitionID);
+		var workflowComponentDefinition : CustomObject = CustomObjectMgr.getCustomObject('WorkflowComponentDefinition', relation.custom.workflowComponentDefinitionName);
+		
+		if (empty(workflowScheduleDefinition) || empty(workflowComponentDefinition)) {
+			
+			var workflowScheduleDefinitionWorkflowComponentDefinitionRelationMessage : String = 'The relation between workflow schedule definition "' + relation.custom.workflowScheduleDefinitionID + '" and component definition "' + relation.custom.workflowComponentDefinitionName + '" was deleted, because one of the objects does not exist anymore.';
+			currentWorkflowComponentInstance.warn(workflowScheduleDefinitionWorkflowComponentDefinitionRelationMessage);
+			pdict.HasWarnings = true;
+			
+			CustomObjectMgr.remove(relation);
+		}
+	}
+	
+	oldWorkflowScheduleInstances.close();
+	oldWorkflowComponentInstances.close();
+	relations.close();
+	
+    return PIPELET_NEXT;
+}

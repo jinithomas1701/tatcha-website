@@ -1,0 +1,13 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<form role="search" class="navbar-search navbar-form simple-search-desktop" action="${URLUtils.url('Search-Show')}" method="get" name="simpleSearch">
+  <div class="input-group hidden-md hidden-lg">
+    <label class="visually-hidden" for="q">${Resource.msg('global.searchcatalog', 'locale', null)}</label>
+    <span class="input-group-addon"><i class="fal fa-search"></i></span>
+    <div class="sr-only" id="serach-suggestion-notification" aria-live="assertive" aria-atomic="true"></div>
+    <input id="q" name="q" data-source="bs3_search" type="text" class="form-control" data-toggle="tooltip" data-placement="bottom" title="Search" placeholder="${Resource.msg('simplesearch.searchtext', 'search', null)}" aria-label="Enter text to search">
+    <input type="hidden" name="lang" value="${pdict.CurrentRequest.locale}"/>
+  </div>
+  <div class="hidden-xl hidden-xxl lg-search-icon" style="display: inline-block; margin-right: 40px; cursor: pointer;">
+  	 <span class="input-group-addon default-outline-class" data-toggle="tooltip" data-placement="bottom" title="Search" tabindex="0" style="top: 15px !important;"><i class="fal fa-search"></i></span>
+  </div>
+</form>

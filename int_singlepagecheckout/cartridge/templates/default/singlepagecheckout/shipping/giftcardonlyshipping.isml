@@ -1,0 +1,63 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+var Site = require('dw/system/Site');
+var countriesList = JSON.parse(Site.getCurrent().getCustomPreferenceValue('CountriesList'));
+	
+var paymentInstruments =  (pdict.p_checkoutobj.paymentInfo && !empty(pdict.p_checkoutobj.paymentInfo.paymentInstruments)) ?
+		pdict.p_checkoutobj.paymentInfo.paymentInstruments: false;
+		
+var paymentTypeApplepay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'ApplePay') ? true : false;
+var paymentTypeAfterPay = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'AFTERPAY_PBI') ? true : false;
+var paymentTypePaypal = (paymentInstruments.length == 1 && paymentInstruments[0].paymentMethod == 'PayPal') ? true : false;
+
+</isscript>
+<isset name="checkoutObj" value="${pdict.p_checkoutobj}" scope="page" />
+<iscomment> Shipping Header </iscomment>
+<div class="mb-0 contactCollapseItem" data-toggle="collapse" data-target="#contactCollapse" role="button" aria-controls="contactShippingCollapse">
+	<span class="outer-section" tabindex="0">
+    	<h2 class="section-heading outer-section-inner" id="contact-section-heading" tabindex="-1">1. Contact &amp; Shipping
+    		<isif condition="${(pdict.p_checkoutobj.checkoutState == 'review' && !paymentTypeApplepay && !paymentTypeAfterPay && !paymentTypePaypal)
+    		|| (paymentTypePaypal && checkoutObj.orderType =='giftcard')}">
+				<a href="#" class="text-primary float-right edit-contact-section" tabindex="0" aria-label="Edit Contact &amp; Shipping">Edit</a>    		
+    		<iselse>
+    			<a href="#" class="text-primary float-right edit-contact-section d-none" tabindex="0" aria-label="Edit Contact &amp; Shipping">Edit</a>    		
+    		</isif>
+         </h2>
+	</span>
+</div>
+
+<iscomment> Shipping Form </iscomment>
+<div id="contactCollapse" class="indent-container collapse show" tabindex="-1" aria-label="Contact and shipping accordion" data-parent="#accordion" style="">
+
+	<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == false)}">
+		<form action="${URLUtils.https('COShipping-UpdateCustomerEmail')}" autocomplete="off" method="post" id="shippingUpdateCustomerEmail" class="addressformfields">	
+			<div class="contact-shipping">
+				<div class="contact-info-container" style="<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true)}">display:none;<iselse></isif>" >
+					<h2 class="section-title">Contact Information</h2>
+					<div class="form-row">
+						<div class="form-group col-12">
+							<input type="email" name="email" value="${pdict.p_checkoutobj.customerInfo.customerEmail}" class="form-control floating__input form-control-lg" id="guestEmail" aria-label="Enter email address" placeholder="Enter email">
+			                
+							<label class="float-label" for="guestEmail" data-content="Email address"> </label>
+							
+			                <div class="mt-2 ml-4" id="singlepagecheckout_profile_customer_addtoemaillist_container">
+			                	<input class="form-check-input" type="checkbox" id="singlepagecheckout_profile_customer_addtoemaillist" name="${pdict.CurrentForms.profile.customer.addtoemaillist.htmlName}" aria-label="Select if you want to join our email list to receive special promotion, early access to new products" />
+			                	<input type="hidden" id="csrf_token" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+			                	<input type="hidden" id="subscribe_subscribe" name="${pdict.CurrentForms.subscribe.subscribe.htmlName}" value="subscribe"/>
+			                	<input type="hidden" id="source" name="source" value="footer"/> 
+			                	<input type="hidden" name="newsLetterSignUpKlavioUrl" id="newsLetterSignUpKlavioUrl" value="${URLUtils.url('Klaviyo-SubscribeFromSPCheckout')}" />
+			                	<span>Join our email list to receive special promotion, early access to new products.</span>
+			                </div>
+			             </div>
+			        </div>    
+				</div>
+			</div>
+			<div class="delivery-container" style="<isif condition="${(pdict.p_checkoutobj.shippingInfo.showSummary == true)}">display:none;<iselse></isif>">
+				<button class="btn btn-primary shipping-giftcardonly-submit" style="margin: 1rem 0;" type="button" aria-label="Continue  to payment">Continue</button>		
+			</div>
+		</form>
+	</isif>	
+		
+	<iscomment> Shipping Summary </iscomment>
+	<isspshippingsummary p_checkoutobj="${checkoutObj}" />						
+</div>

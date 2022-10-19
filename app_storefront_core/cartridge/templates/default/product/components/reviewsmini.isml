@@ -1,0 +1,17 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	// if there is pdict.Product, assign Product to that
+	// this is mostly to cover the case on Product Detail Page where Product is not null
+	if (pdict.Product) {
+		Product = pdict.Product;
+	}
+</isscript>
+<iscomment> Bazaar Voice Intergration Placeholder</iscomment>
+<div class="product-rating-summary" data-pid="${Product.ID}">
+	<i class="fal fa-xs fa-star rating-icon"></i>
+	<i class="fal fa-xs fa-star rating-icon"></i>
+	<i class="fal fa-xs fa-star rating-icon"></i>
+	<i class="fal fa-xs fa-star rating-icon"></i>
+	<i class="fal fa-xs fa-star rating-icon"></i>
+	<a href="#" class="tatcha-animation ">9,999 Reviews</a>
+</div>

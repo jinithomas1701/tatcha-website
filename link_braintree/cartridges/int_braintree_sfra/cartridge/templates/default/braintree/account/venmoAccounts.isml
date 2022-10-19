@@ -1,0 +1,41 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    if (pdict.braintree.prefs.vaultMode) {
+        assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3VenmoUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+    }
+    assets.addCss('/css/braintree.css');
+</isscript>
+
+<div id="venmoAccountBtLoader" class="braintree-loader-container">
+    <i class="braintree-loader"></i>
+</div>
+<div class="venmo-accounts"
+    data-payment-method-id="${pdict.braintree.prefs.paymentMethods.BRAINTREE_VENMO.paymentMethodId}">
+    <isinclude template="braintree/account/venmoAccountsLoop" />
+</div>
+
+<isif condition="${pdict.braintree.prefs.vaultMode}">
+    <div class="card-footer card-footer-border text-center">
+        <div class="js_braintree_accountVenmoButton_wrapper" style="display: none">
+            <div id="braintreeVenmoAccLoader" class="braintree-loader-container">
+                <i class="braintree-loader"></i>
+            </div>
+            <div class="error" id="venmoAccountErrorContainer"></div>
+
+            <div class="js_braintree_accountVenmoButton"
+                data-braintree-config="${JSON.stringify(pdict.braintree.venmo.venmoAccountButtonConfig)}"
+                data-venmo-account-form-fields="${JSON.stringify(pdict.braintree.venmo.venmoAccountFormFields)}"
+                data-venmo-add-account-handler="${pdict.braintree.venmo.venmoAddAccountHandler}">
+                <div class="braintree_accountVenmoButton"></div>
+            </div>
+            <input type="hidden" id="csrf_token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+        </div>
+
+        <div class="card-link add-venmo-account"
+            aria-label="${Resource.msg('label.payment.addnewpayment', 'payment', null)}">
+            ${Resource.msg('link.addnew', 'account', null)}
+        </div>
+    </div>
+</isif>

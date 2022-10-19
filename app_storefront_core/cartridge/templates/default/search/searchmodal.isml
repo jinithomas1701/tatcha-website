@@ -1,0 +1,93 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isscript>
+	var SearchSuggest = require('~/cartridge/scripts/search/SearchSuggest');
+	var suggest = SearchSuggest('Skin Care',4); 
+
+</isscript>
+
+<div class="modal p-0" id="searchDesktopModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog search-modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <i class="fal fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body mt-md-3">
+                <div class="search-results-container">
+                    <div class="row">
+                        <div class="col-md-3 col-lg-3 d-none d-md-flex justify-content-center flex-column">
+                            <div class="tatcha-logo">
+                            	<a class="navbar-brand" href="${URLUtils.url('Home-Show')}">
+                                	<img src="${URLUtils.staticURL('/images/bs4/tatcha-logo-nav.png')}" class="img-float" alt="Tatcha Official Site"/>
+                            	</a>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-9 col-lg-9">
+                            <div class="search-input-container col-11 col-md-9 pl-0">
+                            	<form class="d-inline-block navbar-search navbar-form mr-2 simple-search-desktop search-updated-form" action="${URLUtils.url('Search-Show')}" method="get" name="simpleSearch" style="position: relative;width: 100%;">                            	
+	                                <div class="input-group">	                                
+	                                    <input type="text" id="q" name="q" class="form-control form-control-lg search-input" placeholder="Search" aria-label="Enter text to search"/>
+	                                    <div class="clear-search" role="button" tabindex="0" aria-label="clear search"><i class="fal fa-times-circle"></i></div>
+	                                    <div class="input-group-append">
+	                                        <button class="btn btn-secondary search-icon" type="button" aria-label="Search">
+	                                            <i class="fa fa-search"></i>
+	                                        </button>
+	                                    </div>
+	                                </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row recommendation-row">
+                        <div class="col-md-3 d-none d-md-block popular-desk">
+                            <isscript> 
+                            	var Phrases = suggest.popularSearchPhrases.popularPhrases;
+                            	var phrase = [];
+	                            while (Phrases.hasNext()) {
+									phrase.push(Phrases.next().phrase);
+								}
+							</isscript>	
+							<isif condition="${phrase.length > 0}">	
+	                            <h4 class="search-inner-titles">
+	                                Most popular searches
+	                            </h4>                            					
+	                            <ul class="popular-searches">
+	                            	<isloop items="${phrase}" var="term">
+										<li>
+	                                    <a href="${URLUtils.url('Search-Show', 'q',term)}">${term}</a>
+	                                	</li>
+								 	</isloop>							 	
+	                            </ul>
+                             </isif>
+                        </div>
+                        <div class="col-md-9">                           
+                            <isslot id="search-recomended-foryou" context="global" description="Search Recommended for you carousel" />                            
+                        </div>
+                        <div class="col-md-3 d-md-none popular-mob">
+                        	<isif condition="${phrase.length > 0}">
+	                            <h4 class="search-inner-titles">
+	                                Most popular searches
+	                            </h4>
+	                            <ul class="popular-searches">
+	                                <isloop items="${phrase}" var="term">
+										<li>
+	                                    <a href="${URLUtils.url('Search-Show', 'q',term)}">${term}</a>
+	                                	</li>
+								 	</isloop>
+	                            </ul>
+                            </isif>
+                        </div>
+                    </div>
+                    <div class="row">
+                     	<div class="col-12 results-row">	   		
+                     	</div>  
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

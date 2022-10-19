@@ -1,0 +1,22 @@
+<isscript>
+   var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+   var prefs = BraintreeHelper.getPrefs();
+   var paypalPaymentMethod = dw.order.PaymentMgr.getPaymentMethod(prefs.paypalMethodName);
+   var pdpButtonEnabled = BraintreeHelper.isPaypalButtonEnabled('pdp');
+   var BasketMgr = require('dw/order/BasketMgr');
+</isscript>
+
+<isif condition="${!request.custom.braintreeClientToken}">
+    <isset name="braintreeClientToken" value="${BraintreeHelper.getClientToken()}" scope="request" />
+</isif>
+<isif condition="${pdpButtonEnabled}">
+    <isset name="paypalConfig" value="${prefs.BRAINTREE_PAYPAL_PDP_Button_Config}" scope="page" />
+    <isinclude template="braintree/pdp/paypalPDPButton" />
+</isif>
+
+<script>
+    if (window.braintreeUtils) {
+        initPaypalCartButton();
+        showPdpPaypalButton();
+    }
+</script>

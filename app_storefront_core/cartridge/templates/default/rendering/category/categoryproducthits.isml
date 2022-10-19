@@ -1,0 +1,8 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+				
+<isdecorate template="search/pt_productsearchresult_contentv1">
+	<isinclude template="rendering/category/categoryproducthits_v1">
+	<isif condition=${false}>
+		<isslot id="catPromoBanner" context="category" context-object="${pdict.ProductSearchResult.category}" description="Category Promo Banner"/>
+	</isif>
+</isdecorate>

@@ -1,0 +1,12 @@
+<script>//common/scripts.isml</script>
+<script defer type="text/javascript" src="${URLUtils.staticURL('/js/main.js')}"></script>
+<isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="script">
+    <script defer type="text/javascript" src="${script.src}"></script>
+</isloop>
+<isset name="isloqateAccountEnabled" value="${dw.system.Site.getCurrent().preferences.custom.loqateAccountEnabled}" scope="page" />
+<isset name="loqateAccountCode" value="${dw.system.Site.getCurrent().preferences.custom.loqateAccountCode}" scope="page" />
+<input type="hidden" name="loqateAccountCode" id="loqateAccountCode" value="${loqateAccountCode}"/>
+<isif condition="${isloqateAccountEnabled === true}">
+    <script src="${URLUtils.staticURL('/js/loqatehelper.js')}"></script>
+    <script src="${URLUtils.staticURL('/js/loqatecustom_us.js')}"></script>
+</isif>

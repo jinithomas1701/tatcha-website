@@ -1,0 +1,39 @@
+<iscontent type="text/html" charset="UTF-8">
+
+<table width="100%" cellpadding="0" cellspacing="0">
+    <tr>
+        <td align="center" style="background:#e0e0e0;padding:50px 0;">
+            <center>
+                <table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+                    <tr>
+                        <td colspan="2" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+                            <a href="https://www.osf-commerce.com/">
+                                <img src="${URLUtils.httpStatic('/images/osf_logo.jpg')}" style="border:none;"/>
+                            </a>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+                            <h3>Dear OSF customer, we want to inform you about a status change on the following licenses(<a href="${URLUtils.https('ViewApplication-ProcessLogin')}">${URLUtils.https('ViewApplication-ProcessLogin')}</a>):</h3>
+                            <isloop items="${pdict.licenses}" var="license">
+                                <isif condition="${license.action == 'notvalid'}" >
+                                    <h2>${license.activationKey} (${license.hostName})(${license.siteID})(${license.productName}): <strong style="color:red">NOT VALID</strong></h2> 
+                                </isif>
+                                <isif condition="${license.action == 'expire'}" >
+                                    <h2>${license.activationKey} (${license.hostName})(${license.siteID})(${license.productName}): <strong>EXPIRES IN ${license.expiryDate} days</strong></h2> 
+                                </isif>
+                                <isif condition="${license.action == 'servicefail'}" >
+                                    <h2>${license.activationKey} (${license.hostName})(${license.siteID})(${license.productName}) - <strong style="color:red">VALIDATION SERVICE FAILURE</strong></h2> 
+                                </isif>
+                                <isif condition="${license.action == 'notvalidgrace'}" >
+                                    <h2>${license.activationKey} (${license.hostName})(${license.siteID})(${license.productName}) - <strong style="color:red">NOT VALID, IN GRACE PERIOD OF 3 days</strong></h2> 
+                                </isif>
+                            </isloop>
+                            <h3>Please contact the OSF team.</h3>
+                        </td>
+                    </tr>
+               </table>
+            </center>
+        </td>
+    </tr>
+</table>

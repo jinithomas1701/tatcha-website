@@ -1,0 +1,8 @@
+<div>
+    <div class="${lpmPaymentOption}-method-name">
+        ${dw.order.PaymentMgr.getPaymentMethod(payment.paymentMethod).getName()}
+    </div>
+    <div class="${lpmPaymentOption}-amount">
+        ${pdict.order.priceTotal}
+    </div>
+</div>

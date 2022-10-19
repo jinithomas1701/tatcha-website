@@ -1,0 +1,28 @@
+<iscache type="relative" hour="24"/>
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> class="editorial-title-container container-fluid container-fluid-max container-flush ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+	<div class="">
+		<isif condition="${!empty(pdict.desktopImage.src.desktop)}">
+			<img src="${pdict.desktopImage.src.desktop}" class="editorial-img d-none d-md-block img-fluid" alt="${pdict.imageAlt}"/>
+		</isif>
+		<isif condition="${!empty(pdict.mobileImage)}">
+			<img data-src="${pdict.mobileImage.src.mobile}" class="editorial-img d-sm-block d-md-none img-fluid lazyImage" alt="${pdict.imageAlt}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}"/>
+		</isif>
+		
+		<div class="col-md-8 col-xxl-6 text-container white" style="color: ${pdict.textColor}">
+			<isif condition="${!empty(pdict.title)}">
+				<div class="pre-header">
+					<isprint value="${pdict.title}" />
+				</div>
+			</isif>
+			
+			<isif condition="${!empty(pdict.mainHeading)}">
+				<div class="heading">
+					<isprint value="${pdict.mainHeading}" />
+				<div class="text-center"><i class="fal fa-chevron-down"></i></div>
+			</isif>
+			
+		</div>
+		
+		</div>
+	</div>
+</div>

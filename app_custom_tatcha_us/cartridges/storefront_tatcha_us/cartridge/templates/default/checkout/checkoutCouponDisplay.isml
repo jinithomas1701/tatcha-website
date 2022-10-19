@@ -1,0 +1,24 @@
+<isloop items="${pdict.order.totals.discounts}" var="discount">
+	<isif condition="${discount.type === 'coupon' && discount.applied == true}">
+		<div class="promocode-applied">
+	        <div class="form-row">
+	            <div class="form-group col-12">
+	                <div class="input-group">
+	                    <input type="text" class="form-control form-control-lg d-inline-block" aria-labelledby="enter promo code" placeholder="Promo code" disabled value="${discount.couponCode}">
+	                    <label class="float-label input--filled" data-content="Promo code" for="zipcode"></label>
+	                </div>
+	            </div>
+	        </div>
+	        <span class="promo-close" data-code="${discount.couponCode}" data-uuid="${discount.UUID}" data-action="${discount.removeCouponURL}"><i class="fal fa-times-circle"></i></span>
+	        <isif condition="${discount.gwpCoupon}">
+	        	<div class="promo-gift-checkout mt-1">
+                    <span class="edit-gwp float-none" data-uuid="${pdict.order.editGwpProducts ? pdict.order.editGwpProducts.uuid : ''}" data-actionurl="${pdict.order.editGwpProducts ? pdict.order.editGwpProducts.editGwpProductsUrl : ''}">Edit your promo</span>
+                </div>
+	        <iselse/>
+	        	<div class="coupon-status">
+		            <i class="fal fa-check-circle"></i>Promotional code ${Resource.msgf('text.coupon.applied', 'checkout', null, discount.couponCode)}
+		        </div>
+	        </isif>
+	    </div>
+	</isif>
+</isloop>

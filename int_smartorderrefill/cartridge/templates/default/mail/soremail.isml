@@ -1,0 +1,20 @@
+<iscontent type="text/html " charset="UTF-8"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isinclude template="mail/components/header"/>
+<body>
+    <table width="600" style="margin:0 auto;" cellpadding="0" cellspacing="0">
+        <tbody>
+            <isinclude template="mail/components/subject"/>
+            <isinclude template="mail/components/hello"/>
+            <isinclude template="mail/components/topcontent"/>
+            <isinclude template="mail/components/producttiles"/>
+            <isinclude template="mail/components/address"/>
+            <isinclude template="mail/components/bottomcontent" />
+            <isinclude template="mail/components/button" />
+            <isinclude template="mail/components/thanks" />            
+        </tbody>
+    </table>
+</body>

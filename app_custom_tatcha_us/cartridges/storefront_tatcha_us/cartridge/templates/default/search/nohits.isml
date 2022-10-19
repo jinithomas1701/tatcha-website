@@ -1,0 +1,60 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="common/layout/page_nohits">
+
+	<iscache type="relative" minute="30"/>
+	<isinclude template="util/modules"/>
+
+	<iscomment>create reporting event</iscomment>
+	<isinclude template="util/reporting/ReportSearch.isml"/>
+	<div class="no-hits-banner" style="display:none;">
+		<isslot id="noresult-banner" description="Banner for searches with no hits" context="global"/>
+	</div>
+
+	<iscomment>
+		<div class="header-standard" style="background-image: url(${URLUtils.staticURL('/images/default-category-hdr.png')});">
+			<div class="container">
+				<h1>${Resource.msg('search.nohits.header','search',null)}</h1>
+			</div>
+	</div> </iscomment>
+
+	<div class="container">
+		<div class="search-message">
+			<h1 class="lead state-empty">${Resource.msg('search.nohits.message','search',null)} <strong><isprint encoding="htmlcontent" value="${pdict.productSearch.searchKeywords}"/></strong></h1>
+		</div>
+	</div>
+	<div class="container">
+		<div class="search-message">
+			<p>${Resource.msg('search.nohits.tryagain','search',null)}</p>
+		</div>
+	</div>
+
+	<iscomment>
+	<div class="container state-empty no-hits-content" style="">
+		<div class="row">
+			<div class="col-md-6 col-lg-4 offset-lg-2">
+
+				<iscontentasset aid="noresults-help"/>
+			</div>
+			<div class="col-md-6 col-lg-4">
+			<form action="${URLUtils.url('Search-Show')}" method="get">
+				<fieldset>
+				<div class="input-group input-group-lg search-again">
+                	<span class="input-group-addon"><i class="fal fa-search"></i></span>
+                	<input type="text" name="q" value="" class="form-control input-text" placeholder="Search again?" aria-label="Search">
+                	<input type="submit" style="display: none" />
+                 </div>
+                 </fieldset>
+             </form>
+			</div>
+		</div>
+	</div> </iscomment>
+	<iscomment>Categories / Product Listing</iscomment>
+	<isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnSearchPage')}">
+		<isslot id="einstein-noresults-bottom" description="Seach Page No Results Carousel" context="global" />
+	<iselse>
+		<isslot id="noresults-bottom" description="Seach Page No Results Carousel" context="global" />
+	</isif>
+
+	<isinclude template="search/searchpromo" />
+
+</isdecorate>

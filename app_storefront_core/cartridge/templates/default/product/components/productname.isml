@@ -1,0 +1,14 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+var productNameSlot = '';
+if(!empty(pdict.Product.name)){
+	productNameSlot = pdict.Product.name.substring(0,48);
+}
+if(!empty(pdict.Product.custom.secondaryName)){
+	productNameSlot = '<h1 class="product-name" itemprop="name">'+productNameSlot+'<span class="product-subtitle">'+pdict.Product.custom.secondaryName.substring(0,44)+'</span></h1>';
+} else {
+	productNameSlot = '<h1 class="product-name" itemprop="name">'+productNameSlot+'</h1>';
+
+}
+</isscript>
+<isset name="productNameSlot" value="${productNameSlot}" scope="page"/>

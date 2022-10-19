@@ -1,0 +1,91 @@
+/**
+ * Transforms the date fields for the workflow form. Unfortunately it is not possible to use the date type, because
+ * it will work with GMT or site dates only. But the integration framework must work with the instance time zone.
+ * 
+ * @input UpdateForm   : Boolean If true, the form will be updated, otherwise the object.
+ * @input CurrentForms : Object  The CurrentForms object.
+ * @input WorkflowScheduleDefinition : dw.object.CustomObject The definition to save.
+ */
+
+importPackage(dw.object);
+importPackage(dw.util);
+importPackage(dw.system);
+importPackage(dw.web);
+
+/**
+ * The main function.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Number} PIPELET_NEXT or in case of an exception PIPELINE_ERROR.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+	var updateForm   : Boolean = pdict.UpdateForm;
+	var currentForms : Object  = pdict.CurrentForms;
+	var workflowScheduleDefinition : CustomObject = pdict.WorkflowScheduleDefinition;
+	
+	var calendar : Calendar = new Calendar();
+	calendar.setTimeZone(System.getInstanceTimeZone());
+	if (updateForm) {
+		if (workflowScheduleDefinition.custom.type == 'SINGLE') {
+			calendar.setTime(workflowScheduleDefinition.custom.executionTime);
+			currentForms.workflow.workflow.SINGLE.executionTime.value = StringUtils.formatCalendar(calendar, request.locale, Calendar.INPUT_DATE_TIME_PATTERN);
+		} else {
+			calendar.setTime(workflowScheduleDefinition.custom.executionTime);
+			currentForms.workflow.workflow.RECURRING.executionTime.value = StringUtils.formatCalendar(calendar, request.locale, Calendar.INPUT_TIME_PATTERN);
+			calendar.setTime(workflowScheduleDefinition.custom.executionActiveFrom);
+			currentForms.workflow.workflow.RECURRING.executionActiveFrom.value = StringUtils.formatCalendar(calendar, request.locale, Calendar.INPUT_DATE_PATTERN);
+			if (!empty(workflowScheduleDefinition.custom.executionActiveTo)) {
+				calendar.setTime(workflowScheduleDefinition.custom.executionActiveTo);
+				currentForms.workflow.workflow.RECURRING.executionActiveTo.value = StringUtils.formatCalendar(calendar, request.locale, Calendar.INPUT_DATE_PATTERN);
+			}
+		}
+	} else {
+		var formInvalid : Boolean = false;
+		if (workflowScheduleDefinition.custom.type == 'SINGLE') {
+			try {
+				calendar.parseByLocale(currentForms.workflow.workflow.SINGLE.executionTime.value, request.locale, dw.util.Calendar.INPUT_DATE_TIME_PATTERN);
+				workflowScheduleDefinition.custom.executionTime = calendar.getTime();
+			} catch (e) {
+				currentForms.workflow.workflow.SINGLE.executionTime.invalidateFormElement(Resource.msg('form.error.workflow.SINGLE.executionTimeValueError', 'workflow', null));
+				
+				formInvalid = true;
+			}
+		} else {
+			try {
+				calendar.parseByLocale(currentForms.workflow.workflow.RECURRING.executionTime.value, request.locale, dw.util.Calendar.INPUT_TIME_PATTERN);
+				workflowScheduleDefinition.custom.executionTime = calendar.getTime();
+			} catch (e) {
+				currentForms.workflow.workflow.RECURRING.executionTime.invalidateFormElement(Resource.msg('form.error.workflow.RECURRING.executionTimeValueError', 'workflow', null));
+				
+				formInvalid = true;
+			}
+			try {
+				calendar.parseByLocale(currentForms.workflow.workflow.RECURRING.executionActiveFrom.value, request.locale, dw.util.Calendar.INPUT_DATE_PATTERN);
+				workflowScheduleDefinition.custom.executionActiveFrom = calendar.getTime();
+			} catch (e) {
+				currentForms.workflow.workflow.RECURRING.executionActiveFrom.invalidateFormElement(Resource.msg('form.error.workflow.RECURRING.executionActiveFromValueError', 'workflow', null));
+				
+				formInvalid = true;
+			}
+			if (!empty(currentForms.workflow.workflow.RECURRING.executionActiveTo.value)) {
+				try {
+					calendar.parseByLocale(currentForms.workflow.workflow.RECURRING.executionActiveTo.value, request.locale, dw.util.Calendar.INPUT_DATE_PATTERN);
+					workflowScheduleDefinition.custom.executionActiveTo = calendar.getTime();
+				} catch (e) {
+					currentForms.workflow.workflow.RECURRING.executionActiveTo.invalidateFormElement(Resource.msg('form.error.workflow.RECURRING.executionActiveToValueError', 'workflow', null));
+					
+					formInvalid = true;
+				}
+			} else {
+				workflowScheduleDefinition.custom.executionActiveTo = null;
+			}
+		}
+		
+		if (formInvalid) {
+			return PIPELET_ERROR;
+		}
+	}
+	
+    return PIPELET_NEXT;
+}

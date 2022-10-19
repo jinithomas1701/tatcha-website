@@ -1,0 +1,24 @@
+<isif condition="${pdict.Content && pdict.Content.custom}">
+	<isscript>
+		/* Script Modules */
+		var ogImageUrl = pdict.Content.custom.ogImage;
+		if (!empty(ogImageUrl)) {
+			ogImageUrl = ogImageUrl.getURL();
+		}
+		
+		var ogTitle = pdict.Content.custom.ogTitle;
+		if (empty(ogTitle)) {
+			ogTitle = pdict.Content.pageTitle;
+		}
+		var ogDescription = pdict.Content.custom.ogDescription;
+		if (empty(ogDescription)) {
+			ogDescription = pdict.Content.pageDescription;
+		}
+	</isscript>
+	<meta property="og:title" content="${ogTitle}" />
+	<meta property="og:description" content="${ogDescription}" />
+	<isif condition="${!empty(ogImageUrl)}">
+		<meta property="og:image" content="${ogImageUrl}" />
+	</isif>
+	<meta property="og:site_name" content="${Resource.msg('global.site.name', 'locale', null)}" />
+</isif>

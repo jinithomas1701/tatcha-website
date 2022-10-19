@@ -1,0 +1,275 @@
+@import "tatcha-baseline";
+$brand-primary: $tatcha-luminous !default; // #337ab7
+.product-gift-card {
+  .btn {
+    &:active,
+    &.active {
+      background-image: none;
+      outline: none !important;
+      box-shadow: none !important;
+    }
+    &:focus, .focus {
+      outline: none;
+      box-shadow: none !important;
+    }
+
+    &.btn-lg, .btn-group-lg > .btn {
+      padding: 10px 15px;
+      font-size: 20px;
+      line-height: 1.33333;
+    }
+
+    &.btn-sm, .btn-group-sm > .btn {
+      padding: 6px 12px;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+  }
+  h1 {
+    margin: 40px 0 40px;
+    font-weight: 200;
+    font-size: 44px;
+  }
+  .product-img-main {
+    margin: 8px 8px 8px 15px;
+    @include media-breakpoint-up(md){
+      margin: 8px 32px;
+    }
+  }
+  .gift-cert-label {
+    font-size: 16px;
+    font-weight: 200;
+    text-transform: uppercase;
+  }
+  .e-giftcard-delivery{
+    .float-label::before{
+      min-width:350px;
+    }
+  }
+  .invalid-feedback{
+    font-size: 14px;
+  }
+  .gift-card-thumbnails {
+    margin: 0 40px 16px;
+    @include media-breakpoint-up(sm){
+      margin: 0 80px 16px;
+    }
+    .product-thumbnail {
+      border: 2px solid transparent;
+      cursor: pointer;
+      margin-bottom: 4px;
+      &.active {
+        border: 2px solid $brand-primary;
+      }
+    }
+  }
+  .gift-card-h2 {
+    font-size: 20px;
+    font-weight: $font-weight-normal;
+    text-transform: uppercase;
+  }
+  .gift-card-details {
+    background-color: $background-gray;
+    padding: 16px;
+    border-radius: 16px;
+    line-height: 1.2;
+    margin-top: 8px;
+    font-size: 18px;
+    font-weight: 200;
+    margin: 8px 15px 8px 8px;
+    @include  media-breakpoint-up(md){
+      margin: 8px 32px;
+    }
+    .recipient-sender-wrap{
+      overflow-wrap: break-word;
+  }
+  }
+  .gift-card-recommended-selections {
+    .gift-card-h2, p, .selector-btn-block {
+      text-align: center;
+      @include  media-breakpoint-up(md){
+        text-align: left;
+      }
+    }
+    .selection-block {
+      @include clearfix;
+      text-align: center;
+      .selection-item-cell {
+        float: left;
+        display: table;
+        width: 92px;
+        height: 92px;
+        margin: 8px 2px;
+        border: 1px dashed $border-default;
+        .vertical-middle {
+          display: table-cell;
+          text-align: center;
+          vertical-align: middle;
+          background-color: $background-gray;
+          color: $border-default;
+        }
+        @media(min-width: 375px) {
+          width: 108px;
+          height: 108px;
+        }
+        @media(min-width: 414px) {
+          width: 124px;
+          height: 124px;
+        }
+        @include media-breakpoint-up(sm){
+          width: 152px;
+          height: 152px;
+        }
+        @include media-breakpoint-up(sm){
+          width: 120px;
+          height: 120px;
+        }
+       @include media-breakpoint-up(lg){
+          width: 148px;
+          height: 148px;
+        }
+      }
+    }
+  }
+  .product-list {
+    .product-name {
+      text-transform: none;
+      font-weight: $font-weight-bold;
+      font-size: 14px;
+      @media(min-width:748px){
+        height:4.5rem;
+      }
+      @media(min-width:1366px){
+        height:3rem;
+      }
+    }
+
+    .product-list-unit {
+      @include media-breakpoint-up(sm){
+        margin-top: 0;
+        width: 100%;
+      }
+      .product-marketing-flag-block {
+        min-height:1.5rem;
+        .product-marketing-flag {
+          color: #4D186E;
+          font-weight: bold;
+          text-transform: uppercase;
+        }
+      }
+    }
+  }
+  .product-list .product-list-row:first-of-type {
+    .product-list-unit {
+      @include media-breakpoint-up(sm){
+        margin-top: 0;
+      }
+    }
+  }
+  .selection-item-cell {
+    position: relative;
+    color: $gray-800;
+    .remove {
+      position: absolute;
+      right: -6px;
+      top: -3px;
+      font-size: 18px;
+      background-color: transparent;
+      border-width: 0;
+      color:#CCD4D9;
+    }
+  }
+
+  // Radio Block
+  .radio-box-options-block  {
+    .radio-box-option {
+      border: 2px solid $border-default;
+      margin: 0 0 round(0.5 * $g-unit) 0;
+      position: relative;
+      .selected-icon {
+        position: absolute;
+        right: round(0.25 * $g-unit);
+        top: 0;
+        color: $brand-primary;
+        display: none;
+      }
+      &.selected {
+        border-color: $brand-primary;
+        .selected-icon {
+          display: block;
+        }
+      }
+      input {
+        position: absolute;
+        opacity: 0;
+        height: 100%;
+        width: 100%;
+        padding: 0;
+        margin: 0;
+        cursor: pointer;
+      }
+      label {
+        padding: 4px 8px 6px;
+      }
+      .radio-text-block {
+        line-height: 1.2;
+      }
+    }
+  }
+
+  #giftcardSkipStep {
+    color: #495257;
+    text-decoration: underline;
+  }
+}
+
+.recommended-tab-contents {
+  .product-select {
+    margin: round(0.5 * $g-unit) auto round(0.25 * $g-unit) auto;
+    text-align: center;
+  }
+  .control-label {
+    font-size: 12px;
+    &.active {
+      color: #fff !important;
+      background-color: #000 !important;
+      background-image: none !important;
+      border-color: #000 !important;
+    }
+  }
+
+  label.btn-default {
+    &:active, &:focus {
+      color: #343C40 !important;
+      background-color: #d4d4d4 !important;
+      border-color: #6a7a82 !important;
+    }
+  }
+  input[type="checkbox"]{
+    margin: 4px 0 0;
+    line-height: normal;
+    position: absolute;
+    clip: rect(0,0,0,0);
+    pointer-events: none;
+  }
+  .product-marketing-flag {
+    font-size: 12px !important;
+  }
+  .product-list-rec {
+    display: flex;
+    justify-content: center;
+  }
+  .mobile-view-hr {
+    display : none;
+    @media(max-width: 767.98px) {
+      display : block;
+      width : 100%
+    }
+  }
+  .desktop-view-hr {
+    display : block;
+    @media(max-width: 767.98px) {
+      display : none;
+    }
+  }
+}

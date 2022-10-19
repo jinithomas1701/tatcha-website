@@ -1,0 +1,24 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${!empty(pdict.CurrentHttpParameterMap.page.intValue)}">
+	<isscript>
+	var currentPage = pdict.CurrentHttpParameterMap.page.intValue;
+	var totalPages = 0;
+	if(!empty(currentPage)){
+		if(!empty(pdict.ContentPagingModel)){
+			var totalPages = pdict.ContentPagingModel.maxPage;
+		}
+		var previousPage = 1;
+		var nextPage = totalPages;
+		if((currentPage >= 1) && (currentPage <= totalPages)){
+			var previousPage = currentPage-1;
+			var nextPage = currentPage+1;
+		}
+	}
+	</isscript>
+	<isif condition="${currentPage != 1}">
+		<link rel='prev' href="${URLUtils.url('Blog-Show','page', previousPage)}" />
+	</isif>
+	<isif condition="${currentPage != totalPages}">
+		<link rel='next' href="${URLUtils.url('Blog-Show','page', nextPage)}" />
+	</isif>
+</isif>

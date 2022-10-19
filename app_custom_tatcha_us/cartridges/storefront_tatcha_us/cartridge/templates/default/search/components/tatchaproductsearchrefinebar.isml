@@ -1,0 +1,151 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isscript>
+	var StringHelpers = require('~/cartridge/scripts/util/StringHelpers');
+</isscript>
+
+<iscomment>NOTE: Removes Refinements if NO Products are found</iscomment>
+<isif condition="${pdict.productSearch}">
+
+<iscomment>Fetches refinement options for easier handling in the template</iscomment>
+<isset name="Refinements" value="${pdict.apiProductSearch.refinements}" scope="page"/>
+
+<iscomment>Process refinement options based on configured refinement definitions</iscomment>
+<isif condition="${Refinements != null && Refinements.refinementDefinitions.size() > 0}">
+
+<h2 class="sr-only">${Resource.msg('searchrefinebar.refineresults','search',null)}</h2>
+
+<div class="view-option-group view-filters">
+	<div class="filters-mobile d-block d-sm-block d-md-none">
+		<button class="btn view-option-btn" data-toggle="modal" data-target="#filtersModal">
+			<div class="view-option-hdr">${Resource.msg('global.refinement.filters.label', 'locale', null)}</div>
+			<div class="view-option">
+				<span class="view-option-value">${Resource.msg('global.refinement.filter.options.label', 'locale', null)}</span>
+				<i class="fas float-right fa-sort-down dropdown-icon"></i>
+			</div>
+		</button>
+	</div>
+	<div class="filters-desktop d-none d-sm-none d-md-inline-block">
+		<button class="btn btn-md btn-link mr-3 d-none clear-filter" tabindex="0">${Resource.msg('search.results.clearfilters','search',null)}</button>
+		<isloop items="${Refinements.refinementDefinitions}" var="RefinementDefinition" status="refinementsLoopState">
+
+            <isif condition="${RefinementDefinition.attributeID.equals('skinType')}">
+                <isif condition="${pdict.category && !empty(pdict.category.displayName) && (pdict.category.displayName =='Normal' || pdict.category.displayName =='Combination to Oily'
+                || pdict.category.displayName =='Combination to Dry' || pdict.category.displayName =='Dry' || pdict.category.displayName =='Oily'
+                || pdict.category.displayName =='Sensitive' || pdict.category.displayName =='Body') }">
+                    <isnext/>
+                </isif>
+            </isif>
+
+            <isif condition="${RefinementDefinition.attributeID.equals('isTravelSize')}">
+                <isif condition="${pdict.category && !empty(pdict.category.displayName) && (pdict.category.displayName =='Travel') }">
+                    <isnext/>
+                </isif>
+            </isif>
+
+            <isif condition="${RefinementDefinition.attributeID.equals('size')}">
+                <div class="refinement dropdown mr-3">
+                <iselse>
+			    <div class="dropdown mr-3 refinement">
+		    </isif>
+            <button class="btn view-option-btn dropdown-toggle outline-global" type="button" id="filter${RefinementDefinition.attributeID}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" tabindex="0">
+                <div class="view-option-hdr" aria-hidden="true">
+                    <isif condition="${RefinementDefinition.getDisplayName() == 'Solution'}">
+                        ${Resource.msg('global.refinement.filter.heading.solution', 'locale', null)}
+                    <iselse>
+                        <isprint value="${RefinementDefinition.getDisplayName()}"/>
+                    </isif>
+                </div>
+                <div class="view-option" aria-label=<isif condition="${RefinementDefinition.attributeID == 'skinType'}">"Select Skin Type"<iselse>"Select Skin Solution"</isif>>
+                    <span class="view-option-value" aria-hidden="true">
+                    ${Resource.msgf('global.refinement.filter.heading.all', 'locale', null, RefinementDefinition.getDisplayName())}
+                    </span>
+                    <i class="fas float-right fa-sort-down dropdown-icon"></i>
+                </div>
+            </button>
+
+            <isif condition="${Refinements.getAllRefinementValues(RefinementDefinition).size() > 6 }">
+                <ul class="dropdown-menu dropdown-menu-right dropdown-menu-multi-col dropdown-menu-3-col" aria-labelledby="filter${RefinementDefinition.attributeID}">
+                <li class="row">
+                <isset name="multicolumn" value="true" scope="page" />
+
+            <iselse>
+                <isset name="multicolumn" value="false" scope="page" />
+                <ul class="dropdown-menu test2" aria-labelledby="filter${RefinementDefinition.attributeID}">
+            </isif>
+
+            <isscript>
+                var totalItems = Refinements.getAllRefinementValues(RefinementDefinition).size();
+                if(totalItems%3 != 0){
+                    var colSize = parseInt(totalItems/3)+1;
+                } else {
+                    var colSize = parseInt(totalItems/3);
+                }
+            </isscript>
+
+            <isset name="startRow" value="${0}" scope="page" />
+            <isset name="endRow" value="${colSize-1}" scope="page"/>
+
+            <isloop items="${Refinements.getAllRefinementValues(RefinementDefinition)}" var="RefinementValue" status="RefinementValueStatus">
+                <isif condition="${multicolumn == 'true'}">
+                    <isif condition="${(startRow == RefinementValueStatus.index)}">
+                        <ul class="list-unstyled col-sm-4"><li>
+                        <isset name="startRow" value="${(startRow + colSize)}" scope="page"/>
+                    <iselse>
+                        <li>
+                    </isif>
+                <iselse>
+                    <li>
+                 </isif>
+
+                <isif condition="${pdict.apiProductSearch.isRefinedByAttributeValue(RefinementDefinition.attributeID,RefinementValue.value)}">
+                    <a role="option" href="${StringHelpers.unsanitizeOR(pdict.apiProductSearch.urlRelaxAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()))}" data-value="${'swatch-' + StringHelpers.cleanupID(RefinementValue.getDisplayValue())}"  tabindex="-1">
+                        <div class="checkbox"><label><input type="checkbox" checked data-filter-checked="true" class="prd-refinement" role="checkbox" tabindex="0" data-filter-code="${RefinementValue.getValue()}">${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}</label></div>
+                    </a>
+                <iselse>
+                    <a role="option" href="${StringHelpers.unsanitizeOR(pdict.apiProductSearch.urlRefineAttributeValue('Search-Show',RefinementValue.getID(),RefinementValue.getValue()))}" data-value="${'swatch-' + StringHelpers.cleanupID(RefinementValue.getDisplayValue())}"  tabindex="-1">
+                        <div class="checkbox"><label><input type="checkbox" class="prd-refinement" role="checkbox" tabindex="0" data-filter-code="${RefinementValue.getValue()}">${Resource.msg('refinement.' + RefinementDefinition.attributeID + '.' + RefinementValue.getDisplayValue(), 'locale', RefinementValue.getDisplayValue())}</label></div>
+                    </a>
+                </isif>
+                <div class="sr-only" id="prd-checked" aria-live="polite" aria-atomic="true"></div>
+
+                <isif condition="${multicolumn == 'true'}">
+                    <isif condition="${(endRow == RefinementValueStatus.index) || ((RefinementValueStatus.index+1) == Refinements.getAllRefinementValues(RefinementDefinition).size())}">
+                        </li></ul>
+                        <isset name="endRow" value="${endRow+colSize}" scope="page" />
+                    <iselse>
+                        </li>
+                    </isif>
+                <iselse>
+                    </li>
+                 </isif>
+
+            </isloop>
+
+            <isif condition="${Refinements.getAllRefinementValues(RefinementDefinition).size() > colSize }">
+                </li>
+                     <li class="filter-cta-container">
+                        <button class="btn btn-default btn-sm btn-block">
+                            Done
+                        </button>
+                     </li>
+                </ul>
+            <iselse>
+                    <li class="filter-cta-container">
+                        <button class="btn btn-default btn-sm btn-block">
+                            Done
+                        </button>
+                    </li>
+                </ul>
+            </isif>
+			</div>
+		</isloop>
+	 	<div class="sr-only filter-result" aria-live="polite" aria-atomic="true"></div>
+	</div>
+</div>
+    <isinclude template="search/components/filtermodal"/>
+    <iselseif condition="${pdict.productSearch.count == 0}">
+	<isinclude template="search/components/categoryrefinebar"/>
+</isif>
+</isif>

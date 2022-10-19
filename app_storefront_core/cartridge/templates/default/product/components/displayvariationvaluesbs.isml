@@ -1,0 +1,44 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Dumps variation attributes values as name value pairs.
+	e.g. color: red
+	params:
+	pdict.product
+</iscomment>
+
+<iscomment>
+	Show Edit Details link if
+	Product is not null and it is either a variant and online or options product and online
+</iscomment>
+
+<isif condition="${pdict.product != null && pdict.product.isVariant() && !pdict.origin}">
+	
+			<div class="bag-item-variant">
+				<isloop items="${pdict.product.variationModel.getProductVariationAttributes()}" var="VA" status="status">
+					<isset name="SelectedVariationValue" value="${pdict.product.variationModel.getSelectedValue(VA)}" scope="page"/>
+					<span class="product-variant product-size" data-attribute="${VA.ID}">
+						<isif condition="${SelectedVariationValue != null}">
+							<isprint value="${SelectedVariationValue.displayValue}"/>
+						</isif>					
+					</span>
+					<isif condition="${!(status.last)}"><span class="separator">|</span></isif>
+				</isloop>
+			</div>
+		
+</isif>
+
+<isif condition="${pdict.product != null && pdict.product.isVariant() && pdict.origin}">
+	
+			<div class="product-variant-block">
+				<isloop items="${pdict.product.variationModel.getProductVariationAttributes()}" var="VA" status="status">
+					<isset name="SelectedVariationValue" value="${pdict.product.variationModel.getSelectedValue(VA)}" scope="page"/>
+					<span class="product-variant product-size" data-attribute="${VA.ID}">
+						<isif condition="${SelectedVariationValue != null}">
+							<isprint value="${SelectedVariationValue.displayValue}"/>
+						</isif>						
+					</span>
+					<isif condition="${!(status.last)}"><span class="separator">|</span></isif>
+				</isloop>
+			</div>
+		
+</isif>

@@ -1,0 +1,13 @@
+{
+	"globals": {
+      "session" : true,
+	  "empty" : true,
+	  "request" : true,
+	  "response" : true
+    },
+    "plugins": ["sitegenesis"],
+    "rules": {
+        "sitegenesis/no-global-require": ["error"],
+		"linebreak-style" : 0
+    }
+}

@@ -1,0 +1,32 @@
+  
+/**
+* Salesforce Commerce Cloud-NetSuite Celigo Connector Script File
+* Purpose: This script divides the exported objects into pages.
+*
+*@input orders : dw.util.Iterator orders to be exported
+*@input ordersCount : Number count of orders
+*@input pageSize : Number count of orders
+*@output pages : Object Array of pages of objects
+*/
+importPackage( dw.system );
+importPackage( dw.util );
+
+function execute( args : PipelineDictionary ) : Number
+{
+    var orderCount : Number = args.ordersCount;
+    var pageSize : Number = args.pageSize;
+    var orders : dw.util.Iterator = args.orders;
+    var pages : Object = new ArrayList();
+    var numOfPages : Number ;
+    if(orderCount > pageSize){
+    	numOfPages = Math.ceil(orderCount/pageSize);
+    	for(var i=0 ; i < numOfPages; i++){
+    		pages.push((orders.asList(0, pageSize)).iterator());
+    	}
+    }else{
+    	pages.push(orders);
+    }
+    args.pages = pages;
+
+   return PIPELET_NEXT;
+}

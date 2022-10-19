@@ -1,0 +1,141 @@
+
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="account/pt_account">
+<isinclude template="util/modules"/>
+<isinclude template="product/components/modals"/>
+<link rel="stylesheet" href="https://use.typekit.net/axu1woh.css">
+
+<isscript>
+var step2BodyContent1 = pdict.Content.custom.body+'';
+var step2BodyContent2 = pdict.Content.custom.mobileBody+'';
+var step3MessageContent = pdict.Content.custom.offersContent+'';
+
+</isscript>
+
+<isset name="step2BodyContent1" value="${step2BodyContent1}" scope="session" />
+<isset name="step2BodyContent2" value="${step2BodyContent2}" scope="session" />
+<isset name="step3MessageContent" value="${step3MessageContent}" scope="session" />
+
+<isscript>
+	importScript("cart/CartUtils.ds");
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	var giftproductId = Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID');
+	var giftproduct = dw.catalog.ProductMgr.getProduct(giftproductId);
+	var giftAmount = JSON.parse(Site.getCurrent().getCustomPreferenceValue('giftcert-amount'));
+	var defaultGiftAmount = Site.getCurrent().getCustomPreferenceValue('defaultGiftCertAmount');
+	
+	var selectedGiftCertImage = session.custom.selectedGiftimage ? session.custom.selectedGiftimage : '';
+	var giftSendername = session.custom.senderName ? session.custom.senderName : '';
+	var giftRecepientname = session.custom.recepientName ? session.custom.recepientName : '';
+	var giftCertAmount = session.custom.giftAmount ? session.custom.giftAmount: 0;
+	var activeStep = session.custom.nextStep ? session.custom.nextStep : 0;
+</isscript>
+<isscript>
+	importScript( "util/ViewHelpers.ds" );
+</isscript>
+
+<input type="hidden" id="isPage1Step2Viewed" value="${session.custom.ispage2Viewed}"/>
+<input type="hidden" id="isPage1Step3Viewed" value="${session.custom.ispage3Viewed}"/>
+<input type="hidden" id="selectedImage" value="${selectedGiftCertImage}"/>
+<input type="hidden" id="defaultMessageContent" value="${session.custom.step3MessageContent}"/>
+<div class="product product-gift-card">
+	<input type="hidden" id="activeStep" value="<isprint value="${activeStep}" style="INTEGER">"/>
+	<div class="container">
+		<h1 class="text-center">E-Gift Card</h1>
+		
+		<!-- Tab 1 -->
+		<div class="design-tab">
+			<div class="row">
+				<div class="col-xs-12 col-md-8 col-md-offset-2">
+					<ul class="nav nav-progress nav-pills nav-justified">
+						<div class="col-xs-4">
+							<li role="presentation" class="active">
+								<a class="gift-card-tab gift-design-tab" data-tab="design-tab">
+									<span class="progress-step-num">1</span>
+									<span class="progress-step-description">Design</span>
+								</a>
+							</li>
+						</div>
+						<div class="col-xs-4">
+							<li role="presentation" id="step1RecTabLi" style="pointer-events:none">
+								<a class="gift-card-tab gift-recommend-tab" data-tab="recommend-tab">
+									<span class="progress-step-num">2</span>
+									<span class="progress-step-description">Recommend</span>
+								</a>
+							</li>
+						</div>
+						<div class="col-xs-4">
+							<li role="presentation" id="step1DelTabLi" style="pointer-events:none">
+								<a class="gift-card-tab gift-deliver-tab" data-tab="deliver-tab">
+									<span class="progress-step-num">3</span>
+									<span class="progress-step-description">Deliver</span>
+								</a>
+							</li>
+						</div>
+					</ul>
+					<isif condition="${pdict.Content && pdict.Content.custom}">
+						<p class="text-center">
+							<isprint value="${pdict.Content.description}" />
+						</p>
+					</isif>
+					
+				</div>
+			</div>
+			<div class="row" style="margin-top: 16px;">
+				<isinclude url="${URLUtils.url('TatchaUtils-GetGiftCardImagesFromContentAssets')}"/>
+				<div class="col-sm-8 col-sm-offset-2 col-md-4 col-md-offset-0">
+					<form name="purchaseGiftCerStep1" action="${URLUtils.url('GiftCert-SaveGiftCertStep1Data')}" method="post">
+						<input type="hidden" id="selectedGiftImgae" name="selectedGiftImgae" value="" />
+						<div class="form-group product-qty">
+							<label for="giftCertAmount" class="control-label control-label-lg">Select Amount</label>           
+							<select class="form-control input-lg" name="giftCertAmount" id="giftCertAmount" aria-label="Select Gift certificate amount">
+								<isloop items="${giftAmount}" alias="amount">
+									<option value="${amount}" <isif condition="${amount == giftCertAmount}" >selected</isif> >
+										$<isprint value="${amount}" />
+								 	</option>   
+								</isloop>
+							</select>
+						</div>
+						<div class="form-group">
+							<label for="recipientName" class="control-label control-label-lg">Recipient’s First Name</label>
+							<input id="recipientName" name="recipientName" class="form-control input-lg" value="${giftRecepientname}" maxlength="36">
+							<span class="help-block" style="display: none;">This field is required.</span>
+						</div>
+						<div class="form-group">
+							<label for="senderName" class="control-label control-label-lg">Sender’s First Name</label>
+							<input id="senderName" name="senderName" class="form-control input-lg" value="${giftSendername}" maxlength="36">
+							<span class="help-block" style="display: none;">This field is required.</span>
+						</div>
+						<div class="row">
+							<div class="col-xs-10 col-xs-offset-1">
+								<button type="submit" id="giftGertStep1Next" class="btn btn-lg btn-primary btn-block">Next</button>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	<!-- Tab 2 -->
+		
+		<isif condition="${activeStep === 2}">
+			<div class="recommend-tab">
+			
+			</div>
+		<iselse>
+			<div class="recommend-tab" style="display:none;">
+			</div>
+		</isif>
+		
+		
+	
+	<!-- Tab 3 -->
+		<isif condition="${activeStep === 3}">
+			<div class="deliver-tab">
+			</div>
+		<iselse>
+			<div style="display:none;" class="deliver-tab">
+			</div>
+		</isif>
+</div>
+</isdecorate>

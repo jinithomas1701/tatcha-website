@@ -1,0 +1,36 @@
+@mixin placeholder {
+    ::-webkit-input-placeholder {@content}
+    :-moz-placeholder           {@content}
+    ::-moz-placeholder          {@content}
+    :-ms-input-placeholder      {@content}
+}
+@mixin drop-shadow {
+	border: 1px solid rgba(0, 0, 0, 0.05);
+	box-sizing: border-box;
+
+	/* Shadows/01. Small */
+	box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+	border-radius: 8px;
+}
+@mixin section-anchor {
+	font-weight: $font-weight-bold;
+	text-transform: uppercase;
+	text-align: center;
+}
+
+@mixin section-anchor-after {
+	content: '';
+    display: block;
+    height: 4px;
+    width: 2 * $g-unit;
+    margin: $g-unit auto (1.5 * $g-unit);
+    background-color: $primary;
+}
+
+@mixin clearfix {
+    &:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+}

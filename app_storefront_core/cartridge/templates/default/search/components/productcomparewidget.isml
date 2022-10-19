@@ -1,0 +1,108 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>Product compare widget uses session information and therefore must not be cached.</iscomment>
+<isif condition="${(pdict.CompareList != null) && (pdict.Category != null)}">
+	<isscript>
+		importScript("int_tatcha_dis:common/GetImageUrl.ds");
+		var products = new dw.util.ArrayList();
+		if (!empty(pdict.CompareList.products)) {
+			for (var i = 0, len = pdict.CompareList.products.length; i < len; i++) {
+				var productId = pdict.CompareList.products[i];
+				var item = dw.catalog.ProductMgr.getProduct(productId);
+				var image = getImageUrl(item,'medium');
+				products.add({
+					id: item.ID,
+					name: item.name, 
+					uuid: item.UUID,
+					imgSrc: image ? image : URLUtils.staticURL('/images/noimagesmall.png').toString(),
+					imgAlt: item.name
+				});
+			}
+			
+			var compareListLength = pdict.CompareList.products.length;
+		}
+
+		var plen = products.length;
+		for (i = plen; i < 5; i++) {
+			products.add({
+				imgSrc: URLUtils.staticURL('/images/comparewidgetempty.png').toString(),
+				imgAlt: Resource.msg('productcomparewidget.empty', 'search', null)
+			});
+		}
+	</isscript>
+	<iscomment> </iscomment>
+	<!-- 
+	<div class="compare-items" <isif condition="${plen == 0}">style="display:none;" </isif>data-category="${pdict.Category.ID || ''}">
+		<h2>${Resource.msg('productcomparewidget.compareitems', 'search', null)}</h2>
+		<div class="compare-bar">
+			<div class="compare-items-panel">
+				<isloop items="${products}" var="item" status="Status">
+					<div class="compare-item<isif condition="${!empty(item.id)}"> active</isif>" <isif condition="${!empty(item.uuid)}">data-uuid="${item.uuid}"</isif> <isif condition="${!empty(item.id)}">data-itemid="${item.id}"</isif>>
+						<div class="compare-item-number"><isprint value="${Status.index + 1}" style="INTEGER" /></div>
+						<a class="compare-item-remove"><i class="fa fa-remove"></i></a>
+						<isif condition="${!empty(item.id)}">
+							<img class="compare-item-image" src="${item.imgSrc}" alt="${item.imgAlt}"/>
+						</isif>
+					</div>
+				</isloop>
+			</div>
+			<div class="compare-buttons">
+				<button id="compare-items-button" value="${Resource.msg('productcomparewidget.compareitemsbutton', 'search', null)}" <isif condition="${plen < 2}">disabled="disabled"</isif>>${Resource.msg('productcomparewidget.compareitemsbutton', 'search', null)}</button>
+				<button class="simple" id="clear-compared-items" value="${Resource.msg('productcomparewidget.clearall', 'search', null)}">${Resource.msg('productcomparewidget.clearall', 'search', null)}</button>
+			</div>
+		</div>
+	</div>
+	 -->
+	<div class="compare-panel" <isif condition="${plen == 0}">style="display:none;" </isif>data-category="${pdict.Category.ID || ''}">
+		<button class="compare-tab clearfix collapsed" role="button" data-toggle="collapse" href="#comparePanel" aria-expanded="false" aria-controls="comparePanel">
+			<isif condition="${!empty(compareListLength)}">
+				<div class="compare-tab-heading">Compare <span class="compare-prd-num">(<isprint value="${compareListLength}" />)</span>
+				</div>
+			<iselse>
+				<div class="compare-tab-heading">Compare <span class="compare-prd-num" style="display:none;"></span></div>
+			</isif>
+			
+			<div class="compare-tab-caret">
+				<i class="fal fa-lg fa-chevron-circle-up caret-rotator"></i>
+			</div>
+		</button>
+		<div class="compare-body collapse" id="comparePanel">
+			<div class="compare-cta-top">
+				<div class="compare-clear">
+					<span>You can compare up to 5 items.</span>
+					<button class="btn btn-link" id="clear-compared-items">Clear All</button>
+				</div>
+			</div>
+			<div class="slide-window">
+				<div class="slide-frame-wrapper">
+					<ul class="compare-product-block list-unstyled slide-frame">
+						<isloop items="${products}" var="item" status="Status">
+							<li class="compare-product clearfix<isif condition="${!empty(item.id)}"> active</isif>" <isif condition="${!empty(item.uuid)}">data-uuid="${item.uuid}"</isif> <isif condition="${!empty(item.id)}">data-itemid="${item.id}"</isif>>		
+								<isif condition="${!empty(item.id)}">
+									<img class="compare-prd-image product-thumbnail" src="${item.imgSrc}" alt="${item.imgAlt}"/>
+									<div class="product-name d-none d-md-inline-block">
+										<isprint value="${item.name.substring(0,48)}"/>
+									</div>
+									<button class="btn btn-link btn-remove compare-prd-remove" aria-label="${'Remove product from compare - '+item.name.substring(0,48)+'.'}">
+										<i class="fa fa-lg fa-times-circle"></i>
+									</button>
+								<iselse>
+									<div class="product-thumbnail empty empty-product-wrap">
+									</div>
+									<div class="product-name d-none d-md-inline-block">
+									</div>
+									<button class="btn btn-link btn-remove compare-prd-remove" style="display:none;">
+										<i class="fa fa-lg fa-times-circle"></i>
+									</button>
+								</isif>
+							</li>
+						</isloop>
+					</ul>
+				</div>
+			</div>
+	
+			<div class="compare-cta-bottom">
+				<button class="btn btn-primary btn-block btn-round" id="compare-items-button">Compare Now</button>
+			</div>
+		</div>
+	</div>
+</isif>

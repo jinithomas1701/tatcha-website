@@ -1,0 +1,47 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Ritual Finder',
+			type: 'ritualfinder',
+			ns:'recommendation'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+
+	<iscomment>This page must be cachable. It inherits the caching attributes by the decorated template.</iscomment>
+
+	<isinclude template="components/header/htmlhead_bs"/>
+	<isinclude template="content/content/contentogtags"/>
+	<isinclude template="content/recommendations/pt_whatsnext_UI"/>
+	<link rel="stylesheet" href="${URLUtils.staticURL('/css/tatcha-whatsnext.css')}" />
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+<body>
+	
+	<isinclude template="components/header/header_bs"/>
+	
+	<main role="main" class="product whats-next whats-next-results" tabindex="-1">
+		<isreplace/>
+		<isinclude template="components/browsertoolscheck"/>
+	</main>
+		
+	<isinclude template="components/footer/footer_bs"/>
+	
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+		<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+	</isif>
+	
+	<isinclude template="content/recommendations/pt_whatsnext_VARS"/>
+
+</body>
+</html>

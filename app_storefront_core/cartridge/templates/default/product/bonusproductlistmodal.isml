@@ -1,0 +1,195 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="checkout/cart/pt_cart" scope="page"/>
+<isset name="lazyLoad" value="${true}" scope="page"/>
+<isscript>
+var Site = require('dw/system/Site');
+var samplePromoID = Site.getCurrent().getCustomPreferenceValue('samplePromotionID');
+</isscript>
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' }">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isif condition="${pdict.CurrentHttpParameterMap.lazyLoad.stringValue == 'true' }">
+	<isset name="lazyLoad" value="${false}" scope="page"/>
+</isif>
+
+<isset name="successUrl" value="Cart-Show" scope="page"/>
+<isif condition="${!empty(pdict.CurrentHttpParameterMap.successUrl.stringValue)}">
+	<isset name="successUrl" value="${pdict.CurrentHttpParameterMap.successUrl.stringValue}" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+	<iscomment>This template renders a list of bonus products for adding to the cart.</iscomment>
+
+	<isinclude template="util/modules"/>
+	<isscript>
+		var lidata = {
+			uuid:pdict.BonusDiscountLineItem.UUID,
+			maxItems:pdict.BonusDiscountLineItem.getMaxBonusItems(),
+			itemCount:pdict.BonusDiscountLineItem.getBonusProductLineItems().size(),
+			pageStart: pdict.CurrentHttpParameterMap.pageStart.intValue,
+			bpTotal: pdict.BPTotal,
+			pageSize: pdict.CurrentHttpParameterMap.pageSize.intValue	
+		};
+	</isscript>
+	
+	<div id="bonus-product-list-options" data-options='<isprint value="${JSON.stringify(lidata)}" encoding="off"/>'></div>
+	<div class="modal-header">
+		<h2 tabindex="0"><isprint value="${pdict.BonusDiscountLineItem.getPromotion().getName()}" encoding="off"/></h2>
+		<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</button>
+	</div>
+	<div class="modal-body container-fluid">
+		<isif condition="${!empty(pdict.BonusDiscountLineItem.getPromotion().custom.subHeader)}">
+			<p style="margin-left: 10px;"><isprint value="${StringUtils.pad(pdict.BonusDiscountLineItem.getPromotion().custom.subHeader,98)}" encoding="off"/></p>
+	    </isif>
+		<isif condition="${(pdict.BonusDiscountLineItem.bonusProducts && pdict.BonusDiscountProducts) && (pdict.BonusDiscountLineItem.bonusProducts.size() == 1 || pdict.BonusDiscountProducts.size() == 1)}"><!-- one item --></isif>
+		<isset name="BonusProductsCollection" value="${pdict.BonusDiscountLineItem.bonusProducts.size() > 0 ? pdict.BonusDiscountLineItem.bonusProducts : pdict.BonusDiscountProducts}" scope="page">
+		<isscript>
+		  var sampleProductCounter = 1;
+		  var bonusProductsList = [];
+		  for each (bonusProductItem in BonusProductsCollection) {
+		  	var bonusItem = !empty(bonusProductItem.variationModel) ? bonusProductItem : bonusProductItem.variationModel.defaultVariant;
+		  	if(bonusItem.getAvailabilityModel().isOrderable() && bonusItem.getAvailabilityModel().isInStock()) {
+		  		bonusProductsList.push(bonusItem);
+		  	}
+		  }
+		  var bonusCollection : dw.util.Collection = new dw.util.ArrayList(bonusProductsList);
+		</isscript>
+		<isif condition="${bonusCollection.size() > 0}">
+			<isloop items="${bonusCollection}" var="LoopProductHit" status="loopstate">
+				<isset name="hasDefaultVariant" value="${!empty(LoopProductHit.variationModel)}" scope="page"/>
+				<isset name="Product" value="${hasDefaultVariant ? LoopProductHit : LoopProductHit.variationModel.defaultVariant}" scope="pdict"/>
+				<isscript>
+					var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+					var productType = ProductUtils.getProductType(pdict.Product);
+				</isscript>
+				<isif condition="${sampleProductCounter % 4 === 1}">
+					<div class="row">
+				</isif>
+					<div class="col-6 col-md-3">
+						<div class="bonus-product-item" id="${'item-'+pdict.Product.UUID}" data-producttype="${productType}">
+							<div class="product-slot">
+								<isinclude template="product/components/bonusproductmodal"/>
+							</div>
+						</div>
+					</div>
+					<isif condition="${loopstate.last && lazyLoad && (pdict.BPTotal > 0 )}">
+						<button type="button" id="more-bonus-products" class="button-fancy-medium" value="${Resource.msg('cart.bonusproduct.button.more','checkout',null)}">
+							${Resource.msg('cart.bonusproduct.button.more','checkout',null)}
+						</button>
+					</isif>
+				<isif condition="${(sampleProductCounter % 4 === 0) || (loopstate.last) }">
+					</div>
+				</isif>
+				<isscript>
+					sampleProductCounter++;
+				</isscript>
+			</isloop>
+		</isif>
+	</div>
+	<div class="modal-footer">
+		<div class="container-fluid">
+		<div class="row">
+			<div class="col-sm-12 col-md-9 col-lg-10 offset-md-1">
+				<div class="product-count"><isprint value="${lidata.itemCount}" /> of <isprint value="${lidata.maxItems}" /> selected</div>
+			</div>
+			<div class="col-sm-8 offset-sm-2 col-md-2 col-lg-1 offset-md-0 pt-2">
+				<div class="product-cta">
+			   		<button data-url="${URLUtils.url('Cart-AddBonusProduct', 'bonusDiscountLineItemUUID', pdict.BonusDiscountLineItem.UUID)}" data-success-url="${URLUtils.url(successUrl)}" id="submit-sample-items" type="button" class="btn btn-primary">
+			   			
+			   			<isif condition="${pdict.BonusDiscountLineItem.getPromotion().ID == samplePromoID}">
+			   				<isif condition="${(lidata.itemCount > 0)}">
+				   				<isif condition="${lidata.maxItems == 1}">
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				<iselse/>
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				</isif>
+				   			<iselse/>
+				   				<isif condition="${lidata.maxItems == 1}">
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				<iselse/>
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				</isif>
+				   			</isif>
+			   			<iselse/>
+			   				<isif condition="${(lidata.itemCount > 0)}">
+				   				<isif condition="${lidata.maxItems == 1}">
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				<iselse/>
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				</isif>
+				   			<iselse/>
+				   				<isif condition="${lidata.maxItems == 1}">
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				<iselse/>
+				   					${Resource.msg('cart.addsample','checkout',null)}
+				   				</isif>
+				   			</isif>
+			   			</isif>
+			   			
+			   		</button>
+		   		</div>
+			</div>
+			</div>
+		</div>
+    </div>
+    <script>
+	    var Samples = {
+	   		options: JSON.parse($('#bonus-product-list-options').attr('data-options')),
+	   		totalSelected: $('.select-bonus-item.active').length,
+	   		init: function() {
+	   			$('.select-bonus-item').on('click', function() {
+	   				if($(this).hasClass('active-btn')) {
+	   					$(this).removeClass('active-btn');
+	   	   				$(this).find('span').html('Add');
+	   					Samples.totalSelected--;
+	   					$('.select-bonus-item').removeClass('disabled');
+	   				} else {
+	   					if(Samples.totalSelected < Samples.options.maxItems) {
+	   	   					$(this).addClass('active-btn');
+	   	   	   				$(this).find('span').html('Selected');
+	   	   	   				Samples.totalSelected++;
+	   	   				} 
+	   					if(Samples.totalSelected >= Samples.options.maxItems) {
+	   	   					$('.select-bonus-item:not(.active-btn)').addClass('disabled');
+	   	   				}
+	   				}
+	   				$('#bonusModal .product-count').html(Samples.totalSelected + ' of ' + Samples.options.maxItems + ' selected');
+	   				$('#gwpbonusModal .product-count').html(Samples.totalSelected + ' of ' + Samples.options.maxItems + ' selected');
+	   			});
+	   			$('#submit-sample-items').on('click', function() {
+	   				$('.loader-preventive').show();
+	   				Samples.submitForm();
+	   		    });
+	   			if(Samples.totalSelected >= Samples.options.maxItems) {
+					$('.select-bonus-item:not(.active-btn)').addClass('disabled');
+				}
+	   			$('[data-toggle="tooltip"]').tooltip();
+	   		},
+	   		submitForm: function() {
+	   			var selectedItems = [];
+	   			$('.select-bonus-item.active-btn').each(function() {
+	   				var options = JSON.parse($(this).attr('data-options'));
+	   				selectedItems.push(options);
+	   			});
+	   			selectedItems = JSON.stringify({
+	   				'bonusproducts': selectedItems
+	   			});
+	   			$.ajax({
+	   				url: $('#submit-sample-items').attr('data-url'),
+	   				type: 'POST',
+	   				contentType: "application/json",
+	   			    dataType: 'json',
+	   				data: selectedItems,
+	   				success: function(res) {
+	   					if(res.success == true) {
+	   						window.location.href = $('#submit-sample-items').attr('data-success-url');
+	   					}
+	   				}
+	   			});
+	   		}
+	    };
+	    Samples.init();
+    </script>
+</isdecorate>
+

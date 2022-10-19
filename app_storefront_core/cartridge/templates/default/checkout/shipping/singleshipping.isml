@@ -1,0 +1,271 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isdecorate template="checkout/pt_checkout">
+<isinclude template="util/modules"/>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('skip_email_gate') && !customer.authenticated}" >
+	<isreportcheckout checkoutstep="${1}" checkoutname="${'CheckoutMethod'}" />
+</isif>
+<iscomment>
+    This template visualizes the first step of the single shipping checkout
+    scenario. It renders a form for the shipping address and shipping method
+    selection. Both are stored at a single shipment only.
+</iscomment>
+  
+<iscomment>Report this checkout step (we need to report two steps)</iscomment>
+  
+<isreportcheckout checkoutstep="${2}" checkoutname="${'ShippingAddress'}"/>
+<isreportcheckout checkoutstep="${3}" checkoutname="${'ShippingMethod'}"/>
+<isscript>
+    importScript("cart/CartUtils.ds");
+    var Tatcha = require('~/cartridge/scripts/util/Tatcha.ds');
+		
+    var productListAddresses = CartUtils.getAddressList(pdict.Basket, pdict.CurrentCustomer, true);
+   	var hasAutoDeliveryProduct = CartUtils.hasAutoDeliveryProductInBag(pdict.Basket);
+	var usersCountry = CartUtils.checkUserSavedAddress();
+	var showAdWarning = hasAutoDeliveryProduct && usersCountry;
+</isscript>
+
+<div class="checkout checkout-form">
+	<div class="container">
+		<h1> ${Resource.msg('checkout.title','checkout',null)}</h1>
+		<iscomment>checkout progress indicator</iscomment>
+	    <ischeckoutprogressindicator step="1" rendershipping="${pdict.Basket.productLineItems.size() == 0 ? 'false' : 'true'}"/>
+   
+		<div class="col-md-7">
+			<isif condition="${pdict.CurrentSession.custom.HasSORProducts != true}">
+				<div class="panel panel-default panel-checkout checkout-alt-payment-block">
+				
+					<div class="panel-body">
+						<h2>${Resource.msg('singleshipping.continuewith','checkout',null)}</h2>
+						<isinclude template="braintree/cart/checkoutButtons"/>
+					</div>
+		      	</div>
+		    </isif>
+		    <div class="panel panel-default panel-checkout">
+		    <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('skip_email_gate') && !customer.authenticated}" >
+		    	<div class="panel-heading panel-split">
+						<h2 class="panel-title"> ${Resource.msg('singleshipping.shippingheader','checkout',null)}</h2>
+						<div class="panel-action"></div>
+					</div>
+					<iselse>
+					<div class="panel-heading panel-split">
+						<h2 class="panel-title"> ${Resource.msg('singleshipping.shippingheadersignin','checkout',null)}</h2>
+						<div class="panel-action"></div>
+					</div>
+					
+					</isif>
+					<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('skip_email_gate') && !customer.authenticated}" >
+		    	<div class="panel-body email-panel">
+		    	<div class="panel-section">
+		    	<isinclude template="checkout/shipping/guestemail"/>
+		    	</div>
+		    	</div>
+		    </isif>
+			<form action="${URLUtils.continueURL()}" method="post" id="${pdict.CurrentForms.singleshipping.shippingAddress.htmlName}" class="checkout-shipping-panel address addressformfields address-data-form">
+	      		<div class="panel panel-default panel-checkout">
+					 
+					<div class="panel-body">
+						<div class="panel-section">
+							<isif condition="${pdict.CurrentCustomer.authenticated && pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">
+								<h3 class="shipping-address-title"> ${Resource.msg('minishipments.shippingaddress','checkout',null)}</h3>
+								<div class="review-ad-warning-container">
+									<isif condition="${showAdWarning}">
+										<isinclude template="checkout/components/autodeliveryinternationalshippingwarning" />
+									</isif>
+								</div>
+								<p class="checkout-paragraph">${Resource.msg('global.selectaddressmessage','locale',null)}</p>
+							<iselse/>
+								<h3> ${Resource.msg('minishipments.shippingaddress','checkout',null)}</h3>
+								<isif condition="${showAdWarning}">
+									<isinclude template="checkout/components/autodeliveryinternationalshippingwarning" />
+								</isif>
+							</isif>
+							<div class="panel-section-indent ">
+								<isif condition="${pdict.HomeDeliveries}">
+		                   			<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableMultiShipping')}">
+                       					<isscript>
+			                           		var plicount = 0;
+			                           		for each (var shipment in pdict.Basket.shipments) {
+				                           		for each (var product in shipment.productLineItems) {
+				                                	plicount += product.quantity;
+				                           		}
+				                           	}
+			                       		</isscript>
+									</isif>
+				
+				                   	<iscomment>display select box with stored addresses if customer is authenticated and there are saved addresses</iscomment>
+				                   	<isif condition="${pdict.CurrentCustomer.authenticated && pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">
+				                   		<input type="hidden" id="isUserLoggedIn" name="isUserLoggedIn" value="true"/>
+				                       	<div class="select-address checkout-stack-options-block">
+				                           	<isaddressselectlist p_listId="${pdict.CurrentForms.singleshipping.addressList.htmlName}" p_listaddresses="${productListAddresses}" />
+			                       		    <div class="panel-section-cta">
+											<a href="#" class="btn btn-default btn-sm" data-toggle="modal" data-target="#addAddressModal">${Resource.msg('account.addressbook.editaddress.addaddress','account',null)}</a>
+											</div>
+			                       		</div>
+									</isif>
+									<div class= "panel-section-short checkout-shipping-address-form" <isif condition="${pdict.CurrentCustomer.authenticated && pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">style="display: none"</isif>>
+										<isscript>
+					                       var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+					                   	</isscript>
+					                   	<isdynamicform formobject="${pdict.CurrentForms.singleshipping.shippingAddress.addressFields}" formdata="${currentCountry.dynamicForms.addressDetails}"/>
+					                   	<iscomment>Add address to Address Book</iscomment>
+					                   	<div style="display:none">	
+					                   		<isif condition="${pdict.CurrentCustomer.authenticated}">
+						                       <isinputfield formfield="${pdict.CurrentForms.singleshipping.shippingAddress.addToAddressBook}" type="checkbox" value="true" checked="true"/>
+				                   			</isif>
+					                   		<iscomment>Use address for Billing Address</iscomment>
+				                   			<isinputfield formfield="${pdict.CurrentForms.singleshipping.shippingAddress.useAsBillingAddress}" type="checkbox"/>
+				                   		</div>
+			                   		</div>
+			       				</isif>
+				        	
+					        	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableStorePickUp')}">
+					               <isset name="instoreShipmentsExists" value="${false}" scope="page"/>
+					               <isinclude template="checkout/shipping/storepickup/instoremessages"/>
+					           	<iselse/>
+					               <isset name="instoreShipmentsExists" value="${false}" scope="page"/>
+					           	</isif>
+							</div>
+						</div>
+						<div class="panel-section">
+							<h3>${Resource.msg('singleshipping.selectshipping','checkout',null)}</h3>
+							<div id="shipping-method-list">
+				                <isinclude url="${URLUtils.https('COShipping-UpdateShippingMethodList')}"/>
+				         	</div>					
+						</div>
+							
+						<iscomment> for 20.1-patch3 </iscomment>
+						<isscript>
+							var giftWrapId = Site.getCurrent().getCustomPreferenceValue('GiftWrapId');
+							var giftMsgLength = Site.getCurrent().getCustomPreferenceValue('GiftMsgLen');
+							if(giftWrapId){
+								var giftWrapProduct = dw.catalog.ProductMgr.getProduct(giftWrapId); 
+							} 
+						</isscript>
+						<isif condition="${giftWrapProduct && giftWrapProduct.onlineFlag}">	
+							<div class="panel-section checkout-gift-block" id="bag-gift-block">
+								<isinclude template="checkout/cart/giftwrap.isml" />
+							</div>
+						</isif>
+						
+						<isif condition="${pdict.Basket.productLineItems.size() > 1 && false}">
+				      		<div class="ship-to-multiple">
+			              		${Resource.msg('singleshipping.multiple','checkout',null)} <a href="${URLUtils.https('COShippingMultiple-Start')}">${Resource.msg('global.yes','locale',null)}</a>
+			          		</div>
+				      	</isif>
+			      		</div>
+					<div class="panel-footer text-right">
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+						<input type="hidden" name="${pdict.CurrentForms.singleshipping.shippingAddress.save.htmlName}" value="true"/>
+						<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('skip_email_gate') && !customer.authenticated}" >
+							<input id="customeremail" type="hidden" name="customeremail" value="">
+						</isif>
+				  	<div class="show-shipping-error has-error">
+						<span class="error-block"><span><i class="fal fa-exclamation-circle"></i></span><span class="error-label">${Resource.msg('checkout.fielderror','checkout',null)} </span></span> 
+						</div>
+						<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LOQATE_verification_enabled')}">
+							<isif condition="${pdict.CurrentCustomer.authenticated && pdict.CurrentCustomer.profile.addressBook.addresses.size() > 0}">
+								<button class="btn btn-primary btn-lg btn-checkout-continue demo-save-shipping" data-shipping-page="true" data-form="shipping" type="submit" value="${Resource.msg('global.continuebilling','locale',null)}"><span>${Resource.msg('global.continue','locale',null)}</span></button>
+							<iselse>
+								<button class="btn btn-primary btn-lg btn-checkout-continue shipping-verify-address" data-shipping-page="true" data-form="shipping" type="button" value="${Resource.msg('global.continuebilling','locale',null)}"><span>${Resource.msg('global.continue','locale',null)}</span></button>
+								<button class="btn btn-primary btn-lg btn-checkout-continue shipping-submit-post-verification" style="display:none;" data-form="shipping" data-shipping-page="true" type="submit" value="${Resource.msg('global.continuebilling','locale',null)}"><span>${Resource.msg('global.continue','locale',null)}</span></button>
+							</isif>
+						<iselse>
+							<button class="btn btn-primary btn-lg btn-checkout-continue demo-save-shipping" data-shipping-page="true" data-form="shipping" type="submit" value="${Resource.msg('global.continuebilling','locale',null)}"><span>${Resource.msg('global.continue','locale',null)}</span></button>
+						</isif>
+					</div>
+			
+				<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					</div>
+			</form>
+			</div>
+		
+		</div>
+		<div class="col-md-5">
+			<div id="checkout-summary"><isinclude template="checkout/minisummary"/></div>
+		</div>
+	</div>
+</div>
+
+<isif condition="${pdict.CurrentCustomer.authenticated}">
+	<div class="modal fade modal-primary modal-tatcha-add-address" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="modalAddress">
+	  <div class="modal-dialog" role="document">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close close-addaddress" aria-label="Close"><i class="fal fa-times"></i></button>
+	        <h4 class="modal-title"><strong>${Resource.msg('account.addressbook.editaddress.addaddress','account',null)}</strong></h4>
+	      </div>
+	     <form method="post" action="${URLUtils.url('Address-Form', 'scope', 'shipping')}" id="edit-address-form" name="${pdict.CurrentForms.profile.address.htmlName}" class="addressformfields address-data-form">
+        	<div class="modal-body">
+      			<isdynamicform formobject="${pdict.CurrentForms.profile.address}" formdata="${currentCountry.dynamicForms.addressDetails}"/>
+        	</div>
+        	<div class="modal-footer">
+        		<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+          		<button type="button" class="btn btn-default close-addaddress">Cancel</button>
+				<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LOQATE_verification_enabled')}">
+					<button class="btn btn-primary btn-checkout-continue shipping-verify-address" data-shipping-page="true" data-form="account" type="button" value="${Resource.msg('global.continuebilling','locale',null)}">
+						<span>${Resource.msg('global.save','locale',null)}</span>
+					</button>
+					<button class="btn btn-primary btn-checkout-continue shipping-submit-post-verification" style="display:none;" data-form="account" type="submit" data-shipping-page="true" name="${pdict.CurrentForms.profile.address.create.htmlName}" value="${Resource.msg('global.save','locale',null)}">
+						<span>${Resource.msg('global.save','locale',null)}</span>
+					</button>
+				<iselse>
+					<button class="btn btn-primary btn-checkout-continue demo-save-shipping" type="submit" data-shipping-page="true" data-form="account" name="${pdict.CurrentForms.profile.address.create.htmlName}" value="${Resource.msg('global.save','locale',null)}">
+						${Resource.msg('global.save','locale',null)}
+					</button>
+				</isif>
+        	</div>
+      	</form>
+	    </div>
+	  </div>
+	</div>
+</isif>   
+    
+<div class="modal fade modal-primary modal-tatcha-gift-message" id="giftMessageModal" tabindex="-1" role="dialog" aria-labelledby="modalEstimate" style="display: none;">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close close-giftmsg" aria-label="Close"> <i class="fal fa-times"></i></button>
+				<h4 class="modal-title"><strong>${Resource.msg('checkout.shipment.giftIsMessage','forms',null)}</strong></h4>
+			</div>
+			<isscript>
+			var giftmsg = pdict.Basket.getDefaultShipment().getGiftMessage();
+			</isscript>
+			<form action="${URLUtils.url('Cart-SaveGiftMessage', 'scope', 'shipping')}" method="post" id="giftmsg-form">
+
+				<div class="modal-body">
+					<div class="form-group">
+						    <label class="control-label" for="giftMessage">${Resource.msg('checkout.shipment.giftmessage','forms',null)}</label>
+						    <textarea data-character-limit="${giftMsgLength}" class="form-control required giftmessage" id="textAreaPost" value="${giftmsg}" rows="2" maxlength="${giftMsgLength}" id="giftMessage" name="giftMessage" pattern="(?!.*(?:[\uE000-\uF8FF]|\uD83C[\uDF00-\uDFFF]|\uD83D[\uDC00-\uDDFF])).*">${giftmsg}</textarea>
+						   <div class="char-count"><isprint value="${giftMsgLength}"/></div>
+						   <div class="sr-only sr-only-focusable" id="giftmsg-char-length" aria-live="polite" aria-atomic="true"></div>
+						</div>
+						 <div class="special-character-validation" style="color: #b82e67;display: none;">
+							${Resource.msg('checkout.shipment.giftIsMessage.character.validation','forms',null)}
+						</div>
+	
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default close-giftmsg">Cancel</button>
+					<button type="submit" class="btn btn-primary gift-message-save">Save</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<isinclude template="checkout/components/addressverificationmodal" />
+    
+<isscript>
+    importScript("util/ViewHelpers.ds");
+    var addressForm = pdict.CurrentForms.singleshipping.shippingAddress.addressFields;
+    var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+    var json = JSON.stringify(countries);
+</isscript>
+<script>window.Countries = <isprint value="${json}" encoding="off"/>;</script>
+</isdecorate>
+
+<script>
+$( document ).ready(function() {
+	$('.loader-content').hide();
+});
+</script>

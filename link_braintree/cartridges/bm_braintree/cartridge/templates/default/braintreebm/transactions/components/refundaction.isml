@@ -1,0 +1,5 @@
+<isif condition="${(transaction.status == 'SUBMITTED_FOR_SETTLEMENT')}">
+    <li>
+        <span class="js_braintree_action braintree_refund_action" data-updatepayment="false" data-id="${transaction.legacyId}" data-amount="${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, transaction.amount.value, currency)}" data-action="void" data-title="${Resource.msgf('transaction.void.header', 'braintreebm', null, transaction.legacyId)}">${Resource.msg('transaction.actions.void', 'braintreebm', null)}</span>
+    </li>
+</isif>

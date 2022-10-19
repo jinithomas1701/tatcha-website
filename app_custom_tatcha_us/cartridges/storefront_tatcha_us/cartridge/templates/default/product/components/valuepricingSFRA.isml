@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<span class="product-price">
+	<isset name="price" value="${Product.price}" scope="page" />
+    <isif condition="${Product.productType === 'set'}">
+        <isif condition="${price.min && price.max}">
+            <div class="pricerange">${price.min.sales.formatted} - ${price.max.sales.formatted}</div>
+        <iselse>
+            <div class="salesprice">${price.sales.formatted}</div>
+        </isif>
+    <iselse>
+        <isif condition="${price.type === 'tiered'}">
+		    <div class="price-tiered">
+		        <isloop items="${price.tiers}" var="tier">
+	                <isset name="price" value="${tier.price}" scope="page" />
+	                <div class="price-tiered-values">
+	                    <isprint value="${tier.quantity}" style="INTEGER" />
+	                    <isprint value="${price.sales.formatted}" formatter="*#0"/>
+						<isif condition="${price.list !== null && price.list.decimalPrice}">
+							(<isprint value="${price.list.formatted}"/>)
+						</isif>
+	                </div>
+	            </isloop>
+		    </div>
+		<iselseif condition="${price.type === 'range'}">
+		    <div class="price-range">
+		        <div class="pricerange">${price.min.sales.formatted} - ${price.max.sales.formatted}</div>
+		    </div>
+		<iselse>
+		    <span class="price-sales">
+				<isprint value="${price.sales.formatted}" formatter="*#0"/>					
+				<isif condition="${!empty(Product.specialPrice)}">
+					<span class="product-price-value" id="plp-special-price">
+						${Resource.msgf('product.pricing.specialPrice','product',null, Product.specialPrice)}
+					</span>
+				</isif>
+			</span>
+			<isif condition="${price.list !== null}">
+				<span class="price-standard">
+					<isif condition="${price.list.decimalPrice}">
+						<span class="product-price-value">(<isprint value="${price.list.formatted}"/>)</span>
+					</isif>
+				</span>
+			</isif>
+		</isif>
+
+    </isif>
+</span>

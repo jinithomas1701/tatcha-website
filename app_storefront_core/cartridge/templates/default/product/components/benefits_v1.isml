@@ -1,0 +1,35 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+	<isscript>
+	var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+	var isSkinTypeVariant = ProductUtils.isSkinTypeVariant(pdict.Product);
+	var benefits = ProductUtils.getBenefits(pdict.Product,isSkinTypeVariant);
+	var benefitsVariant = ProductUtils.getBenefits(pdict.Product,true);
+	</isscript>
+	<iscomment>Show heading only if content / icons </iscomment>
+	
+	<div class="product-variants-block text-left">	
+		<isif condition="${benefits.totalIcons.length > 0}">
+			<div class="form-label">${Resource.msg('global.product.benefits.recommended.heading', 'locale', null)}</div>
+			<div class="row pt-2">
+				<iscomment> Only 6 icons displayed  </iscomment>
+				<isloop items="${benefits.totalIcons}" var="benefitIcons" begin="0" end="5" status="iconStatus">
+					<isif condition="${iconStatus.index < benefits.skinTypeIconslength}">
+						<isset name="type" value="skintype" scope="page"/>
+					<iselse>
+						<isset name="type" value="skinconcerns" scope="page"/>								
+					</isif>
+						
+					<div class="col-6 col-lg-4 py-2 d-flex">
+					<div>				
+						<img class="dryness-desktop" alt="${'Image - '+benefitIcons}" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/product/benefits/icons_v1/'+type+'/'+benefitIcons.value+'.svg')}">
+						<img class="dryness-mobile d-lg-none" alt="${'Image - '+benefitIcons}" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, 'images/product/benefits/icons_v1/'+type+'/'+benefitIcons.value+'.svg')}">
+						</div>
+						<div class="ml-2"><span class="recommend"><isprint value="${benefitIcons}"></span></div>
+					</div>			
+				</isloop>
+			</div>
+		</isif>	
+		<iscomment>TODO: FLAG CHECK </iscomment>
+		<!-- <p class="pt-2 py-lg-3 right-for">Is this right for me?<span class="find-out pl-2">Find out now</span></p> -->			
+	</div>
+

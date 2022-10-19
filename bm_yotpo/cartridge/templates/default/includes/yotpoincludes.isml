@@ -1,0 +1,5 @@
+<!--- TEMPLATENAME: yotpoincludes.isml --->
+<iscontent type="text/html" charset="UTF-8">
+<link href="${URLUtils.staticURL('/css/yotpobm.css')}" type="text/css" rel="stylesheet" />
+<script src="${URLUtils.staticURL('/js/lib/jquery-3.3.1.min.js')}"></script>
+<script src="${URLUtils.staticURL('/js/yotpobm.js')}"></script>

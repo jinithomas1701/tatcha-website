@@ -1,0 +1,34 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+All Legal modals reside here.
+</iscomment>
+
+<iscomment> Terms Modal </iscomment>
+<div class="modal fade modal-primary modal-fullscreen modal-fs-margin modal-terms" id="termsModal" tabindex="-1" role="dialog" aria-labelledby="privacyModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="border-width: 0;"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button><h4 class="modal-title"><strong>Terms of Use</strong></h4></div>
+			<div class="modal-body container-fluid" style="top: 40px; bottom: 0;">
+				<isscript>
+				var termsOfUseContent = dw.content.ContentMgr.getContent('terms-of-use');
+				</isscript>
+				<isprint value="${termsOfUseContent.custom.body}" encoding="off" />
+			</div>
+		</div>
+	</div>
+</div>
+
+<iscomment> Privacy Policy Modal </iscomment>
+<div class="modal fade modal-primary modal-fullscreen modal-fs-margin modal-privacy" id="privacyModal" tabindex="-1" role="dialog" aria-labelledby="privacyModal">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header" style="border-width: 0;"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fa fa-times"></i></button><h4 class="modal-title"><strong>Privacy Policy</strong></h4></div>
+			<div class="modal-body container-fluid" style="top: 40px; bottom: 0;">
+				<isscript>
+				var privacyPolicyContent = dw.content.ContentMgr.getContent('privacy-policy');
+				</isscript>
+				<isprint value="${privacyPolicyContent.custom.body}" encoding="off" />
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,61 @@
+<isscript>
+    var braintreeEditStatus = require('~/cartridge/config/bmBraintreePreferences').braintreeEditStatus;
+</isscript>
+<isif condition="${transaction.isTransactionRefund}" >
+    <h2>${Resource.msgf('transaction.detail.refundtitle', 'braintreebm', null, transaction.legacyId)}</h2>
+<iselse>
+    <h2>${Resource.msgf('transaction.detail.title', 'braintreebm', null, transaction.legacyId)}</h2>
+</isif>
+
+<table class="braintree_table">
+    <tr>
+        <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.amt', 'braintreebm', null)}</td>
+        <td class="braintree_table_cell_value braintree_amt_wrapper js_braintree_toggle">
+            <p>
+                <span id="js_transaction_amount">${transaction.amount.value}</span> ${currency}
+            </p>
+        </td>
+    </tr>
+
+    <tr class="braintree_table_row_even">
+        <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.ordertime', 'braintreebm', null)}</td>
+        <td class="braintree_table_cell_value"><isprint value="${helper.convertToDate(transaction.createdAt)}" formatter="M/dd/yy h:mm a"/></td>
+    </tr>
+    <tr>
+        <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.paymentstatus', 'braintreebm', null)}</td>
+        <td class="braintree_table_cell_value transaction_payment_status_value">${helper.parseStatus(transaction.status)}</td>
+    </tr>
+    <tr>
+        <td class="braintree_table_cell_label"></td>
+        <td class="braintree_table_cell_value">
+            <ul class="braintree_transaction_actions">
+                <isif condition="${transaction.isTransactionRefund}" >
+                    <isinclude template="braintreebm/transactions/components/refundaction" />
+                <iselse>
+                    <isinclude template="braintreebm/transactions/components/transactionactions" />
+                </isif>
+            </ul>
+        </td>
+    </tr>
+</table>
+
+<h2>${Resource.msg('transaction.table.history.title', 'braintreebm', null)}</h2>
+
+<table class="braintree_table braintree_transaction_history" >
+    <thead>
+        <tr>
+            <th>${Resource.msg('transaction.table.history.timestamp', 'braintreebm', null)}</th>
+            <th>${Resource.msg('transaction.table.history.status', 'braintreebm', null)}</th>
+            <th>${Resource.msg('transaction.table.history.amt', 'braintreebm', null)}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <isloop items="${transaction.statusHistory}" var="transactionHistory" status="loopstate">
+            <tr>
+                <td><isprint value="${helper.convertToDate(transactionHistory.timestamp)}" formatter="M/dd/yy h:mm a"/></td>
+                <td>${helper.parseStatus(transactionHistory.status)}</td>
+                <td>${transactionHistory.amount.value}</td>
+            </tr>
+        </isloop>
+    </tbody>
+</table>

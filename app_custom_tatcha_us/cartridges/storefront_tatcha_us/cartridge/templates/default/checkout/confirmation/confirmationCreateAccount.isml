@@ -1,0 +1,35 @@
+
+            <form
+                action="${URLUtils.url('OrderSfra-CreateAccount', 'ID', pdict.order.orderNumber, 'UUID', pdict.orderUUID)}"
+                class="checkout-registration"
+                method="POST"
+                name="checkout-register-form" ${pdict.passwordForm.attributes} novalidate>
+				<input type="hidden" name="newsLetterKlaviyoSubscribtionUrl" id="newsLetterKlaviyoSubscribtionUrl" value="${URLUtils.url('KlaviyoSfra-Subscribe')}" />
+				<input type="hidden" name="emailsignup" id="emailsignup" value="${pdict.order.orderEmail}" />
+                <div class="form-group position-relative
+                    <isif condition="${pdict.passwordForm.newpassword.mandatory === true}">required</isif>">
+                    <input
+                        type="password"
+                        class="form-control  form-control-lg floating__input order-confirm-login password password_new"
+                        id="newPassword"
+                        placeholder=" "
+                        data-missing-error="${Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength)}"
+                        data-range-error="${Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength)}"
+                        data-msg-required = "${Resource.msgf('validate.minlength', 'forms', null, pdict.CurrentForms.profile.login.password.minLength)}"
+                    <isprint value="${pdict.passwordForm.newpassword.attributes}" encoding="off" />>
+                    <label data-content="${Resource.msg('field.password','confirmation',null)}" class="float-label" for="newPassword">
+
+                    </label>
+                <button type="submit" class="btn btn-link order-account-submit"><i class="fa fa-arrow-right"></i></button>
+                    <div class="invalid-feedback"></div>
+                </div>
+                <div class="form-check" id="addtoemaillist_container">
+                         <input type="checkbox" name="addtoemaillist" class="form-check-input" value="true" id="addtoemaillist" aria-label="Select if you want to join our email list to receive special promotion, early access to new products" />
+                     	 <span>Keep me up to date on news and offers</span>
+                </div>
+                <isinclude template="checkout/confirmation/confirmationCreateAccountExtension"/>
+
+                <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}"/>
+
+            </form>
+

@@ -1,0 +1,17 @@
+<!--- TEMPLATENAME: zonetag.isml --->
+<isscript>
+	var ExtoleSettings = require('int_extole/cartridge/scripts/extole/libExtole');
+	var ExtoleZoneTagModel = require('int_extole/cartridge/scripts/models/extoleZoneTagModel');
+	var extoleZoneObj = ExtoleZoneTagModel.get(pdict);
+</isscript>
+
+<isif condition="${ExtoleSettings.isExtoleEnabled() && ExtoleSettings.getClientName() && ExtoleSettings.isApprovalAPIEnabled()}">
+	
+	<script type="text/javascript">
+		/* Start Extole */
+ 		 (function(c,e,k,l,a){c[e]=c[e]||{};for(c[e].q=c[e].q||[];a<l.length;)k(l[a++],c[e])})(window,"extole",function(c,e){e[c]=e[c]||function(){e.q.push([c,arguments])}},["createZone"],0);
+  		/* End Extole */
+
+		 extole.createZone(<isprint value="${JSON.stringify(extoleZoneObj)}" encoding="htmlsinglequote"/>);
+	</script>
+</isif>

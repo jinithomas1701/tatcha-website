@@ -1,0 +1,288 @@
+<div class="modal fade checkout-add-card-modal" id="addCardModal" tabindex="-1" role="dialog" aria-labelledby="addCardModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header modal-header-measure">
+                <h5 class="modal-title modal-title-measure" id="addCardModalLabel">ADD CARD</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">
+                <i class="fal fa-times close-spec"></i></span></button>
+            </div>
+
+            <div class="modal-card-form payment-form">
+                <form id="addCreditCardForm" class="account-add-credit-card js_braintree_addCreditCardForm" method="post" action="${URLUtils.url('Braintree-AccountAddCreditCardHandle')}">
+                    <div class="tab-pane active creditcard-content braintree-creditcard-content js_braintree_creditCardContent" id="creditcard-content" role="tabpanel" data-paypal-is-hide-continue-button="${false}">
+                        <fieldset class="payment-form-fields">
+                            <input type="hidden" class="form-control" name="isBraintree" value="true" disabled="disabled" />
+                            <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="${pdict.braintree.prefs.paymentMethods.BRAINTREE_CREDIT.paymentMethodId}" >
+                            <input type="hidden" class="form-control" id="braintreeCardPaymentMethod" name="braintreeCardPaymentMethod" value="CREDIT">
+                            <input type="hidden" class="js_braintree_getOrderInfoUrl" value="${URLUtils.url('Braintree-GetOrderInfo').toString()}" />
+                            <div class="js_braintree_creditCardFields payment-method-braintree modal-body" data-braintree-config="${JSON.stringify(pdict.braintree.hostedFieldsConfig)}">
+                                <div id="braintreeCreditCardFieldsContainer">
+                                    <div class="form-row">
+                                        <div class="form-group required col-12 has-float-label card-owner">
+                                            <div class="braintree-field-wrap">
+                                                <div class="braintree-text-input">
+                                                    <input id="braintreeCardOwner" class="form-control credit-card-field form-control-lg ccnamevalidation cardowner" placeholder="Name (as written on card)*" type="text" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.ownerHtmlName}" maxlength="40" data-new-cart-value="" data-init-value="${pdict.braintree.hostedFieldsConfig.fieldsConfig.initOwnerValue}" />
+                                                </div>
+                                                <div id="braintreeCardOwnerPh" class="braintree-hosted-fields-ph"></div>
+                                            </div>
+                                            <div class="invalid-feedback" id="invalid-feedback"> ${Resource.msg('braintree.creditcard.owner.error.message','locale',null)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-12 has-float-label card-number required">
+                                            <div class="braintree-field-wrap">
+                                                <div id="braintreeCardNumber" class="braintree-hosted-fields-iframe-container form-control form-control-lg"></div>
+                                                <div class="card-image" id="card-image"></div>
+                                                <div id="braintreeCardNumberPh" class="braintree-hosted-fields-ph"></div>
+                                            </div>
+                                            <div class="invalid-feedback" id="invalid-feedback">${Resource.msg('braintree.creditcard.cardnumber.error.message','locale',null)}</div>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group col-md-6 has-float-label card-expiry required">
+                                            <div class="braintree-field-wrap">
+                                                <div id="braintreeExpirationDate" class="braintree-hosted-fields-iframe-container form-control form-control-lg"></div>
+                                                <div id="braintreeExpirationPh" class="braintree-hosted-fields-ph"></div>
+                                            </div>
+                                            <div class="invalid-feedback" id="invalid-feedback">${Resource.msg('braintree.creditcard.expirationdate.error.message','locale',null)}</div>
+                                        </div>
+                                        <div class="form-group col-md-6 has-float-label card-cvv required">
+                                            <div class="braintree-field-wrap">
+                                                <div id="braintreeCvv" class="braintree-hosted-fields-iframe-container form-control form-control-lg"></div>
+                                                <div id="braintreeCvvPh" class="braintree-hosted-fields-ph"></div>
+                                            </div>
+                                            <div class="invalid-feedback" id="invalid-feedback">${Resource.msg('braintree.creditcard.securitycode.error.message','locale',null)}</div>
+                                        </div>
+                                        <div class="security-code-label col-12">
+                                            <span class="security-code-link" data-toggle="tooltip" data-placement="top" aria-label="${Resource.msg('braintree.creditcard.cvv.help.label', 'locale', null)}" title="${Resource.msg('braintree.creditcard.cvv.help.text', 'locale', null)}" role="img" tabindex="0">${Resource.msg('braintree.creditcard.cvv.help.label', 'locale', null)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+                                <div id="braintree3DSecureContainer">
+                                    <div id="braintree3DSecureIframe"></div>
+                                </div>
+
+                                <input id="braintreeCardType" type="hidden" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.typeHtmlName}" value="Visa" />
+                                <input id="cardNumber" type="text" class="cardNumber" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.numberHtmlName}" value="" />
+                                <input id="braintreeCardMaskNumber" type="hidden" name="braintreeCardMaskNumber" value="" />
+                                <input id="braintreeCardExpirationYear" type="hidden" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.expirationYear}" value="" />
+                                <input id="braintreeCardExpirationMonth" type="hidden" name="${pdict.braintree.hostedFieldsConfig.fieldsConfig.expirationMonth}" value="" />
+                                <input id="isCheckoutCard" type="hidden" name="isCheckoutCard" value=""/>
+                                <input id="braintreeCreditCardNonce" type="hidden" name="braintreePaymentMethodNonce" />
+                                <input id="cardOwnerName" type="hidden" name="cardOwnerName" value="" />
+                                <input id="braintreeIs3dSecureRequired" type="hidden" name="braintreeIs3dSecureRequired" value="false" />
+                                <input id="braintreeDeviceData" type="hidden" name="braintreeDeviceData" value="" />
+                                <input id="sameAsShipping" type="hidden" name="sameAsShipping" value="true" />
+                                <input id="billingPhoneNo" type="hidden" name="billingPhoneNo" value="3109087654" />
+                                <input id="braintreeDefaultCard" type="hidden" name="braintreeDefaultCard" value="false" />
+
+                                <div id="braintreeCreditCardErrorContainer" class="error d-none"></div>
+                                <div id="braintreeCreditCardLoader" class="braintree-loader-container">
+                                    <i class="braintree-loader"></i>
+                                </div>
+                                <div class="form-row label-inline form-indent">
+                                    <div class="col-12">
+                                        <label for="braintreeCreditCardMakeDefault">
+                                            <input name="braintreeCreditCardMakeDefault" id="braintreeCreditCardMakeDefault" type="checkbox" value="true" />
+                                            <span> ${Resource.msg('braintree.creditcard.makedefault','locale',null)}</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-------------------------------------------------------------------------->
+				                <!-- Billing Address                                                      -->
+				                <!-------------------------------------------------------------------------->
+				                <isset name="billingFields" value="${pdict.forms.billingForm.addressFields}" scope="page"/>
+								<isset name="selectedCountry" value="${pdict.order.billing.billingAddress.address.countryCode}" scope="page"/>
+								<isset name="countriesList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('CountriesList'))}" scope="page"/>
+								<isset name="provinceList" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('provinceList'))}" scope="page"/>
+
+								<isif condition="${!empty(dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput'))}">
+									<isset name="countryArrayList" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput')}" scope="page" />
+								<iselse/>
+									<isset name="countryArrayList" value="${'AU|BR|ET|DE|IN|MX|FM|MM|NG|PW|SD'}" scope="page" />
+								</isif>
+								<input type="hidden" id="countryWithState" value="${countryArrayList}"/>
+								<isset name="stateUsStyle" value="style='display:none'" scope="page" />
+								<isset name="stateCaStyle" value="style='display:none'" scope="page" />
+								<isset name="stateTextStyle" value="style='display:none'" scope="page" />
+
+								<isif condition="${selectedCountry.value === 'US'}">
+									<isset name="stateUsStyle" value="required" scope="page" />
+								<iselseif condition="${selectedCountry.value === 'CA'}">
+									<isset name="stateCaStyle" value="required" scope="page" />
+								<iselse>
+									<isif condition="${!empty(selectedCountry) && countryArrayList.indexOf(selectedCountry.value) > -1}">
+										<isset name="stateTextStyle" value="required" scope="page" />
+									<iselse>
+										<isset name="stateTextStyle" value="style='display:none'" scope="page" />
+									</isif>
+								</isif>
+
+								<isset name="stateSelected" value="${pdict.order.billing.billingAddress.address.stateCode}" scope="page"/>
+								<input type="hidden" value="${stateSelected || ''}" id="billingStatedefault" <isprint value=${pdict.forms.billingForm.addressFields.states.stateCode.attributes} encoding="off"/> />
+
+								<isif condition="${(!empty(selectedCountry) && countryArrayList.indexOf(selectedCountry.value) > -1) || (selectedCountry.value === 'US') ||  (selectedCountry.value === 'CA')}">
+									<isset name="labelHide" value="" scope="page" />
+									<isset name="postalWidthClass" value="${'col-md-6'}" scope="page" />
+								<iselse>
+									<isset name="labelHide" value="${'d-none'}" scope="page" />
+									<isset name="postalWidthClass" value="${'col-12'}" scope="page" />
+								</isif>
+            					<fieldset class="billing-address-block">
+				                    <div class="billing-address-container">
+					                    <h5 class="section-title">Billing Address</h5>
+					                    <div class="billing-address-flag mb-3"><input id="sameasshippingselector" name="${pdict.forms.billingForm.shippingAddressUseAsBillingAddress.htmlName}" type="checkbox" data-address="${JSON.stringify(pdict.order.billing.billingAddress.address)}" aria-label="Select if billing address is same as shipping address" checked class="mr-2 addressSelector"/>
+					                        <span>Same as shipping</span></div>
+					                    <div class="billing-address">
+					                        <div class="d-none">
+
+					                            <div class="form-group
+					                            ${billingFields.firstName.mandatory === true ? 'required' : ''}
+					                            ${billingFields.firstName.htmlName}">
+					                                <input type="hidden" class="form-control billingFirstName floating__input" id="billingFirstName"
+					                                       value="${pdict.order.billing.billingAddress.address
+					                                        && pdict.order.billing.billingAddress.address.firstName
+					                                        ? pdict.order.billing.billingAddress.address.firstName
+					                                        : ''}"
+					                                <isprint value=${billingFields.firstName.attributes} encoding="off"/>
+					                                autocomplete="given-name" >
+					                                <label class="form-control-label float-label" for="billingFirstName" data-content="First Name"></label>
+					                                <div class="invalid-feedback"></div>
+					                            </div>
+					                            <div class="form-group
+					                            ${billingFields.lastName.mandatory === true ? 'required' : ''}
+					                            ${billingFields.lastName.htmlName}">
+					                                <label class="form-control-label" for="billingLastName"></label>
+					                                <input type="hidden" class="form-control billingLastName" id="billingLastName"
+					                                       value="${pdict.order.billing.billingAddress.address
+					                                    && pdict.order.billing.billingAddress.address.lastName
+					                                    ? pdict.order.billing.billingAddress.address.lastName
+					                                    : ''}"
+					                                <isprint value=${billingFields.lastName.attributes} encoding="off"/>
+					                                autocomplete="family-name">
+					                                <div class="invalid-feedback"></div>
+					                            </div>
+					                        </div>
+
+					                        <div class="form-row">
+					                            <div class="form-group col-12 ${billingFields.address1.htmlName}">
+					                                <input type="text" class="form-control form-control-lg billingAddressOne floating__input" id="billingAddressOne"
+					                                       aria-label="Enter street address" placeholder="Street Address"
+					                                       value="${pdict.order.billing.billingAddress.address
+					                            && pdict.order.billing.billingAddress.address.address1
+					                            ? pdict.order.billing.billingAddress.address.address1
+					                            : ''}"
+					                                <isprint value=${billingFields.address1.attributes} encoding="off"/>
+					                                autocomplete="billing address-line1">
+					                                <label class="form-control-label float-label" for="billingAddressOne" data-content="Address 1"></label>
+                                                    <div class="invalid-feedback "></div>
+					                            </div>
+					                        </div>
+				                            <div class="form-row">
+				                                <div class="form-group col-12 ${billingFields.address2.htmlName}">
+
+				                                    <input type="text" class="form-control form-control-lg billingAddressTwo floating__input" id="billingAddressTwo"
+				                                           aria-labelledby="Enter street address 2 manually" placeholder="Street Address 2"
+				                                           value="${pdict.order.billing.billingAddress.address
+				                                        && pdict.order.billing.billingAddress.address.address2
+				                                        ? pdict.order.billing.billingAddress.address.address2
+				                                        : ''}"
+				                                    <isprint value=${billingFields.address2.attributes} encoding="off"/>
+				                                    autocomplete="billing address-line2">
+				                                    <label class="form-control-label float-label" for="billingAddressTwo" data-content="Address 2"></label>
+				                                </div>
+				                            </div>
+                                            <div class="form-row">
+                                                <div class="form-group col-12 ${billingFields.city.htmlName}">
+                                                    <input type="text" class="form-control form-control-lg billingAddressCity floating__input" id="billingAddressCity"
+                                                           aria-labelledby="Enter City manually" placeholder="City"
+                                                           value="${pdict.order.billing.billingAddress.address
+				                                        && pdict.order.billing.billingAddress.address.city
+				                                        ? pdict.order.billing.billingAddress.address.city
+				                                        : ''}"
+                                                           name="${billingFields.city.htmlName}"
+                                                    <isprint value=${billingFields.city.attributes} encoding="off"/>
+                                                    autocomplete="billing address-level2">
+                                                    <label class="form-control-label float-label" for="billingAddressCity" data-content="City"></label>
+                                                    <div class="invalid-feedback "></div>
+                                                </div>
+                                            </div>
+				                            <div class="form-row">
+                                                <div class="form-group col-md-6">
+                                                    <select ${stateUsStyle} data-missing-error="${Resource.msg('error.message.parse.Prefecture','forms',null)}"  id="billingStateUS" autocorrect="off"  required class="form-control floating__input form-control-lg pl-3">
+                                                        <isloop items="${addressFields.states.stateCode.options}" var="states" status="status">
+                                                            <isif condition="${stateSelected === states.id}">
+                                                                <option class="select-option"  id="${states.id}" selected label="${Resource.msg(states.label,'forms',null)}" value="${states.htmlValue}">${Resource.msg(states.label,'forms',null)}</option>
+                                                                <iselse>
+                                                                    <option class="select-option"  id="${states.id}" label="${Resource.msg(states.label,'forms',null)}" value="${states.htmlValue}">${Resource.msg(states.label,'forms',null)}</option>
+                                                            </isif>
+                                                        </isloop>
+                                                    </select>
+                                                    <select ${stateCaStyle} data-missing-error="${Resource.msg('error.message.parse.Prefecture','forms',null)}"  id="billingStateNonUS" autocorrect="off"  required class="form-control floating__input form-control-lg pl-3">
+                                                        <isloop items="${provinceList}" alias="province">
+                                                            <isif condition="${province.country == 'CA'}">
+                                                                <isloop items="${province.states}" alias="pstate">
+                                                                    <isif condition="${stateSelected === pstate.value}">
+                                                                        <option class="select-option" label="${pstate.label}" selected id="${pstate.value}" value="${pstate.value}">${pstate.label}</option>
+                                                                        <iselse>
+                                                                            <option class="select-option" label="${pstate.label}" id="${pstate.value}" value="${pstate.value}">${pstate.label}</option>
+                                                                    </isif>
+                                                                </isloop>
+                                                            </isif>
+                                                        </isloop>
+                                                    </select>
+                                                    <input type="text" ${stateTextStyle} data-missing-error="Please enter a valid state."   value="${stateSelected || ''}" autocorrect="off"  class="form-control floating__input form-control-lg"  id="billingStateText" placeholder="Province*">
+                                                    <label class="float-label billing-state-label ${labelHide}" data-content="State*"></label>
+                                                    <div class="invalid-feedback"></div>
+                                                </div>
+				                                <div class="form-group ${postalWidthClass} ${billingFields.postalCode.htmlName}">
+				                                    <input type="text" class="form-control form-control-lg billingZipCode floating__input" id="billingZipCode"
+				                                           aria-labelledby="Enter Zipcode manually" placeholder="Zipcode"
+				                                           value="${pdict.order.billing.billingAddress.address
+				                                        && pdict.order.billing.billingAddress.address.postalCode
+				                                        ? pdict.order.billing.billingAddress.address.postalCode
+				                                        : ''}"
+				                                    <isprint value=${billingFields.postalCode.attributes} encoding="off"/>
+				                                    autocomplete="billing postal-code">
+				                                    <label class="form-control-label float-label" for="billingZipCode" data-content="Zipcode"></label>
+                                                    <div class="invalid-feedback"></div>
+				                                </div>
+
+				                            </div>
+
+                                            <div class="form-row mt-2">
+                                                <div class="form-group col-12 ${billingFields.country.htmlName}">
+                                                    <select id="billingCountry" class="form-control form-control-lg pl-3 floating__input"
+                                                    <isprint value=${billingFields.country.attributes} encoding="off"/>
+                                                    autocomplete="billing country">
+                                                    <option label=""></option>
+                                                    <isloop items="${countriesList}" alias="country">
+                                                        <isif condition="${selectedCountry.value == country.value}">
+                                                            <option id="${country.value}" value="${country.value}" selected><isprint value="${country.label}" /></option>
+                                                            <iselse>
+                                                                <option id="${country.value}" value="${country.value}"><isprint value="${country.label}" /></option>
+                                                        </isif>
+                                                    </isloop>
+                                                    </select>
+                                                    <label class="float-label" for="billingCountry" data-content="Country"></label>
+                                                </div>
+                                            </div>
+					                    </div>
+					                </div>
+				                </fieldset>
+
+                                <div class="modal-button-group d-flex justify-content-around">
+                                    <button type="button" class="btn btn-outline-dark btn-p cancel-card btn-lg btn-single-measure"   data-dismiss="modal">Cancel</button>
+                                    <button class="btn btn-primary btn-p submit-newcard btn-lg btn-single-measure" >Save</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

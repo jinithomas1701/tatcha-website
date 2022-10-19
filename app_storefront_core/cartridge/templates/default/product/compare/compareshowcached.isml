@@ -1,0 +1,191 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<isdecorate template="product/compare/pt_compare">
+<isinclude template="util/modules"/>
+	<isscript>
+		importScript("int_tatcha_dis:common/GetImageUrl.ds");
+		var comparisonProducts = new dw.util.ArrayList();
+		var comparisonProductsIterator = pdict.CompareList.products.iterator();
+		var product;
+		while (comparisonProductsIterator.hasNext()) {
+			 product = dw.catalog.ProductMgr.getProduct(comparisonProductsIterator.next())
+			 if(!empty(product)) {
+			 	comparisonProducts.add(product);
+			 }
+		}
+		var cgid = pdict.CurrentHttpParameterMap.category.stringValue;
+		var comparisonProductsSize = comparisonProducts.size();
+	</isscript>
+	<div class="product product-comparison" data-cgid="${cgid}">
+		<div class="container text-center comp-page-header">
+			<h1 class="section-anchor" style="margin-bottom: 8px;margin-top: 32px;">${Resource.msg('product.compareshow.header', 'product', null)}</h1>
+			<p>Find the perfect treasure that fits your wishes and desires.</p>
+		</div>
+	
+		<div class="container-fluid container-comparison-table">
+			<div class="table-responsive">
+				<table class="comparison-table">
+					<tbody>
+						<tr class="main-row">
+							<isloop items="${comparisonProducts}" var="compareProduct" status="status">
+								<td>
+										<a href="${URLUtils.url('Product-Show', 'pid', compareProduct.ID, 'compare_category', cgid)}" class="compare-product-img-link" data-pid="${compareProduct.ID}"><img data-pid="${compareProduct.ID}" class="product-img" src="${getImageUrl(compareProduct,'medium')}" alt="${compareProduct.name}"></a>
+										<h2 class="product-name">
+											<a class="product-view-link" href="${URLUtils.url('Product-Show', 'pid', compareProduct.ID, 'compare_category', cgid)}" data-pid="${compareProduct.ID}">
+												<isprint value="${compareProduct.name}" encoding="on"/>
+												<span class="product-subtitle"><isprint value="${compareProduct.custom.secondaryName}" encoding="on"/></span>
+											</a>
+										</h2>
+										
+										<a class="btn btn-sm btn-link compare-product-more-info" data-pid="${compareProduct.ID}" href="${URLUtils.url('Product-Show', 'pid', compareProduct.ID)}">More Info</a>
+										
+										<isif condition="${!compareProduct.master}">
+											<isset name="pid" value="${compareProduct.ID}" scope="page"/>
+										<iselse/>
+											<isscript>
+												var pid : String;
+												var variants : dw.util.Collection = compareProduct.variants;
+												if (variants != null) {
+													var iter : dw.util.Iterator = variants.iterator();
+													while (iter.hasNext()) {
+														var aVariant : dw.catalog.Product = iter.next();
+														if (aVariant.available && aVariant.online) {
+															pid = aVariant.ID;
+															break;
+														}
+													}
+												}
+											</isscript>
+										</isif>
+	
+								</td>
+							</isloop>
+						</tr>
+						<tr class="row-btn">
+							<isloop items="${comparisonProducts}" var="compareProduct" status="status">
+							<isset name="comparisonProductId" value="${compareProduct.ID}" scope="page">
+								<isset name="Product" value="${compareProduct}" scope="pdict"/>
+								<td class="productIdInput" data-pid="${comparisonProductId}">
+									<div class="product-price">
+										<isinclude template="product/components/valuepricing"/>
+									</div>
+									<isscript>
+										// Get context variables to insert into template placeholders
+									    var VariationUtils = require('~/cartridge/scripts/product/VariationUtils.js');
+									    var context = VariationUtils.getContext(pdict);
+									    var hasVariant = false;
+									</isscript>
+									<isif condition="${context.isValidProductType  && context.attrs && context.attrs.length>0}">
+										<isloop items="${context.attrs}" var="attr">
+											<isif condition="${attr.hasSwatch && attr.values.length > 1}">
+												<isif condition="${attr.attributeId == 'color'}">
+													<div class="color-variant d-flex align-items-center justify-content-center mt-2">
+														<isloop items="${attr.values}" var="attrValue" status="attrStatus">
+															<span class="color-img mr-2 variant-selection ${attrValue.swatchClass == 'selectable selected' ? 'selected' : ''}" href="${attrValue.plpVariantLinkUrl}">
+																<isset name="isChecked" value="${compareProduct.ID === attrValue.productID ? 'checked':''}" scope="page">
+																<isscript>
+																hasVariant=true;
+																</isscript>
+																<input id="${attrValue.productID}" value="${attrValue.productID}" type="radio" name="${compareProduct.ID}" class="color-radio" ${isChecked} >
+																<label for="${attrValue.productID}" class="${isChecked}"><img src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, attrValue.swatchImageUrl)}" alt="color - ${attrValue.displayValue}"/></label>
+															</span>
+														</isloop>
+													</div>
+												<iselseif condition="${attr.attributeId == 'size'}">
+													<div class="product-variant-container compare">
+														<div class="btn-group dropup btn-block product-variant mt-2">
+															<select class="form-control size-form" name="product-variation-size" data-cgid="${cgid}" aria-label="Size">											
+																<isloop items="${attr.values}" var="attrValue" status="attrStatus">
+																	<isscript>
+																	hasVariant=true;
+																	</isscript>
+																	<isset name="variantSelected" value="${attrValue.swatchClass == 'selectable selected' ? 'selected' : ''}" scope="page"/>
+																	<option class="dropdown-item variant-selection" ${variantSelected} value="${attrValue.productID}">${attrValue.compareAttrDisplay}</option>
+																</isloop>
+															</select>
+														</div>
+													</div>
+												</isif>
+											</isif>
+										</isloop>
+									</isif>
+									<isif condition="${!hasVariant}">
+										<div class="no-variant">
+										</div>
+										</isif>
+									<isscript>
+										let avm = pdict.Product.availabilityModel;
+										let available = avm.availabilityStatus==dw.catalog.ProductAvailabilityModel.AVAILABILITY_STATUS_IN_STOCK
+										&& avm.inventoryRecord != null
+										&& avm.inventoryRecord.stockLevel.available;
+										var comingSoonMsg = (pdict.Product.custom.oosProductStatus.value)?pdict.Product.custom.oosProductStatus.value:"";
+								  	
+								  		// Added for mParticle and other analytics 
+								  		var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+										var	productInfo = mParticleUtil.getProductInfo(pdict.Product);																					
+										
+								  	</isscript>
+									<isif condition="${(comingSoonMsg == 'comingsoon')}">
+										<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" title="${pdict.Product.name + ' coming soon link'}"><button class="btn btn-default btn-sm">${Resource.msg('global.comingsoon', 'locale', null)}</button></a>
+								 	<iselseif condition="${available != true}">
+								 		<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" title="${pdict.Product.name + ' out of stock'}"><button class="btn btn-default btn-sm" tabindex="0"  data-productname="<isprint value="${pdict.Product.name}"/>" data-pid="<isprint value="${pdict.Product.ID}"/>">${Resource.msg('global.outofstock', 'locale', null)}</button></a>
+								 	<iselse/>
+										<button class="btn btn-default compare-add-to-bag" data-product-info="${JSON.stringify(productInfo)}" data-pid="${compareProduct.ID}" data-url="${URLUtils.url('Product-Show', 'pid', compareProduct.ID)}" >Add to Bag</button>
+									</isif>
+								</td>
+							</isloop>
+						</tr>
+	
+						<iscomment>all attribute groups and attributes of the first product in the compare list</iscomment>
+						<isif condition="${pdict.CurrentForms.compare.attributegroups != null}">
+							<isloop items="${pdict.CurrentForms.compare.attributegroups}" var="attributeGroup">
+								<isloop items="${attributeGroup.attributes}" var="attribute">
+									<isset name="isAllEmpty" value="true" scope="page"/>
+									<isloop items="${comparisonProducts}" var="compareProduct">
+										<isif condition="${attribute.object.descriptor.ID in compareProduct || attribute.object.descriptor.ID in compareProduct.custom}">
+											<isset name="isAllEmpty" value="false" scope="page"/>
+										</isif>
+									</isloop>
+									<isif condition="${isAllEmpty == 'false'}">
+										<tr class="row-heading">
+												<td colspan="${comparisonProductsSize}">
+													<div class="sticky-container">
+														<div class="sticky-element"><isprint value="${attribute.object.displayName}"/></div>
+													</div>
+												</td>
+										</tr>
+										<tr class="row-body">
+											<isloop items="${comparisonProducts}" var="compareProduct" status="ProductStatus">
+												<isif condition="${attribute.object.descriptor.ID in compareProduct}">
+													<isset name="value" value="${compareProduct[attribute.object.descriptor.ID]}" scope="page"/>
+												<iselseif condition="${attribute.object.descriptor.ID in compareProduct.custom}">
+													<isset name="value" value="${compareProduct.custom[attribute.object.descriptor.ID]}" scope="page"/>
+												<iselse>
+													<isset name="value" value="-" scope="page"/>
+												</isif>
+					
+												<td class="html-field">
+													<iscomment>special formatting for some types</iscomment>
+													<isif condition="${value == '-'}">
+														<isprint value="${value}"/>
+													<iselse/>
+														<isif condition="${attribute.object.descriptor.requiresEncoding()}">
+															<isprint value="${compareProduct.getAttributeModel().getDisplayValue(attribute.object.descriptor)}" encoding="on"/>
+														<iselse/>
+															<isprint value="${compareProduct.getAttributeModel().getDisplayValue(attribute.object.descriptor)}" encoding="off"/>
+														</isif>
+													</isif>
+												</td>
+											</isloop>
+										</tr>
+									</isif>
+								</isloop>
+							</isloop>
+						</isif>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+</isdecorate>

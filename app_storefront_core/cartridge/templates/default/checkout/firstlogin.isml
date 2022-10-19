@@ -1,0 +1,34 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isdecorate template="checkout/pt_checkout"> 
+<isinclude template="util/modules" /> 
+	<isscript> 
+				var CustomerMgr =require('dw/customer/CustomerMgr'); 
+				var useremail = pdict.CurrentForms.login.username.htmlValue;
+				var Customerobj =CustomerMgr.getCustomerByLogin(useremail); 
+				var customerName =	Customerobj.profile.firstName; 
+				if(!empty(Customerobj.profile)){
+					pdict.CurrentSession.custom.userExist = true;
+				}
+			</isscript>
+	<div class="checkout checkout-login">
+	<div class="login-box-content returning-customers clearfix">
+	<div class="checkout-password-reset">
+			<h1 class="text-center">${Resource.msg('account.login.logininclude.firstcheckoutnewthankyou','account',null)}</h1>
+
+			<div class="account-standard">
+				<div class="row">
+				
+					<div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+						<div class="alert alert-success text-center">
+							<p><strong>A reset email was sent to <em><isprint value="${useremail}" /></em>.</strong></p>
+							<p>${Resource.msg('account.passwordresetconfirm.message','account',null)}</p>
+							<p>	${Resource.msg('account.passwordresetconfirm.message2','account',null)},
+				 				<a href="${URLUtils.https('COCustomer-Start')}">click here to start over</a>
+				 			</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+</div>
+</isdecorate>

@@ -1,0 +1,75 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<iscache type="relative" minute="30" varyby="price_promotion" />
+
+<isinclude template="util/modules" />
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	var giftBuilderSku = Site.getCurrent().getCustomPreferenceValue('giftBuilderSKU');
+</isscript>
+<div class="container-fluid d-block" style="padding: 0 1rem;">
+<div class="empty-bag-heading">
+	<div class="overline">LOOKING FOR TREASURES?</div>
+	<h3 class="heading">
+		Try these products
+	</h3>
+</div>
+<div class="row" style="margin:0;">
+<isloop items="${slotcontent.content}" var="product" begin="0" end="3">
+	<isobject object="${product}" view="recommendation">
+
+		<isif condition="${product.master}">
+			<isset name="Product" value="${product.getVariationModel().getDefaultVariant()}" scope="pdict"/>
+		<iselse/>
+			<isset name="Product" value="${product}" scope="pdict"/>
+		</isif>
+
+		<isscript>
+			//Added for mParticle
+			var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+			var productInfo = mParticleUtil.getProductInfo(pdict.Product);
+
+		 </isscript>
+
+		<div class="empty-bag-item col-12 col-xs-12 col-lg-10 offset-lg-1 col-offset-lg-1 offset-xl-1" data-product-info="${JSON.stringify(productInfo)}">
+		<input type="hidden"  class="add-to-cart-url" id="addToCartUrl" value="${URLUtils.url('CartSFRA-AddProduct')}">
+		<input type="hidden"  class="quantity-select-empty-item" value="1">
+			<div class="">
+
+				<div class="product-image d-inline-block" style="display:inline-block">
+					<iscomment>Render the thumbnail</iscomment>
+					<iscomment>If image couldn't be determined, display a "no image" medium.</iscomment>
+					<isif condition="${getImageUrl(pdict.Product, 'medium')}">
+						<isset name="thumbnailUrl" value="${getImageUrl(pdict.Product, 'medium')}" scope="page"/>
+					<iselse/>
+						<isset name="thumbnailUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+					</isif>
+					<a aria-label="Show-Product-Image" href="${URLUtils.http('Product-Show', 'pid', product.ID)}" title="${pdict.Product.name + ' image link'}" style="display: block;">
+						<img  alt="${pdict.Product.name + 'image'}"  class="img-responsive product-img img-fluid"  src="${thumbnailUrl}" />
+					</a>
+				</div>
+
+				<div class="product-contnet d-inline-block" style="display:inline-block">
+					<a href="${URLUtils.http('Product-Show', 'pid', pdict.Product.ID)}" title="${pdict.Product.name + ' product name link'}" style="display: block;">
+						<div class="product-name">
+							<isprint value="${pdict.Product.name}"/>
+						</div>
+						<isif condition="${pdict.Product.custom.secondaryName}">
+							<span class="product-desc"><isprint value="${pdict.Product.custom.secondaryName.substring(0,44)}"/></span>
+						</isif>
+					</a>
+					<div class="">
+						<isinclude template="product/components/valuepricingcarousel"/>
+					</div>
+				</div>
+
+				<div class="float-right add-item add-minicart-empty-item" style="float:right;" data-source="mini-cart-empty-upsell" data-productname="${pdict.Product.name}" data-pid="${pdict.Product.ID}" data-addtocart="${pdict.Product.ID}">
+					<button type="button" aria-label="add to bag" style="border: none; background: none; color: unset;"><i class="fas fa-plus"></i></button>
+				</div>
+
+			</div>
+		</div>
+	</isobject>
+</isloop>
+</div>
+</div>

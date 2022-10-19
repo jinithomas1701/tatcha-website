@@ -1,0 +1,1395 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="integrationframework" type="job">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>Starts the integration framework job.
+@input JobId : String As job configuration parameter.</description>
+        </text-node>
+        <node-display x="2" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_2">
+    <segment>
+      <node>
+        <text-node>
+          <description>IMPORTANT: With each Workflow-Start only ONE workflow should be run.
+If more than one workflow is found for one time, the second workflow must be started with the next job run.
+This must be done, because the second workflow would be called AFTER the first workflow is finished - not when it is scheduled!</description>
+        </text-node>
+        <node-display width="2" x="0" y="2"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Start">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Start" secure="false"/>
+        <node-display x="2" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(CurrentJobParameterMap.JobId)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Job ID creation." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <description>The job ID is created with the site ID to handle different sites correctly.</description>
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="CurrentJobParameterMap.JobId + '_' + dw.system.Site.current.ID" key="From_0"/>
+                <key-binding alias="JobId" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="false"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="workflow/GetLibWorkflow.ds"/>
+                <key-binding alias="ScriptLog" key="ScriptLog"/>
+                <key-binding alias="LibWorkflow" key="LibWorkflow"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <stop-node name="LIB_WORKFLOW_COULD_NOT_BE_INITIALIZED"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="Workflow-HandleServerRestart"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <call-node start-name-ref="Workflow-CreateWorkflowScheduleInstances"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="Workflow-ExecuteWorkflow"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <stop-node name="PARAMETER_JOB_ID_MISSING"/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_4">
+    <segment>
+      <node>
+        <text-node>
+          <description>Handles a server restart. Searches for all running components and sets them to the waiting status to reexecute it.
+@import LibWorkflow : Object The library object.
+@import JobId : String The current job ID.</description>
+        </text-node>
+        <node-display x="6" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="HandleServerRestart">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="HandleServerRestart" secure="false"/>
+        <node-display x="6" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="SearchCustomObject" pipelet-set-identifier="bc_api">
+          <config-property key="CaseSensitive" value="true"/>
+          <config-property key="CustomObjectType" value="WorkflowComponentInstance"/>
+          <config-property key="SearchExpression" value="custom.status = {1} AND custom.processingJobId = {2}"/>
+          <key-binding alias="RunningWorkflowComponentInstances" key="SearchResult"/>
+          <key-binding alias="null" key="Search2Key"/>
+          <key-binding alias="null" key="Search3Key"/>
+          <key-binding alias="null" key="Search4Key"/>
+          <key-binding alias="null" key="Search5Key"/>
+          <key-binding alias="null" key="Search3Value"/>
+          <key-binding alias="null" key="Search4Value"/>
+          <key-binding alias="null" key="Search5Value"/>
+          <key-binding alias="null" key="SortBy1"/>
+          <key-binding alias="null" key="SortBy1Direction"/>
+          <key-binding alias="null" key="SortBy2"/>
+          <key-binding alias="null" key="SortBy2Direction"/>
+          <key-binding alias="null" key="SortBy3"/>
+          <key-binding alias="null" key="SortBy3Direction"/>
+          <key-binding alias="&quot;RUNNING&quot;" key="Search1Value"/>
+          <key-binding alias="JobId" key="Search2Value"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <loop-node element-key="RunningWorkflowComponentInstance" iterator-key="RunningWorkflowComponentInstances"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="do">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Calls the function handleServerRestart on the component (see WorkflowComponentInstance.ds)" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <description>Calls the function handleServerRestart on the component (see WorkflowComponentInstance.ds)</description>
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="WorkflowComponentInstanceWrapper.handleServerRestart()" key="From_1"/>
+                <key-binding alias="DoIt" key="To_1"/>
+                <key-binding alias="LibWorkflow.createWrapperObject(RunningWorkflowComponentInstance)" key="From_0"/>
+                <key-binding alias="WorkflowComponentInstanceWrapper" key="To_0"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="loop" target-path="..">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+                <bend-point relative-to="source" x="-1" y="1"/>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="1" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_6">
+    <segment>
+      <node>
+        <text-node>
+          <description>Creates workflow schedule and component instances if they should be executed now.
+@import LibWorkflow : Object The library object.</description>
+        </text-node>
+        <node-display x="11" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CreateWorkflowScheduleInstances">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CreateWorkflowScheduleInstances" secure="false"/>
+        <node-display x="11" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Get the plan for today AND yesterday to created all instances correctly during day change. Otherwise it is possible, that the last instance of the last day will get lost!" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <description>Get the plan for today AND yesterday to created all instances correctly during day change. Otherwise it is possible, that the last instance of the last day will get lost!</description>
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="Yesterday.add(dw.util.Calendar.DAY_OF_YEAR, -1)" key="From_4"/>
+          <key-binding alias="DoIt" key="To_4"/>
+          <key-binding alias="LibWorkflow.getWorkflowPlan(dw.system.Site.current.ID, Yesterday, CurrentTime)" key="From_5"/>
+          <key-binding alias="WorkflowPlan" key="To_5"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="new dw.util.Calendar()" key="From_0"/>
+          <key-binding alias="CurrentTime" key="To_0"/>
+          <key-binding alias="DoIt" key="To_1"/>
+          <key-binding alias="CurrentTime.setTimeZone(dw.system.System.getInstanceTimeZone())" key="From_1"/>
+          <key-binding alias="new dw.util.Calendar()" key="From_2"/>
+          <key-binding alias="Yesterday.setTimeZone(dw.system.System.getInstanceTimeZone())" key="From_3"/>
+          <key-binding alias="Yesterday" key="To_2"/>
+          <key-binding alias="DoIt" key="To_3"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <transition target-connector="in" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <loop-node element-key="WorkflowPlanEntry" iterator-key="WorkflowPlan"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="do">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <decision-node condition-key="WorkflowPlanEntry.calendar.after(CurrentTime)" condition-operator="expr">
+                <description>This is the check if the workflow should be executed now.</description>
+              </decision-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in1" target-path="./+2">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="2"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="Checks if the object is created already. If so nothing will be done." pipelet-name="SearchCustomObject" pipelet-set-identifier="bc_api">
+                <description>Checks if the object is created already. If so nothing will be done.</description>
+                <config-property key="CaseSensitive" value="true"/>
+                <config-property key="CustomObjectType" value="WorkflowScheduleInstance"/>
+                <config-property key="SearchExpression" value="custom.workflowScheduleDefinitionID = {1} AND custom.plannedStartTime = {2} AND custom.siteId = {3}"/>
+                <key-binding alias="null" key="Search1Key"/>
+                <key-binding alias="null" key="Search2Key"/>
+                <key-binding alias="null" key="Search3Key"/>
+                <key-binding alias="null" key="Search4Key"/>
+                <key-binding alias="null" key="Search5Key"/>
+                <key-binding alias="WorkflowPlanEntry.workflowScheduleDefinition.custom.ID" key="Search1Value"/>
+                <key-binding alias="WorkflowPlanEntry.calendar.getTime()" key="Search2Value"/>
+                <key-binding alias="dw.system.Site.current.ID" key="Search3Value"/>
+                <key-binding alias="null" key="Search4Value"/>
+                <key-binding alias="null" key="Search5Value"/>
+                <key-binding alias="null" key="SortBy1"/>
+                <key-binding alias="null" key="SortBy1Direction"/>
+                <key-binding alias="null" key="SortBy2"/>
+                <key-binding alias="null" key="SortBy2Direction"/>
+                <key-binding alias="null" key="SortBy3"/>
+                <key-binding alias="null" key="SortBy3Direction"/>
+                <key-binding alias="WorkflowScheduleInstanceCount" key="SearchResultCount"/>
+              </pipelet-node>
+              <node-display x="1" y="1"/>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="WorkflowScheduleInstanceCount &gt; 0" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in1" target-path="./+1">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="4"/>
+                  </transition-display>
+                </transition>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <pipelet-node custom-name="The input parameters for the Workflow-CreateWorkflowScheduleInstance are set." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <description>The input parameters for the Workflow-CreateWorkflowScheduleInstance are set.</description>
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="dw.system.Site.current.ID" key="From_0"/>
+                <key-binding alias="SiteId" key="To_0"/>
+                <key-binding alias="WorkflowPlanEntry.workflowScheduleDefinition" key="From_1"/>
+                <key-binding alias="WorkflowScheduleDefinition" key="To_1"/>
+                <key-binding alias="WorkflowPlanEntry.calendar" key="From_2"/>
+                <key-binding alias="Calendar" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="1" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="Workflow-CreateWorkflowScheduleInstance"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+                <bend-point relative-to="target" x="0" y="1"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="-3" y="0"/>
+            </node>
+            <transition target-connector="in3" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="-3"/>
+            </node>
+            <transition target-connector="loop" target-path="..">
+              <transition-display>
+                <bend-point relative-to="target" x="-2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="2" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_8">
+    <segment>
+      <node>
+        <text-node>
+          <description>Creates a workflow schedule instance and its component instances for the given parameters. The whole node is execute in one transaction to prevent concurrent acceses by other DW jobs. This should not happen, but to be sure this is done.
+@import LibWorkflow : Object The library object.</description>
+        </text-node>
+        <node-display x="16" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CreateWorkflowScheduleInstance">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CreateWorkflowScheduleInstance" secure="false"/>
+        <node-display x="16" y="2"/>
+      </node>
+      <simple-transition transaction-control="begin">
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node custom-name="Creates all component instances by calling the function createWorkflowComponentInstances on the workflow instance wrapper object (see WorkflowScheduleInstance.ds)." pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <description>Creates all component instances by calling the function createWorkflowComponentInstances on the workflow instance wrapper object (see WorkflowScheduleInstance.ds).</description>
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="workflow/CreateWorkflowScheduleInstance.ds"/>
+          <key-binding alias="ScriptLog" key="ScriptLog"/>
+          <key-binding alias="WorkflowScheduleInstance" key="WorkflowScheduleInstance"/>
+          <key-binding alias="Calendar" key="Calendar"/>
+          <key-binding alias="WorkflowScheduleDefinition" key="WorkflowScheduleDefinition"/>
+          <key-binding alias="SiteId" key="SiteId"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in2" target-path="./+1" transaction-control="rollback">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1" transaction-control="commit"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_10">
+    <segment>
+      <node>
+        <text-node>
+          <description>Executes the next waiting workflow schedule instance in the execution queue.
+@import LibWorkflow : Object The library object.
+@import JobId : String The current job ID.</description>
+        </text-node>
+        <node-display x="20" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="ExecuteWorkflow">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="ExecuteWorkflow" secure="false"/>
+        <node-display x="20" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Searches the next waiting workflow schedule instance (See libWorkflow.ds-&gt;getNextWaitingWorkflowScheduleInstance)" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <description>Searches the next waiting workflow schedule instance (See libWorkflow.ds-&gt;getNextWaitingWorkflowScheduleInstance)</description>
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="LibWorkflow.getNextWaitingWorkflowScheduleInstance(dw.system.Site.current.ID)" key="From_0"/>
+          <key-binding alias="CurrentWorkflowScheduleInstance" key="To_0"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(CurrentWorkflowScheduleInstance)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <pipelet-node custom-name="Calls the start function on the wrapper object." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <description>Calls the start function on the wrapper object.</description>
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+                <key-binding alias="CurrentWorkflowScheduleInstance.start()" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1"/>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node custom-name="Searches the next waiting workflow component instance within the current workflow instance. (See CurrentWorkflowScheduleInstance.ds-&gt;getNextWaitingWorkflowComponentInstance())" pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <description>Searches the next waiting workflow component instance within the current workflow instance. (See CurrentWorkflowScheduleInstance.ds-&gt;getNextWaitingWorkflowComponentInstance())</description>
+                <config-property key="Transactional" value="false"/>
+                <key-binding alias="CurrentWorkflowScheduleInstance.getNextWaitingWorkflowComponentInstance()" key="From_0"/>
+                <key-binding alias="CurrentWorkflowComponentInstance" key="To_0"/>
+                <key-binding alias="null" key="From_1"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <decision-node condition-key="!empty(CurrentWorkflowComponentInstance)" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node custom-name="Calls the start function on the component wrapper and retrieved the action which should be called." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <description>Calls the start function on the component wrapper and retrieved the action which should be called.</description>
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="CurrentWorkflowComponentInstance.start(JobId)" key="From_0"/>
+                      <key-binding alias="DoIt" key="To_0"/>
+                      <key-binding alias="CurrentWorkflowComponentInstance.custom.action" key="From_1"/>
+                      <key-binding alias="Action" key="To_1"/>
+                      <key-binding alias="Action.match(/^([^#]+)#([^#]+)$/)" key="From_2"/>
+                      <key-binding alias="ScriptAction" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <decision-node condition-key="CurrentWorkflowComponentInstance.custom.disabled" condition-operator="expr"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in"/>
+                      <segment>
+                        <node>
+                          <pipelet-node custom-name="Calls the finish function on the wrapper object with the appropriate parameter." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <description>Calls the finish function on the wrapper object with the appropriate parameter.</description>
+                            <config-property key="Transactional" value="true"/>
+                            <key-binding alias="CurrentWorkflowComponentInstance.finish('SKIPPED')" key="From_0"/>
+                            <key-binding alias="DoIt" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="0" y="3"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../b4.2">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="2"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="source" x="2" y="0"/>
+                      <bend-point relative-to="target" x="0" y="-1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <call-node start-name-ref="Workflow-ExecuteJobStep"/>
+                    <node-display x="1" y="1"/>
+                    <branch basename="b3" source-connector="ERROR">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="target" x="0" y="-1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node custom-name="Calls the finish function on the wrapper object with the appropriate parameter." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <description>Calls the finish function on the wrapper object with the appropriate parameter.</description>
+                            <config-property key="Transactional" value="true"/>
+                            <key-binding alias="CurrentWorkflowComponentInstance.finish('ERROR', ErrorText)" key="From_0"/>
+                            <key-binding alias="DoIt" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="3" y="2"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../+1"/>
+                      </segment>
+                    </branch>
+                    <branch basename="b4" source-connector="OK">
+                      <transition target-connector="in"/>
+                      <segment>
+                        <node>
+                          <pipelet-node custom-name="Calls the finish function on the wrapper object with the appropriate parameter." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <description>Calls the finish function on the wrapper object with the appropriate parameter.</description>
+                            <config-property key="Transactional" value="true"/>
+                            <key-binding alias="CurrentWorkflowComponentInstance.finish('OK')" key="From_0"/>
+                            <key-binding alias="DoIt" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="0" y="2"/>
+                        </node>
+                        <transition target-connector="in1" target-path="./+1"/>
+                      </segment>
+                      <segment>
+                        <node>
+                          <join-node/>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition/>
+                        <node>
+                          <decision-node condition-key="!CurrentWorkflowComponentInstance.custom.asynchron" condition-operator="expr"/>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="yes">
+                            <transition target-connector="in1" target-path="../..">
+                              <transition-display>
+                                <bend-point relative-to="source" x="0" y="1"/>
+                                <bend-point relative-to="source" x="-4" y="1"/>
+                                <bend-point relative-to="target" x="-2" y="0"/>
+                              </transition-display>
+                            </transition>
+                          </branch>
+                        </node>
+                        <transition target-connector="in1" target-path="../+2"/>
+                      </segment>
+                    </branch>
+                    <branch basename="b5" source-connector="SUSPEND">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="target" x="0" y="-1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node custom-name="Calls the finish function on the wrapper object with the appropriate parameter." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <description>Calls the finish function on the wrapper object with the appropriate parameter.</description>
+                            <config-property key="Transactional" value="true"/>
+                            <key-binding alias="CurrentWorkflowComponentInstance.finish('SUSPEND')" key="From_0"/>
+                            <key-binding alias="DoIt" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="2" y="2"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../+1">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="2"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                    <branch basename="b6" source-connector="WARN">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="target" x="0" y="-1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node custom-name="Calls the finish function on the wrapper object with the appropriate parameter." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <description>Calls the finish function on the wrapper object with the appropriate parameter.</description>
+                            <config-property key="Transactional" value="true"/>
+                            <key-binding alias="CurrentWorkflowComponentInstance.finish('WARN', ErrorText)" key="From_0"/>
+                            <key-binding alias="DoIt" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="To_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="1" y="2"/>
+                        </node>
+                        <transition target-connector="in1" target-path="../b4.2">
+                          <transition-display>
+                            <bend-point relative-to="source" x="0" y="2"/>
+                          </transition-display>
+                        </transition>
+                      </segment>
+                    </branch>
+                  </node>
+                  <simple-transition>
+                    <transition-display>
+                      <bend-point relative-to="target" x="0" y="-1"/>
+                    </transition-display>
+                  </simple-transition>
+                  <node>
+                    <pipelet-node custom-name="Calls the finish function on the wrapper object with the appropriate parameter." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                      <description>Calls the finish function on the wrapper object with the appropriate parameter.</description>
+                      <config-property key="Transactional" value="true"/>
+                      <key-binding alias="CurrentWorkflowComponentInstance.finish('ERROR', &quot;FATALL ERROR: Unexpected end work of workflow component&quot;)" key="From_0"/>
+                      <key-binding alias="DoIt" key="To_0"/>
+                      <key-binding alias="null" key="From_1"/>
+                      <key-binding alias="null" key="To_1"/>
+                      <key-binding alias="null" key="From_2"/>
+                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="null" key="From_3"/>
+                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="null" key="From_4"/>
+                      <key-binding alias="null" key="To_4"/>
+                      <key-binding alias="null" key="From_5"/>
+                      <key-binding alias="null" key="To_5"/>
+                      <key-binding alias="null" key="From_6"/>
+                      <key-binding alias="null" key="To_6"/>
+                      <key-binding alias="null" key="From_7"/>
+                      <key-binding alias="null" key="To_7"/>
+                      <key-binding alias="null" key="From_8"/>
+                      <key-binding alias="null" key="To_8"/>
+                      <key-binding alias="null" key="From_9"/>
+                      <key-binding alias="null" key="To_9"/>
+                    </pipelet-node>
+                    <node-display x="4" y="2"/>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1">
+                    <transition-display>
+                      <bend-point relative-to="source" x="0" y="2"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="-1" y="1"/>
+                  </node>
+                  <transition target-connector="in2" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                  <transition target-connector="in2" target-path="../+1"/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="12" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="6" y="7"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <pipelet-node custom-name="Calls the finish function on the workflow instance wrapper." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CurrentWorkflowScheduleInstance.finish()" key="From_0"/>
+                <key-binding alias="DoIt" key="To_0"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="From_3"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+                <key-binding alias="CurrentWorkflowScheduleInstance.getStatus()" key="From_1"/>
+                <key-binding alias="CurrentWorkflowScheduleInstance.custom.status" key="To_1"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <call-node start-name-ref="Workflow-SendNotificationEmail"/>
+              <node-display x="0" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
+              <end-node/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="-1" y="0"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display orientation="horizontal" x="4" y="0"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_12">
+    <segment>
+      <node>
+        <text-node>
+          <description>This is the cleanup component (job) which removes old custom objects created by the integration framework.
+@input workflowMaximumObjectAgeBeforeDeletion : String As job parameter. The maximum age of the custom objects.</description>
+        </text-node>
+        <node-display x="27" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CleanUp">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CleanUp" secure="false"/>
+        <node-display x="27" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Retrieves the parameter workflowMaximumObjectAgeBeforeDeletion." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <description>Retrieves the parameter workflowMaximumObjectAgeBeforeDeletion.</description>
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="!empty(CurrentJobParameterMap.WorkflowMaximumObjectAgeBeforeDeletion)? CurrentJobParameterMap.WorkflowMaximumObjectAgeBeforeDeletion : CurrentWorkflowComponentInstance.getParameterValue('workflowMaximumObjectAgeBeforeDeletion')" key="From_0"/>
+          <key-binding alias="WorkflowMaximumObjectAgeBeforeDeletion" key="To_0"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+          <key-binding alias="!empty(CurrentJobParameterMap.WorkflowMaximumObjectAgeBeforeDeletion)? new Boolean(true) : new Boolean(false)" key="From_1"/>
+          <key-binding alias="IsJobSchedule" key="To_1"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="workflow/CleanUp.ds"/>
+          <key-binding alias="ScriptLog" key="ScriptLog"/>
+          <key-binding alias="new Number(WorkflowMaximumObjectAgeBeforeDeletion)" key="WorkflowMaximumObjectAgeBeforeDeletion"/>
+          <key-binding alias="CurrentWorkflowComponentInstance" key="CurrentWorkflowComponentInstance"/>
+          <key-binding alias="HasWarnings" key="HasWarnings"/>
+          <key-binding alias="IsJobSchedule" key="IsJobSchedule"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="4" y="0"/>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="ERROR"/>
+              <node-display x="2" y="2"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="HasWarnings != true" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="source" x="0" y="1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="0" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="2" y="0"/>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="WARN"/>
+        <node-display x="1" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_14">
+    <segment>
+      <node>
+        <text-node>
+          <description>If a not handled exception occurs in the component&#180;s dynamic call, this node is called.</description>
+        </text-node>
+        <node-display x="32" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="Error">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="Error" secure="false"/>
+        <node-display x="32" y="2"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <key-binding alias="('General Exception in the component: ' + ErrorText)" key="From_0"/>
+          <key-binding alias="ErrorText" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node name="ERROR"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_16">
+    <segment>
+      <node>
+        <text-node>
+          <description>Sends a notification email if the appropriate status was configured.
+@input CurrentWorkflowScheduleInstance : Object The current workflow instance wrapper.</description>
+        </text-node>
+        <node-display x="2" y="18"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="SendNotificationEmail">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="SendNotificationEmail" secure="false"/>
+        <node-display x="2" y="19"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <pipelet-node custom-name="Retrieves the current status." pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <description>Retrieves the current status.</description>
+          <config-property key="Transactional" value="false"/>
+          <key-binding alias="CurrentWorkflowScheduleInstance.getStatus()" key="From_0"/>
+          <key-binding alias="Status" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(CurrentWorkflowScheduleInstance.custom.notificationStatuses) &amp;&amp; !empty(CurrentWorkflowScheduleInstance.custom.notificationEmails) &amp;&amp; CurrentWorkflowScheduleInstance.custom.notificationStatuses.indexOf(Status) &gt;= 0" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="SendMail" pipelet-set-identifier="bc_api">
+                <key-binding alias="&quot;DoNotReply@demandware.com&quot;" key="MailFrom"/>
+                <key-binding alias="&quot;workflow/notificationemail&quot;" key="MailTemplate"/>
+                <key-binding alias="CurrentWorkflowScheduleInstance.custom.notificationEmails.join(',')" key="MailTo"/>
+                <key-binding alias="&quot;Integration Framework Notification - &quot; + dw.system.System.getInstanceHostname()" key="MailSubject"/>
+                <key-binding alias="null" key="LocaleID"/>
+                <key-binding alias="null" key="MailBCC"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
+        <transition-display>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
+        </transition-display>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <end-node/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_18">
+    <segment>
+      <node>
+        <text-node>
+          <description>This start node either executes a script or a pipeline.</description>
+        </text-node>
+        <node-display x="16" y="18"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="ExecuteJobStep">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="ExecuteJobStep" secure="false"/>
+        <node-display x="16" y="19"/>
+      </node>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="!empty(ScriptAction)" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="workflow/JobStepRunner.ds"/>
+                <config-property key="Timeout" value="3600"/>
+                <key-binding alias="ScriptLog" key="ScriptLog"/>
+                <key-binding alias="Action" key="Action"/>
+                <key-binding alias="ExecutionStatus" key="ExecutionStatus"/>
+                <key-binding alias="CurrentWorkflowComponentInstance" key="WorkflowComponentInstance"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <end-node name="ERROR"/>
+                    <node-display orientation="horizontal" x="3" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="!empty(ExecutionStatus) &amp;&amp; ExecutionStatus.code == 'OK'" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <end-node name="OK"/>
+                    <node-display x="0" y="4"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <decision-node condition-key="!empty(ExecutionStatus) &amp;&amp; ExecutionStatus.code == 'SUSPEND'" condition-operator="expr"/>
+              <node-display x="1" y="1"/>
+              <branch basename="b4" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <end-node name="SUSPEND"/>
+                    <node-display x="0" y="3"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <decision-node condition-key="!empty(ExecutionStatus) &amp;&amp; ExecutionStatus.code == 'WARN'" condition-operator="expr"/>
+              <node-display x="1" y="1"/>
+              <branch basename="b5" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <end-node name="WARN"/>
+                    <node-display x="0" y="2"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition/>
+            <node>
+              <decision-node condition-key="!empty(ExecutionStatus) &amp;&amp; ExecutionStatus.code == 'ERROR'" condition-operator="expr"/>
+              <node-display x="1" y="1"/>
+              <branch basename="b6" source-connector="yes">
+                <transition target-connector="in"/>
+                <segment>
+                  <node>
+                    <end-node name="ERROR"/>
+                    <node-display x="0" y="1"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <end-node/>
+              <node-display x="1" y="1"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-2"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <call-node start-name-key="Action"/>
+        <node-display x="7" y="1"/>
+        <branch basename="b3" source-connector="ERROR">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="ERROR"/>
+              <node-display x="1" y="3"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b4" source-connector="OK">
+          <transition target-connector="in">
+            <transition-display>
+              <bend-point relative-to="target" x="0" y="-1"/>
+            </transition-display>
+          </transition>
+          <segment>
+            <node>
+              <end-node name="OK"/>
+              <node-display x="-2" y="3"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b5" source-connector="SUSPEND">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <end-node name="SUSPEND"/>
+              <node-display x="-1" y="3"/>
+            </node>
+          </segment>
+        </branch>
+        <branch basename="b6" source-connector="WARN">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <end-node name="WARN"/>
+              <node-display x="0" y="3"/>
+            </node>
+          </segment>
+        </branch>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="target" x="0" y="-1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <end-node/>
+        <node-display x="2" y="3"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

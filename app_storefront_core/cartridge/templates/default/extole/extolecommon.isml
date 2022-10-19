@@ -1,0 +1,27 @@
+<isinclude template="util/modules"/>
+<div style="display:none">
+	<iscomment> common extole tags </iscomment>
+	<isinclude template="extole/extoleaccountdropdowntag"/>
+	<isinclude template="extole/extolefootersubscription"/>
+	<isinclude template="extole/extoleglobalnavmobiletag"/>
+	<isinclude template="extole/extolefootertag"/>
+
+	<iscomment> cateogry </iscomment>
+	<isif condition="${pdict.originalUrl.indexOf('/category') > 0}">
+		<isinclude template="extole/extolecategorybannertag"/>
+	</isif>
+
+	<iscomment> product page </iscomment>
+	<isif condition="${pdict.originalUrl.indexOf('product') > 0 || pdict.originalUrl.indexOf('Product-Show') > 0}"> 
+		<isinclude template="extole/extoleproducttag"/>
+		<isinclude template="extole/extoleproductmobiletag"/>
+	</isif>
+	
+	<iscomment> confirmation page </iscomment>
+	<isif condition="${pdict.originalUrl.indexOf('checkout/confirmation') > 0}"> 
+		<isinclude template="extole/extoleconfirmationtag"/>
+	</isif>
+	
+	
+	<iscomment> removed  extolepromobannertag, extolepromobannermobiletag and extoleofferslanding</iscomment>
+</div>

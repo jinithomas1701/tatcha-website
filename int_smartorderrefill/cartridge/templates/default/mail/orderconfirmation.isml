@@ -1,0 +1,300 @@
+<iscontent type="text/html " charset="UTF-8"/>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<body>
+<isset name="Order" value="${pdict.Order}" scope="page"/>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<td align="center" style="background:#e0e0e0;padding:50px 0;">
+			<center>
+				<table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+					<tr>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+							<a href="${URLUtils.httpHome()}" title="${Resource.msg('global.storename','common',null)}">
+								<img src="${URLUtils.httpStatic('images/logo-small.svg')}" alt="${Resource.msg('global.storename','common',null)}" style="border:none;"/>
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">						
+							<table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+								<tr>
+									<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.thankyou','smartorderrefill',null)}</th>
+								</tr>
+								<tr>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<p>${Resource.msg('email.orderconfirmation.message','smartorderrefill',null)}</p>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;" colspan="2">
+							<p>
+								${Resource.msg('email.orderconfirmation.order.orderplaced','smartorderrefill',null)}
+								<isprint value="${Order.creationDate}" style="DATE_LONG"/>
+							</p>
+
+							<p>
+								${Resource.msg('label.order.number', 'confirmation', null)}
+								<isprint value="${Order.orderNo}"/>
+							</p>
+
+							<iscomment> Begin - SmartOrderRefill modification </iscomment>
+							<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('SorEnabled')}" >
+								<isinclude template="smartOrderRefill/components/orderConfirmationMail/refillHeader"/>
+							</isif>
+							<iscomment> End - SmartOrderRefill modification </iscomment>
+
+							<table style="background:#ffffff;border:1px solid #999999;width:680px;">
+								<tr>
+									<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;" colspan="3">${Resource.msg('email.orderconfirmation.order.paymentinfo','smartorderrefill',null)}</th>
+								</tr>
+								<tr>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<strong>${Resource.msg('label.order.billing.address', 'confirmation', null)}</strong>
+										<isset name="address" value="${Order.billingAddress}" scope="page"/>
+    									<isinclude template="checkout/addressSummary" />										
+									</td>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<isif condition="${Order.paymentInstruments.length == 1}">
+											<b>${Resource.msg('email.orderconfirmation.order.paymentmethod','smartorderrefill',null)}</b>
+										<iselse/>
+											<b>${Resource.msg('email.orderconfirmation.order.paymentmethods','smartorderrefill',null)}</b>
+										</isif>
+										<iscomment>Render All Payment Instruments</iscomment>
+										<isloop items="${Order.paymentInstruments}" var="paymentInstr" status="piloopstate">
+											<div><isprint value="${dw.order.PaymentMgr.getPaymentMethod(paymentInstr.paymentMethod).name}" /></div>
+											<isif condition="${dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstr.paymentMethod)}">
+												<isprint value="${paymentInstr.maskedGiftCertificateCode}"/><br />
+											</isif>
+											<isif condition="${dw.order.PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstr.paymentMethod)}">
+												<isprint value="${paymentInstr.creditCardHolder}"/><br />
+												<isprint value="${paymentInstr.creditCardType}"/><br />
+												<isprint value="${paymentInstr.maskedCreditCardNumber}"/><br />
+											</isif>
+											<div>
+												<span class="label">${Resource.msg('email.orderconfirmation.order.amount','smartorderrefill',null)}:</span>
+												<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
+											</div><!-- END: payment-amount -->
+										</isloop>
+									</td>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<strong>${Resource.msg('label.order.totals', 'confirmation', null)}:</strong> <br/>
+										${Resource.msg('label.order.subtotal','confirmation', null)}:
+										<isprint value="${Order.getAdjustedMerchandizeTotalPrice(false).add(Order.giftCertificateTotalPrice)}"  />
+										<br/>
+										<isset name="orderDiscount" value="${Order.getAdjustedMerchandizeTotalPrice(false).subtract(Order.getAdjustedMerchandizeTotalPrice(true))}" scope="page"/>
+										
+										<isif condition="${orderDiscount.value !== 0}">
+											${Resource.msg('label.order.discount', 'common', null)}:
+											- <isprint value="${orderDiscount}" />
+											
+										<br/>
+										</isif>
+										${Resource.msg('label.order.shipping.cost','confirmation', null)}:
+										<isprint value="${Order.shippingTotalPrice}"  />
+										<br/>
+										<isset name="shippingDiscount" value="${Order.shippingTotalPrice.subtract(Order.adjustedShippingTotalPrice)}" scope="page"/>
+										<isif condition="${shippingDiscount.value !== 0}">
+											${Resource.msg('label.shipping.discount', 'common', null)}:
+											- <isprint value="${shippingDiscount}" />
+											<br/>
+										</isif>
+										<isset name="totalTax" value="${Order.totalTax}" scope="page"/>
+										<isif condition="${totalTax.value !== 0}">
+											${Resource.msg('label.order.sales.tax','confirmation', null)}:
+											<isprint value="${totalTax}" />
+											<br/>
+										</isif>
+										${Resource.msg('label.order.grand.total','confirmation', null)}:
+										<isprint value="${Order.totalGrossPrice}" />
+									</td>
+								</tr>
+							</table>
+							<isloop items="${Order.shipments}" var="shipment" status="shipmentloopstate">
+								<p><b>${(Resource.msg('email.orderconfirmation.order.shipmentnumber','smartorderrefill',null)) + shipmentloopstate.count}</b></p>
+								<isif condition="${shipment.productLineItems.size() > 0}">
+									<iscomment>Shipment items table</iscomment>
+									<table style="background:#ffffff;border:1px solid #999999;width:680px;">
+										<thead>
+											<tr>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.order.item','smartorderrefill',null)}</th>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.order.quantity','smartorderrefill',null)}</th>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.order.price','smartorderrefill',null)}</th>
+												<isif condition="${empty(shipment.custom.shipmentType) || shipment.custom.shipmentType != 'instore'}"/>
+													<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.orde.shippingto','smartorderrefill',null)}</th>
+												<iselse/>
+													<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.order.instorepickup','smartorderrefill',null)}</th>
+												</isif>
+											</tr>
+										</thead>
+										<isloop items="${shipment.productLineItems}" var="productLineItem" status="pliloopstate">
+											<tr>
+												<isset name="product" value="${productLineItem.product}" scope="page"/>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<div class="name"><a href="${URLUtils.http('Product-Show','pid', product.ID)}" title="${productLineItem.productName}"><isprint value="${productLineItem.productName}"/></a></div>
+												</td>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isprint value="${productLineItem.quantity}"/>
+												</td>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isif condition="${productLineItem.bonusProductLineItem}">
+														<isset name="bonusProductPrice" value="${productLineItem.getAdjustedPrice()}" scope="page"/>
+														<isif condition="${bonusProductPrice > 0}" >
+															<isset name="bonusProductPriceValue" value="${bonusProductPrice}" scope="page"/>
+														<iselse/>
+															<isset name="bonusProductPriceValue" value="${Resource.msg('email.orderconfirmation.order.product.bonus','smartorderrefill',null)}" scope="page"/>
+														</isif>
+														<isprint value="${bonusProductPriceValue}" />
+													<iselse/>
+														<isprint value="${productLineItem.adjustedPrice}"/>
+														<isif condition="${productLineItem.optionProductLineItems.size() > 0}">
+															<isloop items="${productLineItem.optionProductLineItems}" var="optionLI">
+																<p style="color:#990000;">+ <isprint value="${optionLI.adjustedPrice}"/></p>
+															</isloop>
+														</isif>
+													</isif>
+												</td>
+												<isif condition="${pliloopstate.first}">
+													<isset name="rowSpan" value="${shipment.productLineItems.size()}" scope="page"/>
+													<td rowspan="${rowSpan.toFixed()}" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top; border-left: 2px solid #ffffff;">
+														<div>
+															<strong>${Resource.msg('label.order.shipping.address', 'confirmation', null)}</strong>
+															<isset name="address" value="${shipment.shippingAddress}" scope="page"/>
+															<isinclude template="checkout/addressSummary" />
+														</div>
+														<div>
+															${Resource.msg('email.orderconfirmation.order.shippingmethod','smartorderrefill',null)}
+															<isif condition="${!empty(shipment.shippingMethod)}">
+																<isprint value="${shipment.shippingMethod.displayName}"/>
+															<iselse/>
+																<isprint value="${shipment.shippingMethodID}"/>
+															</isif>
+														</div>
+														<div>
+															${Resource.msg('email.orderconfirmation.order.shippingstatus','smartorderrefill',null)}
+															<isif condition="${shipment.shippingStatus==dw.order.Shipment.SHIPPING_STATUS_NOTSHIPPED}">
+																${Resource.msg('email.orderconfirmation.order.notshipped','smartorderrefill',null)}
+															<iselseif condition="${shipment.shippingStatus==dw.order.Shipment.SHIPPING_STATUS_SHIPPED}">
+																${Resource.msg('email.orderconfirmation.order.shipped','smartorderrefill',null)}
+															<iselse/>
+																${Resource.msg('email.orderconfirmation.order.notknown','smartorderrefill',null)}
+															</isif>
+														</div>
+														<isif condition="${!empty(shipment.trackingNumber)}">
+															<div>
+																${Resource.msg('email.orderconfirmation.order.tracking','smartorderrefill',null)}
+																<isprint value="${shipment.trackingNumber}"/>
+															</div>
+														</isif>
+													</td>
+												</isif>
+											</tr>
+										</isloop>
+										<isif condition="${shipment.gift}">
+											<tr>
+												<td colspan="4" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													${Resource.msg('email.orderconfirmation.order.giftmessage','smartorderrefill',null)}
+												</td>
+											</tr>
+											<tr>
+												<td colspan="4" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isif condition="${!empty(shipment.giftMessage)}">
+														<isprint value="${shipment.giftMessage}"/>
+													<iselse/>
+														&nbsp;
+													</isif>
+												</td>
+											</tr>
+										</isif>
+									</table>
+								</isif>
+								<isif condition="${shipment.giftCertificateLineItems.size() > 0}">
+
+									<iscomment>Shipment Gift Certificate</iscomment>
+									<table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+										<thead>
+											<tr>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('global.item','locale',null)}</th>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('global.price','locale',null)}</th>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('order.orderdetails.shippingto','order',null)}</th>
+											</tr>
+										</thead>
+										<isloop items="${shipment.giftCertificateLineItems}" var="giftCertificateLineItem" status="gcliloopstate">
+											<tr>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													${Resource.msg('global.giftcertificate','locale',null)}
+													<div>
+														${Resource.msg('order.orderdetails.giftcertto','order',null)}
+															<isprint value="${giftCertificateLineItem.recipientName}"/><br />
+															<isprint value="${giftCertificateLineItem.recipientEmail}"/>
+													</div>
+													<div>
+														${Resource.msg('order.orderdetails.giftcertfrom','order',null)}
+															<isprint value="${giftCertificateLineItem.senderName}"/><br />
+															<isprint value="${Order.customerEmail}"/>
+													</div>
+												</td>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isprint value="${giftCertificateLineItem.price}"/>
+												</td>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<div>
+														${Resource.msg('order.orderdetails.giftcertshippingaddress','order',null)}
+														<div>
+															<isprint value="${giftCertificateLineItem.recipientName}"/>
+															<isprint value="${giftCertificateLineItem.recipientEmail}"/>
+														</div>
+													</div>
+													<div>
+														${Resource.msg('order.orderdetails.shippingmethod','order',null)}
+														${Resource.msg('order.orderdetails.giftcertshipping','order',null)}
+													</div>
+												</td>
+											</tr>
+										</isloop>
+
+										<iscomment>if shipment is marked as gift</iscomment>
+										<tr>
+											<td colspan="4" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+												${Resource.msg('order.orderdetails.giftmessage','order',null)}
+											</td>
+										</tr>
+
+										<isif condition="${shipment.gift}">
+											<tr>
+												<td colspan="4" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isif condition="${!empty(shipment.giftMessage)}">
+														<isprint value="${shipment.giftMessage}"/>
+													<iselse/>
+														&nbsp;
+													</isif>
+												</td>
+											</tr>
+										<iselse/>
+											<tr>
+												<td colspan="4" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isset name="theGiftCert" value="${shipment.giftCertificateLineItems.iterator().next()}" scope="page"/>
+													<isif condition="${!empty(theGiftCert.message)}">
+														<isprint value="${theGiftCert.message}"/>
+													<iselse/>
+														&nbsp;
+													</isif>
+												</td>
+											</tr>
+										</isif>
+									</table>
+
+								</isif>
+							</isloop>
+						</td>
+					</tr>
+				</table>
+			</center>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

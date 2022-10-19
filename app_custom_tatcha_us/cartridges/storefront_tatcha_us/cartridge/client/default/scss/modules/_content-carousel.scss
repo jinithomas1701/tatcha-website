@@ -1,0 +1,99 @@
+.content-carousel {
+    max-width: 1010px;
+    margin: 0 auto;
+    padding-bottom: 1.5rem;
+    @include media-breakpoint-up(lg) {
+        padding-bottom: 0;
+    }
+    &__heading {
+        margin-bottom: rem-calc(20);
+        line-height: 1.75rem;
+        font: {
+            family: 'Minion Pro';
+            weight: 400;
+            size: 1.25rem;
+        }
+        text : {
+            align: center;
+            transform: capitalize;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom: 2rem;
+            font-size: 1.75rem;
+            line-height: 2.375rem;
+        }
+    }
+    &__link {
+        color: $black;
+        display: block;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+    &__cell {
+        max-width: 255px;
+        border-radius: 4px;
+        margin-right: 20px;
+        padding-left: 4px;
+        padding-bottom: 10px;
+        height: auto;
+        @include media-breakpoint-up(md) {
+            max-width: 320px;
+        }
+    }
+    &__flickity {
+        margin-left: 1rem;
+        @include media-breakpoint-up(lg) {
+            margin-left: 0;
+        }
+        > .content-carousel__cell + .content-carousel__cell {
+            display: none; // To resolve initial load wrapping issue
+        }
+    }
+    &__body {
+        padding: 1rem;
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-flow: column;
+        min-height: 130px;
+        border: {
+            bottom-right-radius: 4px;
+            bottom-left-radius: 4px;
+        }
+        @include media-breakpoint-up(lg) {
+            min-height: 152px;
+        }
+    }
+    &__img {
+        border: {
+            top-right-radius: 4px;
+            top-left-radius: 4px;
+        }
+    }
+    &__title {
+        margin-bottom: 1rem;
+        line-height: 1.5rem;
+        font: {
+            family: 'Minion Pro';
+            weight: 400;
+            size: 1rem;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom: 2rem;
+            font-size: 1.25rem;
+            line-height: 1.75rem;
+        }
+    }
+    // flickity overwrite styles
+    .flickity-prev-next-button {
+        display: none;
+    }
+    .flickity-page-dots .dot {
+        border: 1px solid $black;
+        opacity: 1;
+        margin: 0 5px;
+        &:not(.is-selected) {
+            background: transparent;
+        }
+    }
+}

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <list formid="workflows">
+        <action formid="editWorkflow" valid-form="false"/>
+        <action formid="queueWorkflow" valid-form="false"/>
+    </list>
+    
+    <group formid="workflow">
+        <field formid="id" type="string" mandatory="true" label="workflow.id" missing-error="form.error.workflow.idMissingError" value-error="form.error.workflow.idValueError" binding="custom.ID"/>
+        <field formid="name" type="string" label="workflow.name" binding="custom.name" />
+        <field formid="enabled" type="boolean" label="workflow.enabled" binding="custom.enabled"/>
+        <field formid="description" type="string" label="workflow.description" binding="custom.description" />
+        <!-- The siteIds field will be set manually. -->
+        <field formid="type" type="string" mandatory="true" label="workflow.type" binding="custom.type">
+            <options optionid-binding="value" value-binding="value" label-binding="displayValue"/>
+        </field>
+        <!-- Important note: No date fields are used, because the form definition will show date fields in GMT time,
+             but here the instance time zone must be used. So the transformation is done manually! -->
+        <group formid="SINGLE">
+            <field formid="executionTime" type="string" mandatory="true" label="workflow.runtime" missing-error="form.error.workflow.SINGLE.executionTimeMissingError"/>
+        </group>
+        <group formid="RECURRING">
+            <field formid="executionTime" type="string" mandatory="true" label="workflow.runtime" missing-error="form.error.workflow.RECURRING.executionTimeMissingError"/>
+            <field formid="executionActiveFrom" type="string" mandatory="true" label="workflow.executionActiveFrom" missing-error="form.error.workflow.RECURRING.executionActiveFromMissingError"/>
+            <field formid="executionActiveTo" type="string" label="workflow.executionActiveTo" parse-error="form.error.workflow.RECURRING.executionActiveToValueError"/>
+            <field formid="executionInterval" type="integer" mandatory="true" label="workflow.every" missing-error="form.error.workflow.RECURRING.executionIntervalMissingError" parse-error="form.error.workflow.RECURRING.executionIntervalValueError" binding="custom.executionInterval"/>
+            <field formid="executionIntervalType" type="string" mandatory="true" binding="custom.executionIntervalType">
+                <options optionid-binding="value" value-binding="value" label-binding="displayValue"/>
+            </field>
+            <!-- The executionWeekdays field will be set manually. -->
+        </group>
+        
+        <field formid="notificationMode" type="string" mandatory="true" label="workflow.notificationMode" binding="custom.notificationMode">
+        	<options optionid-binding="value" value-binding="value" label-binding="displayValue"/>
+        </field>
+        
+        <field formid="fileLogLevel" type="string" label="workflow.fileLogLevel" binding="custom.fileLogLevel" />
+        <field formid="componentLogLevel" type="string" label="workflow.componentLogLevel" binding="custom.componentLogLevel" />
+        
+        <action formid="applyWorkflow" valid-form="true"/>
+        <action formid="runWorkflow" valid-form="false"/>
+    </group>
+    
+    <!-- general actions -->
+    <action formid="newWorkflow" valid-form="false"/>
+    <action formid="back" valid-form="false"/>
+    
+    <action formid="enableWorkflows" valid-form="false"/>
+    <action formid="disableWorkflows" valid-form="false"/>
+    <action formid="runWorkflows" valid-form="false"/>
+    <action formid="removeWorkflows" valid-form="false"/>
+</form>

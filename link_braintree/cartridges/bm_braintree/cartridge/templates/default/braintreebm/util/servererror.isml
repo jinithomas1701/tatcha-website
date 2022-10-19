@@ -1,0 +1,16 @@
+<isdecorate template="braintreebm/util/pt_braintree">
+
+<table class="error_box n s e w">
+    <tr valign="top">
+        <td class="error_icon top e"></td>
+        <td class="error top" width="100%">
+        <isif condition="${empty(pdict.BraintreeError)}">
+            ${Resource.msg('braintree.server.error', 'braintreebm', null)}
+        <iselse>
+            ${pdict.BraintreeError}
+        </isif>
+        </td>
+    </tr>
+</table>
+
+</isdecorate>

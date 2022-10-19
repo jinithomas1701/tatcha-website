@@ -1,0 +1,290 @@
+.breadcrumb-container {
+	background-color: #F7F9FA;
+}
+#myaccount-breadcrumb {
+	background-color: #f7f9fa;
+	margin-bottom: 0;
+	padding: 8px 0px;
+	
+	li {
+		 display: inline-block;
+	}
+	a {
+		color: #495257;
+	    text-transform: uppercase;
+	    font-size: 12px;
+	    text-decoration: none;
+	}
+}
+
+.my-account-address-book {
+	.form-group{
+		margin-bottom: 1.5rem;
+	}
+	.card-panel {
+		border-top-width: 3px;
+		border-color: #4d186e;
+		margin-bottom: 22px;
+	    background-color: #fff;
+	    border-radius: 0;
+	    box-shadow: 0 1px 1px rgba(0,0,0,.05);	
+	}
+	
+	.card-heading {
+		margin: 0 8px;
+	    border-left: 2px solid #fff;
+	    border-right: 2px solid #fff;
+		padding: 16px 8px;
+    	border-bottom: 1px solid #4d186e;
+	}
+	
+	.card-panel>.card-heading {
+		color: #4d186e;
+	    background-color: #fff;
+	}
+	
+	.card-split {
+		.card-body-main {
+			float: left;
+		}
+		.card-action {
+			float: right;
+		}
+	}
+	
+	.icon-action {
+		color: #ccd4d9;
+	}
+	
+	a {
+		&:hover {
+			color: #262b2d;
+		}
+		&.btn-address-book:hover,&.edit-cancel:hover,&.btn-primary:hover{
+			color:white;
+		}
+	}
+	
+	.card-footer {
+		padding-top: 0;
+    	text-align: right;
+		padding: 16px;
+    	background-color: #fff;
+    	border-top: 1px solid #fff;
+	}
+	
+	/*.btn-address-book {
+		padding: 2px 6px;
+	    font-size: 12px;
+	    line-height: 1.5;
+	    border-radius: 0;
+	}*/
+	
+	.add-address {
+		.card-panel {
+			border-style: dashed;
+    		border-top-width: 1px;
+			text-align: center;
+		}
+		
+		p {
+			margin-top: 16px;
+			color: #495257;
+		}
+	}
+	
+	a.add-address {
+		text-align: center;
+		text-decoration: none;
+	}
+	.address-list{
+		border: 1px solid #ccd4d9;
+		border-top-width: 3px;
+	}
+	
+	.add-address-book {
+		.add-state-address {
+			margin-top: 48px;
+			border-top-width: 3px;
+			border-color: #ccd4d9;
+			a.icon-action:hover{
+				color: unset !important;
+			}
+		}
+		
+		.card-default>.card-heading {
+			color: #343c40;
+		    background-color: #fff;
+		    border-bottom: 1px solid #ccd4d9;
+		}
+		
+		.card-title {
+			float: left;
+			margin-bottom: 0;
+			margin-top: 0;
+		}
+		
+		.card-action {
+			float: right;
+    		font-size: 14px;
+		}
+		
+		.form-group {
+			display: block;
+		}
+		.shippingPage-tooltip-button {
+			border: none;
+    		background-color: unset;
+		}
+		
+		.checkbox {
+			.form-group {
+				display: flex;
+			}
+			
+			.field-wrapper {
+				margin-right: 0.5rem;
+			} 
+		}	
+		
+		.save-address-btn {
+			text-align: right;
+			.edit-cancel:hover{
+				color: white !important;
+			}
+			/*.edit-cancel, .edit-save {
+				border-radius: 0;
+			    padding: 8px 16px;
+			    font-size: 16px;
+			}*/
+		}
+	}	
+}
+
+
+.suggested-address.modal-dialog {
+		@include media-breakpoint-up(md) {
+			   width: 600px;
+			   max-width: unset;
+	      }
+	}
+	
+.suggested-address {
+	
+	.modal-content {
+	    border-radius: 4px !important;
+	}
+	
+	.modal-body {
+		padding: 2rem 3rem 0 3rem;
+	}
+	
+	.close {
+		position: absolute;
+	    top: 1.5rem;
+	    right: 1.5rem;
+
+		&:hover {
+			opacity: 1;
+		}
+	}
+	
+	.locate-header {
+		font-weight: 600;
+	    text-transform: uppercase;
+	    font-size: 18px;
+	    padding: 1rem 0;
+	}
+	
+	.suggested-address-title {
+		font-weight: 600;
+    	margin-top: 2rem;
+	}
+	
+	.displaynone, .hidden {
+		display: none !important;
+	}
+	
+	.fa-check-circle, .fa-circle {
+		font-size: 25px;
+	}
+	.suggested-address-container {
+		padding: 10px;
+	    border-radius: 4px;
+	    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+	    margin-bottom: 24px;
+	    margin-top: 8px;
+	    cursor: pointer;
+		display: flex;
+
+		label {
+			margin-right: 3rem;
+    		margin-top: 1rem;
+		}
+	}
+	
+	input[type="radio"] {
+		margin-top: 2px;
+	}
+	
+	input.address-radio + label .fa-circle {
+		display: block;
+	}
+	
+	.entered-address-container {
+		padding: 10px;
+	    border-radius: 4px;
+	    margin-bottom: 24px;
+	    margin-top: 8px;
+	    background-color: #F7F9FA;
+	    border: 1px solid #CCD4D9;
+	    cursor: pointer;
+		display: flex;
+		
+		label {
+			margin-right: 1.5rem;
+    		margin-top: 1rem;
+		}
+	}
+	
+	input.address-radio + label .fa-check-circle {
+		display: none;
+	}
+	input.address-radio:checked + label .fa-circle {
+		display: none;
+	}
+	
+	input.address-radio:checked + label .fa-check-circle {
+		display: block;
+	}
+	
+	.text-danger-checkout {
+		font-size: 14px;
+	}
+	
+	.modal-footer {
+		flex-direction: column;
+		text-align: center;
+	    padding-left: 3rem;
+	    padding-right: 3rem;
+	}
+	
+	.save-button {
+		border-radius: 4px !important;
+	    margin-bottom: 1rem;
+	    font-size: 14px;
+	    letter-spacing: 1px;
+	}
+	
+	.edit-link {
+		color: #4D186E !important;
+	    font-size: 14px;
+	    letter-spacing: 1px;
+	    text-transform: uppercase;
+	    cursor: pointer;
+		text-decoration: underline !important;
+	}
+}
+
+
+

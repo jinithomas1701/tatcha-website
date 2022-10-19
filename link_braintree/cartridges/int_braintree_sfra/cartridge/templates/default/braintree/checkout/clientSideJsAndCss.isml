@@ -1,0 +1,25 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+
+    assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+    assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+
+    assets.addJs(pdict.braintree.prefs.clientSdk3HostedFieldsUrl);
+    assets.addJs(pdict.braintree.prefs.clientSdk3ThreeDSecureUrl);
+
+    assets.addJs(pdict.braintree.prefs.clientSdk3PayPalUrl);
+    assets.addJs(pdict.braintree.prefs.clientSdk3PayPalCheckoutUrl);
+    assets.addJs(pdict.braintree.prefs.clientSdk3VenmoUrl);
+
+    assets.addJs(pdict.braintree.prefs.clientSdk3ApplePayUrl);
+
+    assets.addJs(pdict.braintree.prefs.clientSdkLocalPaymentUrl);
+
+    assets.addJs(pdict.braintree.prefs.googlePaySdkUrl);
+    assets.addJs(pdict.braintree.prefs.braintreeGooglePaySdkUrl);
+
+    assets.addJs(pdict.braintree.prefs.srcSdkUrl);
+    assets.addJs(pdict.braintree.prefs.braintreeSrcSdkUrl);
+
+    assets.addCss('/css/braintree.css');
+</isscript>

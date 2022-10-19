@@ -1,0 +1,172 @@
+<isdecorate template="common/layout/cart">
+    <isinclude template="/components/modules" sf-toolkit="off" />
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addCss('/css/tatcha-order-confirm.css');
+        assets.addJs('/js/gtmPurchaseData.js');
+        assets.addJs('/js/giftThankYou.js');
+
+        var pageContext = {
+            title: 'Order Confirmation',
+            type: 'orderconfirmation',
+            ns: 'orderconfirmation'
+        };
+
+    </isscript>
+
+    <isif condition="${pdict.reportingURLs && pdict.reportingURLs.length}">
+        <isinclude template="reporting/reportingUrls"/>
+    </isif>
+    <isif condition="${!empty(pdict.CurrentSession.custom.userType)}">
+         <input type="hidden" id="userType" value="${pdict.CurrentSession.custom.userType}">
+    </isif>
+    <div class="checkout checkout-order-confirmation container-fluid order-confirm-page pr-xxl-0 pl-xxl-0">
+        <div class="row no-gutters">
+            <div class="header-standard col-12 col-lg-8 col-xxl-6 mx-auto">
+                <div class="container order-confirm-details pl-0 pr-0" role="alert" aria-live="assertive" tabindex="0">
+                    <div class="title text-center" aria-live="assertive">
+                        ${Resource.msg('order.orderconfirmation.heading', 'order', null)},
+                        <isif condition="${!pdict.returningCustomer}">
+                            <isprint value="${pdict.order.billing.billingAddress.address.firstName}"/>
+
+                            <iselse/>
+                            <isprint value="${pdict.customer ? pdict.customer.firstName: ''}"/>
+
+                        </isif>
+                    </div>
+                    <div class="order-number text-center" aria-live="assertive">
+                        ${Resource.msg('order.orderconfirmation.ordernumber', 'order', null)}
+                        <isprint value="${pdict.order.orderNumber}"/>
+                        .
+                    </div>
+                    <isif condition="${pdict.order.orderEmail}">
+                        <div class="email-text text-center">
+                            ${Resource.msg('order.orderconfirmation.message1', 'order', null)} <strong>
+                            <isprint value="${pdict.order.orderEmail}" encoding="htmlcontent"/>
+                        </strong>. ${Resource.msg('order.orderconfirmation.message2', 'order', null)}
+                        </div>
+                    </isif>
+                </div>
+                    <div class="d-flex flex-column flex-lg-row">
+                        <isif condition="${pdict.returningCustomer === false && pdict.order.orderEmail}">
+                            <div class="order-confirm-background account-creation rounded mr-4 p-4">
+                                <div class="creating-heading text-center mb-3">Get more benefits by creating an account
+                                </div>
+                                <div class="creating-subheading text-center mb-3">Checkout faster, receive special promotions, a birthday gift,
+                                    and more!
+                                </div>
+                                <isinclude template="checkout/confirmation/confirmationCreateAccount"/>
+                            </div>
+                        </isif>
+                        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LincEnabled') && pdict.hasShippingItems == true}">
+                        <div class="order-confirm-background rounded p-4">
+                                <div class="text-center shipping-container-linc ${pdict.returningCustomer? 'reg-customer': ''}">
+                                    <isinclude template="checkout/confirmation/lincconfirmation"/>
+                                </div>
+                        </div>
+                        </isif>
+                    </div>
+                    <isinclude template="checkout/confirmation/confirmationDetails"/>
+                    <iscomment>GTM change</iscomment>
+
+                    <isif
+                        condition="${!empty(pdict.order.billing) && !empty(pdict.order.billing.payment.selectedPaymentInstruments) && pdict.order.billing.payment.selectedPaymentInstruments.length > 0}">
+                        <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="paymentInstrumentMethod">
+                            <input type="hidden" id="checkouttype"
+                                   value="${pdict.CheckoutType !== null ? pdict.CheckoutType : paymentInstrumentMethod.paymentMethod}">
+                            <isbreak/>
+                        </isloop>
+                    </isif>
+                <div class="row no-gutters">
+                    <div class="col-12 mx-auto">
+                        <div class="row no-gutters">
+                            <div class="order-confirm-banner col-lg-6 refer-a-friend-banner pr-3">
+                                <iscomment> Extole conversion complete tag </iscomment>
+                                <div id="extole_zone_confirmation">
+                                </div>
+                            </div>
+
+                            <div class="order-confirm-banner col-lg-6">
+                                <iscontentasset aid="orderconfirmation-marketing-container-sfra"/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                </div>
+
+
+            </div>
+        <iscontentasset aid="order-questions"/>
+        </div>
+
+<iscomment>Thank you note </iscomment>
+<isif condition="${pdict.gcPaymentItems.length >= 1}">
+	<div class="modal fade modal-primary " id="thankyouNote" tabindex="-1" role="dialog" aria-labelledby="thankyouNote">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close close-round thankyou-close-button" data-dismiss="modal" aria-label="Close" style="position: absolute;"><i class="fa fa-times"></i></button>
+					<h4 class="modal-title"><strong>${Resource.msg('gift.send.thankyou.note','giftcertificate',null)}</strong></h4>
+				</div>
+
+				<form id="thankyou_form" action="${URLUtils.url('GiftCert-SendThankyou')}" method="POST">
+					<div class="modal-body">
+						<div class="form-group">
+							<input id="view" name="view" type="hidden" value="${pdict.gcPaymentItems[0].view}">
+							<label for="thankYouMessage" class="control-label control-label-lg">${Resource.msgf('gift.thank.you','giftcertificate',null,pdict.gcPaymentItems[0].senderName)}</label>
+							<textarea id="thankYouMessage" name="thankYouMessage" class="form-control font-sans" rows="5" placeholder="Add your own custom message here."></textarea>
+							<span class="help-block" style="display: none;">${Resource.msg('gift.inline.message','giftcertificate',null)}
+							</span>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+						<button type="button" id="send_thankyou_btn" class="btn btn-primary send-thankyou">Send</button>
+					</div>
+				</form>
+				<div class="alert alert-success alert-thankyou" id="alert-thankyou" role="alert" style="display: none;">
+					<div class="alert-icon">
+						<span class="fa-layers fa-fw">
+							<i class="fa fa-circle text-success" data-fa-transform="grow-12"></i>
+							<i class="fal fa-check fa-inverse" data-fa-transform="shrink-3"></i>
+						</span>
+					</div>
+					<div class="alert-text">Your thank you note has been sent.</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</isif>
+
+    <iscomment>Purchase data for GTM</iscomment>
+    <input type="hidden" value="${JSON.stringify(pdict.gtmOrderData)}" id="gtmConfirmationPurchaseData" />
+
+    <iscomment>Setting purchase data for mParticle purchase event</iscomment>
+    <input type="hidden" id="mParticleOrderDatalayer" value="${pdict.mParticleOrderJson}"/>
+
+    <isextolezonetag name="conversion" order="${pdict.order}"/>
+    <isinclude template="checkout/confirmation/lincconfirmationwidget"/>
+
+    <iscomment>Conversion tracking should only be done in the purchase confirmation page once the customer has paid.</iscomment>
+    <isif condition="${dw.system.Site.getCurrent().preferences.custom.yotpoCartridgeEnabled}">
+        <isif condition="${!empty(pdict.order)}">
+            <isif condition="${pdict.order.totalGrossPrice && pdict.order.totalGrossPrice.value}">
+                <isset name="orderTotalValue" value="${pdict.order.totalGrossPrice.value}" scope="page"/>
+                <iselse/>
+                <isset name="orderTotalValue" value="${pdict.order.totals.subTotalIncludingOrderDiscount.replace(/\$|,/g, '')}" scope="page"/>
+            </isif>
+
+            <isscript>
+                var YotpoUtils = require('int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+
+                var currentLocaleID  = YotpoUtils.getCurrentLocale(request);
+                var yotpoAppKey = YotpoUtils.getAppKeyForCurrentLocale(currentLocaleID);
+                var conversionTrackingURL = dw.system.Site.getCurrent().preferences.custom.yotpoConversionTrackingPixelURL;
+                var conversionTrkURL = conversionTrackingURL + "?order_amount=" + orderTotalValue + "&order_id=" + pdict.order.orderNumber + "&order_currency=" + pdict.order.currencyCode + "&app_key=" + yotpoAppKey;
+            </isscript>
+
+            <img src="${conversionTrkURL}" width="1" height="1">
+        </isif>
+    </isif>
+</isdecorate>

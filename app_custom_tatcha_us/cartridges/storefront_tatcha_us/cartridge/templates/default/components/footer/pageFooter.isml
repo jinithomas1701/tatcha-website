@@ -1,0 +1,113 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="/components/modules" sf-toolkit="off" />
+<iscomment>
+    This is the footer for all pages. Be careful caching it if it contains
+    user dependent information. Cache its elements instead if necessary (do not forget
+    to change the isinclude into a pipeline include for that).
+</iscomment>
+
+<isscript>
+	var automatExcludeNSList = ['cms', 'blog', 'orderconfirmation', 'recommendation', 'cart', 'account', 'wishlist'];
+	var currentNS = (pageContext && pageContext.ns) ? pageContext.ns: '';
+	var loadAutomatSnippet = automatExcludeNSList.indexOf(currentNS) > -1 ? true: false;
+</isscript>
+<iscomment> Automat Includes </iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('AUTOMAT_IsEnabled') && !loadAutomatSnippet}">
+	<script src="${dw.system.Site.getCurrent().getCustomPreferenceValue('automatConductorURL')}" async></script>
+</isif>
+
+<iscomment>added params from Klaviyo Render tags</iscomment>
+
+
+<footer class="tatcha-footer-new">
+    <iscontentasset aid="tatcha-footer-education-support-banner"/>
+    <div class="main-footer-wrap">
+        <div class="container footer-wrap">
+            <div class="row">
+                <div class="footer-list col-md-5 col-lg-6">
+                    <div class="">
+                        <iscomponent pipeline ="DisplayFooterCompSFRA-FooterSubscribe" updateddesign="true"/>
+
+                        <div class="footer-socialmedia-icons">
+                            <iscontentasset aid="tatcha-footer-social-v1"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-list col-md-2 col-lg-2">
+                    <iscontentasset aid="tatcha-footer-company-v1"/>
+                </div>
+                <div class="footer-list col-md-3 col-lg-2">
+                    <iscontentasset aid="tatcha-footer-help-v1"/>
+                </div>
+                <div class="footer-list col-md-2 col-lg-2">
+                    <iscontentasset aid="tatcha-footer-account-v1"/>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="lower-footer-wrap">
+        <div class="container copyright">
+            <iscontentasset aid="footer-region-selector-v1"/>
+            <iscontentasset aid="tatcha-footer-copyright-v1"/>
+        </div>
+    </div>
+
+    <isinclude url="${URLUtils.url('KlaviyoSfra-RenderKlaviyo',
+        'title', request.pageMetaData.title,
+        'pagecontexttype', (!empty(pdict.pageContext) ? ''+pdict.pageContext : null),
+        'searchterm', request.httpParameterMap.q.stringValue,
+        'searchresultscount', (!empty(pdict.productSearch) ? ''+pdict.productSearch.count : null),
+        'productid', request.httpParameterMap.pid.stringValue,
+        'pagecgid',  request.httpParameterMap.cgid.stringValue,
+        'orderno', (!empty(pdict.order) ? pdict.order.orderNumber : null)
+    )}"/>
+</footer>
+<div class="cookie-warning-container" style="display: none;">
+    <input class="cookie-warning-checkbox" id="cookie-warning-checkbox" type="checkbox"/>
+    <div class="cookie-warning-bar">
+        <div class="container">
+            <p class="cookie-warning-message">This website uses cookies and other technologies to understand your use of our website and to give you a better experience. By continuing to use the site or closing this banner, you agree to our use of cookies and other technologies. To find out more about cookies and how to change your choices, please go to our <a href="https://www.tatcha.com/privacy-policy.html">Privacy Policy</a>.</p>
+        </div>
+        <label for="cookie-warning-checkbox" class="cookie-warning-close">
+            <i class="fal fa-times fa-lg"></i>
+        </label>
+    </div>
+</div>
+<iscomment>
+    Customer registration can happen everywhere in the page flow. As special tag in the pdict
+    is indicating it. So we have to check on every page, if we have to report this event for
+    the reporting engine.
+</iscomment>
+
+<isscript>
+    if(!empty(pdict.CurrentHttpParameterMap) && pdict.CurrentHttpParameterMap.original && pdict.CurrentHttpParameterMap.original.value) {
+        var originalUrl = pdict.CurrentHttpParameterMap.original.value;
+        originalUrl = originalUrl.replace('!$', '?');
+        originalUrl = originalUrl.split('^^').join('&');
+        session.custom.TargetLocation = originalUrl;
+    }
+    session.custom.showCreateAccountSuccess = false;
+</isscript>
+
+<iscomment>RDMP-3452: adding attributes for MParticle-RenderMParticleTags call</iscomment>
+<isinclude url="${URLUtils.url('LoginSfra-LoginModal',
+		'isProfileUpdated', pdict.isProfileUpdated,
+		'pagecontexttype', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.type : null,
+  		'pagecontexttitle', ('pageContext' in this && !empty(pageContext)) ? ''+pageContext.title : null,
+  		'checkoutState', (pdict.currentStage) ? pdict.currentStage : '',
+  		'checkoutMode', (pdict.currentStage !== 'placeOrder') ? 'edit' : '',
+  		'paymentMethod', (pdict.order && !empty(pdict.order.billing) && !empty(pdict.order.billing.payment) && !empty(pdict.order.billing.payment.selectedPaymentInstruments)) ? pdict.order.billing.payment.selectedPaymentInstruments[0].paymentMethod : '')}"/>
+
+<iscomment> facebook pixel includes </iscomment>
+<isinclude template="common/pixel_footer"/>
+
+<isif condition="${(dw.system.Site.current.getCustomPreferenceValue('UseGladlyChat') == true)}">
+    <iscontentasset aid="gladly-widget"/>
+</isif>
+
+<iscomment>gpds widget includes</iscomment>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('EnableRSCADC')}">
+    <isinclude template="rsc_gpds_footer"/>
+</isif>
+
+<isinclude template="product/components/modalslegal"/>

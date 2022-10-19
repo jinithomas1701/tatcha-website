@@ -1,0 +1,33 @@
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div id="license-section">
+    <isif condition="${pdict.isValid}">
+        <h2 class="green">${Resource.msg('forms.license.isValid.true','license', null)}</h2>
+    <iselseif condition="${!pdict.isEntered}" />
+        <h2 class="red">${Resource.msg('forms.licence.isEntered.false', 'license', null)}</h2>
+    <iselse/>
+        <h2 class="red">${Resource.msg('forms.license.isValid.false','license', null)}</h2>
+    </isif>
+    <isif condition="${!empty(pdict.expiryDate) && pdict.expiryDate != 0}">
+        <p>${Resource.msg('forms.license.expiry_date','license', null)} ${pdict.expiryDate}</p>
+    </isif>
+    
+    <form method="post" action="${pdict.formAction}">
+        <div class="form-row ${!session.forms.license.email.valid ? 'red' : ''}">
+            <label for="${session.forms.license.email.htmlName}">
+                <span>${Resource.msg(session.forms.license.email.label,'license', null)}</span>
+            </label>
+            <input required id="${session.forms.license.email.htmlName}" type="email" name="${session.forms.license.email.htmlName}" value="${session.forms.license.email.htmlValue}">
+        </div>
+        <div class="form-row ${!session.forms.license.licensekey.valid ? 'red' : ''}" >
+            <label for="${session.forms.license.licensekey.htmlName}">
+                <span>${Resource.msg(session.forms.license.licensekey.label,'license', null)}</span>
+            </label>
+            <input required id="${session.forms.license.licensekey.htmlName}" type="text" name="${session.forms.license.licensekey.htmlName}" value="${session.forms.license.licensekey.htmlValue}">
+        </div>
+        <input type="hidden" name="${session.forms.license.licenseUniqueID.htmlName}" value="${session.forms.license.licenseUniqueID.htmlValue}">
+        <input type="submit" value="${Resource.msg(session.forms.license.save.label, 'license', null)}" name="${session.forms.license.save.htmlName}"/>
+    </form>
+</div>

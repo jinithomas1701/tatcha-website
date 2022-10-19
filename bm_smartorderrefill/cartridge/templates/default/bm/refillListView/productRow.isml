@@ -1,0 +1,75 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+</isscript>
+<isset name="product" value="${dw.catalog.ProductMgr.getProduct(listItem.ID)}" scope="page"/>
+<tr class="sor-module__titles-row">
+    <td class="product-thumbnail">
+        <isif condition="${product != null && product.getImage('large',0) != null}">
+			<isset name="imageUrl" value="${getImageUrl(product,'medium')}" scope="page"/>
+			<isset name="imageAlt" value="${getImageAlt(product)}" scope="page"/>
+			<isset name="imageTitle" value="${getImageTitle(product)}" scope="page"/>
+		<iselse/>									
+			<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagesmall.png')}" scope="page"/>										
+		</isif>
+        
+        <isset name="productLink" value="${URLUtils.https(new dw.web.URLAction('Product-Show', dw.system.Site.current.ID), new dw.web.URLParameter('pid', listItem.ID))}" scope="page" />
+        <a href="${productLink}">
+            <img itemprop="image" class="primary-image" src="${imageUrl}" alt="${product.name}" title="${product.name}"/>
+        </a>
+    </td>
+    <td>
+        <a href="${productLink}" class="productName title">
+            <p><strong>${product.name}</strong></p>
+        </a>
+        <isif condition="${product.isVariant()}">
+            <isloop items="${product.variationModel.getProductVariationAttributes()}" var="VA">
+                <isset name="SelectedVariationValue" value="${product.variationModel.getSelectedValue(VA)}" scope="page"/>
+                <div class="attribute" data-attribute="${VA.ID}">
+                    <strong><span class="label">${VA.displayName}:</span></strong>
+                    <span class="value">
+                        <isprint value="${SelectedVariationValue ? SelectedVariationValue.displayValue : '-'}"/>
+                    </span>
+                </div>
+            </isloop>
+        <iselse>
+            -
+        </isif>
+    </td>
+    <td class="label-col">
+        ${listItem.interval} ${Resource.msg('smartorderrefill.periodicity.' + listItem.periodicity, 'smartorderrefill', null)}
+        <div>
+        <isif condition="${listItem.commitment > listItem.commitmentDone}" >
+            ${Resource.msg('smartorderrefill.productview.commitment','smartorderrefill', null)}
+            ${listItem.commitmentDone}/${listItem.commitment}
+        </isif>
+        </div>
+    </td>
+    <td class="product-quantity">
+        ${listItem.quantity}
+    </td>
+    
+    <td><isprint value="${new dw.value.Money(listItem.price, listItem.currencyCode)}" /></td>
+    <td>
+        <isif condition="${pdict.ProductList.products.length > 1}" >
+            <span class="remove_product">
+                <span class="button" data-link="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', pdict.listTypeParam, pdict.ProductList.ID, 'item', listItem.ID, 'client', pdict.ProductList.customerNo, 'action', 'removeProduct')}">${Resource.msg('smartorderrefill.productview.removelink.name', 'smartorderrefill', null)}</span>
+            </span>
+        <iselse/>
+            <span>${Resource.msg('smartorderrefill.productview.removeproductwarning.' + pdict.ProductList.refillType, 'smartorderrefill',null)}</span>
+        </isif>
+    </td>
+    <td>
+        <span class="update">
+        	<!-- 
+            <a class="button" href="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', pdict.listTypeParam, pdict.ProductList.ID, 'item', listItem.ID, 'client', pdict.ProductList.customerNo, 'action', 'editProduct')}">${Resource.msg('smartorderrefill.productview.editlink.name','smartorderrefill',null)}</a>
+            -->
+            &nbsp; 
+        </span>
+    </td>
+</tr>
+<isset name="total" value="${total + (listItem.price * listItem.quantity)}" scope="page" />

@@ -1,0 +1,44 @@
+<isscript>
+	var Tatcha = require('~/cartridge/scripts/util/Tatcha');
+	var pid = pdict.pid;
+</isscript>
+<iscomment>Compare</iscomment>
+<iscomment>++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++</iscomment>
+<isscript>
+var product = pdict.product;
+var productname = pdict.product && pdict.product.object.name ? pdict.product.object.name : pid;
+</isscript>
+
+<iscomment>Wishlist</iscomment>
+
+<isif condition="${(product.getPriceModel().getPrice().value != '0.0')}">
+	<isif condition="${session.customer.authenticated}">
+		<isscript>
+			var isWishListItem = Tatcha.isWishlistItem(pid);
+		</isscript>
+		<div class="wishlist-block wishlist-btn-container">
+			<a role="button" aria-label="${'add product ' +productname+ ' to wishlist'}" tabindex="0" <isif condition="${isWishListItem == true}">style="display: none"</isif> data-url="${URLUtils.https('Wishlist-AddItemJson', 'pid', pdict.pid)}" class="outline-global wishlist-additem no-scroll btn btn-link btn-wishlist wishlist-off" data-toggle="tooltip" data-pid=${pdict.pid} data-placement="top" title="Add to Wishlist">
+				<span class="fa-layers fa-fw fa-sm">
+					<i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+					<i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+				</span>
+			</a>
+			<a role="button" aria-label="${'remove product ' +productname+ ' from wishlist '}" tabindex="0" <isif condition="${isWishListItem != true}">style="display: none"</isif> data-url="${URLUtils.https('Wishlist-RemoveItemJson', 'pid', pdict.pid)}" class="outline-global wishlist-removeitem no-scroll btn btn-link btn-wishlist wishlist-on wishlist-active" data-toggle="tooltip" data-pid=${pdict.pid} data-placement="top" title="Remove from Wishlist">
+				<span class="fa-layers fa-fw fa-sm">
+					<i class="fa fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+					<i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+				</span>
+			</a>
+			<div class="sr-only" id="wishlist-action-sr-${pdict.pid}" aria-live="assertive" aria-atomic="true"></div>
+		</div>
+	<iselse/>
+		<div class="wishlist-block wishlist-btn-container">
+			<a role="button" aria-label="${productname + ' add to wishlist'}" tabindex="0" data-pid="${pdict.pid}" class="wishlist-login-btn no-scroll btn btn-link btn-wishlist wishlist-off outline-global" data-cat-page="true" data-toggle="modal" data-target="#loginModal" title="Add to Wishlist">
+				<span class="fa-layers fa-fw fa-sm">
+					<i class="fal fa-heart fa-lg" data-fa-transform="left-3 up-1"></i>
+					<i class="fal fa-list" data-fa-transform="right-12 down-6 shrink-7"></i>
+				</span>
+			</a>
+		</div>
+	</isif>
+</isif>

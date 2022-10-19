@@ -1,0 +1,45 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+
+<head>
+
+	<isscript>
+		var pageContext = {
+			title: 'Compare',
+			type: 'compare',
+			ns:'compare'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+	<isinclude template="components/header/htmlhead_bs"/>
+	<isinclude template="product/compare/pt_compare_UI"/>
+
+	<iscomment>Add template-specific header information here.</iscomment>
+
+</head>
+
+<body>
+	<div id="wrapper" class="pt_product-compare">
+		<isinclude template="components/header/header_bs"/>
+
+		<main id="main" role="main" class="clearfix compare-page" tabindex="-1">
+			<isinclude template="components/browsertoolscheck"/>
+			<iscontent type="text/html" charset="UTF-8" compact="true"/>
+			
+			<isreplace/>
+	
+		</main>
+		<isset name="pageName" value="compare" scope="page" />
+		<isinclude template="product/components/modals"/>
+		<isinclude template="components/footer/footer_bs"/>
+	    <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+			<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+		</isif>
+		<isinclude template="product/compare/pt_compare_VARS"/>
+	</div>
+</body>
+</html>

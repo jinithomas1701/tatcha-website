@@ -1,0 +1,41 @@
+/**
+* Runs legacy pipeline-based WorkflowComponents in via Job Step script.
+* It mimics a Pipleline based execution of legacy WorkflowCompomentInstances.
+*
+* The only mandatory input parameter for such pipeline executions is assumed to be CurrentWorkflowComponentInstance. 
+* All other legacy WorkflowComponent related aspects are assumed to be derived from the below. 
+*
+* @output WorkflowComponentInstance : Object
+*/
+
+var HashMap 	= require('dw/util/HashMap');
+var Pipeline 	= require('dw/system/Pipeline');
+var Status 		= require('dw/system/Status');
+var WorkflowComponentInstanceScriptWrapper = require('./objects/WorkflowComponentInstanceScriptAdapter');
+
+/**
+ * Triggers the pipeline execution
+ * 
+ * @param {dw.util.HashMap} args 
+ * @returns {dw.system.Status}
+ */
+function execute( args ) 
+{
+
+	//parameters to be passed to the fake WorkflowComponentInstance 
+	var parameters = {};
+	
+	//Rebuild Synonym Index
+	parameters.action = 'GeneralComponent-RebuildSynonymIndex';
+	parameters.FullRebuild = 0;//false
+	parameters.Asynchronous = 0;//false
+	parameters.RebuildAllSites = 0;//false
+
+	var workflowComponentInstance = new WorkflowComponentInstanceScriptWrapper( parameters );
+	args.WorkflowComponentInstance = workflowComponentInstance;
+	
+	workflowComponentInstance.start('wtf');
+	
+	return PIPELET_NEXT;
+	
+}

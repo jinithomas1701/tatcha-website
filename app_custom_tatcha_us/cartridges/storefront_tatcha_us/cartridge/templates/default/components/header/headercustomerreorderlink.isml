@@ -1,0 +1,92 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+	<isscript>
+		var browsing = require('app_storefront_controllers/cartridge/scripts/util/Browsing');
+		var links, title;
+		// User has session, but not authenticated
+		if (customer.registered && !customer.authenticated) {
+			title = Resource.msg('global.accountlink', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('LoginSfra-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			}];
+		// User has session and is validated
+		} else if (customer.registered) {
+			title = Resource.msgf('global.user.name', 'locale', null, customer.profile.firstName,"");
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('Order-History'),
+				title: Resource.msg('global.link.trackorder', 'locale', null)
+			}, {
+				href: URLUtils.https('Wishlist-Show'),
+				title: Resource.msg('global.link.wishlist', 'locale', null)
+			}];
+			logoutLink = {
+				href: URLUtils.https('LoginSfra-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			};
+		// user has no session
+		} else {
+			title = Resource.msg('global.login', 'locale', null) + ' /  ' + Resource.msg('global.register', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.login', 'locale', null)
+			}, {
+				href: URLUtils.https('Account-StartRegister'),
+				title: Resource.msg('global.register', 'locale', null)
+			}];
+		}
+		var accountFlag = pdict.CurrentHttpParameterMap.myaccount.stringValue;
+	</isscript>
+<div class="ritual-finder-desktop d-none d-lg-block">
+	<isif condition="${!customer.authenticated}">
+		<isif condition="${request.httpCookies['dw_order_placed']}">
+			<a href="${URLUtils.https('Order-Reorder')}" class="prenav-reorder-mobile-link"> Reorder</a>
+			<iselse>
+                <isif condition="${request.httpCookies['dw_ritual_finder']}">
+                    <a href="${request.httpCookies['dw_ritual_finder'].value}" class="prenav-consultation-mobile-link">
+                        See My Ritual
+                    </a>
+                    <iselse>
+                        <a href="${URLUtils.https('Page-Show', 'cid', 'ritual_finder')}" class="prenav-consultation-mobile-link">
+                            Ritual Finder Quiz
+                        </a>
+                </isif>
+		</isif>
+	<iselse>
+		<isif condition="${request.httpCookies['dw_order_placed']}">
+			<a href="${URLUtils.https('Order-Reorder')}" class="prenav-reorder-mobile-link"> Reorder</a>
+			<iselse>
+                <isif condition="${request.httpCookies['dw_ritual_finder']}">
+                    <a href="${request.httpCookies['dw_ritual_finder'].value}" class="prenav-consultation-mobile-link">
+                        See My Ritual
+                    </a>
+                    <iselse>
+                        <a href="${URLUtils.https('Page-Show', 'cid', 'ritual_finder')}" class="prenav-consultation-mobile-link">
+                            Ritual Finder Quiz
+                        </a>
+                </isif>
+		</isif>
+	</isif>
+</div>
+
+	<isif condition="${request.httpCookies['dw_order_placed']}">
+		<a href="${URLUtils.https('Order-Reorder')}" class="btn d-lg-none d-xl-none d-xxl-none" style="background-color: #D5C0F5;"> Reorder</a>
+		<iselse>
+            <isif condition="${request.httpCookies['dw_ritual_finder']}">
+                <a href="${request.httpCookies['dw_ritual_finder'].value}" class="btn d-lg-none d-xl-none d-xxl-none" style="background-color: #D5C0F5;">
+                    See My Ritual
+                </a>
+                <iselse>
+                    <a href="${URLUtils.https('Page-Show', 'cid', 'ritual_finder')}" class="btn d-lg-none d-xl-none d-xxl-none" style="background-color: #D5C0F5;">
+                        Ritual Finder Quiz
+                    </a>
+            </isif>
+	</isif>

@@ -1,0 +1,34 @@
+<!--- TEMPLATENAME: productCard.isml --->
+<isset name="bonusProduct" value="${pdict.bonusProduct}" scope="page"/>
+
+<div class="col-6 col-md-3">
+    <div class="sample-product bonus-product-item">
+        <div class="product-slot">
+            <div class="sample-img product-img-block">
+                <img src="${bonusProduct.images.large &&  bonusProduct.images.large[0] ? bonusProduct.images.large[0].tileItemImageURL : URLUtils.staticURL('/images/noimagemedium.png')}"
+                     alt="${bonusProduct.productName}"
+                     title="${bonusProduct.images.large[0].title}" class="img-fluid">
+            </div>
+            <h3 class="head-text product-name free-sample-product-name" itemprop="name">${bonusProduct.productName}
+                <span class="product-subtitle secondary-name-subtitle">
+                    <isif condition="${!empty(bonusProduct.secondaryName)}">
+                        ${bonusProduct.secondaryName}
+                    </isif>
+                </span>
+            </h3>
+            <div class="product-select bonus-product-select">
+                <button type="button" class="add-product select-bonus-item select-bonus-product btn btn-outline-dark btn-promo-select btn-sm control-label free-sample-add-btn col-form-label ${bonusProduct.selected ? 'active active-btn' : ''}" role="checkbox" data-pid="${bonusProduct.id}" aria-label="${bonusProduct.productName}" aria-checked="true" data-qty="1">
+                    <input type="checkbox" checked autocomplete="off" aria-label="Add product">
+                    <span class="btn-status">
+                        <isif condition="${bonusProduct.selected}">
+                            Selected
+                            <iselse/>
+                            Add
+                        </isif>
+                    </span>
+                </button>
+
+            </div>
+        </div>
+    </div>
+</div>

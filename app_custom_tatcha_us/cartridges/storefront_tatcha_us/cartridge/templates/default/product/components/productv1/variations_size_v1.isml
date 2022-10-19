@@ -1,0 +1,60 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+
+<isscript>
+	// Get context variables to insert into template placeholders
+    var VariationUtils = require('~/cartridge/scripts/product/VariationUtilsSfra.js');
+    var context = VariationUtils.getContext(pdict);
+</isscript>
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+<isif condition="${context.isValidProductType}">
+	<isloop items="${context.attrs}" var="attr" status="sizeattr">
+		<isif condition="${attr.hasSwatch && attr.attributeId == 'size' && attr.values.length >= 1}">
+            <isif condition="${attr.values.length != 1}">
+			    <div class="dropdown dropdown--pdp dropdown--with-label mr-3">
+                    <button class="btn view-option-btn dropdown-toggle dropdown-toggle--label"  data-flip="false" type="button" id="variantSize" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <isloop items="${attr.values}" var="attrValue" status="attrStatus">
+                            <isif condition="${attrValue.swatchClass == 'selectable selected'}">
+                                <div class="view-option-hdr"><isprint value="${attrValue.displayName}"/></div>
+                                <div class="view-option">
+                                    <span class="view-option-value"><isprint value="${attrValue.description}" /></span>
+                                    <i class="fas float-right fa-sort-down dropdown-icon"></i>
+                                </div>
+                                <isbreak/>
+                            </isif>
+                        </isloop>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="variantSize">
+                        <isloop items="${attr.values}" var="attrValue" status="attrStatus">
+                            <isset name="variantSelected" value="${attrValue.swatchClass == 'selectable selected' ? 'active' : ''}" scope="page"/>
+                            <li>
+                                <a class="variant-option ${variantSelected} "
+                                    href="${attrValue.linkUrl}"
+                                    title="${attrValue.resourceVariationsLabel}"
+                                    data-vtype="${attr.attributeId}"
+                                    data-productid="${attrValue.productID}"
+                                    data-lgimg='<isif condition="${attrValue.largeImage}">${attrValue.largeImage}</isif>'>
+                                        <isprint value="${attrValue.description}" />
+                                </a>
+                            </li>
+                        </isloop>
+                    </ul>
+			    </div>
+            <iselse/>
+                <isloop items="${attr.values}" var="attrValue" status="attrStatus">
+                    <isif condition="${attrValue.swatchClass == 'selectable selected'}">
+                        <div class="dropdown dropdown--pdp dropdown--plain-text mr-3">
+                            <div class="dropdown-toggle dropdown-toggle--label">
+                                <div class="view-option-hdr">Size</div>
+                                <div class="view-option">
+                                    <span class="view-option-value"><isprint value="${attrValue.description}" /></span>
+                                </div>
+                            </div>
+                        </div>
+                        <isbreak/>
+                    </isif>
+                </isloop>
+            </isif>
+		</isif>
+	</isloop>
+</isif>

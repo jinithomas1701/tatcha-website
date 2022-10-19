@@ -1,0 +1,47 @@
+<isdecorate template="common/layout/page">
+
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets');
+        assets.addJs('/lib/colorbox/jquery.colorbox-min.js');
+        assets.addJs('/js/productDetail.js');
+        assets.addCss('/css/tatcha-product-new.css');
+    </isscript>
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<script>
+    //2. This code loads the IFrame Player API code asynchronously.
+    var tag = document.createElement('script');
+
+    tag.src = "https://www.youtube.com/iframe_api";
+    var firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    //for vimeo api player
+    var vimeoTag = document.createElement('script');
+    vimeoTag.src = "https://player.vimeo.com/api/player.js";
+    vimeoTag.defer = true;
+    var vimeoScriptTag = document.getElementsByTagName('script')[0];
+    vimeoScriptTag.parentNode.insertBefore(vimeoTag, vimeoScriptTag);
+</script>
+<isinclude template="product/productogtags"/>
+<isinclude template="util/modules"/>
+    <isobject object="${pdict.Product}" view="detail">
+        <main id="main" role="main" class="product product-detail-container product-detail-container-spec noanimation" itemscope itemtype="http://schema.org/Product" tabindex="-1">
+            <isinclude template="components/browsertoolscheck"/>
+            <div class="product-transaction">
+                <div id="primary" class="container">
+                    <div id="pdpMain" class="row">
+                        <iscomment>Image and variation options are part of the include template</iscomment>
+                        <isif condition="${pdict.Product.productSet || pdict.Product.bundle}">
+                            <isinclude template="product/producttopcontentPS" />
+                            <iselseif condition="${pdict.Product.ID == pdict.giftBuilderSKU}">
+                                <isinclude template="product/giftbuilder/producttopcontent" />
+                                <iselse/>
+                                <isinclude template="product/producttopcontent_v1" />
+                        </isif>
+                    </div>
+                </div>
+                <isinclude template="product/components/productv1/productcontentblocks_v1"/>
+            </div>
+        </main>
+    </isobject>
+</isdecorate>

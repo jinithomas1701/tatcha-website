@@ -1,0 +1,176 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+</isscript>
+<isdecorate template="account/reorder/pt_reorder">
+<isinclude template="util/modules"/>
+<isinclude template="account/returntoaccounthome">
+<div class="container reorder-container">
+	<div class="compact-h1-group">
+		<h1 class="text-center">${Resource.msg('account.orders.reorder','account',null)}</h1>
+		<p class="text-center">Quickly reorder your favorite products.</p>
+	</div>
+		<div class="row">
+			<div class="col-lg-10 offset-lg-1">
+				<isif condition="${pdict.TotalProducts > 0 }">
+					<iscontentasset aid="reorder-promotion-unit"/>
+					<isloop items="${pdict.ReorderList}" var="Product" status="productloopstate">
+						<isset name="product" value="${Product.product}" scope="page" />
+						<isset name="PriceModel" value="${Product.product.getPriceModel()}" scope="page"/>
+				        <isset name="SalesPrice" value="${PriceModel.getPrice()}" scope="page"/>
+						<isscript>
+							importScript("int_tatcha_dis:common/GetImageUrl.ds");
+							let availability = ProductUtils.getAvailability(Product.product,1);												
+							var relatedFullSizeProductID = Product.product.custom.relatedFullSizeProduct;
+							var relatedFullSizeProductStockStatus = false;
+
+							if(!empty(relatedFullSizeProductID)){
+								var relatedFullSizeProduct = ProductUtils.getFullSizeProduct(Product.product);
+								relatedFullSizeProductStockStatus = relatedFullSizeProduct.getAvailabilityModel().isInStock();
+							}
+							let purchaseableSamplePrds = ((SalesPrice.valueOrNull != null && SalesPrice.value == '0') && relatedFullSizeProductStockStatus) ? true : false;
+							let isSample = (SalesPrice.valueOrNull != null && SalesPrice.value > 0 ) ? false : true; 
+							
+							// Added for mParticle and other analytics 
+							var mParticleUtil = require('int_mParticle/cartridge/scripts/mParticleUtils.js');
+							var productInfo = mParticleUtil.getProductInfo(product);
+							
+						</isscript>
+						<isif condition="${!empty(Product.product) && Product.product.getImage('large',0) != null}">
+							<isset name="imageUrl" value="${getImageUrl(Product.product,'medium')}" scope="page"/>
+						<iselse/>
+							<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagemedium.png')}" scope="page"/>
+						</isif>						
+
+						<iscomment>Order date header </iscomment>			            
+			            <isif condition="${Product.showDate === true || productloopstate.index == 0}">
+			            	<div class="order-group-date-header">
+			              		<p>Order Placed On <isprint value="${Product.dateOrdered}" /></p>
+			            	</div>
+			            </isif>
+			            						
+						<div class="card panel-default product-stack-list-unit">
+							<div class="card-body panel-split">
+								<div class="order-items-detail product">
+									<div class="row">
+										<div class="col-12 col-md-3 col-lg-2">
+											<isif condition="${(SalesPrice.valueOrNull != null && SalesPrice.value > 0)}">
+												<a href="${URLUtils.http('Product-Show','pid', Product.product.ID)}" style="display: block;">
+													<img class="product-img img-responsive img-fluid" src="${imageUrl}">
+												</a>
+											<iselse>											
+												<isif condition="${relatedFullSizeProductID}">
+													<a href="${URLUtils.http('Product-Show','pid', relatedFullSizeProductID)}" style="display: block;">
+														<img class="product-img img-responsive img-fluid" src="${imageUrl}">
+													</a>
+												<iselse>
+													<img class="product-img img-responsive img-fluid" src="${imageUrl}">
+												</isif>																
+											</isif>
+										</div>
+										<div class="col-12 col-md-5 col-lg-7 product-text-col">
+											<h5 class="product-name">
+												<isif condition="${(SalesPrice.valueOrNull != null && SalesPrice.value > 0)}">
+													<a href="${URLUtils.http('Product-Show','pid', Product.product.ID)}">
+														<isprint value="${Product.product.name}" />
+													</a>												
+												<iselse>
+													
+													<isif condition="${relatedFullSizeProductID}">
+														<a href="${URLUtils.http('Product-Show','pid', relatedFullSizeProductID)}" style="display: block;">
+															<isprint value="${Product.product.name}" />
+														</a>
+													<iselse>
+														<isprint value="${Product.product.name}" />
+													</isif>	
+												</isif>
+												
+												<isif condition="${!empty(Product.product.custom.secondaryName)}"> 
+													<span class="product-subtitle"><isprint value="${Product.product.custom.secondaryName.substring(0,44)}" encoding="on"/></span>
+												</isif>
+											</h5>
+											
+											<iscomment>Variants Information </iscomment>	
+											<div class="product-variants">
+												<isloop items="${Product.product.variationModel.getProductVariationAttributes()}" var="VA" status="status">
+													<isset name="SelectedVariationValue" value="${Product.product.variationModel.getSelectedValue(VA)}" scope="page"/>
+													<span class="product-variant">
+														<isif condition="${SelectedVariationValue != null}">
+															<isprint value="${SelectedVariationValue.displayValue}"/>
+														</isif>					
+													</span>
+													<isif condition="${!(status.last)}"><span class="separator">|</span></isif>
+												</isloop>
+				                                <br>
+				                                <isif condition="${(SalesPrice.valueOrNull != null && SalesPrice.value >0)}">			                                     
+													<span class="product-price"><isprint value="${SalesPrice}" formatter="*#0"/></span>
+												</isif>
+											</div>											
+										</div>
+										<div class="col-12 col-md-4 col-lg-3 offset-md-0 stack-list-action">
+											<isinclude template="account/showrefillflag" />
+											<isif condition="${(availability.ats > 0 && !isSample) || purchaseableSamplePrds}">
+												<iscomment>Instock conditions </iscomment>																								
+												<isif condition="${purchaseableSamplePrds}">
+													<button class="btn btn-outline-secondary btn-block reorder-prd-add-qv" data-product-info="${JSON.stringify(productInfo)}"  data-url="${URLUtils.https('Product-Show','pid', relatedFullSizeProduct.ID)}" data-pid="${relatedFullSizeProduct.ID}" data-productname="${relatedFullSizeProduct.name}" data-price="${relatedFullSizeProduct.priceModel.price.value}">${Resource.msg('account.orders.reorder.buyfullsize','account',null)}</button>													
+												<iselse>
+													<button class="btn btn-outline-secondary btn-block reorder-prd-add-qv" data-product-info="${JSON.stringify(productInfo)}"  data-url="${URLUtils.https('Product-Show','pid', Product.product.ID)}" data-pid="${Product.product.ID}" data-productname="${Product.product.name}" data-price="${Product.product.priceModel.price.value}">${Resource.msg('account.orders.reorder.buyagain','account',null)}</button>													
+												</isif>
+												<iscomment>Reviews </iscomment>
+												<isif condition="${(Product.product.custom.enableReviewsRatings == true)}">												
+													<a class="btn btn-link btn-block btn-sm btn-review" href="${URLUtils.http('Product-Show','pid', Product.product.ID,'reviews','true')}">${Resource.msg('global.writeareview','locale',null)}</a>												
+												</isif>	
+											<iselse>
+											
+												<isif condition="${!isSample}">
+													<iscomment>OOS conditions </iscomment>
+													<isif condition="${(Product.product.custom.oosProductStatus.value == 'comingsoon')}">
+														<div class="product-stock-message" ><isprint value="${Resource.msg('global.comingsoon.button', 'locale', null)}" /></div>
+													<iselse/>
+														<isif condition ="${(Product.product.custom.oosProductStatus.value == 'comingsoon')}">
+			      											<div class="product-stock-message" ><isprint value="${Resource.msg('global.comingsoon.button', 'locale', null)}" /></div>
+			       										<iselseif condition ="${(Product.product.custom.oosProductStatus.value == 'notifymy')}">
+															<div class="product-stock-message" ><isprint value="${Resource.msg('global.outofstock', 'locale', null)}" /></div>
+			       										<iselseif condition ="${(Product.product.custom.oosProductStatus.value == 'notavailable')}">
+															<div class="product-stock-message"><span class="discontinued"><isprint value="${Resource.msg('global.outofstock.reorder.nolonger', 'locale', null)}" /></span></div>														
+				 										<iselse>
+															<div class="product-stock-message" ><isprint value="${Resource.msg('global.outofstock', 'locale', null)}" /></div>
+			    										</isif>
+			    									</isif>
+	    										</isif>
+											</isif>
+										</div>
+										
+									</div>
+								</div>									
+							</div>
+						</div>
+						
+				</isloop>
+				<isif condition="${pdict.HasNextPage == true}"> 
+					<div class="reorder-see-more">
+						<div class="m-top text-center see-more"><a href="#" class="reorder-more btn btn-lg btn-outline-secondary" data-api-url="${URLUtils.https('Order-Reorder','currentPage',pdict.CurrentPage,'type','ajax')}"  class="btn btn-default">See More</a></div>
+					</div>
+				</isif>
+				
+			<iselse>
+					<iscomment> No order items </iscomment>
+					<div class="alert alert-default text-center empty-state" role="alert" style="">
+						<p>${Resource.msg('account.orders.reorder.noitems','account',null)}</p>
+						<div class="m-top mt-4"><a href="${URLUtils.url('Search-Show','cgid', 'shop_all')}" class="btn btn-default">${Resource.msg('account.orders.reorder.goshopping','account',null)}</a></div>
+					</div>				
+			</isif>
+		</div>
+	</div>
+</div>
+
+<isif condition="${pdict.TotalProducts <= 0 }">
+	<div class="container">
+		<isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnCartWithOutProduct')}">
+			<isslot id="einstein-cart-empty" description="Einstein Empty Cart page slot." context="global" context-object="${pdict.Basket}" />
+		<iselse>
+			<isslot id="cart-empty" description="Empty Cart page slot." context="global" />
+		</isif>
+	</div>
+</isif>
+</isdecorate>

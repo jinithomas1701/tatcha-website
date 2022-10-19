@@ -1,0 +1,115 @@
+<isdecorate template="braintreebm/util/pt_transactions">
+
+<isinclude template="inc/Modules">
+<isinclude template="braintreebm/util/modules">
+
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/bmBraintreeHelper');
+    var isSearchByOrderNo = pdict.CurrentHttpParameterMap.orderNo.submitted;
+    var isSearchByTransaction = pdict.CurrentHttpParameterMap.transactionId.submitted;
+    var isSearchByPaymentMethod = pdict.CurrentHttpParameterMap.paymentMethod.submitted;
+
+    if (!isSearchByOrderNo && !isSearchByTransaction && !isSearchByPaymentMethod) {
+        isSearchByOrderNo = true;
+    }
+</isscript>
+
+<div class="braintree_header">
+    <isset name="ordersUrl"   value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', 'orders')}" scope="page">
+    <isbreadcrumb name1="Ordering" url1="${ordersUrl}" name2="${Resource.msg('transactions.title', 'braintreebm', null)}">
+    <table>
+        <tr><td width="100%" class="table_title w e s n">${Resource.msg('transactions.title', 'braintreebm', null)}</td></tr>
+        <tr><td class="w e s"></td></tr>
+        <tr><td class="table_title_description e w"><p>${Resource.msg('transactions.description', 'braintreebm', null)}</p></td></tr>
+    </table>
+</div>
+
+<div class="braintree_transactions_list">
+    <div class="js_braintree_switch_block">
+        <table class="infobox w e s n">
+            <tr>
+                <td class="infobox_title_search">${Resource.msg('search.order.title', 'braintreebm', null)}</td>
+                <td align="right" nowrap="nowrap" class="infobox_item_search">
+                    <a href="#braintree_search_order_by_id" class="${isSearchByOrderNo ? 'braintree_active_link js_braintree_switch' : 'switch_link js_braintree_switch'}" data-title="${Resource.msg('search.order.title', 'braintreebm', null)}">${Resource.msg('search.orderbynumber', 'braintreebm', null)}</a>&nbsp;
+                    <a href="#braintree_search_transaction_by_id" class="${isSearchByTransaction ? 'braintree_active_link js_braintree_switch' : 'switch_link js_braintree_switch'}" data-title="${Resource.msg('search.order.title', 'braintreebm', null)}">${Resource.msg('search.transactionbyid', 'braintreebm', null)}</a>&nbsp;
+                    <a href="#braintree_search_transaction_by_payment_method" class="${isSearchByPaymentMethod ? 'braintree_active_link js_braintree_switch' : 'switch_link js_braintree_switch'}" data-title="${Resource.msg('search.order.title', 'braintreebm', null)}">${Resource.msg('search.transactionbymethod', 'braintreebm', null)}</a>
+                </td>
+            </tr>
+            <tr><td class="braintree_note">${Resource.msg('search.note.update', 'braintreebm', null)}</td></tr>
+            <tr><td class="braintree_note">${Resource.msg('search.note.details', 'braintreebm', null)}</td></tr>
+            <isinclude template="braintreebm/transactions/components/tabs/searchbyorderno" />
+            <isinclude template="braintreebm/transactions/components/tabs/searchbyid" />
+            <isinclude template="braintreebm/transactions/components/tabs/searchbypaymentmethod" />
+            <tr><td colspan="2">&nbsp;</td></tr>
+        </table>
+    </div>
+
+    <isscript>
+        var pagingModel = pdict.PagingModel;
+        var orders = !empty(pagingModel) ? pagingModel.pageElements : [];
+    </isscript>
+
+    <isif condition="${!empty(orders)}">
+        <table>
+            <tr>
+                <td class="table_header w e s">${Resource.msg('search.grid.ordernumber', 'braintreebm', null)}</td>
+                <td class="table_header e s" nowrap="nowrap">${Resource.msg('search.grid.date', 'braintreebm', null)}</td>
+                <td class="table_header e s" nowrap="nowrap">${Resource.msg('search.grid.customer', 'braintreebm', null)}</td>
+                <td class="table_header e s left" nowrap="nowrap">${Resource.msg('search.grid.total', 'braintreebm', null)}</td>
+                <td class="table_header e s left" nowrap="nowrap">${Resource.msg('search.grid.amount', 'braintreebm', null)}</td>
+                <td class="table_header e s left" nowrap="nowrap">${Resource.msg('search.grid.paymentmethod', 'braintreebm', null)}</td>
+                <td class="table_header e s left" nowrap="nowrap">${Resource.msg('search.grid.orderstatus', 'braintreebm', null)}</td>
+                <td class="table_header e s left" nowrap="nowrap" colspan="2">${Resource.msg('search.grid.status', 'braintreebm', null)}</td>
+            </tr>
+            
+            <isloop items="${orders}" var="order">
+                <isscript>
+                    var paymentInstrument = BraintreeHelper.getBraintreePaymentInstrument(order);
+                </isscript>
+                <tr>
+                    <td class="table_detail w e s" nowrap="nowrap">
+                        <isif condition="${order.custom.isBraintreeIntentOrder}">
+                            ${order.orderNo}
+                        <iselse>
+                            <a href="${URLUtils.url('ViewOrder_52-Dispatch', 'OrderID', order.getUUID(), 'payment', 'payment', 'NoBackToListButton')}" data-width="780" data-orderno="${order.orderNo}" title="${Resource.msgf('ordertransaction.title', 'braintreebm', null, order.orderNo)}">${order.orderNo}</a>
+                        </isif>
+                    </td>
+                    <td class="table_detail e s" nowrap="nowrap">
+                        <isprint value="${order.creationDate}" formatter="MMM dd, yyyy h:mm a"/>
+                    </td>
+                    <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.customerName}"/></td>
+                    <td class="table_detail e s" nowrap="nowrap"><isprint value="${order.totalGrossPrice}"/></td>
+                    <td class="table_detail e s" nowrap="nowrap"><isprint value="${paymentInstrument ? paymentInstrument.getPaymentTransaction().getAmount() : 'N/A'}"/></td>
+                    <td class="table_detail e s" nowrap="nowrap"><isprint value="${paymentInstrument ? dw.order.PaymentMgr.getPaymentMethod(paymentInstrument.paymentMethod).getName() : 'N/A'}"/></td>
+                    <td class="table_detail e s ${(order.status).toString() === 'FAILED' ? 'braintree_failed_order' : ''}" nowrap="nowrap"><isprint value="${(order.status).toString()}"/></td>
+                    <td class="table_detail e s payment_status" nowrap="nowrap"><isprint value="${order.custom.braintreePaymentStatus ? BraintreeHelper.parseStatus(order.custom.braintreePaymentStatus) : 'N/A'}"/></td>
+                    <td class="table_detail e s" nowrap="nowrap">
+                        <isif condition="${order.custom.isBraintreeIntentOrder}">
+                            <button class="button js_braintree_create_transaction" data-orderno="${order.orderNo}" data-ordertoken="${order.orderToken}">${Resource.msg('search.grid.createtransaction', 'braintreebm', null)}</button>
+                        <iselse>
+                            <isif condition="${paymentInstrument && !empty(paymentInstrument.getPaymentTransaction().transactionID)}">
+                                <a class="js_braintree_show_transaction_detail" href="${URLUtils.url('BraintreeAdmin-OrderTransaction', 'orderNo', order.orderNo, 'orderToken', order.orderToken)}" data-orderno="${order.orderNo}" data-ordertoken="${order.orderToken}" title="${Resource.msgf('ordertransaction.title', 'braintreebm', null, order.orderNo)}">${Resource.msg('search.grid.orderdetails', 'braintreebm', null)}</a>
+                            </isif>
+                        </isif>
+                    </td>
+                </tr>
+            </isloop>
+
+        </table>
+
+        <isbraintreepagination pageurl="${URLUtils.https('BraintreeAdmin-Orders')}" pagingmodel="${pagingModel}"/>
+
+    <iselse>
+
+        <div class="table_detail w e s">${Resource.msg('transactions.emptysearch', 'braintreebm', null)}</div>
+
+    </isif>
+
+</div>
+
+<div class="braintree_footer">
+    <a class="button" href="${ordersUrl}">&lt;&lt; ${Resource.msg('transactions.backordering', 'braintreebm', null)}</a>
+    <button class="button js_braintree_new_transaction_vault braintree_create_transaction">${Resource.msgf('transaction.newvaulttransaction', 'braintreebm', null)}</button>
+</div>
+
+</isdecorate>

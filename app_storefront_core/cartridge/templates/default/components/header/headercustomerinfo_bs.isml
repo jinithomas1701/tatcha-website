@@ -1,0 +1,99 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+	<isscript>
+		var browsing = require('app_storefront_controllers/cartridge/scripts/util/Browsing');
+		var links, title;
+		// User has session, but not authenticated
+		if (customer.registered && !customer.authenticated) {
+			title = Resource.msg('global.accountlink', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('Login-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			}];
+		// User has session and is validated
+		} else if (customer.registered) {
+			title = Resource.msgf('global.user.name', 'locale', null, customer.profile.firstName,"");
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.accountlink', 'locale', null)
+			}, {
+				href: URLUtils.https('Order-History'),
+				title: Resource.msg('global.link.trackorder', 'locale', null)
+			}, {
+				href: URLUtils.https('Wishlist-Show'),
+				title: Resource.msg('global.link.wishlist', 'locale', null)
+			}];
+			logoutLink = {
+				href: URLUtils.https('Login-Logout'),
+				title: Resource.msg('global.logout', 'locale', null),
+				class: 'user-logout buttonstyle'
+			};
+		// user has no session
+		} else {
+			title = Resource.msg('global.login', 'locale', null) + ' /  ' + Resource.msg('global.register', 'locale', null);
+			links = [{
+				href: URLUtils.https('Account-Show'),
+				title: Resource.msg('global.login', 'locale', null)
+			}, {
+				href: URLUtils.https('Account-StartRegister'),
+				title: Resource.msg('global.register', 'locale', null)
+			}];
+		}
+		var accountFlag = pdict.CurrentHttpParameterMap.myaccount.stringValue;
+	</isscript>
+<li>
+	<div role="navigation" class="prenav-utility" aria-label="prenav-utility-nav">
+		<isinclude template="components/header/headercustomerreorderlink"/>
+	</div>
+</li>
+
+<li class="search-form-list d-md-none d-lg-block d-xl-block d-xxl-block">
+	<isinclude template="search/simplesearch_bs"/>
+</li>
+<li class="d-none d-lg-flex align-items-center">
+	<isif condition="${!customer.authenticated}">
+	<div role="navigation" class="prenav-utility" aria-label="prenav-utility-nav">
+		<ul class="list-inline">
+           <li class="d-inline-flex login-btn-menu">
+           		<isif condition="${!empty(accountFlag) && accountFlag == 'true'}">
+					<a href="${URLUtils.https('Account-Show')}" aria-label="account -link"><i class="fal fa-lg fa-user-circle"></i><span>login</span></a>
+				<iselse/>
+
+					<button data-toggle="modal" class="nav-btn sliding pr-0 login-dropdown gtm-login" data-target="#loginModal" aria-label="click here to login"><i class="fal fa-lg fa-user-circle user-login-icon"></i> <span class="header-customer-login">Login</span></button>
+					<button data-toggle="modal" class="nav-btn sliding pr-0 login-dropdown-icon gtm-login" data-target="#loginModal" aria-label="click here to login"><i class="fal fa-lg fa-user-circle"></i><span class="header-customer-login">Login</span></button>
+				</isif>
+           </li>
+        </ul>
+    </div>
+	<iselse>
+		<div role="navigation" class="prenav-utility" aria-label="prenav-utility-nav">
+			<ul class="list-inline">
+	           <li class="d-inline-block login-nav-wrap">
+		           	<button class="dropdown-toggle sliding pr-0 login-dropdown loggedin-dropdown move-account nav-login-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">${Resource.msg('account.header.hi','account',null)},  <isprint value="${title.substr(0,18)}"/>
+		           	</button>
+		           	<button class="dropdown-toggle sliding pr-0 login-dropdown-icon move-account nav-login-btn" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+		           		style="margin-top:.29rem;margin-right:.25rem;">
+		           		<i class="fal fa-lg fa-user-circle"></i>
+						Login
+		           	</button>
+	                <ul class="dropdown-menu minibar-list login-dropdown-menu-items" role="list" tabindex="0">
+	                  
+	                  	<isloop items="${links}" var="link" status="s" >
+			        		<li class="account-item-list move-account" role="listitem"><a  href="${link.href}" title="${Resource.msgf('global.goto.label', 'locale', null, link.title)}"><isprint value="${link.title}"/></a></li>
+						</isloop>
+	                  
+	                  
+	                  <li id="extole_zone_account_drop_down" class="refer-li move-account" role="listitem"></li>
+			          <li class="move-account" role="listitem"><a  href="${logoutLink.href}"  id="logout-btn" title="${Resource.msgf('global.goto.label', 'locale', null, logoutLink.title)}"><isprint value="${logoutLink.title}"/></a></li>
+	                  
+	                </ul>
+	           </li>
+	        </ul>
+	    </div>
+	</isif>
+<isextolezonetag name="overlay" element_id="extole_zone_overlay" />
+</li>

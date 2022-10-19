@@ -1,0 +1,172 @@
+{
+  "name": "Feature set 3",
+  "description": "Feature set 3 component",
+  "group": "assets",
+  "attribute_definition_groups": [
+  	{
+  		"id": "featureset1",
+      	"name": "Set 1 Content",
+      	"description": "Set 1 copntent",
+      	"attribute_definitions": [
+	        {
+	          "id": "set1desktopimage",
+	          "name": "Image",
+	          "type": "image",
+	          "required": false
+	        },
+	        {
+	          "id": "set1imageAlt",
+	          "name": "Image Alt Text",
+	          "type": "string",
+	          "required": false
+	        },
+	        {
+	          "id": "set1heading",
+	          "name": "Heading",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set1body",
+	          "name": "Body",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set1linktext",
+	          "name": "Link Text",
+	          "type": "string",
+	          "required": false
+	        },
+	        {
+	          "id": "set1linkurl",
+	          "name": "Link URL",
+	          "type": "url",
+	          "required": false
+	        }
+       ]
+  	},
+  	{
+  		"id": "featureset2",
+      	"name": "Set 2 Content",
+      	"description": "Set 2 copntent",
+      	"attribute_definitions": [
+	        {
+	          "id": "set2desktopimage",
+	          "name": "Image",
+	          "type": "image",
+	          "required": false
+	        },
+	        {
+	          "id": "set2imageAlt",
+	          "name": "Image Alt Text",
+	          "type": "string",
+	          "required": false
+	        },
+	        {
+	          "id": "set2heading",
+	          "name": "Heading",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set2body",
+	          "name": "Body",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set2linktext",
+	          "name": "Link Text",
+	          "type": "string",
+	          "required": false
+	        },
+	        {
+	          "id": "set2linkurl",
+	          "name": "Link URL",
+	          "type": "url",
+	          "required": false
+	        }
+       ]
+  	},
+  	{
+  		"id": "featureset3",
+      	"name": "Set 3 Content",
+      	"description": "Set 3 copntent",
+      	"attribute_definitions": [
+	        {
+	          "id": "set3desktopimage",
+	          "name": "Image",
+	          "type": "image",
+	          "required": false
+	        },
+	        {
+	          "id": "set3imageAlt",
+	          "name": "Image Alt Text",
+	          "type": "string",
+	          "required": false
+	        },
+	        {
+	          "id": "set3heading",
+	          "name": "Heading",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set3body",
+	          "name": "Body",
+	          "type": "string",
+	          "required": true
+	        },
+	        {
+	          "id": "set3linktext",
+	          "name": "Link Text",
+	          "type": "string",
+	          "required": false
+	        },
+	        {
+	          "id": "set3linkurl",
+	          "name": "Link URL",
+	          "type": "url",
+	          "required": false
+	        }
+       ]
+  	},
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margins for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

@@ -1,0 +1,95 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isset name="DecoratorTemplate" value="account/pt_account_bs" scope="page"/>
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' || pdict.CurrentHttpParameterMap.pwr.stringValue == 'true' || pdict.CurrentHttpParameterMap.source.stringValue == 'search' || pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'cart'}">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+<div class="my-account my-account-address-book">
+	<div class="container edit-container add-address-book">
+		<div class="row">
+			<div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+				<div class="card card-default edit-group edit-state add-state-address">
+					<div class="card-heading card-split">
+										  
+						<isif condition="${pdict.Action == 'add'}">
+							<h4 class="card-title"><isprint value="${Resource.msg('account.addressbook.editaddress.addaddress','account',null)}" /></h4>
+						<iselse/>
+						  <h4 class="card-title"><isprint value="${Resource.msg('account.addressbook.editaddress.editaddress','account',null)}" /></h4>
+						</isif>
+						<a href="${URLUtils.url('Address-List')}" class="card-action edit-cancel icon-default icon-action">
+						 <i class="fal fa-lg fa-times"></i></a>
+						
+						</div>
+						<div class="card-body">
+						<isif condition="${(pdict.CurrentHttpParameterMap.invalid.stringValue == 'true')}">
+							<div class="alert alert-danger" role="alert"><isprint value="${Resource.msg('resource.form.error.title','forms',null)}" /></div>
+						</isif>
+						<div class="dialog-required" style="display: none;">
+							<span class="required-indicator">&#8226; <em><isprint value="${Resource.msg('global.requiredfield','locale',null)}" /></em></span>
+						</div>
+					
+						<form method="post" action="${URLUtils.httpsContinue()}" id="edit-address-form" name="${pdict.CurrentForms.profile.address.htmlName}">
+							<fieldset>					
+								<isif condition="${pdict.Status != null && pdict.Status.isError()}">
+									<!-- Use the error code value to build an appropriate error message -->
+									<span class="form-error">
+										<isprint value="${Resource.msg('addressdetails.' + pdict.Status.code, 'account',null)}"/>
+									</span>
+								</isif>
+					
+								<isscript>
+									var currentCountry = require('~/cartridge/scripts/util/Countries').getCurrent(pdict);
+								</isscript>
+								<isif condition="${!empty(dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput'))}">
+									<isset name="countryArrayList" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('countriesWithStateInput')}" scope="page" />
+									<iselse/>
+									<isset name="countryArrayList" value="${'AU|BR|ET|DE|IN|MX|FM|MM|NG|PW|SD'}" scope="page" />
+								</isif>
+								<input type="hidden" id="countryWithState" value="${countryArrayList}"/>
+								<isdynamicform formobject="${pdict.CurrentForms.profile.address}" formdata="${currentCountry.dynamicForms.addressDetails}"/>
+					
+					
+								<div class="text-right save-address-btn">
+								<a class="btn btn-outline-dark btn-lg edit-cancel" href="${URLUtils.url('Address-List')}">
+										<isprint value="${Resource.msg('global.cancel','locale',null)}" />
+									</a>
+									<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('LOQATE_verification_enabled')}">
+										<button class="btn btn-primary btn-lg edit-save account-add-address-btn" type="button" name="${pdict.Action == 'add' ? pdict.CurrentForms.profile.address.create.htmlName : pdict.CurrentForms.profile.address.edit.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
+											<isprint value="${Resource.msg('global.save','locale',null)}" />
+										</button>
+										<button class="btn btn-primary btn-lg edit-save account-add-address-submit" style="display: none;" type="submit" name="${pdict.Action == 'add' ? pdict.CurrentForms.profile.address.create.htmlName : pdict.CurrentForms.profile.address.edit.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
+											<isprint value="${Resource.msg('global.save','locale',null)}" />
+										</button>
+									<iselse>
+										<button class="btn btn-primary btn-lg edit-save" type="submit" name="${pdict.Action == 'add' ? pdict.CurrentForms.profile.address.create.htmlName : pdict.CurrentForms.profile.address.edit.htmlName}" value="${Resource.msg('global.apply','locale',null)}">
+											<isprint value="${Resource.msg('global.save','locale',null)}" />
+										</button>
+									</isif>
+								</div>
+								<input type="hidden" name="scope" value="${request.httpParameterMap.scope}">
+								<input type="hidden" name="plid" value="${request.httpParameterMap.plid}">
+								<input type="hidden" name="addressType" value="${request.httpParameterMap.addressType}">
+								<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+							</fieldset>
+					
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<isinclude template="checkout/components/addressverificationmodal" />
+					
+<isscript>
+	importScript("util/ViewHelpers.ds");
+	var addressForm = pdict.CurrentForms.profile.address;
+	var countries = ViewHelpers.getCountriesAndRegions(addressForm);
+	var json = JSON.stringify(countries);
+</isscript>
+<script>window.Countries = <isprint value="${json}" encoding="off"/>;</script>
+</isdecorate>

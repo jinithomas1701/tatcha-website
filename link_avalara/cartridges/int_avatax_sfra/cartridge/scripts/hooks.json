@@ -1,0 +1,12 @@
+{
+	"hooks": [
+		{
+			"name": "dw.order.calculateTax",
+			"script": "./hooks/avatax/avataxhooks.js"
+		},
+		{
+			"name": "dw.order.createOrderNo",
+			"script": "./hooks/avatax/avataxhooks.js"
+		}
+	]
+}

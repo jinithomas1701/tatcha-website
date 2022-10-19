@@ -1,0 +1,18 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/producttile.css');
+    assets.addCss('/css/component.css');
+
+    assets.addJs('/js/einstein-recommendations.js');
+</isscript>
+
+<div class="einstein-product-recommendations" 
+    data-recommender="${pdict.recommender}" 
+    data-primary-product-id="${pdict.primaryProductId}" 
+    data-secondary-product-id="${pdict.secondaryProductId}"
+    data-alternative-group-type="${pdict.alternativeGroupType}"
+    data-alternative-group-id="${pdict.alternativeGroupId}"
+    data-template="assets/producttile"
+    data-product-load-url="${pdict.productLoadUrl}"
+    data-limit="${pdict.limit}">
+</div>

@@ -1,0 +1,50 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+
+<isscript>
+    var HasRefillProducts = null;
+    if (dw.system.Site.getCurrent().getCustomPreferenceValue('SorEnabled')) {
+        HasRefillProducts = require('int_smartorderrefill/cartridge/scripts/smartOrderRefill/refillHelper.js').checkForRefillProducts();
+    }
+
+    var afterPayOrderTotal  = totalCartPrice.value;
+    var afterPayMin = dw.system.Site.getCurrent().getCustomPreferenceValue('apMinThresholdAmount');
+    var afterPayMax = dw.system.Site.getCurrent().getCustomPreferenceValue('apMaxThresholdAmount');
+    var afterPayEligible = false;
+    if(((afterPayOrderTotal >= parseFloat(afterPayMin,10)) && (afterPayOrderTotal <= parseFloat(afterPayMax,10)))) {
+        afterPayEligible = true;
+    }
+    var basketObject = dw.order.BasketMgr.getCurrentBasket();
+    var productLineItems = basketObject.productLineItems;
+    var hasOnlyGiftCertificate = false;
+    if(productLineItems.length === 0 && basketObject.giftCertificateLineItems && basketObject.giftCertificateLineItems.length > 0) {
+        hasOnlyGiftCertificate = true;
+    }
+</isscript>
+<isif condition="${!HasRefillProducts}">
+    <div class="row minicart-payment-buttons" style="margin-bottom: .5rem">
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled') && afterPayEligible == true && !hasOnlyGiftCertificate}">
+            <div class="minicart-payment-btn-afterpay minicart-payment-btn-common">
+                <iscomment> Afterpay Express</iscomment>
+                <isinclude template="afterpay/afterpayExpressButtonMiniBag" />
+            </div>
+        </isif>
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('BRAINTREE_PAYPAL_Visibility_Express_Button_On_MiniCart')}">
+            <div class="minicart-payment-btn-paypal minicart-payment-btn-common">
+                <iscomment>Paypal</iscomment>
+                <isinclude template="braintree/cart/minicartButton"/>
+            </div>
+        </isif>
+        <isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('BRAINTREE_APPLEPAY_Visibility_Button_On_MiniCart')}" >
+            <div class="minicart-aple-pay-btn minicart-payment-btn-common minicart-payment-apple-pay-btn">
+                <iscomment>Apple Pay</iscomment>
+                <isinclude template="braintree/cart/minicartApplepayButton"/>
+            </div>
+        </isif>
+    </div>
+</isif>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressEnabled') && !hasOnlyGiftCertificate && !HasRefillProducts}">
+    <isafterpaythreshold totalprice="${totalCartPrice}" classname="minicart-afterpay-message" section="minicart"/>
+</isif>
+
+

@@ -1,0 +1,8 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+ <isif condition="${!empty(pdict.Product.custom.skinTypeVariationsV1)}">
+		 <isif condition="${!isQuickView}">
+		 	<isprint value="${pdict.Product.custom.skinTypeVariationsV1}" encoding="off"  />
+		<iselse>
+		 	<isprint value="${pdict.Product.custom.qVskinTypeVariations}" encoding="off"  />
+		</isif>
+	</isif>

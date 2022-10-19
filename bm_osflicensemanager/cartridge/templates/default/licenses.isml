@@ -1,0 +1,15 @@
+<isset name="Resource" value="${require('dw/web/Resource')}" scope="page" />
+<isdecorate template="application/MenuFrame">
+    <iscontent type="text/html" charset="UTF-8">
+    <div class="instructions">
+        <p>
+            ${Resource.msg('license.instructions', 'license', null)}
+        </p>
+    </div>
+    <isinclude template="licensesmodule.isml" /> 
+    <script src="${URLUtils.staticURL('/js/ui/jquery-ui.min.js')}" type="text/javascript"></script>
+    <script src="${URLUtils.staticURL('/js/osflicenser.js')}" type="text/javascript"></script>
+    <style type="text/css">@import url(${URLUtils.staticURL('/js/ui/jquery-ui.min.css')})</style>
+    <style type="text/css">@import url(${URLUtils.staticURL('/css/styles.css')})</style>
+    <input type="hidden" id="errorMessage" value="${Resource.msg('license.errormessage', 'license', null)}">
+</isdecorate>

@@ -1,0 +1,93 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<!doctype html>
+<!--[if lt IE 7]> <html class="ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!--> <html lang="en"> <!--<![endif]-->
+<head>
+	<isscript>
+		var pageContext = {
+			title: 'Product Search Results',
+			type:'search',
+			ns:'search'
+		};
+	</isscript>
+	<isinclude template="util/modules"/>
+	<iscomment>
+		Please mind that the productsearchrefinebar contains price information that is subject to personalization.
+		Make sure the decorated template specifies ISCACHE varyby="price_promotion".
+	</iscomment>
+
+	<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableCSSLazyload')}">
+		<isinclude template="components/header/htmlhead_category_bs"/>
+		<iselse>
+			<isinclude template="components/header/htmlhead_bs"/>
+	</isif>
+	
+	<isif condition="${(pdict.CurrentHttpParameterMap.cgid.submitted && pdict.CurrentHttpParameterMap.cgid.value != '')}">
+		<link rel="canonical" href="${URLUtils.https('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid)}" />
+	</isif>
+
+	<iscomment>Add  template-specific header information here.</iscomment>
+	<isinclude template="search/search_seo_links"/>
+</head>
+<body>
+
+
+		<isinclude template="components/header/header_bs"/>
+		<isif condition="${!empty(pdict.ProductSearchResult.category)}">
+			<isset name="searchResultsCss" value="" scope="page" />
+			<isif condition="${!empty(pdict.CurrentHttpParameterMap.cgid.stringValue)}">
+				<input id="searchUrl" type="hidden" value="${URLUtils.url('Search-Show','cgid', pdict.CurrentHttpParameterMap.cgid.stringValue)}" />
+			</isif>
+			<iscomment>Add a check for BACK button for Auto Delivery page </iscomment>			
+			<isif condition="${pdict.ProductSearchResult.category.ID == 'about_auto_delivery'}">
+				<isscript>
+					var referer = (session.clickStream) ? session.clickStream.last.referer : '';
+					var backURL = URLUtils.url('Account-Show');
+					try{	
+						if (referer!='' && referer.indexOf("tatcha/account") !=-1) {
+							referer = 'myaccount';
+						}
+					} catch(err){}
+				
+				</isscript>			
+				<isif condition="${!empty(referer) && referer =='myaccount'}">
+					<div class="container-fluid breadcrumb-container">
+						<ol id="myaccount-breadcrumb" class="breadcrumb container">
+							<li>
+						  		<a href="${backURL}">
+						  			<i class="fal fa-angle-double-left"></i>
+						  				${Resource.msg('global.back','locale',null)}
+						  		</a>
+						  	</li>
+						</ol>
+					</div>	
+				</isif>		
+			</isif>			
+			
+			
+		<iselse>	
+			<isset name="searchResultsCss" value="search-results" scope="page" />
+		</isif>
+		<iscomment> New exposed mobile nav </iscomment>
+		<iscontentasset aid="mobile-exposed-nav"/>
+		<main id="main" role="main" class="category-page product product-list-v2 clearfix pt_product-search-result ${searchResultsCss}" tabindex="-1">
+			<isinclude template="components/browsertoolscheck"/>
+			<isreplace/>
+		</main>
+		
+		<isif condition="${!empty(pdict.ProductSearchResult) && !empty(pdict.ProductSearchResult.category) && compareEnabled}">
+			<iscomparecontrols category="${pdict.ProductSearchResult.category}"/>
+		</isif>
+		<isset name="pageName" value="search" scope="page" />
+		<isinclude template="product/components/modals"/>
+		<isinclude template="components/footer/footer_bs"/>
+		<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('enableJSLazyload')}">
+			<script src="${URLUtils.staticURL('/js/app.js')}"></script>
+		</isif>
+		<isinclude template="search/pt_productsearchresult_UI"/>
+		<isinclude template="search/pt_productsearchresult_VARS"/>
+	
+</body>
+</html>

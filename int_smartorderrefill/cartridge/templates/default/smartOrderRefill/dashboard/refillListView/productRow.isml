@@ -1,0 +1,176 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isscript>
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	var StringHelper = require('app_storefront_core/cartridge/scripts/util/StringHelpers');
+	var Tatcha = require('app_storefront_core/cartridge/scripts/util/Tatcha');
+	var nextOrder = Tatcha.getNextSOROrder(pdict.ProductList);
+	var secondnextOrder = Tatcha.getSecondNextSOROrder(pdict.ProductList);
+	var nextOrderDate = !empty(nextOrder) ? new Date(nextOrder.createdAt) : '';
+</isscript>
+<isset name="product" value="${dw.catalog.ProductMgr.getProduct(listItem.ID)}" scope="page"/>
+<div class="checkout-bag">
+ <div class="bag-item-list">
+	<div class="bag-item-line">
+		<div class="row">   	
+    	
+    	<div class="subscriptionSection-img col-3 col-md-2 bag-item-img-block">
+    		 <isset name="imageUrl" value="${getImageUrl(product, 'medium')}" scope="page" />
+             <img itemprop="image" class="img-fluid product-img primary-image" src="${imageUrl}" alt="${product.name}" title="${product.name}"/>
+         </div>
+    
+ 		<div class="col-9 col-md-10 bag-item-detail">
+				<div class="bag-item-name-variant">
+				 <div class="row">
+					<div class="col-12">
+						<h5 class="product-name">
+							<a href="${URLUtils.url('Product-Show', 'pid', product.ID)}">
+		        				${product.name}
+		        				<isif condition="${product.custom.secondaryName}"> 
+										<span class="product-subtitle"><isprint value="${product.custom.secondaryName.substring(0,44)}"/></span>
+								</isif>
+		        			</a>
+		        		</h5>
+		        	</div>
+		        </div>
+		        <isif condition="${pdict.ProductList.products.length > 1}">
+		            <isif condition="${(!pdict.isPaused && empty(listItem.commitment)) || (!pdict.isPaused && listItem.commitmentDone >= listItem.commitment)}" >
+		                <span data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', pdict.listTypeParam, pdict.ProductList.ID, 'item', listItem.ID, 'action', 'removeProduct')}" 
+		                class="sorlink sorshowmodal"
+		                data-title="${dw.web.Resource.msg('smartorderrefill.productview.removelink.title', 'smartorderrefill', null)}"
+		                data-content="${dw.web.Resource.msg('smartorderrefill.productview.removelink.content', 'smartorderrefill', null)}"
+		                data-yes="${dw.web.Resource.msg('smartorderrefill.productview.removelink.yes', 'smartorderrefill', null)}"
+		                data-no="${dw.web.Resource.msg('smartorderrefill.productview.removelink.no', 'smartorderrefill', null)}">
+		                ${dw.web.Resource.msg('smartorderrefill.productview.removelink.name', 'smartorderrefill', null)}</span>
+		            <iselseif condition="${!isPaused}"/>
+		                <span>${Resource.msgf('smartorderrefill.productview.commitment', 'smartorderrefill', null)} ${listItem.commitmentDone}/${listItem.commitment} </span>
+		            <iselse>
+		                
+		            </isif>
+		        </isif>
+					
+				<div class="row">
+					<div class="col-12">
+						<div class="bag-item-variant">
+							<isif condition="${product.isVariant()}">
+					            <isloop items="${product.variationModel.getProductVariationAttributes()}" var="VA" status="status">
+					                <isset name="SelectedVariationValue" value="${product.variationModel.getSelectedValue(VA)}" scope="page"/>
+					                <div class="attribute product-variant" data-attribute="${VA.ID}">
+					                    <span class="value">
+					                        <isif condition="${SelectedVariationValue != null}">
+					                            <isprint value="${SelectedVariationValue.displayValue}"/>
+					                        <iselse/>
+					                            -
+					                        </isif>
+					                    </span>
+					                </div>
+					                <isif condition="${!status.last}"><span class="separator">|</span></isif>
+					            </isloop>
+					        <iselse>
+					            -
+					        </isif>
+				 		</div>
+				 	</div>
+				 </div>
+			    </div>
+	    
+			    <div class="bag-item-qty row">
+					<div class="col-8">
+						<div class="form-group form-inline bag-item-qty">
+						<label class="control-label">Qty</label>
+				        <isif condition="${!listItem.cancelDate}">
+				        	<isscript>
+							var defaultMaxQty = Site.getCurrent().getCustomPreferenceValue('maxOrderQuantity');
+							var maxQty = !empty(product.custom.maxOrderQuantity) ? product.custom.maxOrderQuantity : defaultMaxQty;
+							var qtys = StringHelper.GetArray(1, maxQty, 1);
+							</isscript>
+							<input type="hidden" id="currQuantity_${listItem.ID}" value="${listItem.quantity}"/>
+							<select class="form-control input-sm" name="quantity" id="quantity_${listItem.ID}">
+								<isloop items="${qtys}" alias="qty">
+									<option value="${qty}" <isif condition="${(listItem.quantity == qty)}">selected</isif>><isprint value="${qty}" style="INTEGER"/></option>
+								</isloop>
+							</select>
+				            <input type="hidden" value="${listItem.ID}" name="item" id="item_${listItem.ID}" />
+				        <iselse>
+				            ${listItem.quantity}
+				        </isif>
+				
+				        <div id="actions">
+				            <isif condition="${!pdict.isPaused}" >
+				                <button id="ad-update-qty" <isif condition="${empty(nextOrderDate)}">disabled</isif> type="submit" data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', pdict.listTypeParam, pdict.ProductList.ID, 'item', listItem.ID, 'action', 'updateQuantity')}" class="update-item sorlink btn btn-outline-secondary btn-md button-default-small">${dw.web.Resource.msg('global.update', 'locale', null)}</button>
+				            </isif>
+				        </div>
+				       	</div>
+		    		</div>
+		    		
+		    		<div class="col-4">
+						<div class="bag-item-price">
+	    					<isprint value="${new dw.value.Money(listItem.price, currencyCode)}" />
+	    				</div>
+	    			</div>
+		    	</div>
+			</div>
+		</div>
+    	</div>
+    	</div>
+    </div>
+    
+    <isif condition="${!empty(nextOrderDate)}">
+		<div class="auto-delivery-schedule">
+			<div class="data-label">Schedule</div>
+			<span class="schedule-info">Your next shipment will be on&nbsp;
+			
+				<input type="hidden" id="${'currNextDate-'+listItem.ID}" value='<isprint value="${nextOrderDate}" style="DATE_SHORT" timezone="utc" />'>
+				<input type="hidden" id="${'currFrequency-'+listItem.ID}" value="${listItem.interval}">
+				<input type="text" name="nxtDate" class="form-control modifydatepicker datepicker input-sm datepicker-common align-middle" id="${'sorNextDate-'+listItem.ID}" readonly="true" value='<isprint value="${nextOrderDate}" style="DATE_SHORT" timezone="utc" />'>
+				&nbsp;and then&nbsp;
+
+                <select id="${'select-everydelivery-'+listItem.ID}" class="everydelivery-select" name="everyDelivery" style="display: none">
+                    <option disabled>${dw.web.Resource.msg('smartorderrefill.oneitem','smartorderrefill',null)}</option>
+	                <isif condition="${!empty(pdict.preferences.SorDeliveryWeekInterval)}" >
+	                    <option value="${pdict.PERIODICITY.WEEK}" <isif condition="${listItem.periodicity === pdict.PERIODICITY.WEEK}">selected</isif>>${dw.web.Resource.msg('refill.multiple.weeks', 'forms', null)}</option>
+	                </isif>
+	                <isif condition="${!empty(pdict.preferences.SorDeliveryMonthInterval)}" >
+	                    <option value="${pdict.PERIODICITY.MONTH}" <isif condition="${listItem.periodicity === pdict.PERIODICITY.MONTH}">selected</isif>>${dw.web.Resource.msg('refill.multiple.months', 'forms', null)}</option>
+	                </isif> 
+                </select>
+
+                <isif condition="${!empty(pdict.preferences.SorDeliveryWeekInterval)}" >
+                    <select class="week-select" id="${'sorWeek-'+listItem.ID}" name="sorWeek">
+                        <isloop items="${pdict.preferences.SorDeliveryWeekInterval}" var="woption">
+                            <isif condition="${woption > 0}">
+                                <option value="${woption}" <isif condition="${woption == listItem.interval}">selected</isif> > ${woption} </option>
+                            </isif>
+                        </isloop>
+                    </select>
+                </isif>
+
+                <isif condition="${!empty(pdict.preferences.SorDeliveryMonthInterval)}" >
+                    <isset name="intMonths" value="${pdict.preferences.SorDeliveryMonthInterval}" scope="page" />
+                   	<isscript>
+                   		if(!empty(product.custom.OsfSmartOrderInterval)) {
+                   			intMonths = product.custom.OsfSmartOrderInterval;
+                  			}
+                   	</isscript>
+                       <select class="input-select form-control input-sm select-sor-month align-middle" id="${'sorMonth-'+listItem.ID}" name="sorMonth">
+                           <isloop items="${intMonths.sort()}" var="option">
+                               <option value="${option}" <isif condition="${option == listItem.interval}">selected</isif> > 
+                               	Every <isprint value=${option} style="INTEGER"> 
+                               	<isif condition="${option > 1}"> 
+                               		${Resource.msg('refill.multiple.months', 'forms', null)}
+                               	<iselse>
+                               		${Resource.msg('refill.multiple.month', 'forms', null)}
+                               	</isif>
+                               </option>
+                           </isloop>
+                       </select>
+                </isif>
+                   &nbsp;after that.&nbsp;&nbsp;
+                   <button type="submit" class="btn btn-outline-secondary btn-md button-default-small align-middle update-refill sorlink" data-link="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'sid', pdict.ProductList.ID, 'item', listItem.ID, 'action', 'updateRefill')}" id="ad-update-schedule" >${dw.web.Resource.msg('global.update', 'locale', null)} </button>
+			</span>
+		</div>
+	</isif>

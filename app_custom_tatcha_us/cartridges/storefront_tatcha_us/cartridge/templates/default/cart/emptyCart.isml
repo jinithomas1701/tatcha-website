@@ -1,0 +1,18 @@
+<isinclude template="util/modules" />
+<div style="min-height: 800px" class="bag-page empty-bag-container ${!(pdict.items.length === 0 && pdict.giftCertificateItems.length === 0) ? 'hide-empty-cart' : ''}">
+    <div class="cart-empty empty-text text-center bag-is-empty">
+        <div class="title">${Resource.msg('cart.cartempty','checkout',null)} <br> ${Resource.msg('cart.cartempty.msg','checkout',null)}</div>
+        <div class="m-top">
+            <a href="${URLUtils.url('Search-Show','cgid', 'shop_all')}" class="btn btn-outline-dark mt-4"  value="${Resource.msg('global.continueshopping','locale',null)}" name="${pdict.CurrentForms.cart.continueShopping.htmlName}">
+                ${Resource.msg('global.shopall','locale',null)}
+            </a>
+
+        </div>
+    </div>
+    <div class="carousel-overline mt-4">${Resource.msg('cart.newtotatcha','checkout',null)}</div>
+    <isif condition="${dw.system.Site.current.getCustomPreferenceValue('UseEinsteinOnCartWithOutProduct')}">
+        <isslot id="einstein-cart-empty" description="Einstein Empty Cart page slot." context="global" context-object="${pdict.Basket}" />
+        <iselse>
+            <isslot id="cart-empty" description="Empty Cart page slot." context="global" />
+    </isif>
+</div>

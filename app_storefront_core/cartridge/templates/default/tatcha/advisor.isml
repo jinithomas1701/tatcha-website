@@ -1,0 +1,59 @@
+<!--- TEMPLATENAME: advisor.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" hour="24"/>
+<iscomment>
+	This template renders the slot content of a content asset
+	using only the body of the content.
+	Note, only one content asset body is rendered.
+</iscomment>
+
+<iscomment>make sure we have content at all</iscomment>
+<a class="nav-link advisor-handle" href="javascript:void(0)" data-toggle="modal" data-target="#advisorModal">
+	<i class="fal fa-lg fa-life-ring"></i> Advisor
+</a>
+
+<!-- Modal Popup -->
+<div class="modal fade modal-primary modal-tatcha-advisor" id="advisorModal" role="dialog" style="display: none;">
+	<div class="modal-dialog modal-lg" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+				<i class="fal fa-times"></i></button>
+				<h4 class="modal-title"><strong>Advisor</strong></h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="col-md-8">
+						<div class="main-block">
+							<isinclude url="${URLUtils.url('Page-Include', 'cid', 'advisor-how-may-we-advise-you')}"/>
+						</div>
+						<div class="skintype-block">
+							<isinclude url="${URLUtils.url('Page-Include', 'cid', 'advisor-i-know-my-skin-type')}"/>
+						</div>
+						<div class="skinconcern-block">
+							<isinclude url="${URLUtils.url('Page-Include', 'cid', 'advisor-i-have-skin-concern')}"/>
+						</div>
+						<div class="questions-block">
+							<isinclude url="${URLUtils.url('Page-Include', 'cid', 'advisor-top-10-questions')}"/>
+						</div>
+						<div class="tostart-block">
+							<isinclude url="${URLUtils.url('Page-Include', 'cid', 'advisor-i-dont-know-where-to-start')}"/>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="right-block">
+							<isinclude url="${URLUtils.url('Page-Include', 'cid', 'advisor-right-column')}"/>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<!-- Modal Popup End -->
+
+
+
+<div class="advisor-content" style="display: none">
+	
+</div>

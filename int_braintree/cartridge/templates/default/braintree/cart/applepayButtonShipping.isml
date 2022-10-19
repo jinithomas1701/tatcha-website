@@ -1,0 +1,37 @@
+<isscript>
+    BraintreeHelper.addDefaultShipping(pdict.Basket);
+    var amount = BraintreeHelper.getAmount(pdict.Basket);
+    
+    //session.custom.NoCall = false;
+    var app = require('app_storefront_controllers/cartridge/scripts/app');
+	var cartModel = app.getModel('Cart').get();
+	var balanceAmount = cartModel.getNonGiftCertificateAmount();
+
+    var applePayButtonConfig = {
+        paymentMethodName: prefs.applePayMethodName,
+        clientToken: request.custom.braintreeClientToken,
+        messages: {
+            CLIENT_REQUEST_TIMEOUT: Resource.msg('braintree.error.CLIENT_REQUEST_TIMEOUT', 'locale', null),
+            CLIENT_GATEWAY_NETWORK: Resource.msg('braintree.error.CLIENT_GATEWAY_NETWORK', 'locale', null),
+            CLIENT_REQUEST_ERROR: Resource.msg('braintree.error.CLIENT_REQUEST_ERROR', 'locale', null),
+            CLIENT_MISSING_GATEWAY_CONFIGURATION: Resource.msg('braintree.error.CLIENT_MISSING_GATEWAY_CONFIGURATION', 'locale', null)
+        },
+        returnUrl: URLUtils.url('Braintree-AppleCheckoutFromCart', 'fromCart', 'true').toString(),
+        options: {
+            amount: parseFloat(balanceAmount.getValue()),
+            currency: balanceAmount.getCurrencyCode(),
+            displayName: prefs.BRAINTREE_APPLEPAY_Display_Name
+        },
+        /*customFields: {
+            field_2: 'client_value'
+        },*/
+    }
+
+</isscript>
+
+<div class="braintree-cart-apple-buttons-wrap js_braintree_applepayButtonsWrap">
+        <div class="braintree-cart-apple-button js_braintree_applepay_button apple-pay-button apple-pay-button-black btn-block btn-alt-pay" data-braintree-config="${JSON.stringify(applePayButtonConfig)}">
+        </div>
+</div>
+<div class="applepayoverlay" >
+</div>

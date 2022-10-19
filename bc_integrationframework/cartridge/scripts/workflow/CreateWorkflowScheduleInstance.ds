@@ -1,0 +1,48 @@
+/**
+ * Create a new WorkflowScheduleInstance with the given values.
+ * 
+ * @input SiteId : String
+ * @input WorkflowScheduleDefinition : Object
+ * @input Calendar : dw.util.Calendar
+ * @output WorkflowScheduleInstance : Object
+ */
+
+importPackage(dw.system);
+importPackage(dw.util);
+importPackage(dw.object);
+
+importScript('bc_integrationframework:workflow/libWorkflow.ds');
+
+/**
+ * The main function.
+ * 
+ * @param {dw.system.PipelineDictionary} pdict The pipeline dictionary.
+ * 
+ * @return {Number} PIPELET_NEXT or in case of an exception PIPELINE_ERROR.
+ */
+function execute(pdict : PipelineDictionary) : Number {
+	var libWorkflow : Object = new LibWorkflow();
+	var siteId : String = pdict.SiteId;
+	var workflowScheduleDefinition : Object = pdict.WorkflowScheduleDefinition;
+	var calendar : Calendar = pdict.Calendar;
+	
+	var workflowScheduleInstanceId = libWorkflow.createWorkflowScheduleInstanceId(siteId, workflowScheduleDefinition.custom.ID, calendar);
+	
+	var workflowScheduleInstance : CustomObject = CustomObjectMgr.createCustomObject('WorkflowScheduleInstance', workflowScheduleInstanceId);
+	
+	workflowScheduleInstance.custom.siteId = siteId;
+	workflowScheduleInstance.custom.workflowScheduleDefinitionID = workflowScheduleDefinition.custom.ID;
+	workflowScheduleInstance.custom.plannedStartTime = calendar.getTime();
+	workflowScheduleInstance.custom.notificationStatuses = workflowScheduleDefinition.custom.notificationStatuses;
+	workflowScheduleInstance.custom.notificationEmails = workflowScheduleDefinition.custom.notificationEmails;
+	workflowScheduleInstance.custom.notificationMode = workflowScheduleDefinition.custom.notificationMode;
+	workflowScheduleInstance.custom.fileLogLevel = workflowScheduleDefinition.custom.fileLogLevel;
+	workflowScheduleInstance.custom.componentLogLevel = workflowScheduleDefinition.custom.componentLogLevel;
+	
+	workflowScheduleInstance = libWorkflow.createWrapperObject(workflowScheduleInstance);
+	workflowScheduleInstance.createWorkflowComponentInstances(siteId);
+	
+	pdict.WorkflowScheduleInstance = workflowScheduleInstance;
+	
+    return PIPELET_NEXT;
+}

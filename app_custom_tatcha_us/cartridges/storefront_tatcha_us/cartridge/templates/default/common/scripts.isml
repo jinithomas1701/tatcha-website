@@ -1,0 +1,20 @@
+<script>//common/scripts.isml</script>
+<isscript>
+    var prefs = require('*/cartridge/config/braintreePreferences');
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs(prefs.clientSdk3ClientUrl);
+    assets.addJs(prefs.clientSdk3DataCollectorUrl);
+
+    assets.addJs(prefs.clientSdk3PayPalUrl);
+    assets.addJs(prefs.clientSdk3ApplePayUrl);
+    assets.addJs(prefs.clientSdk3PayPalCheckoutUrl);
+
+    assets.addJs('/js/int_braintree_custom.min.js');
+</isscript>
+<link href="${URLUtils.staticURL('/css/braintree.css')}" rel="stylesheet">
+<isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="script">
+    <script defer type="text/javascript" src="${script.src}"
+    <isif condition="${script.integrity != null}">integrity="${script.integrity}" crossorigin="anonymous"></isif>
+    >
+    </script>
+</isloop>

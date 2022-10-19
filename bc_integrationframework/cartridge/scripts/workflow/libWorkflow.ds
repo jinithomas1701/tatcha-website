@@ -1,0 +1,604 @@
+/**
+ * The library with functions for the integration framework.
+ */
+
+importPackage(dw.util);
+importPackage(dw.system);
+importPackage(dw.object);
+importScript( 'bc_integrationframework:workflow/libWorkflowLogToFile.ds' );
+
+function LibWorkflow() {}
+
+/**
+ * Get WorkflowSchedulPlan
+ * @param {String} siteId ID of the site
+ * @param {Calendar} calendarStart start time
+ * @param {Calendar} calendarEnd end time  
+ * @return {ArrayList} WorkflowPlan as list
+ */
+LibWorkflow.prototype.getWorkflowPlan = function(siteId : String, calendarStart : Calendar, calendarEnd : Calendar) : ArrayList {
+	if (empty(calendarStart)) {
+		return null;
+	}
+	
+	var result : ArrayList = new ArrayList();
+	
+	var workflowScheduleDefinitions : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowScheduleDefinition', 'custom.siteIds = {0} AND custom.enabled = true', null, siteId);
+	if (empty(workflowScheduleDefinitions) || !workflowScheduleDefinitions.hasNext()) {
+		return result;
+	}
+	
+	if (empty(calendarEnd) || calendarStart.after(calendarEnd)) {
+		calendarEnd = new Calendar();
+		calendarEnd.setTimeZone(System.getInstanceTimeZone());
+		calendarEnd.setTime(calendarStart.getTime());
+	}
+	
+	var calendarLowerBound : Calendar = new Calendar();
+	var calendarUpperBound : Calendar = new Calendar(); 
+	calendarLowerBound.setTimeZone(System.getInstanceTimeZone());
+	calendarUpperBound.setTimeZone(System.getInstanceTimeZone());
+	
+	calendarLowerBound.parseByFormat(calendarStart.get(Calendar.YEAR) + '.' + (calendarStart.get(Calendar.MONTH)+1) + '.' + calendarStart.get(Calendar.DAY_OF_MONTH) + ' 00:00:00.000', 'yyyy.MM.dd HH:mm:ss.SSS');
+	calendarUpperBound.parseByFormat(calendarEnd.get(Calendar.YEAR) + '.' + (calendarEnd.get(Calendar.MONTH)+1) + '.' + calendarEnd.get(Calendar.DAY_OF_MONTH) + ' 23:59:59.999', 'yyyy.MM.dd HH:mm:ss.SSS');
+	
+	var addFunction : Function = function(calendar : Calendar, workflowScheduleDefinition : CustomObject) {
+		var calendarLastModified : Calendar = new Calendar();
+		calendarLastModified.setTimeZone(System.getInstanceTimeZone());
+		calendarLastModified.setTime(workflowScheduleDefinition.lastModified);
+		
+		if (!calendar.before(calendarLastModified)) {
+			result.add({
+				"calendar"                 : calendar,
+				"workflowScheduleDefinition": workflowScheduleDefinition
+			});
+		}
+	}
+	
+	while (workflowScheduleDefinitions.hasNext()) {
+		var workflowScheduleDefinition : CustomObject = workflowScheduleDefinitions.next();
+		
+		if (workflowScheduleDefinition.custom.type == 'SINGLE') {
+			var calendar : Calendar = new Calendar();
+			calendar.setTimeZone(System.getInstanceTimeZone());
+			calendar.setTime(workflowScheduleDefinition.custom.executionTime);
+			
+			if (!calendar.before(calendarLowerBound) && !calendar.after(calendarUpperBound)) {
+				addFunction(calendar, workflowScheduleDefinition);
+			}
+		} else {
+			if (empty(workflowScheduleDefinition.custom.executionWeekdays)) {
+				continue;
+			}
+			
+			var executionTime : Calendar = new Calendar();
+			executionTime.setTimeZone(System.getInstanceTimeZone());
+			executionTime.setTime(workflowScheduleDefinition.custom.executionTime);
+			
+			var executionActiveFromDate : Date = new Date(workflowScheduleDefinition.custom.executionActiveFrom.getTime());
+			// To be 100% sure that the milliseconds are 0!
+			executionActiveFromDate.setMilliseconds(0);
+			var executionActiveFrom : Calendar = new Calendar();
+			executionActiveFrom.setTimeZone(System.getInstanceTimeZone());
+			executionActiveFrom.setTime(executionActiveFromDate);
+			executionActiveFrom.set(Calendar.HOUR_OF_DAY, executionTime.get(Calendar.HOUR_OF_DAY));
+			executionActiveFrom.set(Calendar.MINUTE, executionTime.get(Calendar.MINUTE));
+			executionActiveFrom.set(Calendar.SECOND, 0);
+			
+			var executionActiveTo : Calendar = null;
+			if (!empty(workflowScheduleDefinition.custom.executionActiveTo)) {
+				var executionActiveToDate : Date = new Date(workflowScheduleDefinition.custom.executionActiveTo.getTime());
+				executionActiveToDate.setMilliseconds(0);
+				executionActiveTo = new Calendar();
+				executionActiveTo.setTimeZone(System.getInstanceTimeZone());
+				executionActiveTo.setTime(executionActiveToDate);
+				
+				// The last possible point of time (hours, minutes, seconds and milliseconds) is set.
+				executionActiveTo.set(Calendar.HOUR_OF_DAY, 23);
+				executionActiveTo.set(Calendar.MINUTE, 59);
+				executionActiveTo.set(Calendar.SECOND, 59);
+			}
+			
+			if (calendarUpperBound.before(executionActiveFrom) || (!empty(executionActiveTo) && calendarLowerBound.after(executionActiveTo))) {
+				continue;
+			}
+			
+			var actualLowerBound : Calendar = (calendarLowerBound.after(executionActiveFrom) ? calendarLowerBound : executionActiveFrom);
+			var actualUpperBound : Calendar = ((empty(executionActiveTo) || calendarUpperBound.before(executionActiveTo)) ? calendarUpperBound : executionActiveTo);
+			
+			var addField : Number;
+			if (workflowScheduleDefinition.custom.executionIntervalType == 'MINUTE') {
+				addField = Calendar.MINUTE;
+			} else if (workflowScheduleDefinition.custom.executionIntervalType == 'HOUR') {
+				addField = Calendar.HOUR_OF_DAY;
+			} else if (workflowScheduleDefinition.custom.executionIntervalType == 'DAY') {
+				addField = Calendar.DAY_OF_YEAR;
+			} else if (workflowScheduleDefinition.custom.executionIntervalType == 'WEEK') {
+				addField = Calendar.WEEK_OF_YEAR;
+			} else if (workflowScheduleDefinition.custom.executionIntervalType == 'MONTH') {
+				addField = Calendar.MONTH;
+			} else {
+				addField = Calendar.YEAR;
+			}
+			
+			var calendarIterator : Calendar = new Calendar();
+			calendarIterator.setTimeZone(System.getInstanceTimeZone());
+
+			//setting the start date as close to the lower bound as it gets and make both start dates equal
+			//doing this the algorithm takes the definition unit and quantity into account, determines 
+			//the closest setup time and fast forwards to the new "start date" for the calculation
+			if ( !executionActiveFrom.after(actualLowerBound) )
+			{
+				//set the baseline
+				calendarIterator.setTime(executionActiveFrom.getTime());
+
+				//calculation based on addField value
+				var timeDifferenceInMilliSeconds = actualLowerBound.getTime().getTime() - executionActiveFrom.getTime().getTime();
+				var _MINUTE : Number = 60000;
+				var _HOUR : Number = 60 * _MINUTE;
+				var _DAY : Number = 24 * _HOUR;
+				var _WEEK : Number = 7 * _DAY;
+				
+				var timeDifferenceInMilliSeconds = actualLowerBound.getTime().getTime() - executionActiveFrom.getTime().getTime();
+
+				//calculating days
+				if (workflowScheduleDefinition.custom.executionIntervalType == 'MINUTE') {
+					var units = Math.floor( timeDifferenceInMilliSeconds / (workflowScheduleDefinition.custom.executionInterval * _MINUTE) );
+					//always removing one more unit than needed
+					if (units > 0) {
+						units = units - ( Math.floor( (24*60) / workflowScheduleDefinition.custom.executionInterval) + 1 );
+					}
+					calendarIterator.add(Calendar.MINUTE, units * workflowScheduleDefinition.custom.executionInterval );
+				} else if (workflowScheduleDefinition.custom.executionIntervalType == 'HOUR') {
+					var units = Math.floor( timeDifferenceInMilliSeconds / (workflowScheduleDefinition.custom.executionInterval * _HOUR) );
+					//always removing one more unit than needed
+					if (units > 0) {
+						units = units - ( Math.floor(24 / workflowScheduleDefinition.custom.executionInterval) + 1 );
+					}
+					calendarIterator.add(Calendar.HOUR_OF_DAY, units * workflowScheduleDefinition.custom.executionInterval );
+				} else if (workflowScheduleDefinition.custom.executionIntervalType == 'DAY') {
+					var units = Math.floor( timeDifferenceInMilliSeconds / (workflowScheduleDefinition.custom.executionInterval * _DAY) );
+					//always removing one more unit than needed
+					if (units > 0) {
+						units = units - 1;
+					}
+					calendarIterator.add(Calendar.DAY_OF_YEAR, units * workflowScheduleDefinition.custom.executionInterval );
+				} else if (workflowScheduleDefinition.custom.executionIntervalType == 'WEEK') {
+					var units = Math.floor( timeDifferenceInMilliSeconds / (workflowScheduleDefinition.custom.executionInterval * _WEEK) );
+					//always removing one more unit than needed
+					if (units > 0) {
+						units = units - ( workflowScheduleDefinition.custom.executionInterval + 1 );
+					}
+					calendarIterator.add( Calendar.DAY_OF_YEAR, units * workflowScheduleDefinition.custom.executionInterval * 7);
+					//calendarIterator.setTime(executionActiveFrom.getTime());
+				} else if (workflowScheduleDefinition.custom.executionIntervalType == 'MONTH') {
+					//ignore, not worth the effort
+					calendarIterator.setTime(executionActiveFrom.getTime());
+				} else {
+					//ignore, not worth the effort
+					calendarIterator.setTime(executionActiveFrom.getTime());
+				}
+				executionActiveFrom.setTime(calendarIterator.getTime());
+			}		
+			
+			// The algorithm below is not very performant for minutes and hours when starting at executionActiveFrom.
+			// So a special algorithm for determining the calendarIterator start time is used.
+			// Unfortunately it only works for minutes and hours.
+			if (workflowScheduleDefinition.custom.executionIntervalType == 'MINUTE'
+				|| workflowScheduleDefinition.custom.executionIntervalType == 'HOUR') {
+				calendarIterator.setTime(calendarLowerBound.getTime());
+				var milliseconds : Number = 60000;
+				if (workflowScheduleDefinition.custom.executionIntervalType == 'HOUR') {
+					milliseconds *= 60;
+					
+					calendarIterator.set(Calendar.MINUTE, executionActiveFrom.get(Calendar.MINUTE));
+				}
+				
+				var timeFound : Boolean = false;
+				for (var i=0; i<workflowScheduleDefinition.custom.executionInterval; i++) {
+					if (((calendarIterator.getTime().getTime() - executionActiveFrom.getTime().getTime()) % (workflowScheduleDefinition.custom.executionInterval * milliseconds)) == 0) {
+						timeFound = true;
+						break;
+					}
+					
+					calendarIterator.add(addField, -1);
+				}
+				// This should never happen! But maybe through rounding errors.
+				if (!timeFound) {
+					calendarIterator.setTime(executionActiveFrom.getTime());
+				}
+			} 
+			
+			while (!calendarIterator.after(actualUpperBound)) {
+				// If the given week day is not in the weekday list, then no execution must be done on that day.
+				if (workflowScheduleDefinition.custom.executionWeekdays.indexOf(calendarIterator.get(Calendar.DAY_OF_WEEK).toString()) >= 0
+					&& !calendarIterator.before(actualLowerBound)) {
+					var calendar : Calendar = new Calendar();
+					calendar.setTimeZone(System.getInstanceTimeZone());
+					calendar.setTime(calendarIterator.getTime());
+					
+					addFunction(calendar, workflowScheduleDefinition);
+				}
+				
+				calendarIterator.add(addField, workflowScheduleDefinition.custom.executionInterval);
+			}
+		}
+	}
+	workflowScheduleDefinitions.close();
+	
+	result.sort(workflowPlanComparator);
+	
+	return result;
+};
+/**
+ * Get the WorkflowSchedulePlan for all WorkflowScheduleInstances for a given calendar date from 0:00:00 till 23:59:59 for the overview
+ * @param {Calendar} calendarStart calendar date
+ * @return {ArrayList} List of WorkflowScheduleInstances
+ */
+LibWorkflow.prototype.getWorkflowPlanForOverview = function(calendarStart : Calendar) {
+	var workflowPlanForOverview : ArrayList = new ArrayList();
+	var allSiteIds : Array = ['Sites-Site'];
+	
+	for each (var site : Site in Site.allSites)
+	{
+		allSiteIds.push(site.ID);
+	} 
+	
+	for each (var siteId : String in allSiteIds) {
+		
+		var workflowPlan : ArrayList = this.getWorkflowPlan(siteId, calendarStart, calendarStart);
+		
+		var calendarLowerBound : Calendar = new Calendar();
+		var calendarUpperBound : Calendar = new Calendar(); 
+		calendarLowerBound.setTimeZone(System.getInstanceTimeZone());
+		calendarUpperBound.setTimeZone(System.getInstanceTimeZone());
+		
+		calendarLowerBound.parseByFormat(calendarStart.get(Calendar.YEAR) + '.' + (calendarStart.get(Calendar.MONTH)+1) + '.' + calendarStart.get(Calendar.DAY_OF_MONTH) + ' 00:00:00.000', 'yyyy.MM.dd HH:mm:ss.SSS');
+		calendarUpperBound.parseByFormat(calendarStart.get(Calendar.YEAR) + '.' + (calendarStart.get(Calendar.MONTH)+1) + '.' + calendarStart.get(Calendar.DAY_OF_MONTH) + ' 23:59:59.999', 'yyyy.MM.dd HH:mm:ss.SSS');
+		
+		// The plan returned by getWorkflowPlan maps the current state of all WorkflowScheduleDefinition objects. To show
+		// the already executed workflows for the day, the plan entry's calendar is used - which was calculated from the set
+		// preferences of the definition. If these preferences are changed, the executed workflows can not be determined. To
+		// solve this problem, all executed workflows will be searched and added here.
+		var workflowScheduleInstances : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowScheduleInstance', 'custom.siteId = {0} AND custom.plannedStartTime >= {1} AND custom.plannedStartTime <= {2}', null, siteId, calendarLowerBound.getTime(), calendarUpperBound.getTime());
+		
+		workflowPlanForOverview.addAll(prepareWorkflowPlanOverview(this, siteId, workflowPlan, workflowScheduleInstances));
+		workflowScheduleInstances.close();
+	}
+	workflowPlanForOverview.sort(workflowPlanComparator);
+	
+	return workflowPlanForOverview;
+};
+/**
+ * Get the WorkflowSchedulePlan for running instances (WorkflowScheduleInstances in RUNNING or WAITING state) for each site
+ * @return {ArrayList} List of WorkflowScheduleInstances in RUNNING or WAITING state
+ */
+LibWorkflow.prototype.getWorkflowPlanForRunningInstances = function() {
+	var workflowPlanForOverview : ArrayList = new ArrayList();
+	var allSiteIds : Array = ['Sites-Site'];
+	
+	for each (var site : Site in Site.allSites)
+	{
+		allSiteIds.push(site.ID);
+	} 
+	
+	for each (var siteId : String in allSiteIds) {
+		var workflowPlan : ArrayList = new ArrayList();
+		
+		var workflowScheduleInstances : ArrayList = new ArrayList();
+		var runningWorkflowComponentInstances : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowComponentInstance', 'custom.status = {0} OR custom.status = {1}', null, 'WAITING', 'RUNNING');
+		
+		Outer:
+		for each (var workflowComponentInstance : CustomObject in runningWorkflowComponentInstances) {
+			var workflowScheduleInstance : CustomObject = CustomObjectMgr.getCustomObject('WorkflowScheduleInstance', workflowComponentInstance.custom.workflowScheduleInstanceID);
+			
+			if (workflowScheduleInstance.custom.siteId != siteId) {
+				continue;
+			}
+			
+			for each (var workflowScheduleInstance2 : Object in workflowScheduleInstances) {
+				if (workflowScheduleInstance.custom.ID == workflowScheduleInstance2.custom.ID) {
+					continue Outer;
+				}
+			}
+			
+			var workflowScheduleInstanceWrapper : Object = this.createWrapperObject(workflowScheduleInstance);
+			
+			// Check if the workflow is really RUNNING or WAITING.
+			var status : String = workflowScheduleInstanceWrapper.getStatus();
+			if (status == 'WAITING' || status == 'RUNNING') {
+				workflowScheduleInstances.add(workflowScheduleInstanceWrapper);
+			}
+		}
+		runningWorkflowComponentInstances.close();
+		
+		workflowPlanForOverview.addAll(prepareWorkflowPlanOverview(this, siteId, workflowPlan, workflowScheduleInstances));
+		
+	}
+	
+	workflowPlanForOverview.sort(workflowPlanComparator);
+	
+	return workflowPlanForOverview;
+};
+/**
+ * Checks for a site and WorkflowScheduleInstance if it is in RUNNING or WAITING state
+ * @param {String} siteId ID for the site
+ * @param {String} workflowScheduleDefinitionId ID for the WorkflowScheduleInstance
+ * @return {Boolean} if RUNNING or WAITING return true; else false
+ */
+LibWorkflow.prototype.isWorkflowScheduleRunning = function(siteId : String, workflowScheduleDefinitionId : String) : Boolean {
+	var runningWorkflowComponentInstances : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowComponentInstance', 'custom.status = {0} OR custom.status = {1}', null, 'WAITING', 'RUNNING');
+	
+	for each (var workflowComponentInstance : CustomObject in runningWorkflowComponentInstances) {
+		var workflowScheduleInstance : CustomObject = CustomObjectMgr.getCustomObject('WorkflowScheduleInstance', workflowComponentInstance.custom.workflowScheduleInstanceID);
+		
+		if (workflowScheduleInstance && workflowScheduleInstance.custom && workflowScheduleInstance.custom.siteId != siteId) {
+			continue;
+		}
+		
+		if (workflowScheduleInstance && workflowScheduleInstance.custom && workflowScheduleInstance.custom.workflowScheduleDefinitionID == workflowScheduleDefinitionId) {
+ 			var workflowScheduleInstanceWrapper : Object = this.createWrapperObject(workflowScheduleInstance);
+			
+			// Check if the workflow is really RUNNING or WAITING.
+			var status : String = workflowScheduleInstanceWrapper.getStatus();
+			if (status == 'WAITING' || status == 'RUNNING') {
+				return true;
+			}
+		}
+	}
+	runningWorkflowComponentInstances.close();
+	
+	return false;
+};
+/**
+ * Get the next WorkflowSchedule in WAITING state
+ * @param {String} siteId ID for the site
+ * @return {Object} object representation of the WorkflowScheduleInstance
+ */
+LibWorkflow.prototype.getNextWaitingWorkflowScheduleInstance = function(siteId : String) : Object {
+	var waitingWorkflowScheduleInstances : ArrayList = new ArrayList();
+	var waitingWorkflowComponentInstances : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowComponentInstance', 'custom.status = {0}', null, 'WAITING');
+	
+	Outer:
+	for each (var workflowComponentInstance : CustomObject in waitingWorkflowComponentInstances) {
+		var workflowScheduleInstance : CustomObject = CustomObjectMgr.getCustomObject('WorkflowScheduleInstance', workflowComponentInstance.custom.workflowScheduleInstanceID);
+		
+		if (empty(workflowScheduleInstance)) {
+			Logger.getLogger('libWorkflow.ds').error('getNextWaitingWorkflowScheduleInstance: No WorkflowScheduleInstance (ID: "' + workflowComponentInstance.custom.workflowScheduleInstanceID + '") found for WorkflowComponentInstance with ID "' + workflowComponentInstance.custom.ID + '"!');
+			continue;
+		}
+		
+		if (workflowScheduleInstance.custom.siteId != siteId) {
+			continue;
+		}
+		
+		for each (var waitingWorkflowScheduleInstance : Object in waitingWorkflowScheduleInstances) {
+			if (waitingWorkflowScheduleInstance.custom.ID == workflowScheduleInstance.custom.ID) {
+				continue Outer;
+			}
+		}
+		
+		var workflowScheduleInstanceWrapper : Object = this.createWrapperObject(workflowScheduleInstance);
+		
+		// Note: The list contains workflows in status FINISHED_ERROR too! The check which workflow is really
+		// exceutable is done below by calling the getNextWaitingWorkflowComponentInstance function.
+		waitingWorkflowScheduleInstances.add(workflowScheduleInstanceWrapper);
+	}
+	waitingWorkflowComponentInstances.close();
+	
+	// TODO @aree: Comment why!
+	waitingWorkflowScheduleInstances.sort(new PropertyComparator('lastModified'));
+	
+	for each (var workflowScheduleInstanceWrapper : Object in waitingWorkflowScheduleInstances) {
+		if (!empty(workflowScheduleInstanceWrapper.getNextWaitingWorkflowComponentInstance())) {
+			return workflowScheduleInstanceWrapper;
+		}
+	}
+	
+	return null;
+};
+/**
+ * Creating the WorkflowScheduleDefinitionWorkflowComponentDefinitionRelationId as concatenation of WorkflowScheduleDefinition's id, WorkflowComponentDefiniton's name and a position value
+ * to get the link and a unique identifier 
+ * @param {String} workflowScheduleDefinitionId ID of the WorkflowScheduleDefinition
+ * @param {String} workflowComponentDefinitionName Name of the WorkflowComponentDefinition
+ * @param {Number} position Position
+ * @return {String} WorkflowScheduleDefinitionWorkflowComponentDefinitionRelationId
+ */
+LibWorkflow.prototype.createWorkflowScheduleDefinitionWorkflowComponentDefinitionRelationId = function(workflowScheduleDefinitionId : String, workflowComponentDefinitionName : String, position : Number) : String {
+	return workflowScheduleDefinitionId + '_' + workflowComponentDefinitionName + '_' + position;
+}
+
+/**
+ * Creating the WorkflowScheduleInstanceId as concatenation of siteID, WorkflowScheduleDefinition's id and the planned workflow start time
+ * @param {String} siteId ID of the site
+ * @param {String} workflowScheduleDefinitionId ID of the WorkflowScheduleDefinition
+ * @param {Calendar} plannedStartTime planned workflow start time
+ * @return {String} WorkflowScheduleInstanceId
+ */
+LibWorkflow.prototype.createWorkflowScheduleInstanceId = function(siteId : String, workflowScheduleDefinitionId : String, plannedStartTime : Calendar) : String {
+	//always use GMT
+	var myCalendar : Calendar = new Calendar();
+	myCalendar.setTime(plannedStartTime.getTime());
+	//return siteId + '_' + workflowScheduleDefinitionId + '_' + StringUtils.formatCalendar(plannedStartTime, 'yyyy-MM-dd_HH:mm');
+	//return siteId + '_' + workflowScheduleDefinitionId + '_' + StringUtils.formatCalendar(myCalendar, 'yyyy-MM-dd_HH:mm');
+	return siteId + '_' + workflowScheduleDefinitionId + '_' + StringUtils.formatCalendar(myCalendar, 'yyyy-MM-dd_HH:mm:ss');
+}
+
+/**
+ * Creating the WorkflowComponentInstanceId as concatenation of WorkflowScheduleInstance's id, WorkflowComponentDefinition's id and a position value
+ * @param {String} workflowScheduleInstanceId ID of the WorkflowScheduleInstance
+ * @param {String} workflowComponentDefinitionName Name of the WorkflowComponentDefinition
+ * @param {Number} position Position
+ * @return {String} WorkflowComponentInstanceId
+ */
+LibWorkflow.prototype.createWorkflowComponentInstanceId = function(workflowScheduleInstanceId : String, workflowComponentDefinitionName : String, position : Number) : String {
+	return workflowScheduleInstanceId + '_' + workflowComponentDefinitionName + '_' + position;
+}
+
+/**
+ * Creates dynamically a workflow object representation for a given instance stored in a CustomObject 
+ * @param {CustomObject} objectToWrap Object which should be wrapped
+ * @return {Object} wrapped object
+ */
+LibWorkflow.prototype.createWrapperObject = function(objectToWrap : CustomObject) : Object {
+	if (empty(objectToWrap)) {
+		return null;
+	}
+	
+	importScript("workflow/objects/" + objectToWrap.type + ".ds");
+    
+    var wrapperObject : Object = (new Function('return new ' + objectToWrap.type + '()'))();
+    wrapperObject.object = objectToWrap;
+    wrapperObject.type = objectToWrap.type;
+    wrapperObject.ID = objectToWrap.custom.ID;
+    
+    wrapperObject.reloadObject = function(refetch) {
+    	if (empty(this.object)) {
+			return;
+		}
+		
+		if(refetch === false){
+			var customObject : CustomObject = objectToWrap;
+		}else{
+			var customObject : CustomObject = CustomObjectMgr.getCustomObject(this.type, this.ID);
+		}
+		
+		if (!empty(customObject)) {
+			for (var property in customObject) {
+				if (typeof(customObject[property]) != 'function') {
+					if (property == 'custom') {
+						this.custom = new Object();
+						
+						// "Detach" the custom attribute object to prevent ORM exceptions on access.
+						for (var customProperty in customObject.custom) {
+							this.custom[customProperty] = customObject.custom[customProperty];
+						}
+					} else {
+						this[property] = customObject[property];
+					}
+				}
+			}
+		}
+    };
+    if ( objectToWrap.type == "WorkflowComponentInstance" ) {
+		createWorkflowInstanceFileLogger( wrapperObject );
+    }
+    
+    wrapperObject.reloadObject(false);
+    
+    return wrapperObject;
+};
+
+/**
+ * Prepare WorkflowSchedulePlan for the overview
+ * @param {Object} libWorkflow libworkflow object; this
+ * @param {String} siteId ID of the site
+ * @param {ArrayList} workflowPlan WorkflowPlan as list
+ * @param {ArrayList} workflowScheduleInstances List of all WorkflowScheduleInstances 
+ * @param {Boolean} includeComponents Flag if WorkflowComponentInstances should be included
+ * @return {Object} WorkflowSchedulePlan
+ */
+function prepareWorkflowPlanOverview(libWorkflow : Object, siteId : String, workflowPlan : ArrayList, workflowScheduleInstances : ArrayList, includeComponents : Boolean) {
+	// add passed workflow instances to the workflow plan
+	var workflowScheduleInstancesMap : Object = {};
+	for each (var workflowScheduleInstance : CustomObject in workflowScheduleInstances) {
+		var workflowScheduleDefinition = CustomObjectMgr.getCustomObject('WorkflowScheduleDefinition', workflowScheduleInstance.custom.workflowScheduleDefinitionID);
+		workflowScheduleInstancesMap[workflowScheduleInstance.custom.ID] = workflowScheduleInstance;
+		// This can only happen if the definition is deleted. The instances will be kept for history reasons.
+		if (empty(workflowScheduleDefinition)) {
+			workflowScheduleDefinition = {
+				"custom": {
+					"ID"  : workflowScheduleInstance.custom.workflowScheduleDefinitionID,
+					"name": workflowScheduleInstance.custom.workflowScheduleDefinitionID
+				}
+			};
+		}
+		
+		var calendar : Calendar = new Calendar();
+		calendar.setTimeZone(System.getInstanceTimeZone());
+		calendar.setTime(workflowScheduleInstance.custom.plannedStartTime);
+		
+		var contains : Boolean = false;
+		for each (var workflowPlanEntry : Object in workflowPlan) {
+			if (workflowPlanEntry.calendar.equals(calendar) && workflowPlanEntry.workflowScheduleDefinition.custom.ID == workflowScheduleDefinition.custom.ID) {
+				contains = true;
+				break;
+			}
+		}
+		
+		if (!contains) {
+			workflowPlan.add({
+				"calendar"                 : calendar,
+				"workflowScheduleDefinition": workflowScheduleDefinition
+			});
+		}
+	}
+	
+	// take the updated workflow plan and for each instance
+	// get the status, get the components (if required)
+	var workflowPlanForOverview : ArrayList = new ArrayList();
+	for each (var workflowPlanEntry : Object in workflowPlan) {
+		var workflowScheduleInstanceId : String = libWorkflow.createWorkflowScheduleInstanceId(siteId, workflowPlanEntry.workflowScheduleDefinition.custom.ID, workflowPlanEntry.calendar);
+		var workflowScheduleInstance : CustomObject = workflowScheduleInstancesMap[workflowScheduleInstanceId];
+		if (!workflowScheduleInstance) {
+			workflowScheduleInstance = CustomObjectMgr.getCustomObject('WorkflowScheduleInstance', workflowScheduleInstanceId);
+		}
+		var status : String;
+		var workflowComponentInstances : ArrayList;
+		if (!empty(workflowScheduleInstance)) {
+			workflowScheduleInstance = libWorkflow.createWrapperObject(workflowScheduleInstance);
+			// getStatus currently fetches the components 		
+			status = workflowScheduleInstance.getStatus();
+			if(includeComponents){
+				workflowComponentInstances  = workflowScheduleInstance.getWorkflowComponentInstances();
+			}else{
+				workflowComponentInstances = new ArrayList();
+			}
+		} else {
+			status = 'NOT_STARTED';
+			workflowComponentInstances = new ArrayList();
+			
+			if(includeComponents){	
+				//var relations : ArrayList = allRelations.get(workflowPlanEntry.workflowScheduleDefinition.custom.ID);
+				var relations : SeekableIterator = CustomObjectMgr.queryCustomObjects('WorkflowScheduleDefinitionWorkflowComponentDefinitionRelation', 'custom.workflowScheduleDefinitionID = {0}', null, workflowPlanEntry.workflowScheduleDefinition.custom.ID);
+				for each (var relation : CustomObject in relations) {
+					// A little fake object is created for the overview, because no instances exist.
+					workflowComponentInstances.add({
+						"custom": {
+							"workflowComponentDefinitionName": relation.custom.workflowComponentDefinitionName,
+							"statusMessages": [],
+							"status": "NOT_STARTED"
+							// The other attributes are currently not used in the overview.
+						}
+					});
+				}
+				relations.close();
+			}
+		}
+		
+		workflowPlanForOverview.add({
+			"calendar": workflowPlanEntry.calendar,
+			"workflowScheduleDefintion": workflowPlanEntry.workflowScheduleDefinition,
+			"workflowScheduleInstance": workflowScheduleInstance,
+			"status": status,
+			"workflowComponentInstances": workflowComponentInstances,
+			"siteId": siteId
+		});
+	}
+	workflowPlanForOverview.sort(workflowPlanComparator);
+	
+	return workflowPlanForOverview;
+}
+
+LibWorkflow.prototype.prepareWorkflowPlanOverview = prepareWorkflowPlanOverview;
+
+/**
+ * Comparator to sort WorkflowSchedulePlan lists by their calendar attribute
+ * @param {Object} object1
+ * @param {Object} object2 
+ *
+ */
+function workflowPlanComparator(object1 : Object, object2 : Object) {
+	return object1.calendar.compareTo(object2.calendar);
+}

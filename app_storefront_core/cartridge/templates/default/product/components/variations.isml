@@ -1,0 +1,99 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+	Desc:
+		Creates the variation section if product is a variation or a master,
+		otherwise
+
+	Parameter:
+		Product - the product to use
+
+	Options:
+		none
+	Available if empty: no
+	Full-Block-Element: yes
+</iscomment>
+
+<isscript>
+	// Get context variables to insert into template placeholders
+    var VariationUtils = require('~/cartridge/scripts/product/VariationUtils.js');
+    var context = VariationUtils.getContext(pdict);
+</isscript>
+<isset name="isQuickView" value="${pdict.CurrentHttpParameterMap.source.stringValue == 'quickview' || pdict.CurrentHttpParameterMap.source.stringValue == 'giftregistry' || pdict.CurrentHttpParameterMap.source.stringValue == 'wishlist'}" scope="page"/>
+<isif condition="${context.isValidProductType}">
+	<div class="product-variations" data-attributes="${context.selectedAttrs}">
+		<h2 class="visually-hidden">Variations</h2>
+		<iscomment>
+			Filter out variation attribute values with no orderable variants.
+			The "clean" ProductVariationModel of the master without any selected attribute values is used to filter the variants.
+			Otherwise hasOrderableVariants() would use currently selected values resulting in a too narrow selection of variants.
+		</iscomment>
+		<isloop items="${context.attrs}" var="attr">			
+			<isif condition="${attr.hasSwatch}">
+				<div class="product-variants-block <isif condition="${attr.attributeId == 'color'}">variants-color</isif> attribute">
+					<div class="form-label">
+					<isif condition="${attr.selectedValue}">					
+						<isprint value="${attr.displayName}"/>:&nbsp;<span class="variant-name"> <isprint value="${attr.selectedValue}" />  </span>
+					<iselse>
+						<isprint value="${attr.displayName}"/>					
+					</isif>
+					
+					</div>
+					<div class="value variant-list">
+						<isif condition="${attr.values.length > 1}">
+							<isloop items="${attr.values}" var="attrValue" status="attrStatus">
+								<isset name="variantSelected" value="${attrValue.swatchClass == 'selectable selected' ? 'active' : ''}" scope="page"/>
+								<a class="variant-option ${variantSelected} ${isQuickView ? 'swatchanchor':''} focus-outline-purple"
+								href="${attrValue.linkUrl}"
+								title="${attrValue.resourceVariationsLabel}"
+								data-vtype="${attr.attributeId}"
+								data-productid="${attrValue.productID}"
+								data-available="${attrValue.isAvailable}"
+								data-lgimg='<isif condition="${attrValue.largeImage}">${attrValue.largeImage}</isif>'>
+								<isif condition="${attrValue.isColorSwatch}">
+									<img class="img-circle rounded-circle" src="${URLUtils.staticURL(URLUtils.CONTEXT_LIBRARY, null, attrValue.swatchImageUrl)}" alt="color - ${attrValue.displayValue}">																																				
+								<iselse/>
+									<isprint value="${attrValue.displayName}"/>
+								</isif>
+								</a>
+							</isloop>
+						</isif>
+					</div>
+						
+					<iscomment>Size Chart link</iscomment>
+					<isif condition="${attr.sizeChart}">
+						<div class="size-chart-link">
+							<a href="${attr.sizeChart.url}"
+							target="_blank"
+							title="${attr.sizeChart.title}">
+							${attr.sizeChart.label}
+							</a>
+						</div>
+					</isif>
+				</div>
+			<iselse/>
+				<iscomment>Drop down list</iscomment>
+				<li class="attribute variant-dropdown">
+					<span class="label va-${attr.attributeId}">
+						 ${attr.resourceGlobalSelect} <isprint value="${attr.displayName}"/>
+					</span>
+					<div class="value">
+						<select class="variation-select" id="va-${attr.attributeId}" name="${'dwvar_' + attr.masterId + '_' + attr.attributeId}">
+							<option value="" class="emptytext">${attr.resourceGlobalSelect} <isprint value="${attr.displayName}"/></option>
+							<isloop items="${attr.values}" var="attrValue">
+								<iscomment>filter out unorderable variation attribute values</iscomment>
+								<isif condition="${attrValue.isOrderableInMaster}">
+									<isif condition="${attrValue.isAvailable}">
+										<option value="${attrValue.optionValue}<isif condition="${!attr.uuid}">&uuid=${attr.uuidStringValue}</isif>"
+											data-lgimg='<isif condition="${attrValue.largeImage}">${attrValue.largeImage}</isif>' <isprint value="${attrValue.selected}" encoding="off"/>>
+											<isprint value="${(attrValue.displayValue)}"/>
+										</option>
+									</isif>
+								</isif>
+		</isloop>
+						</select>
+					</div>
+				</li>
+			</isif>
+		</isloop>
+	</div>
+</isif>

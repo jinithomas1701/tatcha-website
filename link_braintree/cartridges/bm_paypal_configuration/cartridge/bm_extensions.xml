@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<extensions xmlns="http://www.demandware.com/xml/bmmodules/2007-12-11"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.demandware.com/xml/bmmodules/2007-12-11 bmext.xsd">
+
+	<menuaction id="paypal_configuration" menupath="site-prefs" position="1" site="true">
+		<name xml:lang="x-default">PayPal Styles Configuration</name>
+		<short_description xml:lang="x-default">Manage the PayPal Smart Button Styles and PayPal Credit Banner Configurations</short_description>
+		<description xml:lang="x-default">Manage the PayPal Smart Button Styles and PayPal Credit Banner Configurations</description>
+		<exec pipeline="PaypalConfig" node="Start" />
+        <sub-pipelines>
+			<pipeline name="PaypalConfig-Start" />
+			<pipeline name="PaypalConfig-SaveSmartButton" />
+			<pipeline name="PaypalConfig-SaveCreditBanner" />
+		</sub-pipelines>
+		<icon>paypalbm/images/paypal_mark_logo.png</icon>
+	</menuaction>
+
+</extensions>

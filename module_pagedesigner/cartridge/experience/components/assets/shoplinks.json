@@ -1,0 +1,81 @@
+{
+  "name": "Link Row",
+  "description": "Link Row",
+  "group": "assets",
+  "attribute_definition_groups": [
+    {
+      "id": "link1",
+      "name": "Link 1",
+      "description": "The values for link 1.",
+      "attribute_definitions": [
+        {
+          "id": "linkurl1",
+          "name": "Link 1 URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "linktext1",
+          "name": "Link 1 Text",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "link",
+      "name": "Link 2",
+      "description": "The values for link 2.",
+      "attribute_definitions": [
+        {
+          "id": "linkurl2",
+          "name": "Link 2 URL",
+          "type": "url",
+          "required": false
+        },
+        {
+          "id": "linktext2",
+          "name": "Link 2 Text",
+          "type": "string",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "margins",
+      "name": "Margin Options",
+      "description": "Margin Options for the section.",
+      "attribute_definitions": [
+        {
+	      "id": "topMargin",
+	      "name": "Top Margin",
+	      "description": "Top Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    },
+	    {
+	      "id": "bottomMargin",
+	      "name": "Bottom Margin",
+	      "description": "Bottom Margin.",
+	      "type": "enum",
+	      "values": [
+	        "none",
+	        "small",
+	        "medium",
+	        "large"
+	      ],
+	      "required": true,
+	      "default_value": "none"
+	    }
+      ]
+    }
+  ],
+  "region_definitions": []
+}

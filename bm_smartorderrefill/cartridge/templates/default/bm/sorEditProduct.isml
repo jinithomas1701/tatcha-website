@@ -1,0 +1,116 @@
+<isdecorate template="application/MenuFrame">
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+    <isinclude template="components/header" />
+    <isset name="client" value="${request.httpParameterMap.client.stringValue}" scope="page" />
+    <input type="hidden" name="selectedProductID" value="${pdict.selectedProductID}"> 
+    <input type="hidden" name="selectedVariationID" value="${pdict.selectedProductID}">
+    <input type="hidden" name="selectedPeriodicity" value="${pdict.selectedPeriodicity}">
+    <input type="hidden" name="selectedInterval" value="${pdict.selectedInterval}">
+    
+    <a id="backbutton" class="button button--right" href="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', pdict.listTypeParam, pdict.listID, 'client', client, 'action', 'view', 'section', 'products')}">
+         &#171; ${Resource.msg('forms.sorsubscriptions.backTo.label', 'sor_forms', null)}
+        <isif condition="${pdict.isSubscription}">
+            ${Resource.msg('forms.sorsubscriptions.subscriptionDetails.label', 'sor_forms', null)}
+        <iselse>
+            ${Resource.msg('forms.sorsubscriptions.orderDetails.label','sor_forms', null)}
+        </isif>
+    </a>
+
+    <div class="edit-product-wrapper">
+        <h3 class="edit-product-title">
+            <strong> ${Resource.msg('club.vieworder.editproduct', 'sor_smartorderrefill', null)}: ${pdict.selectedProductName} 
+                <isif condition="${!empty(pdict.selectedVariations)}" >
+                    (<em>
+                        <isloop items="${pdict.selectedVariations}" var="variation">
+                            <isprint value="${variation}"  />
+                        </isloop>
+                    </em>)
+                </isif>
+            </strong> 
+        </h3>
+        <div class="edit-product-fields">
+            <form action="${URLUtils.https('SmartOrderRefillReport-ManageRefillList', pdict.listTypeParam, pdict.listID, 'client', client, 'action', 'editProductSave', 'opid', pdict.originalProductID)}" method="post">
+                <div class="row">
+                    <div class="col-6">
+                        <isif condition="${!pdict.commitment}" >
+                            <div class="form-group">
+                                <label for="${pdict.CurrentForms.editproduct.product.htmlName}">${Resource.msg('forms.sorsubscriptions.changeproduct', 'sor_forms', null)}</label>
+                                <select class="input-select required" id="${pdict.CurrentForms.editproduct.product.htmlName}" name="${pdict.CurrentForms.editproduct.product.htmlName}">
+                                    <isloop items="${pdict.products}" var="product">
+                                    <option class="select-option" id="${product.ID}" value="${product.ID}" label="${product.name}">
+                                        ${product.name}
+                                    </option>
+                                    </isloop>
+                                </select>
+                            </div>
+                        </isif>
+                    </div>
+                    <div class="col-6"> 
+                        <div class="form-group">
+                            <label for="${pdict.CurrentForms.editproduct.variation.htmlName}">${Resource.msg('forms.sorsubscriptions.changevariation', 'sor_forms', null)}</label>
+                            <select class="input-select required" id="${pdict.CurrentForms.editproduct.variation.htmlName}" name="${pdict.CurrentForms.editproduct.variation.htmlName}">
+                                <isloop items="${pdict.variations}" var="option">
+                                    <option class="select-option" data-master="${option.ID}" value="${option.value}" label="${option.label}">
+                                        ${option.label}
+                                    </option>
+                                </isloop>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <isif condition="${pdict.isSubscription}">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group">    
+                                <label for="${pdict.CurrentForms.editproduct.periodicity.htmlName}">${Resource.msg('forms.sorsubscriptions.changerefill', 'sor_forms', null)}</label>
+                                <select class="input-select required" id="${pdict.CurrentForms.editproduct.periodicity.htmlName}" name="${pdict.CurrentForms.editproduct.periodicity.htmlName}">
+                                    <isloop items="${pdict.periodicity}" var="option">
+                                        <option class="select-option" value="${option.value}" label="${option.label}">${option.value}</option>
+                                    </isloop>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="form-group">
+                                <label for="${pdict.CurrentForms.editproduct.interval.htmlName}">&nbsp;</label>
+                                <select class="input-select required" id="${pdict.CurrentForms.editproduct.interval.htmlName}" name="${pdict.CurrentForms.editproduct.interval.htmlName}">
+                                    <isloop items="${pdict.interval}" var="option">
+                                        ${pdict.CurrentForms.editproduct.interval.options}
+                                        <option class="select-option" data-periodicity="${option.periodicity}" value="${option.value}" label="${option.label}">${option.value}</option>
+                                    </isloop>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </isif>
+                <div class="row">
+                    <div class="col-6 quantity">
+                        <div class="form-group">
+                            <div class="form-row  edit-product-quantity  required">
+                                <label for="${pdict.CurrentForms.editproduct.quantity.htmlName}">
+                                    <span class="required-indicator">•</span>
+                                    <span>${Resource.msg('forms.sorsubscriptions.quantity', 'sor_forms', null)}</span>
+                                </label>
+                                <input class="input-text required" id="${pdict.CurrentForms.editproduct.quantity.htmlName}" type="number" min="1" name="${pdict.CurrentForms.editproduct.quantity.htmlName}" value="${pdict.quantity}">
+                                <span class="form-caption error-message error visualy-hidden">${Resource.msg('form.editproduct.error.quantity.invalid', 'sor_forms', null)}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="form-group">
+                            <label for="${pdict.CurrentForms.editproduct.save.htmlName}">&nbsp;</label>
+                            <input class="button confirm_btn" type="submit" value="${Resource.msg('forms.sorsubscriptions.confirm.label', 'sor_forms', null)}" name="${pdict.CurrentForms.editproduct.save.htmlName}"/>            
+                        </div>
+                    </div>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</isdecorate>
+
+<isinclude template="components/footer" /> 
+

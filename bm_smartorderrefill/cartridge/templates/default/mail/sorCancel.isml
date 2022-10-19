@@ -1,0 +1,188 @@
+<iscontent type="text/html " charset="UTF-8"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<body>
+<isset name="Order" value="${pdict.Order}" scope="page"/>
+
+<table width="100%" cellpadding="0" cellspacing="0">
+	<tr>
+		<td align="center" style="background:#e0e0e0;padding:50px 0;">
+			<center>
+				<table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+					<tr>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+							<a href="${URLUtils.httpHome()}" title="${Resource.msg('global.storename','sor_smartorderrefill',null)}">
+								<img src="${URLUtils.httpStatic('images/logo-small.svg')}" alt="${Resource.msg('global.storename','sor_smartorderrefill',null)}" style="border:none;"/>
+							</a>
+						</td>
+					</tr>
+					<tr>
+						<td colspan="2" style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">						
+							<table  style="background:#ffffff;border:1px solid #999999;width:680px;">
+								<tr>
+									<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.thankyou','sor_smartorderrefill',null)}</th>
+								</tr>
+								<tr>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<p>${Resource.msg('email.orderconfirmation.message','sor_smartorderrefill',null)}</p>
+									</td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;" colspan="2">
+							<p>
+								${Resource.msg('email.orderconfirmation.order.orderplaced','sor_smartorderrefill',null)}
+								<isprint value="${Order.creationDate}" style="DATE_LONG"/>
+							</p>
+
+							<p>
+								${Resource.msg('label.order.number', 'sor_smartorderrefill', null)}
+								<isprint value="${Order.orderNo}"/>
+							</p>
+
+							<table style="background:#ffffff;border:1px solid #999999;width:680px;">
+								<tr>
+									<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;" colspan="3">${Resource.msg('email.orderconfirmation.order.paymentinfo','sor_smartorderrefill',null)}</th>
+								</tr>
+								<tr>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<strong>${Resource.msg('label.order.billing.address', 'sor_smartorderrefill', null)}</strong>
+										<isset name="address" value="${Order.billingAddress}" scope="page"/>
+    									<div class="address-summary">
+											<div>
+												<span class="firstName">
+													<isif condition="${address && address.firstName}">${address.firstName}</isif>
+												</span>
+												<span class="lastName">
+													<isif condition="${address && address.lastName}">${address.lastName}</isif>
+												</span>
+											</div>
+
+											<div class="address1">
+												<isif condition="${address && address.address1}">${address.address1}</isif>
+											</div>
+
+											<div class="address2">
+												<isif condition="${address && address.address2}">${address.address2}</isif>
+											</div>
+
+											<span class="city">
+												<isif condition="${address && address.city}">${address.city},</isif>
+											</span>
+											<span class="stateCode">
+												<isif condition="${address && address.stateCode}">${address.stateCode}</isif>
+											</span>
+											<span class="postalCode">
+												<isif condition="${address && address.postalCode}">${address.postalCode}</isif>
+											</span>
+										</div>
+									</td>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<isif condition="${Order.paymentInstruments.length == 1}">
+											<b>${Resource.msg('email.orderconfirmation.order.paymentmethod','sor_smartorderrefill',null)}</b>
+										<iselse/>
+											<b>${Resource.msg('email.orderconfirmation.order.paymentmethods','sor_smartorderrefill',null)}</b>
+										</isif>
+										<iscomment>Render All Payment Instruments</iscomment>
+										<isloop items="${Order.paymentInstruments}" var="paymentInstr" status="piloopstate">
+											<div><isprint value="${dw.order.PaymentMgr.getPaymentMethod(paymentInstr.paymentMethod).name}" /></div>
+											<isif condition="${dw.order.PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals(paymentInstr.paymentMethod)}">
+												<isprint value="${paymentInstr.maskedGiftCertificateCode}"/><br />
+											</isif>
+											<isif condition="${dw.order.PaymentInstrument.METHOD_CREDIT_CARD.equals(paymentInstr.paymentMethod)}">
+												<isprint value="${paymentInstr.creditCardHolder}"/><br />
+												<isprint value="${paymentInstr.creditCardType}"/><br />
+												<isprint value="${paymentInstr.maskedCreditCardNumber}"/><br />
+											</isif>
+											<div>
+												<span class="label">${Resource.msg('email.orderconfirmation.order.amount','sor_smartorderrefill',null)}:</span>
+												<span class="value"><isprint value="${paymentInstr.paymentTransaction.amount}"/></span>
+											</div><!-- END: payment-amount -->
+										</isloop>
+									</td>
+									<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+										<strong>${Resource.msg('label.order.totals', 'sor_smartorderrefill', null)}:</strong> <br/>
+										${Resource.msg('label.order.subtotal','sor_smartorderrefill', null)}:
+										<isprint value="${Order.getAdjustedMerchandizeTotalPrice(false).add(Order.giftCertificateTotalPrice)}"  />
+										<br/>
+										<isset name="orderDiscount" value="${Order.getAdjustedMerchandizeTotalPrice(false).subtract(Order.getAdjustedMerchandizeTotalPrice(true))}" scope="page"/>
+										
+										<isif condition="${orderDiscount.value !== 0}">
+											${Resource.msg('label.order.discount', 'sor_smartorderrefill', null)}:
+											- <isprint value="${orderDiscount}" />
+											
+										<br/>
+										</isif>
+										<isset name="totalTax" value="${Order.totalTax}" scope="page"/>
+										<isif condition="${totalTax.value !== 0}">
+											${Resource.msg('label.order.sales.tax','sor_smartorderrefill', null)}:
+											<isprint value="${totalTax}" />
+											<br/>
+										</isif>
+										${Resource.msg('label.order.grand.total','sor_smartorderrefill', null)}:
+										<isprint value="${Order.totalGrossPrice}" />
+									</td>
+								</tr>
+							</table>
+							<isloop items="${Order.shipments}" var="shipment" status="shipmentloopstate">
+								<p><b>${(Resource.msg('email.orderconfirmation.order.shipmentnumber','sor_smartorderrefill',null)) + shipmentloopstate.count}</b></p>
+								<isif condition="${shipment.productLineItems.size() > 0}">
+									<iscomment>Shipment items table</iscomment>
+									<table style="background:#ffffff;border:1px solid #999999;width:680px;">
+										<thead>
+											<tr>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.order.item','sor_smartorderrefill',null)}</th>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.order.quantity','sor_smartorderrefill',null)}</th>
+												<th style="background:#cccccc;padding:5px 20px;font-size:12px;font-family:arial;text-align:left;">${Resource.msg('email.orderconfirmation.order.price','sor_smartorderrefill',null)}</th>
+											</tr>
+										</thead>
+										<isloop items="${shipment.productLineItems}" var="productLineItem" status="pliloopstate">
+											<tr>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<div class="name"><isprint value="${productLineItem.productName}"/></div>
+													<div class="sku">
+														<span class="label">${Resource.msg('smartorderrefill.itemno', 'sor_smartorderrefill', null)} </span>
+														<span class="value">${productLineItem.productID}</span>
+													</div>
+												</td>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isprint value="${productLineItem.quantity}"/>
+												</td>
+												<td style="font-size:12px;font-family:arial;padding:20px 10px;vertical-align:top;">
+													<isif condition="${productLineItem.bonusProductLineItem}">
+														<isset name="bonusProductPrice" value="${productLineItem.getAdjustedPrice()}" scope="page"/>
+														<isif condition="${bonusProductPrice > 0}" >
+															<isset name="bonusProductPriceValue" value="${bonusProductPrice}" scope="page"/>
+														<iselse/>
+															<isset name="bonusProductPriceValue" value="${Resource.msg('email.orderconfirmation.order.product.bonus','sor_smartorderrefill',null)}" scope="page"/>
+														</isif>
+														<isprint value="${bonusProductPriceValue}" />
+													<iselse/>
+														<isprint value="${productLineItem.adjustedPrice}"/>
+														<isif condition="${productLineItem.optionProductLineItems.size() > 0}">
+															<isloop items="${productLineItem.optionProductLineItems}" var="optionLI">
+																<p style="color:#990000;">+ <isprint value="${optionLI.adjustedPrice}"/></p>
+															</isloop>
+														</isif>
+													</isif>
+												</td>
+											</tr>
+										</isloop>
+									</table>
+								
+								</isif>
+							</isloop>
+						</td>
+					</tr>
+				</table>
+			</center>
+		</td>
+	</tr>
+</table>
+</body>
+</html>

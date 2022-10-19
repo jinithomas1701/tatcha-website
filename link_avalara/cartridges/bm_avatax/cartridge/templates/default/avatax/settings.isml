@@ -1,0 +1,672 @@
+<!--- TEMPLATENAME: test.isml --->
+
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Avalara | AvaTax Settings</title>
+
+	<link rel="stylesheet"
+		href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css" />
+
+	<script src="//code.jquery.com/jquery-1.12.4.js"></script>
+
+	<isset name="loaderimgurl" value="${URLUtils.staticURL('/images/loader.gif')}" scope="page" />
+	<isset name="closeimgurl" value="${URLUtils.staticURL('/images/close-icon.png')}" scope="page" />
+
+	<style>
+		.main-pane li {
+			list-style-type: circle;
+		}
+
+		.input-label {
+			cursor: help;
+		}
+
+		select {
+			padding: 5px !important;
+			font-size: 0.9em !important;
+		}
+
+		input {
+			padding: 5px;
+			min-width: 400px;
+			font-size: 0.9em !important;
+		}
+
+		td.td-order-number {
+			font-weight: bold;
+		}
+
+		.modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+			background: rgba(255, 255, 255, .8) url(${loaderimgurl}) 50% 50% no-repeat;
+		}
+
+		/* When the body has the loading class, we turn
+		   the scrollbar off with overflow:hidden */
+		body.loading .modal {
+			overflow: hidden;
+		}
+
+		/* Anytime the body has the loading class, our
+		   modal element will be visible */
+		body.loading .modal {
+			display: block;
+		}
+
+		.main-table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		.main-table td,
+		.main-table th {
+			border: 1px solid #ddd;
+			padding: 15px;
+		}
+
+		.main-table tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+
+		/*    .main-table tr:hover {
+            background-color: #ddd;
+        } */
+		.main-table th {
+			padding-top: 12px;
+			padding-bottom: 12px;
+			text-align: center;
+			background-color: #666;
+			color: white;
+		}
+
+		.test-services-table {
+			border-collapse: collapse;
+			width: 100%;
+		}
+
+		.test-services-table tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+
+		.test-services-table td,
+		.test-services-table th {
+			border: 1px solid #ddd;
+			padding: 15px;
+		}
+
+		.ui-tooltip {
+			font-family: Helvetica Neue, Helvetica, Arial, Verdana, sans-serif;
+			border-radius: 1px;
+			font-size: 1.34rem;
+		}
+	</style>
+</head>
+
+<isdecorate template="application/MenuFrame">
+	<iscontent type="text/html" charset="UTF-8" />
+	<isinclude template="inc/Modules" />
+
+	<isset name="TOP_URL"
+		value="${URLUtils.url('SiteNavigationBar-ShowMenuitemOverview', 'CurrentMenuItemId', pdict.CurrentMenuItemId)}"
+		scope="page" />
+	<isbreadcrumb name1="${pdict.mainmenuname}" url1="${TOP_URL}" name2="${pdict.menuname}" />
+
+	<div id="main-pane" class="main-pane" data-ajax="false" data-img="${URLUtils.staticURL('/icons/spinner.gif')}">
+
+		<!-- errors -->
+		<isif condition="${pdict.errormsg}">
+			<!-- or any other useful error condition -->
+			<table border="0" cellspacing="0" cellpadding="4" width="100%" class="error_box n s e w">
+				<tr valign="top">
+					<td class="error_icon top e">
+						<img src="${URLUtils.webRoot()}/images/error.gif" width="16" height="15" alt="" border="0" />
+					</td>
+					<td class="error top" width="100%">
+						<p>
+							Error:
+							<isprint value="${pdict.errormsg}" />
+							<br />
+						</p>
+					</td>
+				</tr>
+			</table>
+		</isif>
+
+		<table border="0" cellpadding="0" cellspacing="0" width="100%">
+			<tr>
+				<td width="100%" class="w e s table_title">AvaTax Settings</td>
+			</tr>
+
+			<tr>
+				<td class="w e s">
+					<img src="/on/demandware.static/Sites-Site/-/default/vbb6ced9dcf76be8340a5f0be590d1bfce47e377f/images/space.gif"
+						width="1" height="2" alt="" border="0">
+				</td>
+			</tr>
+
+			<tr>
+				<td valign="top" class="table_title_description w e s">
+
+
+					<p>Account Settings provides options that will be applied to all transactions for calculating taxes.
+					</p>
+					<p>Services module has services that can be used to test some AvaTax features.</p>
+
+					<p>
+						To save these settings, click <b>Save</b>.
+					</p>
+					<p>
+						To reset values for all the settings, click <b>Reset</b>.
+					</p>
+				</td>
+			</tr>
+		</table>
+
+		<isscript>
+      var settings = pdict.settings;
+  </isscript>
+
+
+		<div id="tabs" class="tabs"
+			style='font-family: Helvetica Neue, Helvetica, Arial, Verdana, sans-serif; width: 60%;'>
+			<ul>
+				<li>
+					<a href="#settings-div">
+						<span>Account Settings</span>
+					</a>
+				</li>
+				<li>
+					<a href="#fragment-3">
+						<span>Services</span>
+					</a>
+				</li>
+			</ul>
+
+			<div id="settings-div">
+				<form id="settings-form" class="settings-form form" data-url="${URLUtils.url('AVSettings-Save')}">
+					<table id="main-table" class="main-table" cellspacing="25" cellpadding="3" width="600px">
+						<colgroup>
+							<col id="dw-gridcolumn-61" style="width: 9%" />
+							<col id="dw-gridcolumn-59" style="width: 2%" />
+						</colgroup>
+
+						<tbody>
+							<tr class="dw-body-row" style="background: #ddd;">
+								<td class="dw-body" colspan="4" style="color: #666;">
+									<div>
+										<p style="font-weight: bold; font-size: 1.05em;" class=''>AvaTax Options
+										</p>
+										<p>These settings will apply to all transactions for the current site.</p>
+										<p> Please check the importer of records, permanent establishment, and nexus
+											setup on your AvaTax account.</p>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class='input-label'
+											title="When selected, this will enable AvaTax tax calculation on transactions.">
+											Tax
+											Calculation</span>
+									</div>
+								</td>
+								<td>
+									<select id="select-taxcalculation" class="select-taxcalculation">
+										<option value="true" <isprint
+											value="${settings.taxCalculation ? 'selected=selected' : ''}">
+											>Enabled </option>
+										<option value="false" <isprint
+											value="${settings.taxCalculation ? '' : 'selected=selected'}">
+											>Disabled </option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class='input-label'
+											title="When selected, this will enable shipping address validation during checkout on the storefront. AvaTax only validates addresses in the United States and Canada.">
+											Address
+											Validation</span>
+									</div>
+								</td>
+								<td>
+									<select id="select-addressvalidation" class="select-addressvalidation">
+										<option value="true" <isprint
+											value="${settings.addressValidation ? 'selected=selected' : ''}">
+											>Enabled </option>
+										<option value="false" <isprint
+											value="${settings.addressValidation ? '' : 'selected=selected'}">
+											>Disabled </option>
+									</select>
+								</td>
+							</tr>
+
+
+							<tr>
+								<td>
+									<div>
+										<span class='input-label'
+											title="When selected, this will save all orders to AvaTax. When set to 'Disabled', orders will not be saved to AvaTax, and so operations such as voiding or modifying the transaction will not be available.">
+											Save
+											Transactions to AvaTax</span>
+									</div>
+								</td>
+								<td>
+									<select id="select-savetransactions" class="select-savetransactions">
+										<option value="true" <isprint
+											value="${settings.saveTransactions ? 'selected=selected' : ''}">
+											>Enabled </option>
+										<option value="false" <isprint
+											value="${settings.saveTransactions ? '' : 'selected=selected'}">
+											>Disabled </option>
+									</select>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<div>
+										<span class='input-label'
+											title="If enabled, successful orders on the storefront will be marked 'Committed' when posting to AvaTax.">
+											Commit Transactions to AvaTax</span>
+									</div>
+								</td>
+								<td>
+									<select id="select-committransactions" class="select-committransactions">
+										<option value="true" <isprint
+											value="${settings.commitTransactions ? 'selected=selected' : ''}">
+											>Enabled </option>
+										<option value="false" <isprint
+											value="${settings.commitTransactions ? '' : 'selected=selected'}">
+											>Disabled </option>
+									</select>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<div>
+										<span class='input-label'
+											title="AvaTax company code configured on the admin console of the AvaTax account.">
+											Company Code</span>
+									</div>
+								</td>
+								<td>
+									<input id="company-code" type="text"
+										placeholder="AvaTax company code. Default value - 'default'."
+										value="${settings.companyCode}" />
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<div>
+										<span class='input-label'
+											title="Select what value is sent as the customer code for authenticated customers. For guest customers, Email ID entered during checkout is used.">
+											Customer
+											Code</span>
+									</div>
+								</td>
+								<td>
+									<div class='td-container'>
+										<select id="select-use-custom-customercode" class="select-usecustomcustomercode"
+											style="margin-bottom: 10px; min-width: 400px;">
+											<option value='customer_number' <isprint
+												value="${settings.useCustomCustomerCode == 'customer_number' ? 'selected=selected' : ''}">
+												>Customer Number (Default)</option>
+											<option value="customer_email" <isprint
+												value="${settings.useCustomCustomerCode == 'customer_email' ? 'selected=selected' : ''}">
+												>Customer Email ID</option>
+											<option value="custom_attribute" <isprint
+												value="${settings.useCustomCustomerCode == 'custom_attribute' ? 'selected=selected' : ''}">
+												> Another attribute of the 'Profile' System Object</option>
+										</select>
+										<br />
+										<span>
+											<input class='ip-field' id='custom-attr-ip-field' type="text"
+												placeholder="e.g. taxID or custom.taxID" value="" <isprint
+												value="${settings.useCustomCustomerCode != 'custom_attribute' ? 'disabled=disabled' : ''}" />
+											/> </span>
+
+									</div>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<div>
+										<span class='input-label'
+											title="This tax code will be used to calculate taxes for shipping methods. If not specified, frieght code 'FR' will be used.">
+											Shipping
+											Tax Code
+										</span>
+									</div>
+
+								</td>
+								<td>
+									<input id="defult-shipping-tax-code" type="text"
+										placeholder="Shipping method tax code. Default value - 'FR'."
+										value="${settings.defaultShippingMethodTaxCode}" />
+								</td>
+							</tr>
+
+							<tr class="dw-body-row" style="background: #ddd;">
+								<td class="dw-body" colspan="4" style="text-align: left; color: #666;">
+									<div>
+										<p style="font-weight: bold; font-size: 1.05em;" class=''>Cross Border
+											Calculation</p>
+
+										<p>Cross border calculation is only supported for the Net price amounts and not
+											for the
+											Gross
+											amount.</p>
+
+									</div>
+								</td>
+							</tr>
+
+							<tr>
+
+								<td>
+									<div>
+										<span class='input-label'
+											title="Cross border calculation only work if the Taxation Policy of the site is set to 'Net'.">
+											Taxation Policy <span
+												style="font-size: smaller; color: #868686; font-style: italic;">(Value
+												derived from site settings)</span>
+										</span>
+
+									</div>
+								</td>
+								<td>
+									<div>
+										<select disabled title="Value derived from current site settings"
+											id="select-taxationpolicy" class="select-taxationpolicy" style="">
+											<option value="net" <isprint
+												value="${dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET ? 'selected=selected' : ''}">
+												>Net</option>
+											<option value="gross" <isprint
+												value="${dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET ? '' : 'selected=selected'}">
+												>Gross</option>
+										</select>
+										<br>
+										<isif
+											condition="${dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_NET}">
+											</span>
+											<iselseif
+												condition="${dw.order.TaxMgr.taxationPolicy === dw.order.TaxMgr.TAX_POLICY_GROSS}">
+												<span style="color: Red; margin-bottom: 10px;">Cross Border
+													calculation will not work for the
+													current site.
+												</span>
+											</iselseif>
+										</isif>
+									</div>
+								</td>
+
+
+							</tr>
+							<tr class="dw-body-row" style="background: #ddd;">
+								<td class="dw-body" colspan="4" style="text-align: left; color: #666;">
+									<div>
+										<p style="font-weight: bold; font-size: 1.05em;" class=''>Address
+											Details</p>
+
+										<p>Details of the Company location from where the products will be shipped. This
+											will be used for calculating taxes for all transactions.</p>
+										<p>If the Location Code value is provided, AvaTax prefers it over other address
+											fields for tax calculation.</p>
+
+									</div>
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<div>
+										<span class=''>Location Code</span>
+									</div>
+								</td>
+								<td>
+									<input id="address-location-code" type="text" placeholder="Location code"
+										value="${settings.locationCode}" />
+								</td>
+							</tr>
+
+							<tr>
+								<td>
+									<div>
+										<span class=''>Address
+											Line 1</span>
+									</div>
+								</td>
+								<td>
+									<input id="address-line1" type="text" placeholder="Line 1" title=""
+										value="${settings.line1}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class=''>Address
+											Line 2</span>
+									</div>
+								</td>
+								<td>
+									<input id="address-line2" type="text" placeholder="Line 2" title=""
+										value="${settings.line2}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class=''>Address
+											Line 3</span>
+									</div>
+								</td>
+								<td>
+									<input id="address-line3" type="text" placeholder="Line 3" title=""
+										value="${settings.line3}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class=''>City</span>
+									</div>
+								</td>
+								<td>
+									<input id="address-city" type="text" placeholder="City" title=""
+										value="${settings.city}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class=''>State</span>
+									</div>
+								</td>
+								<td>
+									<input id="address-state" type="text" placeholder="State" title=""
+										value="${settings.state}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class=''>ZIP/Postal
+											Code</span>
+									</div>
+								</td>
+								<td>
+									<input id="address-zipcode" type="text" placeholder="ZIP/PostalCode" title=""
+										value="${settings.zipCode}" />
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<div>
+										<span class=''>Country Code</span>
+									</div>
+								</td>
+								<td>
+									<input id="input-countrycode" class="input-countrycode" type="text"
+										placeholder="Country" title="" value="${settings.countryCode}" />
+
+								</td>
+							</tr>
+							<tr style="background-color: #ffffff;">
+								<td colspan='2' style="text-align: right;">
+
+									<p class="msg" id="msg" style="float: left;"></p>
+
+									<button style="margin-right: 10px; padding: 4px 30px 4px 30px;" type="submit"
+										name="Save" id="submit-btn" class="button submit-btn" value="Save">Save</button>
+									<button style="padding: 4px 30px 4px 30px;" type="button" name="Reset"
+										id="reset-btn" class="button reset-btn" value="Reset">Reset</button>
+								</td>
+							</tr>
+
+						</tbody>
+					</table>
+				</form>
+			</div>
+			<!-- Test service section -->
+			<div id="fragment-3">
+				<table id="test-services-table" class="test-services-table" cellspacing="25" cellpadding="3"
+					width="600px">
+					<colgroup>
+						<col id="dw-gridcolumn-61" style="width: 9%" />
+						<col id="dw-gridcolumn-59" style="width: 2%" />
+						<col id="dw-gridcolumn-61" style="width: 9%" />
+					</colgroup>
+
+					<tbody>
+						<tr class="dw-body-row" style="background: #ddd;">
+							<td class="dw-body" colspan="4" style="color: #666;">
+								<div>
+									<p>The functionalities provided below are for testing purpose. To verify the AvaTax
+										credentials, click the <b>Test
+											Connection</b> button and it verifies the AvaTax connection with the
+										credentials
+										configured under <i>Administration >
+											Services.</i>
+									</p>
+									<p>Please go through the Service Response to understand and create a scalable
+										module.
+									</p>
+								</div>
+							</td>
+						</tr>
+						<tr>
+
+							<td colspan='3'>
+								<button style="margin-right: 10px; padding: 4px 30px 4px 30px;" type="button"
+									name="Test Connection" id="test-con-btn" class="button test-con-btn"
+									value="Test Connection" data-url="${URLUtils.https('AVSettings-Test')}">Test
+									Connection</button>
+
+								<p id="message" class="message" style="float: right; margin: 2px 0 0em 0;"></p>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div>
+									<span class='input-label' title="Voids a transaction in AvaTax">Void
+										Transaction </span>
+								</div>
+							</td>
+							<td>
+								<input type="text" name="order-no" id="void-order-no" class="void-order-no"
+									placeholder="Order No." />
+							</td>
+							<td>
+								<button style="margin-right: 10px; padding: 4px 30px 4px 30px;" type="button"
+									name="Void" id="void-btn" class="button void-btn" value="Void"
+									data-url="${URLUtils.https('AVSettings-Void')}">Void</button>
+
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div>
+									<span class='input-label' title="Commits a transaction in AvaTax">Commit
+										Transaction </span>
+								</div>
+							</td>
+							<td>
+								<input type="text" name="order-no" id="commit-order-no" class="commit-order-no"
+									placeholder="Order No." />
+							</td>
+							<td>
+								<button style="margin-right: 10px; padding: 4px 30px 4px 30px;" type="button"
+									name="Commit" id="commit-btn" class="button commit-btn" value="Commit"
+									data-url="${URLUtils.https('AVSettings-Commit')}">Commit</button>
+
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div>
+									<span class='input-label' title="Validates the shipping address of the order">
+										Address
+										Validation </span>
+								</div>
+							</td>
+							<td>
+								<input type="text" name="order-no" id="validate-order-no" class="validate-order-no"
+									placeholder="Order No." />
+							</td>
+							<td>
+								<button style="margin-right: 10px; padding: 4px 30px 4px 30px;" type="button"
+									name="Validate" id="validate-btn" class="button validate-btn" value="Validate"
+									data-url="${URLUtils.https('AVSettings-Validate')}">Validate</button>
+
+							</td>
+						</tr>
+						<tr>
+							<td colspan='3'>
+								<p id="transaction-msg" class="transaction-msg"
+									style="text-align: center; margin: 2px 0 0em 0;">Enter order
+									number to test above features.</span>
+
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<span>Service Response</span>
+							</td>
+							<td colspan='2'>
+								<textarea id="response-json"
+									style="width: 400px; height: 100px; overflow: scroll; resize: none; font-family: consolas, menlo, monospace;">
+
+                        		</textarea>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+		</div>
+	</div>
+
+
+	<div id="dummy-div" style="display: none;">
+		<!-- Placeholder -->
+	</div>
+
+
+</isdecorate>
+
+
+<script src="//code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="${URLUtils.staticURL('js/loadingoverlay.min.js')}"></script>
+<script src="${URLUtils.staticURL('/js/settingsui.js')}"></script>

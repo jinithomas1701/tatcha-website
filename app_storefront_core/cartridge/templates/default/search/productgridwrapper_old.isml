@@ -1,0 +1,9 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscache type="relative" minute="90" varyby="price_promotion"/>
+<isinclude template="util/modules"/>
+
+<isif condition="${!empty(pdict.ScrollType) && pdict.ScrollType === 'top'}">
+	<isproductgridscrolltop pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}" page="${pdict.pageInfo}"/>
+<iselse>
+	<isproductgrid pagingmodel="${pdict.ProductPagingModel}" category="${pdict.ProductSearchResult.category}" page="${pdict.pageInfo}"/>
+</isif>

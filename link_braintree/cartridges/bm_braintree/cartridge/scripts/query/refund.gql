@@ -1,0 +1,8 @@
+mutation refundTransaction($input: RefundTransactionInput!) {
+  refundTransaction(input: $input) {
+    clientMutationId
+    refund {
+        ...refundFields
+    }
+  }
+}

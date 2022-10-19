@@ -1,0 +1,42 @@
+<isinclude template="util/modules"/>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('klaviyo_subscription_sync_enabled')}">
+	<isset name="formURL" value="KlaviyoSfra-Subscribe" scope="page" />
+<iselse/>
+	<isset name="formURL" value="Account-EditSubscribtion" scope="page" />
+</isif>
+
+<isif condition="${!request.httpCookies['dw_cookies_nwsltr_subcribed']}">
+	<div>
+		<h3 class="sign-up-heading">Keep in Touch</h3>
+		<p class="sign-up-message">Signup for access to special offers, new products, tips, and more.</p>
+		<form class="form-block mailing-list col-xs-12  col-md-8 p-0 mb-lg-4 ajaxsubscribeForm" action="${URLUtils.url(formURL)}" method="post" name="SubscribeForm" id="SubscribeForm">
+			<div class="mb-4">
+				<input type="text" aria-label="Join Our Mailing List" placeholder=" " class="form-control form-control-lg required email floating__input" id="inlineFormCustomSelectPref" name = "emailsignup">
+				<span class="input-group-btn input-group-append">
+					<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+					<input type="hidden" name="${pdict.CurrentForms.subscribe.subscribe.htmlName}" value="subscribe"/>
+					<input type="hidden" name="source" value="footer"/>
+					<button class="btn btn-input-group email-subscribe-submit" type="submit">  <i class="fas fa-arrow-right text-arrow"></i></button>
+				</span>
+				<label for="inlineFormCustomSelectPref" class="float-label join-mailing-list" data-content="Email address"></label>
+			</div>
+		</form>
+		<p class="email-suscribed-message newly-subscribed d-none">
+			<isprint value="${Resource.msg('global.subsciptionmsg','locale',null)}" />
+		</p>
+		<p class="email-suscribed-message already-subscribed d-none">
+			<isprint value="${Resource.msg('global.alreadysubscribedmsg','locale',null)}" />
+		</p>
+	</div>
+<iselse>
+	<div class="footer-shareandearn-container">
+		<h3 class="sign-up-heading">Share with your friends</h3>
+		<iscontentasset  aid="tatcha-footer-offer-message-v1"/>
+		<div class="col-12  col-md-9 col-lg-12 p-0 mb-lg-4 refer-a-friend-subscritpion">
+			<div class="input-group text-input-group refer-friend refer-a-friend-wrap">
+				<div id="extole_zone_footer_subscription" class="refer-a-friend-link"></div>
+				<i class="fas fa-arrow-right text-arrow"></i>
+			</div>
+		</div>
+	</div>
+</isif>

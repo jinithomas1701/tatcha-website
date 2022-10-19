@@ -1,0 +1,49 @@
+.card-panel-container{
+    .card{
+        border:0;
+        cursor: pointer;
+        min-height: 350px;
+        @include media-breakpoint-down(md) {
+           margin-bottom: 1rem;
+        }
+        .card-details-container{
+            background-color:$gray-100;
+            text-align: center;
+            .card-details{
+                height: 12.5rem;
+                padding: 1rem;
+                @include media-breakpoint-down(md) {
+                    height: 17.5rem;
+                }
+                @include media-breakpoint-down(sm) {
+                    height: 11.5rem;
+                }
+                @include media-breakpoint-down(xs) {
+                    height: 13.5rem;
+                }
+                .card-name{
+                    font-size:21px;
+                    font-weight: $font-weight-bold;
+                    text-transform: uppercase;
+                    &:after{
+                        content: '';
+                        display: block;
+                        height: 2px;
+                        width: 3.125rem;
+                        margin: 1.375rem auto;
+                        background-color: $black;
+                    }
+                }
+            }
+            .card-btn{
+                letter-spacing: 1px;
+                text-decoration: underline;
+                color:$text-black;
+                margin-bottom: 1rem;
+            }
+        }
+
+    }
+
+
+}

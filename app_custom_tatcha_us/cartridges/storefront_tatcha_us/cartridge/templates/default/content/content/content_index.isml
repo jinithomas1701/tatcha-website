@@ -1,0 +1,57 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="content/content/pt_content" scope="page"/>
+<isdecorate template="${DecoratorTemplate}">
+<iscomment>
+	Use the decorator template based on the page context. If
+	the content page was requested from a search result the
+	decorator search/pt_contentsearchresult is used. The default
+	decorator for the content page is content/content/pt_content.
+</iscomment>
+<iscache type="relative" hour="24"/>
+
+	<isscript>
+    importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var ContentMgr = require('dw/content/ContentMgr');
+	var content = ContentMgr.getFolder(pdict.content.ID);
+	var onlineContent = content.getOnlineContent();
+	</isscript>
+<isset name="contentClass" value="content-index" scope="page"/>
+	<isif condition="${pdict.content != null}">
+		<div class="container">
+			<div class="content-header">
+				<h1><isprint value="${pdict.content.name}" encoding="off"/></h1>
+			</div>
+
+			<div class="row">
+				<isloop items="${onlineContent}" var="ContentAsset" status="loopcounter">
+					<isif condition="${!empty(ContentAsset.custom.indexImage.getURL()) && !empty(ContentAsset.custom.title) && !empty(ContentAsset.custom.indexDescription)}">
+						<div class="col-md-4">
+							<div class="content-article" href="prototype-content-ingredient.html">
+								<div class="content-article-img-container">
+                                    <isset name="imageUrl" value="${getBlogMediaUrl(ContentAsset.custom.indexImage,'pdp')}" scope="page"/>
+									<img class="content-article-img img-fluid lazyImage" data-src="${imageUrl}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}" alt="${ContentAsset.custom.title ? ContentAsset.custom.title : ContentAsset.custom.sectionAnchor}" aria-hidden="true" />
+								</div>
+								<div class="content-article-description">
+									<div class="content-article-text-block">
+										<h2 class="content-article-title">${ContentAsset.custom.title}</h2>
+										<p class="content-article-line">${ContentAsset.custom.indexDescription.substring(0,120)}</p>
+									</div>
+									<div class="content-article-cta">
+										<a href="${URLUtils.url('Page-Show', 'cid', ContentAsset.ID)}" aria-label="Read more about ${ContentAsset.custom.title}" class="btn btn-default btn-md">
+											${Resource.msg('global.readmore','locale',null)}
+										</a>
+									</div>
+								</div>
+							</div>
+						</div>
+					</isif>
+					<isif condition="${loopcounter.count % 3 == 0}">
+						</div><div class="row">
+					</isif>
+				</isloop>
+			</div>
+
+		</div>
+	</isif>
+
+</isdecorate>

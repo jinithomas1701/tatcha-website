@@ -1,0 +1,19 @@
+<isif condition="${pdict.braintree.applePayButtonConfig}" >
+    <div class="braintree-cart-apple-buttons-wrap js_braintree_applepayButtonsWrap braintree-cart-buttons-wrap w-100" style="height: 45px;display:none;"
+         data-checkout-form-fields="${JSON.stringify(pdict.braintree.sfraCheckoutFormFields)}"
+         data-checkout-from-cart-url="${pdict.braintree.checkoutFromCartUrl}"
+         data-checkout-placeorder-url="${pdict.braintree.placeOrdeUrl}">
+        <div class="braintree-cart-apple-button-wrap" style="height: 45px;">
+            <div class="braintree-cart-apple-button js_braintree_applepay_button" data-braintree-config="${JSON.stringify(pdict.braintree.applePayButtonConfig)}" style="height: 45px;">
+                <div class="apple-pay-button btn-block apple-pay-button-black" style="height: 45px;"><span class="text"></span><span class="logo"></span></div>
+            </div>
+            <div class="braintreeApplePayLoader braintree-loader-container">
+                <i class="braintree-loader"></i>
+            </div>
+        </div>
+        <input type="hidden" id="braintreeApplePayDeviceData" name="braintreeApplePayDeviceDataInput" value=""/>
+        <input type="hidden" name="braintreeApplePayShippingAddress">
+        <input type="hidden" id="csrf_token" name="${pdict.csrf.tokenName}" value="${pdict.csrf.token}" />
+    </div>
+</isif>
+

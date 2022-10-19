@@ -1,0 +1,68 @@
+<h2>${Resource.msgf('order.detail.title', 'braintreebm', null, order.orderNo)}</h2>
+
+<table class="braintree_table">
+    <isif condition="${transaction.customer && (!empty(transaction.customer.firstName || transaction.customer.lastName))}">
+        <tr>
+            <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customername', 'braintreebm', null)}</td>
+            <td class="braintree_table_cell_value">
+                ${Resource.msgf('transaction.detail.customerformatwithstatus', 'braintreebm', null, transaction.customer.firstName, transaction.customer.lastName, null)}
+            </td>
+        </tr>
+    </isif>
+
+    <isif condition="${transaction.customer && !empty(transaction.customer.email)}">
+        <tr class="braintree_table_row_even">
+            <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customeremail', 'braintreebm', null)}</td>
+            <td class="braintree_table_cell_value">${transaction.customer.email}</td>
+        </tr>
+    </isif>
+
+    <isif condition="${transaction.customer && !empty(transaction.customer.legacyId)}">
+        <tr>
+            <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.customerid', 'braintreebm', null)}</td>
+            <td class="braintree_table_cell_value">${transaction.customer.legacyId}</td>
+        </tr>
+    </isif>
+
+    <isif condition="${transaction.shipping && !empty(transaction.shipping.shippingAddress) && !empty(transaction.shipping.shippingAddress.addressLine1)}">
+        <tr class="braintree_table_row_even">
+            <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.shipaddress', 'braintreebm', null)}</td>
+            <td class="braintree_table_cell_value">
+                <isprint value="${Resource.msgf('transaction.detail.shipaddressformat', 'braintreebm', null, transaction.shipping.shippingAddress.fullName, transaction.shipping.shippingAddress.addressLine1, (empty(transaction.shipping.shippingAddress.addressLine2) ? '' : transaction.shipping.shippingAddress.addressLine2), transaction.shipping.shippingAddress.adminArea2, transaction.shipping.shippingAddress.adminArea1, transaction.shipping.shippingAddress.postalCode, transaction.shipping.shippingAddress.countryCode)}" encoding="jshtml"/>
+            </td>
+        </tr>
+    </isif>
+
+    <isif condition="${!empty(transaction.paymentMethodName)}">
+        <tr class="braintree_table_row_even">
+            <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.paymentmethod', 'braintreebm', null)}</td>
+            <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.paymentmethodname', 'braintreebm', null, transaction.paymentMethodName)}</td>
+        </tr>
+    </isif>
+
+    <isif condition="${!empty(leftToSettle) && leftToSettle.getValue() > 0}">
+        <tr>
+            <td class="braintree_table_cell_label">${Resource.msg('transaction.detail.amtlefttosettle', 'braintreebm', null)}</td>
+            <td class="braintree_table_cell_value">${Resource.msgf('transaction.detail.moneyformat', 'braintreebm', null, leftToSettle.toNumberString(), currency)}</td>
+        </tr>
+    </isif>
+</table>
+
+<isif condition="${transaction.transactionHistoryList && transaction.transactionHistoryList.length > 1}">
+    <div class="braintree_selectother_transactions">
+        <h2>${Resource.msg('transaction.detail.history', 'braintreebm', null)}</h2>
+        <select class="js_braintree_order_transactions_ids">
+            <isloop items="${transaction.transactionHistoryList}" var="transactionId">
+                <isif condition="${transactionId instanceof Object}" >
+                    <option value="${transactionId.id}" data-type="${transactionId.type}" ${transactionId.id == transaction.legacyId ? 'selected="selected"' : ''}>
+                        ${Resource.msgf('transaction.detail.historytransaction', 'braintreebm', null, transactionId.type, transactionId.id)}
+                    </option>
+                <iselse>
+                    <option value="${transactionId}" ${transactionId == transaction.legacyId ? 'selected="selected"' : ''}>
+                        ${Resource.msgf('transaction.detail.historyrefund', 'braintreebm', null, transactionId)}
+                    </option>
+                </isif>
+            </isloop>
+        </select>
+    </div>
+</isif>

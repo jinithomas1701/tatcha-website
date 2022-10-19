@@ -1,0 +1,61 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isdecorate template="account/pt_account_bs">
+
+<isinclude template="util/modules" />
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('/js/paymentInstruments.js');
+    assets.addCss('/css/braintree.css');
+    assets.addCss('/css/account/payment.css');
+
+    if (pdict.braintree.isGooglePaySavingAllowed) {
+        assets.addJs(pdict.braintree.prefs.googlePaySdkUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+        assets.addJs(pdict.braintree.prefs.braintreeGooglePaySdkUrl);
+        }
+    if (pdict.braintree.isCreditCardSavingAllowed) {
+        assets.addJs(pdict.braintree.prefs.clientSdk3HostedFieldsUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3ThreeDSecureUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3ClientUrl);
+        assets.addJs(pdict.braintree.prefs.clientSdk3DataCollectorUrl);
+        }
+    if (pdict.braintree.isSrcSavingAllowed) {
+        assets.addJs(pdict.braintree.prefs.srcSdkUrl);
+        assets.addJs(pdict.braintree.prefs.braintreeSrcSdkUrl);
+        }
+ </isscript>
+<isset name="bctext2" value="${Resource.msg('global.paymentsettings','locale',null)}" scope="pdict" />
+
+<ol class="breadcrumb view-state" style="display: none;">
+	<li><a href="prototype-my-account.html">
+	<i class="fal fa-angle-double-left"></i> Back</a></li>
+</ol>
+<div class="my-account my-account-payment">
+	<div class="container view-state account-payment-container">
+		<div class="compact-h1-group">
+			<h1 class="text-center">${Resource.msg('account.paymentinstrumentlist.header','account',null)}</h1>
+			<p class="text-center">Manage your saved credit cards.</p>
+		</div>
+		<isscript>
+        var addCardUrl : String = URLUtils.url('BraintreePayments-ShowAddCard');
+		var deleteCardUrl : String = URLUtils.url('PaymentInstruments-Delete');
+		var isAllowedAddCard : Boolean = true;
+		if(dw.order.PaymentMgr.getPaymentMethod('CREDIT_CARD').getPaymentProcessor().getID() == 'BRAINTREE_CREDIT') {
+			addCardUrl = URLUtils.url('BraintreePayments-ShowAddCard');
+			var braintreePrefs = require('int_braintree/cartridge/config/braintreePreferences');
+			deleteCardUrl = URLUtils.url('Braintree-AccountDeleteCreditCard');
+			isAllowedAddCard = braintreePrefs.BRAINTREE_Vault_Mode != 'not';
+		}
+		var defaultCard = null;
+		for(var key in pdict.CurrentForms.paymentinstruments.creditcards.storedcards) {
+			var card = pdict.CurrentForms.paymentinstruments.creditcards.storedcards[key];
+			if(card.object.custom.braintreeDefaultCard == true) {
+				defaultCard = card;
+			}
+		}
+		var autoRefillToken = customer.profile.custom.OsfSorSubscriptionToken;
+		</isscript>
+		<isinclude template="braintree/account/paymentsBlock" />
+	</div>
+</div>
+</isdecorate>

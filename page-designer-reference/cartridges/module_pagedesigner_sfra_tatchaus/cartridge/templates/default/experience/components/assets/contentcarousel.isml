@@ -1,0 +1,24 @@
+<iscache type="relative" hour="24"/>
+<div class="content-carousel ${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+  <h2 class="content-carousel__heading">${pdict.headline}</h2>
+  <div class="content-carousel__flickity" data-flickity='{ "cellAlign": "left", "contain": true,"wrapAround":true, "imagesLoaded": true, "percentPosition": false, "freeScroll": false, "pageDots": true , "groupCells": true, "accessibility": false }'>
+    <iscomment>Loop the carousel items - Start </iscomment>
+    <isloop begin="1" end="3" status="count">
+      <isset name="index" value="${count.index}" scope="page" />
+      <div class="content-carousel__cell">
+        <a <isif condition="${!empty(pdict['anchorid'+index])}">id="${pdict['anchorid'+index]}"</isif> 
+          href="${pdict['linkurl'+index]}" class="content-carousel__link"
+          title="${pdict['title'+index]}">
+          <img class="content-carousel__img img-fluid" src="${pdict['image'+index]}" alt=" ${pdict['imageAlt'+index]}" width="750" height="500" />
+          <div class="content-carousel__body">
+            <h3 class="content-carousel__title"><isprint value="${dw.util.StringUtils.truncate(pdict['title'+index], 55 , "TRUNCATE_CHAR" , pdict['title'+index].length > 55 ? "..." : "" )}" /></h3>
+            <div class="btn btn-link mt-auto text-left">
+              <isprint value="${pdict['linktext'+index]}" />
+            </div>
+          </div>
+        </a>
+      </div>
+    </isloop>
+    <iscomment>Loop the carousel items - End</iscomment>
+  </div>
+</div>

@@ -1,0 +1,152 @@
+{
+  "name": "tatcha",
+  "version": "103.1.11",
+  "description": "Tatcha",
+  "main": "gulpfile.js",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "^4.6.1",
+    "bootstrap-sass": "^3.3.7",
+    "browserify": "^13.1.0",
+    "imagesloaded": "^3.2.0",
+    "lodash": "^3.10.1",
+    "promise": "^7.0.4",
+    "qs": "^6.2.0",
+    "url": "^0.11.0"
+  },
+  "devDependencies": {
+    "@tridnguyen/config": "^2.3.1",
+    "@tridnguyen/version": "^1.0.0",
+    "ampersand-model": "^6.0.2",
+    "ampersand-view": "^9.0.0",
+    "async": "^2.0.1",
+    "babel-core": "^6.1.2",
+    "babel-preset-es2015": "^6.1.2",
+    "browserify": "^12.0.1",
+    "chai": "^3.4.0",
+    "chalk": "^1.1.3",
+    "cldr-data": "^36.0.0",
+    "dwupload": "^3.8.0",
+    "eslint": "^1.10.3",
+    "event-stream": "^3.3.4",
+    "exorcist": "^0.4.0",
+    "flickity": "^2.0.10",
+    "gaze": "^1.1.1",
+    "glob": "^7.0.6",
+    "globalize": "^1.1.1",
+    "grunt": "^0.4.5",
+    "grunt-autoprefixer": "^3.0.3",
+    "grunt-browserify": "^4.0.1",
+    "grunt-cli": "^0.1.13",
+    "grunt-concurrent": "^2.1.0",
+    "grunt-contrib-connect": "^0.11.2",
+    "grunt-contrib-copy": "^0.8.2",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-eslint": "^17.3.1",
+    "grunt-external-sourcemap": "^0.1.8",
+    "grunt-gh-pages": "^1.0.0",
+    "grunt-jsdoc": "^1.0.0",
+    "grunt-mocha-test": "^0.12.7",
+    "grunt-sass": "^1.1.0",
+    "grunt-webdriver": "^1.0.0",
+    "gulp": "^3.9.0",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-connect": "^2.2.0",
+    "gulp-eslint": "^1.1.1",
+    "gulp-gh-pages": "^0.5.4",
+    "gulp-htmlmin": "^3.0.0",
+    "gulp-if": "^2.0.0",
+    "gulp-mocha": "^2.1.3",
+    "gulp-rename": "^1.2.2",
+    "gulp-sass": "^2.1.0",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-util": "^3.0.7",
+    "gulp-webdriver": "^1.0.2",
+    "handlebars": "^4.0.4",
+    "hbsfy": "^2.4.1",
+    "http-server": "^0.9.0",
+    "istanbul": "next",
+    "jsdoc": "^3.4.0",
+    "jshint-stylish": "^2.0.1",
+    "load-grunt-tasks": "^3.3.0",
+    "merge-stream": "^1.0.0",
+    "minimist": "^1.2.0",
+    "mkdirp": "^0.5.1",
+    "mocha": "^2.3.3",
+    "moment-timezone": "^0.4.1",
+    "node-sass": "^3.8.0",
+    "phantomjs": "^1.9.18",
+    "postcss-cli": "^2.5.1",
+    "properties-parser": "^0.3.0",
+    "proxyquire": "^1.7.3",
+    "q": "^1.4.1",
+    "require-inject": "^1.3.0",
+    "sass-graph": "^2.1.2",
+    "sinon": "^1.17.2",
+    "vinyl-buffer": "^1.0.0",
+    "vinyl-source-stream": "^1.1.0",
+    "vinyl-transform": "^1.0.0",
+    "watchify": "^3.6.0",
+    "webdriverio": "^3.3.0",
+    "xml2js": "^0.4.15"
+  },
+  "scripts": {
+    "test:unit": "bin/test.js",
+    "test:application": "wdio test/application/webdriver/wdio.conf.js",
+    "lint": "grunt lint",
+    "build": "gulp build",
+    "preversion": "version > old_version",
+    "version": "bin/version.js && rm old_version && git add ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tatcha/tatcha-mochi"
+  },
+  "author": "Tri Nguyen",
+  "license": "ISC",
+  "paths": {
+    "includePaths": [
+      "app_storefront_core/cartridge/scss/default"
+    ],
+    "css": [
+      {
+        "src": "app_storefront_core/cartridge/scss/default/",
+        "dest": "app_storefront_core/cartridge/static/default/css/"
+      },
+      {
+        "src": "int_singlepagecheckout/cartridge/scss/",
+        "dest": "int_singlepagecheckout/cartridge/static/default/css/"
+      }
+    ],
+    "js": [
+      {
+        "module": "default",
+        "src": "app_storefront_core/cartridge/js/",
+        "dest": "app_storefront_core/cartridge/static/default/js/"
+      },
+      {
+        "module": "common",
+        "src": "app_storefront_core/cartridge/js/",
+        "dest": "app_storefront_core/cartridge/static/default/js/common"
+      },
+      {
+        "module": "page_designer",
+        "src": "app_storefront_core/cartridge/js/",
+        "dest": "app_storefront_core/cartridge/static/default/js/page_designer"
+      },
+      {
+        "module": "checkout",
+        "src": "int_singlepagecheckout/cartridge/js/",
+        "dest": "int_singlepagecheckout/cartridge/static/default/js/checkout"
+      },
+      {
+        "module": "smartorderrefill",
+        "src": "int_smartorderrefill/cartridge/client/default/js/",
+        "dest": "int_smartorderrefill/cartridge/static/default/js/smartorderrefill"
+      }
+    ],
+    "isml": [
+      "app_storefront_core/cartridge/templates/default/util/modules.isml"
+    ]
+  }
+}

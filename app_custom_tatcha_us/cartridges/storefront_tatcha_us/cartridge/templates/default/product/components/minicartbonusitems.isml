@@ -1,0 +1,127 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="lazyLoad" value="${true}" scope="page"/>
+<isset name="samplePromoID" value="${dw.system.Site.getCurrent().getCustomPreferenceValue('samplePromotionID')}" scope="page"/>
+<isif condition="${pdict.CurrentHttpParameterMap.format.stringValue == 'ajax' }">
+    <isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isif condition="${pdict.CurrentHttpParameterMap.lazyLoad.stringValue == 'true' }">
+    <isset name="lazyLoad" value="${false}" scope="page"/>
+</isif>
+
+<isset name="successUrl" value="CartSFRA-Show" scope="page"/>
+<isif condition="${!empty(pdict.CurrentHttpParameterMap.successUrl.stringValue)}">
+    <isset name="successUrl" value="${pdict.CurrentHttpParameterMap.successUrl.stringValue}" scope="page"/>
+</isif>
+
+<iscomment>This template renders a list of bonus products for adding to the cart.</iscomment>
+
+<isinclude template="util/modules"/>
+<isscript>
+    var lidata = {
+        uuid:pdict.BonusDiscountLineItem.UUID,
+        maxItems:pdict.BonusDiscountLineItem.getMaxBonusItems(),
+        itemCount:pdict.BonusDiscountLineItem.getBonusProductLineItems().size(),
+        pageStart: pdict.CurrentHttpParameterMap.pageStart.intValue,
+        bpTotal: pdict.BPTotal,
+        pageSize: pdict.CurrentHttpParameterMap.pageSize.intValue
+    };
+</isscript>
+
+<div id="bonus-product-list-options" data-options='<isprint value="${JSON.stringify(lidata)}" encoding="off"/>'></div>
+<div class="modal-header">
+    <h2 tabindex="0"><isprint value="${pdict.BonusDiscountLineItem.getPromotion().getName()}" encoding="off"/></h2>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</button>
+</div>
+<div class="modal-body container-fluid samples-modal" data-uuid = "${pdict.BonusDiscountLineItem.UUID}">
+    <isif condition="${!empty(pdict.BonusDiscountLineItem.getPromotion().custom.subHeader)}">
+        <p style="margin-left: 10px;"><isprint value="${StringUtils.pad(pdict.BonusDiscountLineItem.getPromotion().custom.subHeader,98)}" encoding="off"/></p>
+    </isif>
+    <isscript>
+        var sampleProductCounter = 1;
+    </isscript>
+    <isset name="BonusProductsCollection" value="${pdict.selectedBonusProducts.size() > 0 ? pdict.selectedBonusProducts : pdict.products}" scope="page">
+        <isif condition="${pdict.products.size() > 0}">
+            <isloop items="${pdict.products}" var="LoopProductHit" status="loopstate">
+                <isif condition="${sampleProductCounter % 4 === 1}">
+                    <div class="row">
+                </isif>
+                <div class="col-6 col-md-3 ">
+                    <div class="bonus-product-item" id="${'item-'+LoopProductHit.uuid}" data-producttype="${LoopProductHit.productType}">
+                        <div class="product-slot">
+                            <isinclude template="product/components/bonusproductmodal"/>
+                        </div>
+                    </div>
+                </div>
+                <isif condition="${loopstate.last && lazyLoad && (pdict.BPTotal > 0 )}">
+                    <button type="button" id="more-bonus-products" class="button-fancy-medium" value="${Resource.msg('cart.bonusproduct.button.more','checkout',null)}">
+                        ${Resource.msg('cart.bonusproduct.button.more','checkout',null)}
+                    </button>
+                </isif>
+                <isif condition="${(sampleProductCounter % 4 === 0) || (loopstate.last) }">
+</div>
+</isif>
+<isscript>
+    sampleProductCounter++;
+</isscript>
+</isloop>
+</isif>
+</div>
+<div class="modal-footer">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12 col-md-9 col-lg-10 offset-md-1">
+                <div class="product-count"><isprint value="${lidata.itemCount}" /> of <isprint value="${lidata.maxItems}" /> selected</div>
+            </div>
+            <div class="col-sm-8 offset-sm-2 col-md-2 col-lg-1 offset-md-0 pt-2">
+                <div class="selected-bonus-products">
+                    <isloop items="${pdict.selectedBonusProducts}" var="selectedProduct" status="productLoopStatus">
+                        <div class="selected-pid row d-none"
+                             id = "selected-pid-${selectedProduct.pid}"
+                             data-pid="${selectedProduct.pid}"
+                             data-qty='<isprint value="${selectedProduct.submittedQty}" encoding="htmlsinglequote" formatter="#"/>'
+                             data-optionid="${selectedProduct.option.optionid}"
+                             data-option-selected-value="${selectedProduct.option.selectedvalue}" >
+                            <div class="bonus-product-name">${selectedProduct.name}</div>
+                        </div>
+                    </isloop>
+                </div>
+                <div class="product-cta">
+                    <button data-url="${URLUtils.url('CartSFRA-AddBonusProducts', 'bonusDiscountLineItemUUID', pdict.BonusDiscountLineItem.UUID)}" data-success-url="${URLUtils.url(successUrl)}" id="submit-sample-items" type="button" class="btn btn-primary add-bonus-products">
+
+                        <isif condition="${pdict.BonusDiscountLineItem.getPromotion().ID == samplePromoID}">
+                            <isif condition="${(lidata.itemCount > 0)}">
+                                <isif condition="${lidata.maxItems == 1}">
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                    <iselse/>
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                </isif>
+                                <iselse/>
+                                <isif condition="${lidata.maxItems == 1}">
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                    <iselse/>
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                </isif>
+                            </isif>
+                            <iselse/>
+                            <isif condition="${(lidata.itemCount > 0)}">
+                                <isif condition="${lidata.maxItems == 1}">
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                    <iselse/>
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                </isif>
+                                <iselse/>
+                                <isif condition="${lidata.maxItems == 1}">
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                    <iselse/>
+                                    ${Resource.msg('cart.addsample','checkout',null)}
+                                </isif>
+                            </isif>
+                        </isif>
+
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

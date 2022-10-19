@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?demandware-pipeline version="2.0"?>
+
+<pipeline group="Feeds" type="process">
+  <branch basename="_ANONYMOUS_BRANCH_1">
+    <segment>
+      <node>
+        <text-node>
+          <description>The pipeline GeneralImport-CleanUpFiles is @deprecated and moved to StandardComponents. A jump node was added for compatibility reasons.</description>
+        </text-node>
+        <node-display height="2" x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CleanUpFiles">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CleanUpFiles" secure="false"/>
+        <node-display x="1" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="StandardComponents-CleanUpFiles"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_3">
+    <segment>
+      <node>
+        <text-node>
+          <description>The pipeline GeneralImport-CleanUpAllFiles is @deprecated and moved to StandardComponents. A jump node was added for compatibility reasons.</description>
+        </text-node>
+        <node-display height="2" x="4" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="CleanUpAllFiles">
+    <segment>
+      <node>
+        <start-node call-mode="private" name="CleanUpAllFiles" secure="false"/>
+        <node-display x="5" y="1"/>
+      </node>
+      <simple-transition>
+        <transition-display>
+          <bend-point relative-to="source" x="0" y="1"/>
+        </transition-display>
+      </simple-transition>
+      <node>
+        <jump-node start-name-ref="StandardComponents-CleanUpAllFiles"/>
+        <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+</pipeline>

@@ -1,0 +1,9 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/layout.css');
+    assets.addCss('/css/pagedesigner-bootstrap.min.css');
+</isscript>
+<div class="row mx-n2">
+	<isprint value="${pdict.regions.column1.setClassName("region region_landscape-small col-12 col-md-6 px-2").render()}" encoding="off"/>
+	<isprint value="${pdict.regions.column2.setClassName("region region_landscape-small col-12 col-md-6 px-2").render()}" encoding="off"/>
+</div>

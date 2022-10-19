@@ -1,0 +1,23 @@
+<div class="payment-type-title">
+    Credit Card
+</div>
+<div class="fs-16-normal billing-address-wrapped">
+    <span class="card-icon">
+        <isif condition="${('Master' == payment.type) || (payment.type === 'Mastercard')}">
+            <i class="fab fa-cc-mastercard fa-lg" aria-hidden="true" alt="Mastercard logo"></i>
+        </isif>
+        <isif condition="${('JCB' == payment.type) || (payment.type === 'Jcb')}">
+            <i class="fab fa-cc-jcb fa-lg" aria-hidden="true" alt="JCB logo"></i>
+        </isif>
+        <isif condition="${('Visa' == payment.type)}">
+            <i class="fab fa-cc-visa fa-lg" aria-hidden="true" alt="Visa logo"></i>
+        </isif>
+        <isif condition="${('Amex' == payment.type) || (payment.type === 'American express')}">
+            <i class="fab fa-cc-amex fa-lg" aria-hidden="true" alt="Amex logo"></i>
+        </isif>
+        <isif condition="${('Discover' == payment.type)}">
+            <i class="fab fa-cc-diners-club fa-lg" aria-hidden="true" alt="Discover logo"></i>
+        </isif>
+    </span>
+    ending in  ${payment.lastFour}
+</div>

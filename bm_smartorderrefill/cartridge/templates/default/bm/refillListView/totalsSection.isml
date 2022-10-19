@@ -1,0 +1,19 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<div class="sub-details-total">
+    <div class="total-section">
+        <div class="content-section">                    
+            <div class="total-header">
+                <h3 class="order-section-title"> ${Resource.msg('club.vieworder.totals', 'sor_smartorderrefill', null)}</h3>
+            </div>
+            <div class="total-info">
+                <p><span>${Resource.msg('club.vieworder.subtotal', 'sor_smartorderrefill', null)}</span><span><isprint value="${new dw.value.Money(total, pdict.currencyCode)}" /></span></p>
+                <p><span>${Resource.msg('club.vieworder.shipping', 'sor_smartorderrefill', null)} (${pdict.ShippingMethodName})</span><span><isprint value="${new dw.value.Money(pdict.ShippingCost, pdict.currencyCode)}" /></span></p>
+                <p><span>${Resource.msg('club.vieworder.ordertotal', 'sor_smartorderrefill', null)}</span><span><isprint value="${new dw.value.Money((total+pdict.ShippingCost), pdict.currencyCode)}" /></span></p>
+            </div>
+        </div>
+    </div>
+</div>

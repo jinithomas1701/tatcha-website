@@ -1,0 +1,58 @@
+/**
+* Push an order object in json format to the Selligent Web Service 
+*
+*   @input newOrder : dw.order.Order 
+*
+*/
+importPackage( dw.system );
+importPackage( dw.ws );
+importPackage( dw.order );
+importPackage( dw.svc);
+importScript("Selligent/selligentExportOrders.ds");
+importScript("Selligent/selligentExportBase.ds");
+
+/**
+* Main function of the script.
+*
+* @param {PipelineDictionary} pdict contains the new order
+*/
+function execute( args : PipelineDictionary ) : Number
+{
+	try
+	{
+		var newOrder : Order = args.newOrder;
+		var fielsToExport : Array = getOrderFieldsToExport();
+		var json : String = exportOrder(newOrder, fielsToExport);
+
+		var result : Result = ServiceRegistry.get("SelligentAddOrder").call(json);
+		if(result.status == "ERROR") {
+		   throw result.errorMessage;
+		}	 	
+	}
+	catch(e) 
+	{
+		Logger.error("Selligent Error: Unable to create order in SIM order list :" + e.message);	
+		return PIPELET_ERROR;
+	}
+   return PIPELET_NEXT;
+}
+
+/**
+* Get the properties list to export from the config file 
+*
+* @returns an array of properties to export 
+*/
+function getOrderFieldsToExport() : Array
+{
+	var fielsToExport : Array;
+	if (configFileExist("order") === false)
+	{
+	
+		var result : Result = ServiceRegistry.get("SelligentGetSettings").call();
+		if(result.status == "ERROR") {
+		   throw result.errorMessage;
+		}	
+	}
+	fielsToExport = getFieldsToExport("order");
+	return fielsToExport;
+}

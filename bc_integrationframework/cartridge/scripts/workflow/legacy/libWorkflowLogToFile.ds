@@ -1,0 +1,64 @@
+/**
+ * Facade for actual file logger implementation to make includeScript AND require possible without loosing logging context
+ */
+
+//script path for the actual file logging implementation
+var libWorkflowLogToFileScriptPath = "bc_integrationframework/cartridge/scripts/workflow/legacy/libWorkflowLogToFile_impl";
+
+var isActiveLogLevel = function(requestedLogLevel, configuration){
+	return require( libWorkflowLogToFileScriptPath ).isActiveLogLevel(requestedLogLevel, configuration);
+};
+
+/**
+ * Created the lib with the given log file.
+ * 
+ * @param logFile The log file.
+ */
+function LogToFileLib( logFile ) {
+	return require( libWorkflowLogToFileScriptPath ).LogToFileLib("logFile");
+}
+
+/**
+* If there currently is a job monitor initialized and has a current task, this one will be returned. 
+* Otherwise the DW system Logger will be returned.
+*
+* @param category the category to get the logger for
+* @return Logger
+*/
+function getCurrentWorkflowInstanceFileLogger( fileNamePrefix, category ) 
+{
+	return require( libWorkflowLogToFileScriptPath ).getCurrentWorkflowInstanceFileLogger( fileNamePrefix, category );
+}
+
+/**
+* Distroys the current file logger.
+* 
+* @param currentWorkflowComponentInstance WorkflowComponentInstance that provides the context for file logging.
+* 
+* return WorkflowInstanceFileLogger
+*/
+function distroyWorkflowInstanceFileLogger( currentWorkflowComponentInstance )
+{
+	return require( libWorkflowLogToFileScriptPath ).distroyWorkflowInstanceFileLogger( currentWorkflowComponentInstance );
+}
+
+/**
+* Gets the request based WorkflowInstanceFileLogger singleton.
+* 
+* @param currentWorkflowComponentInstance WorkflowComponentInstance that provides the context for file logging.
+* 
+* return WorkflowInstanceFileLogger
+*/
+function createWorkflowInstanceFileLogger( currentWorkflowComponentInstance ) 
+{
+	return require( libWorkflowLogToFileScriptPath ).createWorkflowInstanceFileLogger( currentWorkflowComponentInstance );
+}
+
+if( typeof(exports) !== 'undefined')
+{
+	exports.isActiveLogLevel = isActiveLogLevel;
+	exports.LogToFileLib = LogToFileLib;
+	exports.getCurrentWorkflowInstanceFileLogger = getCurrentWorkflowInstanceFileLogger;
+	exports.distroyWorkflowInstanceFileLogger = distroyWorkflowInstanceFileLogger;
+	exports.createWorkflowInstanceFileLogger = createWorkflowInstanceFileLogger;
+}

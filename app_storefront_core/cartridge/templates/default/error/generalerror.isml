@@ -1,0 +1,11 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isset name="DecoratorTemplate" value="error/pt_error" scope="page"/>
+<isif condition="${!empty(pdict.nodecorator) && pdict.nodecorator == true}">
+	<isset name="DecoratorTemplate" value="util/pt_empty" scope="page"/>
+</isif>
+
+<isdecorate template="${DecoratorTemplate}">
+	<iscache type="relative" hour="24"/>
+	<isinclude template="util/modules"/>
+	<iscontentasset aid="error-page"/>
+</isdecorate>

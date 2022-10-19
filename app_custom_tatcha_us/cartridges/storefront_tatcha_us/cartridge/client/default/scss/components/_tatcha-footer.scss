@@ -1,0 +1,267 @@
+// STANDARD FOOTER
+// For most Tatcha Pages except checkout
+
+.tatcha-footer-new{
+    position: relative;
+    .email-subscribe-submit{
+        position: absolute!important;
+        right: 0!important;
+        top:7px!important;
+    }
+    .footer-shareandearn-container{
+        .fa-arrow-right{
+            position: absolute;
+            right: 11px;
+            }
+         }
+    .upper-footer{
+        background: $secondary-purple;
+        padding: 1rem;
+        justify-content: center;
+        display: flex;
+        align-items: center;
+        .logo-style{
+            padding-right: 1rem;
+        }
+        .rtr-message{
+            @include media-breakpoint-down(sm) {
+                font-size: 0.875rem;
+            }
+        }
+        a{
+            color: $text-black;
+            text-decoration: underline;
+        }
+    }
+    .main-footer-wrap{
+        background-color: $footer-color;
+        padding: 5rem;
+        color: $white;
+        @include media-breakpoint-down(lg) {
+            padding: 5rem 1rem;
+        }
+        @include media-breakpoint-down(sm) {
+            padding: 3rem 1rem;
+        }
+        .footer-wrap{
+            @include media-breakpoint-down(lg) {
+                min-width: 100%;
+            }
+            .footer-list{
+                .sign-up-heading{
+                    font-weight: 400;
+                    font-size: 1.3rem;
+                    font-family: $wn-serif;
+                }
+                .sign-up-message{
+                    padding: 0.5rem 0rem;
+                    width: calc(100% - 30%);
+                    @include media-breakpoint-down(md) {
+                        width: 100%;
+                    }
+                    @include media-breakpoint-down(sm) {
+                        font-size: 0.875rem;
+                    }
+                }
+                .email-suscribed-message{
+                    padding-bottom: 1rem;
+                    font-weight: 700;
+
+                    color: #C5B4E3;
+                }
+
+                .text-input-group{
+                    background: $white;
+                    width: calc(100% - 40%);
+                    align-items: center;
+                    height: 3rem;
+                    border-radius: 5px;
+                    @include media-breakpoint-down(md) {
+                        width: 100%;
+                    }
+                    input{
+                        border:none;
+                        margin-left: 1rem;
+                        width: calc(100% - 15%);
+                        @include media-breakpoint-down(md) {
+                            width: calc(100% - 20%);
+                        }
+                    }
+
+                    input:focus,
+                    select:focus,
+                    textarea:focus,
+                    button:focus {
+                        outline: none;
+                        box-shadow: none !important;
+                    }
+
+                    input::-webkit-input-placeholder {
+                        color: $text-black;
+                        font-style: normal;
+                    }
+
+                    .text-arrow{
+                        color: $text-black;
+                    }
+
+                }
+                .refer-friend{
+                    background: $secondary-purple;
+                    input{
+                        background: $secondary-purple;
+                    }
+                    a{
+                        color: $text-black;
+                    }
+                    .refer-a-friend-link{
+                        letter-spacing: normal;
+                    }
+                }
+                .footer-socialmedia-icons{
+                    @include media-breakpoint-down(md) {
+                        padding-top: 1rem;
+                    }
+                    @include media-breakpoint-down(sm) {
+                        padding: 2rem 0rem 1rem 0rem;
+                    }
+                    .list-inline{
+                        display: flex;
+                        .list-inline-item:not(:last-child) {
+                            margin-right: 0.75rem;
+                        }
+                        .each-list{
+                            background: $white;
+                            border-radius: 0.75rem;
+                            width: 1.5rem;
+                            justify-content: center;
+                            display: flex;
+                            a{
+                                color: $text-black;
+                            }
+                        }
+                    }
+                }
+                .footer-link-list{
+                    @include media-breakpoint-up(md) {
+                        .collapse {
+                            display: block;
+                        }
+
+                        .pull-right {
+                            display: none;
+                        }
+                    }
+                    @include media-breakpoint-down(sm) {
+                        .fa-minus {
+                            display: block;
+                        }
+
+                        .fa-plus {
+                            display: none;
+                        }
+                        .header-wrap{
+                            align-items: center;
+                            display: flex;
+                            justify-content: space-between;
+                        }
+                        .collapsed {
+                            .fa-minus {
+                                display: none;
+                            }
+
+                            .fa-plus {
+                                display: block;
+                            }
+                        }
+                    }
+                    .link-header{
+                        color: $secondary-purple;
+                    }
+
+                    .mobile-link-header{
+                        border-top: 1px solid;
+
+                        a{
+                            padding: 1rem 0rem;
+                            display: block;
+                            color: $white;
+                            font-size: 1rem;
+                            font-weight: 700;
+                        }
+                    }
+                    .footer-link-wrap{
+                        list-style-type: none;
+                        padding: 0rem;
+                        .each-footer-link{
+                            font-size: 0.9rem;
+                            a{
+                                color: $white;
+                                display: block;
+                                padding: 0.5rem 0rem;
+                            }
+                        }
+                    }
+                }
+                .mobile-link-header-bottomborder{
+                    @include media-breakpoint-down(sm) {
+                        border-bottom: 1px solid;
+                    }
+                }
+            }
+        }
+    }
+    .lower-footer-wrap {
+        background: #4B535C;
+        padding: 1rem 2.5rem;
+        @include media-breakpoint-down(sm) {
+            padding: 1rem 0.5rem;
+        }
+        .copyright{
+            display: flex;
+            @include media-breakpoint-down(sm) {
+                display: grid;
+                padding-bottom: 3rem;
+            }
+            @include media-breakpoint-down(md) {
+                max-width: 100%;
+            }
+            .location-select{
+                cursor: pointer;
+                option{
+                    color: $text-black;
+                }
+                .btn{
+                    border: 1px solid;
+                    font-weight: 500;
+                }
+            }
+            .lower-footer{
+                padding-left: 2rem;
+                color: $white;
+                @include media-breakpoint-down(sm) {
+                    padding-left: 0rem;
+                    padding-top: 1rem;
+                }
+                a{
+                    color: $white;
+                }
+                .each-copyright-link{
+                    @include media-breakpoint-down(sm) {
+                        display: block;
+                        padding: 1rem 0rem;
+                    }
+                }
+                .separator {
+                    padding: 0px 5px;
+                    @include media-breakpoint-down(sm) {
+                        padding: 1rem 5px;
+                    }
+                }
+            }
+            a {
+                text-transform: capitalize;
+            }
+        }
+    }
+}

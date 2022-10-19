@@ -1,0 +1,125 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isinclude template="util/modules"/>
+<isreportcheckout checkoutstep="${5}" checkoutname="${'OrderSummary'}"/>
+<isset name="checkoutObj" value="${pdict.p_checkoutobj}" scope="page" />
+<isscript>
+	var singlePageCheckoutUtils = require('int_singlepagecheckout/cartridge/scripts/util/SinglePageCheckoutUtils');
+	var basket = singlePageCheckoutUtils.getCurrentBasket();
+	var productLineItems = basket.productLineItems;
+</isscript>
+
+<isif condition="${pdict.p_checkoutobj && (pdict.p_checkoutobj.shippingInfo.showSummary == true || productLineItems.length === 0) && (pdict.p_checkoutobj.billingInfo && pdict.p_checkoutobj.billingInfo.showBillingSummary === true)}">
+	<div class="mb-0 reviewCollapseItem" data-toggle="collapse" data-target="#reviewCollapse" aria-expanded="true" aria-controls="placeOrderCollapse">
+		<span class="outer-section">
+	    	<h2 class="section-heading mb-0 outer-section-inner" tabindex="-1">
+	    	3. Place Order
+	    	</h2>
+		</span>
+	</div> 
+	<div id="reviewCollapse" class="indent-container collapse show" aria-label="Place Order accordion" data-parent="#accordion" style="">
+	
+	<isif condition="${checkoutObj.shippingInfo.shippingAddress.country !='US' && checkoutObj.orderType !== 'giftcard'}" > 
+		<div class="bg-warning border rounded warning-spec">
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" aria-label="I acknowledge that shipping charges do not include international customs or duties" value="" id="internationalDutiesNotification">
+				<label class="form-check-label pt-1" for="defaultCheck1">
+				<b>I acknowledge that shipping charges do not include international customs or duties</b>
+				<p class="pt-2 mr-5">Please contact you local customs office for country specific information, as carriers may charge additional fees upon arrival.</p>
+				</label>
+			</div>
+		</div>		
+	</isif>
+	
+	<iscomment> AD Warning Message</iscomment>
+	<isif condition="${pdict.p_checkoutobj.showAdWarning == true}">
+		<div class="rounded danger-spec">
+			<p class="subhead">Auto-Delivery is only available in the United States</p>
+			<p class="mr-4 pr-3 mb-0">If you are shipping outside of the US, remove those Auto-Delivery items from your bag. <a class="ad-bag-link" href="${URLUtils.url('Cart-Show')}"><u>Go to bag</u></a></p>
+		</div>
+	</isif>
+	
+	<iscomment> Place order failure</iscomment>
+	<isif condition="${(pdict.CurrentHttpParameterMap.PlaceOrderError.stringValue == 'true')}">
+		<isif condition="${session.custom.taxError}">
+			<div class="rounded danger-spec" role="alert">${Resource.msg('confirm.error.taxerror','checkout',null)}</div>				
+		<iselse>
+			<div class="rounded danger-spec" role="alert">${Resource.msg('confirm.error.technical','checkout',null)}</div>		
+		</isif>
+	</isif>
+	
+	<div class="order-terms">
+		<iscontentasset aid="order-terms"/>
+	</div>
+	
+	<isif condition="${checkoutObj.showAdWarning == false}" > 
+		<form action="${URLUtils.https('COSummary-Submit')}" method="post">
+			<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+			<input type="hidden" name="scope" value="checkout-summary"/>
+			<input type="hidden" name="${pdict.CurrentForms.profile.confirm.htmlName}" value="true"/>
+			<input type="hidden" name="checkoutType" value=""/>
+			
+			<isscript>
+				var BraintreeHelper = require('int_braintree/cartridge/scripts/braintree/braintreeHelper');
+	    		var prefs = BraintreeHelper.getPrefs();
+				var isEnable3dSecure = empty(pdict.isenable3dsecure) ? prefs.BRAINTREE_3DSecure_Enabled : pdict.isenable3dsecure;;
+				var ownerName = '';
+				var amount = BraintreeHelper.getAmount(basket).getValue();
+			</isscript>
+			<div class="js_braintree_devicedataContent" style="display: none">
+				<isinclude template="braintree/util/deviceData"/>
+			</div>
+			<isif condition="${checkoutObj.shippingInfo.shippingAddress.country !='US' && checkoutObj.orderType !== 'giftcard'}" > 	
+				<button class="btn btn-primary review-submit disabled" disabled aria-label="Place my order">
+			    	<i class="fas fa-lock mr-2 "></i>
+			        Place my order
+			    </button>
+			    
+			    <div class="sticky-place-order">
+			    	<div class="container-fluid">
+				    	<button class="btn btn-primary review-submit disabled" disabled aria-label="Place my order">
+					    	<i class="fas fa-lock mr-2 "></i>
+					        Place my order
+					    </button>
+					</div>
+			    </div>
+			         
+	        <iselse>
+				<button class="btn btn-primary review-submit" aria-label="Place my order">
+		        	<i class="fas fa-lock mr-2 "></i>
+		        	Place my order
+		        </button>
+		        <div class="sticky-place-order">
+		        	<div class="container-fluid">
+				    	<button class="btn btn-primary review-submit" aria-label="Place my order">
+				        	<i class="fas fa-lock mr-2 "></i>
+				        	Place my order
+				        </button>
+			        </div>
+			    </div>   
+	        </isif>
+	        
+		</form>		
+	<iselse>
+		<button class="btn btn-primary review-submit disabled hasADItems" aria-label="Place my order">
+			<i class="fas fa-lock mr-2 "></i>
+		    	Place my order
+		</button>
+		
+		<div class="sticky-place-order">
+			<div class="container-fluid">
+	        	<button class="btn btn-primary review-submit disabled hasADItems" aria-label="Place my order">
+					<i class="fas fa-lock mr-2 "></i>
+				    	Place my order
+				</button>
+			</div>
+	    </div> 
+	</isif>	
+	</div> 	
+	
+<iselse>
+	<div class="mb-0 collapsed reviewCollapseItem disabled" data-toggle="collapse" data-target="#reviewCollapse" aria-expanded="false" aria-controls="placeOrderCollapse">
+		<span class="outer-section" tabindex="-1">
+			<h2 class="section-heading mb-0 outer-section-inner" tabindex="-1">3. Place Order</h2>
+	   </span>
+	</div> 
+</isif>

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+
+<field mandatory="true" type="string" label="forms.license.email.label" formid="email"/>
+
+<field mandatory="true" type="string" label="forms.license.licensekey.label" formid="licensekey"/>
+
+<field mandatory="false" type="string" label="" formid="licenseUniqueID"/>
+
+<action label="forms.license.save.label" formid="save" valid-form="true"/>
+
+</form>

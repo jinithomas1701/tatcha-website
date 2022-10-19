@@ -1,0 +1,52 @@
+query Search($input: TransactionSearchInput!) {
+  search {
+    transactions(input: $input) {
+      edges {
+        node {
+          id
+          legacyId
+          orderId
+          paymentMethod {
+            id
+            legacyId
+          }
+          amount {
+            value
+            currencyCode
+          }
+          createdAt
+          customer {
+            firstName
+            lastName
+            id
+            email
+            legacyId
+          }
+          shipping {
+            shippingAddress {
+              fullName
+              addressLine1
+              addressLine2
+              adminArea1
+              adminArea2
+              postalCode
+              countryCode
+            }
+          }
+          refunds {
+            ...refundFields
+          }
+          status
+          statusHistory {
+            status
+            timestamp
+            amount {
+                value
+                currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+}

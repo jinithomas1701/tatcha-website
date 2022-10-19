@@ -1,0 +1,130 @@
+<!--- TEMPLATENAME: pairswith.isml --->
+<isif condition="${!empty(pairsWithId) && !empty(pairsWith) && !inCart && inStock}">
+<isset name="cartProduct" value="${lineItem.product}" scope="page" />
+
+<isscript>
+	var priceModel = pairsWith.getPriceModel();
+	var price = 0;
+	if(priceModel) {
+		 price = priceModel.getPrice();
+	}
+ </isscript>
+	<div class='popup-unit' data-cartproductid="${cartProduct.ID}" role="row">
+		<div class="popup-body">
+			<isscript>
+			//Added for mParticle
+			var productInfo = {};
+			let category = !empty(pairsWith.getPrimaryCategory()) ? pairsWith.getPrimaryCategory().displayName : '';
+			productInfo = {
+				sku: pairsWith.ID,
+				productname: pairsWith.name,
+				masterSku: pairsWith.getID(),
+				variant: require('int_mParticle/cartridge/scripts/mParticleUtils.js').getVariation(pairsWith),
+				category: category
+			};
+			</isscript>
+			<div class="d-flex flex-row pairs-with-flex">
+				<div class="product-image" role="cell">
+				<a href="${URLUtils.http('Product-Show','pid', pairsWith.ID)}" tabindex="-1" class="pairs-with-image">
+				<isif condition="${pairsWith.variant && !empty(pairsWith.getVariationModel())}">
+				    <isset name="imageProduct" value="${pairsWith.getVariationModel()}" scope="page"/>
+				<iselse/>
+				    <isset name="imageProduct" value="${pairsWith}" scope="page"/>
+				</isif>
+				<isif condition="${!empty(imageProduct.getImages('large')) && imageProduct.getImages('large').length>0}">
+							<isset name="imageUrl" value="${getImageUrl(imageProduct,'small','0','false','pdp')}" scope="page"/>
+							<isset name="imageAlt" value="${getImageAlt(imageProduct)}" scope="page"/>
+							<isset name="imageTitle" value="${getImageTitle(imageProduct)}" scope="page"/>
+						<iselse/>
+							<isset name="imageUrl" value="${URLUtils.staticURL('/images/noimagelarge.png')}" scope="page"/>
+							<isset name="imageAlt" value="${pairsWith.name}" scope="page"/>
+							<isset name="imageTitle" value="${pairsWith.name}" scope="page"/>
+						</isif>
+					<img class="img-fluid" title="${imageTitle}" src="${imageUrl}" alt="image - ${imageAlt}" />
+				</a>
+				</div>
+				<div class="product-contnet mt-3 mt-md-0"  role="cell">
+					<div class="product-name"> <a href="${URLUtils.http('Product-Show','pid', pairsWith.ID)}" class="pairs-with-name" tabindex="-1"> <isprint value="${pairsWith.name}" /> </a></div>
+					<div class="use-before-heading pb-2">
+						<isif condition="${cartProduct.custom.why}">
+							WHY: <isprint value="${' '+cartProduct.custom.why}" />
+						</isif>
+					</div>
+					<isset name="isFullSize" value="0" scope="page" />
+						<isloop items="${pairsWith.variationModel.getProductVariationAttributes()}" var="VA" status="status">
+							<isset name="SelectedVariationValue" value="${pairsWith.variationModel.getSelectedValue(VA)}" scope="page"/>
+							<span class="product-variant" data-attribute="${VA.ID}" class="pairs-with-variant" tabindex="-1">
+								<isif condition="${SelectedVariationValue != null && !pairsWith.custom.isTravelSize}">
+									<!-- <isprint value="${SelectedVariationValue.displayValue}"/>  -->
+									<isset name="isFullSize" value="1" scope="page" />
+								</isif>
+							</span>
+<!-- 							<isif condition="${!(status.last)}"><span class="separator">|</span></isif> -->
+						</isloop>
+						<!-- <isif condition="${isFullSize == 1 && price > 0}">
+						<span class="separator"> | <isprint value="${price}" formatter="*#0"/></span>
+						 </isif> -->
+						<div data-submitform="${pairsWith.ID}" style="display: none;">
+							<input type="hidden" name="Quantity" size="2" maxlength="3" value="1"/>
+							<input type="hidden" name="cartAction" value="add" />
+							<input type="hidden" name="pid" value="${pairsWith.ID}" />
+							<input type="hidden" name="productname" value="${pairsWith.name}" />
+							<input type="hidden" name="page" value="bag" />
+							<input type="hidden" name="pageInfo" value="addToBag" />
+						</div>
+						<isscript>
+                           productInfo.price = priceModel.getPrice().value ? priceModel.getPrice().value : '';
+                        </isscript>
+                        <isif condition="${isFullSize == 1 && price > 0}">
+							<button type="button" aria-label="add to bag" data-product-info="${JSON.stringify(productInfo)}" data-addtocart="${pairsWith.ID}" class="btn btn-sm btn-primary d-none hidden-xs d-md-inline-block add-to-cart pairs-with-addtobagone pairs-with-main" tabindex="-1">${Resource.msg('global.addtocart','locale',null)} - <isprint value="${price}" formatter="*#0"/></button>
+						</isif>
+					<isset name="hasTravelSize" value="0" scope="page" />
+					<isset name="travelPrice" value="0" scope="page" />
+					<iscomment>travel product is empty if no travel variant is configured / if it is out of stock</iscomment>
+						<isif condition="${!empty(travelProduct)}">
+							<isset name="hasTravelSize" value="1" scope="page" />
+							<isset name="priceModel" value="${travelProduct.getPriceModel()}" scope="page" />
+							<isif condition="${priceModel}">
+								<isset name="travelPrice" value="${priceModel.getPrice()}" scope="page" />
+							</isif>
+						 </isif>
+						<isif condition="${hasTravelSize == 1 && travelPrice > 0}">
+							<div data-submitform="${travelProduct.ID}" style="display: none;">
+								<input type="hidden" name="Quantity" size="2" maxlength="3" value="1"/>
+								<input type="hidden" name="cartAction" value="add" />
+								<input type="hidden" name="pid" value="${travelProduct.ID}" />
+								<input type="hidden" name="productname" value="${travelProduct.name}" />
+								<input type="hidden" name="page" value="bag" />
+								<input type="hidden" name="pageInfo" value="addToBag" />
+							</div>
+							<isscript>
+	                           productInfo.price = priceModel.getPrice().value ? priceModel.getPrice().value : '';
+	                           productInfo.variant = "Travel Size";
+	                        </isscript>
+							<button type="button" aria-label="add travel size" data-product-info="${JSON.stringify(productInfo)}" data-addtocart="${travelProduct.ID}" class="btn btn-sm btn-link add-travel-link d-none hidden-xs d-md-inline-block text-primary pl-2 pairs-with-travelsizeone pairs-with-travel" tabindex="-1">${Resource.msg('global.addtravelsize','locale',null)} - <isprint value="${travelPrice}" formatter="*#0"/></button>
+						</isif>
+
+						<iscomment> if both fullsie and travel size are empty for nonvarient products </iscomment>
+						<isif condition="${isFullSize == 0 && hasTravelSize == 0}">
+							<isscript>
+	                           productInfo.price = priceModel.getPrice().value ? priceModel.getPrice().value : '';
+	                        </isscript>
+	                        <button type="button" aria-label="add to bag" data-product-info="${JSON.stringify(productInfo)}" data-addtocart="${pairsWith.ID}" class="btn btn-sm btn-primary d-none hidden-xs d-md-inline-block add-to-cart pairs-with-addtobagone pairs-with-main" tabindex="-1">${Resource.msg('global.addtocart','locale',null)} - <isprint value="${price}" formatter="*#0"/></button>
+						</isif>
+				</div>
+			</div>
+			<isif condition="${isFullSize == 1 && price > 0}">
+				<button type="button" data-product-info="${JSON.stringify(productInfo)}" data-addtocart="${pairsWith.ID}" class="btn btn-sm btn-primary hidden-sm hidden-md hidden-lg hidden-xl d-md-none mt-2 mb-2 add-to-cart pairs-with-addtobagtwo pairs-with-main" tabindex="-1">${Resource.msg('global.addtocart','locale',null)}-<isprint value="${price}" formatter="*#0"/></button>
+			</isif>
+			<isif condition="${hasTravelSize == 1 && travelPrice > 0}">
+				<button type="button" data-product-info="${JSON.stringify(productInfo)}" data-addtocart="${travelProduct.ID}" class="btn btn-sm btn-link add-travel-link d-md-none hidden-sm hidden-md hidden-lg hidden-xl text-primary pl-2 pairs-with-travelsizetwo pairs-with-travel" tabindex="-1">${Resource.msg('global.addtravelsize','locale',null)}-<isprint value="${travelPrice}" formatter="*#0"/></button>
+			</isif>
+			<isif condition="${isFullSize == 0 && hasTravelSize == 0}">
+				<button type="button" data-product-info="${JSON.stringify(productInfo)}" data-addtocart="${pairsWith.ID}" class="btn btn-sm btn-primary hidden-sm hidden-md hidden-lg hidden-xl d-md-none mt-2 mb-2 add-to-cart pairs-with-addtobagtwo pairs-with-main" tabindex="-1">${Resource.msg('global.addtocart','locale',null)}-<isprint value="${price}" formatter="*#0"/></button>
+			</isif>
+			<div data-closesuggestion="${cartProduct.ID}" class="product-suggestion-close delete-product" role="button" tabindex="-1">
+				<i class="fal fa-times"></i>
+			</div>
+		</div>
+	</div>
+</isif>

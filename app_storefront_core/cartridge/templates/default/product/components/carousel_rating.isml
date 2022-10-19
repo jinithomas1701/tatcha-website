@@ -1,0 +1,20 @@
+<iscache type="relative" hour="24"/>
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isscript> 
+	var ratingLink = "rating-" + pdict.Product.name; 
+	var showrating = 'enableReviewsRatings' in pdict.Product.custom; 
+</isscript>
+<isinclude template="util/yotpomodules.isml" />
+<isyotpocategorybottomlineheader />
+				
+<isset name="productUrl" value="${URLUtils.url('Product-Show', 'pid', pdict.Product.ID)}" scope="page" />
+<a class="product-view-link reviews-ratings-link" href="${productUrl}#reviews" aria-label="${ratingLink}" tabindex="-1">
+	<div class="product-rating-summary d-flex justify-content-center" >
+		<isif condition="${showrating && !pdict.Product.productSet}">
+			<div id="yotpoSRDiv" data-sr-yotpo="${showrating}" style="display:none;"> </div>
+			<div id="yotpoPSEnabledDiv" data-ps-yotpo="${!pdict.Product.productSet}" style="display:none;"> </div>
+				<isyotpocategorybottomlinewidget product="${pdict.Product}" />
+		</isif>
+	</div>
+</a>

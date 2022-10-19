@@ -1,0 +1,66 @@
+<!--- TEMPLATENAME: yotpoproductbottomlinewidget.isml --->
+
+<iscomment>It displays the product ratings for current product.</iscomment>
+<iscontent type="text/html" />
+
+<isif condition="${dw.system.Site.getCurrent().preferences.custom.yotpoCartridgeEnabled}">
+
+	<isif condition="${!empty(pdict.product)}">
+	
+		<isscript>
+			
+			var YotpoUtils = require('int_yotpo/cartridge/scripts/yotpo/utils/YotpoUtils');
+			var currentLocaleID = YotpoUtils.getCurrentLocale(request);
+			var yotpoAppKey = YotpoUtils.getAppKeyForCurrentLocale(currentLocaleID);
+			var isBottomLineEnabled = YotpoUtils.isBottomLineEnabledForCurrentLocale(currentLocaleID);
+			var productInformationFromMaster = dw.system.Site.getCurrent().preferences.custom.producInformationFromMaster;
+				
+			if(isBottomLineEnabled){
+			
+				var product : dw.catalog.Product = pdict.product;
+				var currentProduct : dw.catalog.Product;
+				
+				currentProduct = product;
+				
+				if(product.variant) {
+					if(productInformationFromMaster) {
+						currentProduct = product.getVariationModel().master;
+					}
+				}
+				
+				var model : String = currentProduct.brand;
+				
+				if(empty(model)){
+					model = "";
+				}
+				
+				var domainAddress : String = URLUtils.home(); 		
+					
+				var productURL : String = URLUtils.abs('Product-Show','pid', currentProduct.ID);
+				productURL = encodeURI(productURL);
+				
+				var regex : String = "([\/])";
+				var productID : String = YotpoUtils.escape(currentProduct.ID, regex, "-");
+				
+				var imageURL : String = encodeURI(YotpoUtils.getImageLink(currentProduct));
+				imageURL = empty(imageURL) ? "Image not available" : imageURL;
+				var separator = " > ";
+				var productCategory : String = YotpoUtils.getCategoryPath(currentProduct, separator);
+			}
+		</isscript>
+		
+		<isif condition="${isBottomLineEnabled}">
+			<div id="yotpo-bottomline-top-div" class="yotpo bottomLine"
+			    data-appkey="${yotpoAppKey}"
+			    data-domain="${domainAddress}"
+			    data-product-id="${productID}"
+			    data-product-models="${model}"
+			    data-name="${currentProduct.name}"
+			    data-url="${productURL}"
+			    data-image-url="${imageURL}"
+			    data-description="${currentProduct.shortDescription}"
+			    data-bread-crumbs="${productCategory}">
+			</div>
+		</isif>
+	</isif>
+</isif>

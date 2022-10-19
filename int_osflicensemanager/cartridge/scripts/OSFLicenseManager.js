@@ -1,0 +1,1 @@
+"use strict";exports.getLicenseStatus=require("~/cartridge/scripts/utils/osfLicenseManager").getOrInstallLicense;

@@ -1,0 +1,25 @@
+<!--- TEMPLATENAME: facebook_footer.isml --->
+
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<script src="${URLUtils.staticURL('/js/facebookpixel.js')}" type="text/javascript"></script>
+
+<isif condition="${typeof checkoutObj !== 'undefined'}"> 
+	<isscript> 
+		var basketInfo;
+		var fbhelper = require('int_pixel/cartridge/scripts/FacebookAPIHelper');
+		if(!empty(checkoutObj)){
+			basketInfo = fbhelper.getBasketDetails(checkoutObj.basket);
+		}
+	</isscript>
+	<input type="hidden" id="fbbasketDetails" data-basket-info="${JSON.stringify(basketInfo)}">
+</isif>
+
+<isif condition="${!empty(pdict.Order)}"> 
+	<isscript> 
+	var fbhelper = require('int_pixel/cartridge/scripts/FacebookAPIHelper');
+	var orderInfo = fbhelper.preparePurchaseEventData(pdict.Order);
+	</isscript>
+	<input type="hidden" id="fborderDetails" data-order-info="${JSON.stringify(orderInfo)}">
+</isif>
+

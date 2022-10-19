@@ -1,0 +1,238 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isdecorate template="checkout/pt_checkout"> 
+<isinclude template="util/modules" /> 
+<iscomment>Report this checkoutstep</iscomment>
+<isreportcheckout checkoutstep="${1}" checkoutname="${'CheckoutMethod'}" /> 
+<isscript> 
+	var CustomerMgr =require('dw/customer/CustomerMgr'); 
+	var useremail = pdict.CurrentForms.login.username.htmlValue;
+	var Customerobj, customerName, newPasswordReset;
+	
+	if(useremail) {
+		Customerobj =CustomerMgr.getCustomerByLogin(useremail);		 
+		if(!empty(Customerobj) && !empty(Customerobj.profile)){
+			pdict.CurrentSession.custom.userExist = true;
+			customerName =	Customerobj.profile.firstName;
+			newPasswordReset = Customerobj.profile.custom.IsPasswordReset;
+		}			
+	}
+</isscript>
+<div class="checkout checkout-login">
+   <div class="login-box-content returning-customers clearfix"	id="login-fb-checkout">
+      <div class="container">
+         <isif condition="${!pdict.CurrentSession.customer.externallyAuthenticated}">
+            <div class="checkout-email">
+               <isif condition="${pdict.CurrentHttpParameterMap.emailExists != 'true'}">
+                  <h1>${Resource.msg('account.login.logininclude.checkoutwelcome','account',null)}</h1>
+                  <div class="row">
+                     <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                        <p>${Resource.msg('account.login.logininclude.checkouttext','account',null)}</p>
+                     </div>
+                  </div>
+                  <div class="row">
+                     <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+                        <form action="${URLUtils.httpsContinue()}" method="post" id="${pdict.CurrentForms.login.htmlName}">
+                           <div class="form-group">
+                              <isif condition="${!pdict.CurrentForms.login.loginsucceeded.valid}">
+                                 <div class="alert alert-danger" role="alert">${Resource.msg('account.login.logininclude.loginerror','account',null)}</div>
+                              </isif>
+                              <isscript>
+                                 pdict.CurrentSession.custom.userExist = false;
+                                 var isLoginSucceeded =	!pdict.CurrentForms.login.loginsucceeded.valid ? 'has-error' : '';
+                              </isscript>
+                              <isscript> 
+                                 var attributes = { 
+                                 'data-msg-required': Resource.msg('validate.email', 'forms',null) };
+                              </isscript>
+                              <isinputfield formfield="${pdict.CurrentForms.login.username}"	rowclass="username" type="email" placeholder="${Resource.msg('login.username.placeholder','forms',null)}" attributes="${attributes}" />
+                              <span class="help-block" style="display: none;">${Resource.msg('account.login.logininclude.validemail','account',null)}</span>
+                           </div>
+                           <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}"	value="${dw.web.CSRFProtection.generateToken()}" />
+                           <button type="submit" value="${Resource.msg('global.login','locale',null)}"	class="btn btn-primary btn-lg btn-block email-check" name="${pdict.CurrentForms.login.continuelogin.htmlName}">
+                           ${Resource.msg('global.continue','locale',null)}</button>
+                           <isscript> 
+							var Site = require('dw/system/Site');
+							var showFBLogin = Site.getCurrent().getCustomPreferenceValue('enableFacebookLogin');
+							</isscript>
+			
+							<isif condition="${showFBLogin === true}">
+                           		<div class="checkout-facebook">
+                              	<hr>
+                             	 <p>${Resource.msg('account.login.logininclude.fbregister','account',null)}</p>
+                             	 <div class="cta-container">
+                                 <a href="javascript:void(0)" data-container="login-fb-checkout"	class="btn btn-default btn-facebook btn-xs-sm-block fb-loginbtn"><i class="fab fa-lg fa-facebook"></i> ${Resource.msg('account.login.logininclude.fblogin','account',null)}
+                                 </a>
+                              	</div>
+                           	</div>
+                           </isif>
+                        </form>
+               </isif>
+               </div>
+           
+            <div class="checkout-has-password">
+               <isif condition="${pdict.CurrentHttpParameterMap.emailExists == 'true'}">
+                  <isif condition= "${(newPasswordReset !== true)}">
+                     <h1>${Resource.msg('account.login.logininclude.checkoutwelcome','account',null)}</h1>
+                     <div class="row">
+                        <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                           <p>${Resource.msg('account.login.logininclude.checkouttext','account',null)}</p>
+                        </div>
+                     </div>
+                     <div class="login-form">
+                        <form action="${URLUtils.httpsContinue()}" method="post"	id="${pdict.CurrentForms.login.htmlName}">
+                           <div class="row">
+                              <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                                 <isif condition="${!pdict.CurrentForms.login.loginsucceeded.valid}">
+                                    <div class="alert alert-danger" role="alert">${Resource.msg('account.login.logininclude.loginerror','account',null)}</div>
+                                 </isif>
+                                 <isscript>
+                                    var isLoginSucceeded =	!pdict.CurrentForms.login.loginsucceeded.valid ? 'has-error' : '';
+                                 </isscript>
+                              </div>
+                           </div>
+                           <div class="row">
+                              <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+                                 <div class="form-group">
+                                    <isscript> 
+                                       var attributes = { 
+                                       'data-msg-required': Resource.msg('validate.email', 'forms',null) };
+                                       
+                                    </isscript>
+                                    
+                                    <div class="input-group input-group-readonly">
+									    <input class="input-text form-control readonly" readonly="true" type="email" id="dwfrm_login_username" name="dwfrm_login_username" value="${pdict.CurrentForms.login.username.value}" placeholder="beautiful@tatcha.com" data-msg-required="${Resource.msg('validate.email', 'forms',null)}" maxlength="50" aria-required="true" aria-invalid="false">
+									    <span class="input-group-btn">
+									      <a href="${URLUtils.https('COCustomer-Start')}" class="btn btn-link promo-remove username-reset">
+									      <i class="fal fa-times-circle"></i> </a>
+									    </span>
+									</div>
+                                    
+                                    
+                                    <span class="help-block" style="display: none;">${Resource.msg('account.login.logininclude.validemail','account',null)}</span>
+                                 </div>
+                              </div>
+                           </div>
+                           <div class="account-standard">
+                              <div class="row">
+                                 <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                                    <h5>
+                                       Welcome back, 
+                                       <isprint value="${customerName}" />
+                                       . ${Resource.msg('account.login.logininclude.passwordtocontinue','account',null)} 
+                                    </h5>
+                                 </div>
+                              </div>
+                              <div class="row">
+                                 <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+                                    <div class="form-group">
+                                       <isscript> 
+                                          var attributes = {
+                                          autocomplete: "off",
+                                          'data-msg-required': Resource.msg('validate.password', 'forms',	null) };
+                                       </isscript>
+                                       <isinputfield formfield="${pdict.CurrentForms.login.password}"	rowclass="password" type="password"	placeholder="${Resource.msg('login.password.placeholder','forms',null)}" attributes="${attributes}" />
+                                       <span class="help-block" style="display: none;">Inline	error message here.</span>
+                                    </div>
+                                    <div class="form-actions">
+                                       <a href="${URLUtils.url('Account-PasswordReset')}"
+                                          title="${Resource.msg('account.login.logininclude.forgotpassword.label','account',null)}">
+                                       ${Resource.msg('account.login.logininclude.forgotpassword','account',null)}
+                                       </a>
+                                    </div>
+                                    <button type="submit" value="${Resource.msg('global.login','locale',null)}" class="btn btn-primary btn-lg btn-block" name="${pdict.CurrentForms.login.login.htmlName}" id="checkout-login-form-btn">
+                                    ${Resource.msg('global.continue','locale',null)}</button>
+                                    <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}" />
+                                    
+
+								
+                                 </div>
+                              </div>
+                           </div>
+                           
+                        </form>
+                     </div>
+                     <div class="row">
+                        <div class="col-sm-6 col-sm-offset-3 col-md-4 col-md-offset-4">
+                           <isif condition="${!pdict.CurrentCustomer.registered && ( empty(session.custom.HasSORProducts) ||
+                              !session.custom.HasSORProducts )}">
+                              <form action="${URLUtils.httpsContinue()}" method="post">
+                                 <button type="submit" value="${Resource.msg('checkoutlogin.checkoutguestbutton','checkout',null)}"	class="btn btn-default btn-lg btn-block m-top-5" name="${pdict.CurrentForms.login.unregistered.htmlName}">
+                                 <span>${Resource.msg('checkoutlogin.checkoutguestbutton','checkout',null)}</span>
+                                 </button>
+                                 <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}" />
+                              </form>
+                           </isif>
+                           <isscript> 
+							var Site = require('dw/system/Site');
+							var showFBLogin = Site.getCurrent().getCustomPreferenceValue('enableFacebookLogin');
+							</isscript>
+                           
+							<isif condition="${showFBLogin === true}">
+                           <div class="checkout-facebook">
+                              <hr>
+                              <p>${Resource.msg('account.login.logininclude.fbcheckout','account',null)}</p>
+                              <div class="cta-container">
+                                 <a href="javascript:void(0)" data-container="login-fb-checkout"
+                                    class="btn btn-default btn-facebook btn-xs-sm-block fb-loginbtn">
+                                 <i class="fab fa-lg fa-facebook"></i> ${Resource.msg('account.login.logininclude.fblogin','account',null)}
+                                 </a>
+                              </div>
+                           </div>
+                           </isif>
+                        </div>
+                     </div>
+                  </isif>
+                  <isif condition= "${(newPasswordReset === true)}">
+                     <div class="checkout-platform-xfer">
+                        <h1>
+                           Welcome back, 
+                           <isprint value="${customerName}" />
+                           !
+                        </h1>
+                        <div class="account-standard">
+                           <div class="row">
+                              <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+                                 <div class="alert alert-default text-center">
+                                    <h3>${Resource.msg('account.login.logininclude.checkoutnewwelcome','account',null)}</h3>
+                                    <p><strong>${Resource.msg('account.login.logininclude.checkoutnewwelcometext1','account',null)}</strong></p>
+                                    <p></p>
+                                    <div class="row">
+                                       <div class="col-sm-10 col-sm-offset-1 col-lg-8 col-lg-offset-2">
+                                          <form action="${URLUtils.url('Account-PasswordResetForm', 'scope', 'checkout')}" method="post" name="PasswordResetForm" id="PasswordResetForm">
+                                             <input type="hidden" value="${useremail}" name= "${pdict.CurrentForms.requestpassword.email.htmlName}"/>
+                                             <button type="submit" class="btn btn-default btn-lg btn-block m-top m-btm demo-success" value="${Resource.msg('account.passwordreset.button','account',null)}" name="${pdict.CurrentForms.requestpassword.send.htmlName}">
+                                             ${Resource.msg('account.passwordreset.button','account',null)}
+                                             </button>
+                                             <input name='${pdict.CurrentForms.requestpassword.send.htmlName}' type='hidden' />
+                                             <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+                                          </form>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </isif>
+                  
+
+               </isif>
+            </div>
+         </isif>
+        </div>
+     </div>
+</div>
+<div style="display: none">
+	<isinclude template="account/login/oauthlogininclude" />
+</div>
+
+</isdecorate>
+
+<script>
+
+$( document ).ready(function() {
+	$('.loader-content').hide();
+	$('.loader-content').hide();
+});
+</script>
+

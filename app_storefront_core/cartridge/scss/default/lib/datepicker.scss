@@ -1,0 +1,88 @@
+
+// DATEPICKER
+.ui-datepicker {
+    display: none;
+    height: auto;
+    padding: 16px;
+    background: #FFFFFF;
+    border: 1px solid $border-default;
+    z-index: 1100 !important;
+}
+.ui-datepicker-header {
+    font-weight: $font-weight-light;
+    font-size: 1.25 * $font-size-base;
+    text-transform: uppercase;
+    .ui-datepicker-title {
+        text-align: center;
+    }
+    .ui-datepicker-prev, .ui-datepicker-next {
+        display: inline-block;
+        text-align: center;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        background-image: url('../../images/calendar-btn-sprite.png');
+        background-repeat: no-repeat;
+        line-height: 600%;
+        overflow: hidden;
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            background-image: url('../../images/calendar-btn-sprite-2x.png');
+            background-size: 24px 48px;
+        }
+    }
+    .ui-datepicker-prev {
+        float: left;
+        background-position: center 0px;
+    }
+    .ui-datepicker-next {
+        float: right;
+        background-position: center -24px;
+    }
+}
+.ui-datepicker a {
+    text-decoration: none;
+}
+.ui-datepicker table {
+    margin: 8px auto 0;
+    width: 100%;
+    thead {
+        background-color: $background-gray;
+        th {
+            padding: 4px;
+            text-align: center;
+        }
+    }
+    tbody {
+        td {
+            text-align: center;
+            border: 1px solid $border-default;
+        }
+    }
+}
+.ui-datepicker td span, .ui-datepicker td a {
+  display: inline-block;
+  font-weight: $font-weight-normal;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  line-height: 30px;
+  color: $brand-primary;
+}
+
+.ui-datepicker-calendar .ui-state-default {
+  background: #ffffff;
+}
+.ui-datepicker-unselectable .ui-state-default {
+  background: #f4f4f4;
+  color: #b4b3b3;
+}
+
+.ui-datepicker-calendar .ui-state-hover {
+  background-color: darken( $brand-primary, 15% );
+  color: #FFFFFF;
+}
+
+.ui-datepicker-calendar .ui-state-active {
+    background-color: $brand-primary;
+    color: #FFFFFF;
+}

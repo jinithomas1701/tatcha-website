@@ -1,0 +1,73 @@
+<div class="addproduct-fields">
+            <form id="addProductForm" action="${URLUtils.https('SmartOrderRefillController-ManageRefillList', pdict.listTypeParam, pdict.listID, 'action','addProductSave')}" method="post">
+                <div class="row">
+                    <div class="col-6">
+                        <isif condition="${!pdict.commitment}" >
+                            <div class="form-group">
+                                <label for="${pdict.CurrentForms.addproduct.product.htmlName}">${Resource.msg('forms.sorsubscriptions.selectproduct', 'forms', null)}</label>
+                                <select class="input-select required" id="${pdict.CurrentForms.addproduct.product.htmlName}" name="${pdict.CurrentForms.addproduct.product.htmlName}">
+                                    <isloop items="${pdict.products}" var="product">
+                                    <option class="select-option" id="${product.ID}" value="${product.ID}" label="${product.name}">
+                                        ${product.name}
+                                    </option>
+                                    </isloop>
+                                </select>
+                            </div>
+                        </isif>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-6"> 
+                        <div class="form-group">
+                            <label for="${pdict.CurrentForms.addproduct.variation.htmlName}">${Resource.msg('forms.sorsubscriptions.selectvariation', 'forms', null)}</label>
+                            <select class="input-select required" id="${pdict.CurrentForms.addproduct.variation.htmlName}" name="${pdict.CurrentForms.addproduct.variation.htmlName}">
+                                <isloop items="${pdict.variations}" var="option">
+                                    <option class="select-option" data-master="${option.ID}" value="${option.value}" label="${option.label}">
+                                        ${option.label}
+                                    </option>
+                                </isloop>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <isif condition="${pdict.isSubscription}">
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group" id="addprod_periodicity">    
+                                <label for="${pdict.CurrentForms.addproduct.periodicity.htmlName}">${Resource.msg('forms.sorsubscriptions.selectrefill', 'forms', null)}</label>
+                                <select class="input-select required" id="${pdict.CurrentForms.addproduct.periodicity.htmlName}" name="${pdict.CurrentForms.addproduct.periodicity.htmlName}">
+                                    <isloop items="${pdict.periodicity}" var="option">
+                                        <option class="select-option" value="${option.value}" label="${option.label}">${option.value}</option>
+                                    </isloop>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="form-group" id="addprod_interval">
+                                <label for="${pdict.CurrentForms.addproduct.interval.htmlName}">&nbsp;</label>
+                                <select class="input-select required" id="${pdict.CurrentForms.addproduct.interval.htmlName}" name="${pdict.CurrentForms.addproduct.interval.htmlName}">
+                                    <isloop items="${pdict.interval}" var="option">
+                                        <option class="select-option" data-periodicity="${option.periodicity}" value="${option.value}" label="${option.label}">${option.value}</option>
+                                    </isloop>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </isif>
+                <div class="row">  
+                    <div class="col-6 quantity">
+                        <div class="form-group">
+                            <div class="form-row  addproduct-quantity  required">
+                                <label for="${pdict.CurrentForms.addproduct.quantity.htmlName}">
+                                    <span class="quty">${Resource.msg('forms.sorsubscriptions.quantity', 'forms', null)}</span>
+                                </label>
+                                    <input class="input-text required input-quantity" id="${pdict.CurrentForms.addproduct.quantity.htmlName}" type="number" min="1" name="${pdict.CurrentForms.addproduct.quantity.htmlName}" value="${pdict.quantity}">
+                                <div class="quty-error"><span class="form-caption error-message error visualy-hidden">${Resource.msg('form.addproduct.error.quantity.invalid', 'forms', null)}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div> 
+            </form>
+        </div>

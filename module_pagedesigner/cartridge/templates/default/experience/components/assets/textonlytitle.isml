@@ -1,0 +1,19 @@
+<iscache type="relative" hour="24"/>
+<div class="container">
+<div <isif condition="${!empty(pdict.anchorid)}">id="${pdict.anchorid}"</isif> class="textonly-title col-md-10 col-lg-8 col-xxl-6 mx-auto position-relative
+	${pdict.topMargin != 'none' ? 'm-top t-' + pdict.topMargin : ''} ${pdict.bottomMargin != 'none' ? 'm-bottom b-' + pdict.bottomMargin : ''}">
+    <h1 class="hero-heading">
+    	<isif condition="${'overline' in pdict && !empty(pdict.overline)}">
+        	<div class="pre-header"><isprint value="${pdict.overline}" /></div>
+        </isif>
+        <isif condition="${'title' in pdict && !empty(pdict.title)}" >
+        	<isprint value="${pdict.title}" />
+        </isif>
+	</h1>
+	<isif condition="${'body' in pdict && !empty(pdict.body)}" > 
+		<p class="col-md-10 col-lg-8 mx-auto">
+			<isprint value="${pdict.body}" />
+		</p>
+	</isif>
+</div>
+</div>

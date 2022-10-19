@@ -1,0 +1,43 @@
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('klaviyo_subscription_sync_enabled')}">
+	<isset name="formURL" value="Klaviyo-Subscribe" scope="page" />
+<iselse/>
+	<isset name="formURL" value="Account-EditSubscribtion" scope="page" />
+</isif>
+<section id="welcomeGift" class="full-width-bg">	
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12">
+				<div class="content-row row-side-x-side-desktop">
+					<div class="row no-gutter" style="margin: 0;">
+						<div class="col-md-6">
+							<div class="content-img-container">
+								<img class="content-img img-responsive" src="${pdict.Content.custom.homePopupImage.url}">
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="content-description">
+								<div class="content-text text-welcome">
+									<h2>
+										<span><isprint value="${pdict.Content.custom.homePopupTitle}"/></span>
+									</h2>
+									<isprint value="${pdict.Content.custom.homePopupDescription1}"  encoding="off"/>
+									<form class= "form-inline mailing-list ajaxsubscribeForm" action="${URLUtils.url(formURL)}" method="post" name="SubscribeForm">
+										<div class="input-group">
+											<input type="email" class="form-control required email" placeholder="beautiful@tatcha.com" name="${pdict.CurrentForms.subscribe.email.htmlName}">
+									      	<span class="input-group-btn">
+									        	<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+     												<input type="hidden" name="${pdict.CurrentForms.subscribe.subscribe.htmlName}" value="subscribe"/>
+     												<input type="hidden" name="source" value="offers-landing"/>
+									        	<button class="btn btn-input-group btn-primary" type="submit">Sign Up</button>
+									      	</span>
+									    </div>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>

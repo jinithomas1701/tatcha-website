@@ -1,0 +1,75 @@
+<!--- TEMPLATENAME: changeaddress.isml --->
+<iscomment>
+Property of OSF Global Services, Inc., (with its brand OSF Commerce). OSF remains the sole owner of all right, title and interest in the software.
+Do not copy, sell, reverse engineer or otherwise attempt to derive or obtain information about the functioning, manufacture or operation therein.
+</iscomment>
+<isinclude template="smartOrderRefill/util/modules"/>
+<isset name="addressType" value="${request.httpParameterMap.addressType.stringValue}" scope="page" />
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+	<h4 class="modal-title"><strong>Edit Address</strong></h4>
+</div>
+<form method="post" name="EditAddressForm" id="editAddressForm" action="${URLUtils.https('SmartOrderRefillController-ManageRefillList', 'addressType', addressType, pdict.listTypeParam, pdict.listID, 'action', 'updateAddressSave')}">
+    
+    <div class="modal-body">
+    	<div class="checkout-form" style="margin:0">
+    		<div class="panel-section-indent checkout-stack-options-block">
+    			<isif condition="${!empty(pdict.customerAddresses)}">
+    				<div class="field-wrapper">
+    					<!-- Preferred address -->
+    					<isif condition="${!empty(pdict.prefAddress)}">
+	    					<isset name="prefAddress" value="${pdict.prefAddress}" scope="page" />
+	    					<div class="radio checkout-radio-block radio-changeaddress <isif condition="${prefAddress.countryCode.value == 'US'}">selected</isif>">
+								<label class="checkout-radio">
+									<input type="radio" name="${pdict.CurrentForms.changeaddress.selectedAddress.htmlName}" class="address-radio" value="${prefAddress.ID}" id="${prefAddress.ID}" checked="checked" <isif condition="${prefAddress.countryCode.value !== 'US'}">disabled</isif>>
+									<div class="radio-text-block">
+										${Resource.msgf('address.saved.dropdown.format.name', 'forms', null, prefAddress.firstName, prefAddress.lastName)}<br>
+										${Resource.msgf('address.saved.dropdown.format.address1', 'forms', null, prefAddress.address1, prefAddress.city)}
+										<isif condition="${prefAddress.stateCode !== null}">
+											${Resource.msgf('address.saved.dropdown.format.stateCode', 'forms', null, prefAddress.stateCode)}
+										</isif>
+										${Resource.msgf('address.saved.dropdown.format.address2', 'forms', null, prefAddress.postalCode, prefAddress.countryCode)}</br>
+										${Resource.msgf('address.saved.dropdown.format.phone', 'forms', null, prefAddress.phone)}
+									</div>
+								</label>
+								<span class="selected-icon"><i class="fal fa-check-circle"></i></span>
+							</div>
+						</isif>
+		            	<isloop items="${pdict.customerAddresses}" var="address">
+							<isif condition="${prefAddress.ID !== address.ID}">
+								<isset name="aid" value="${address.ID}" scope="page"/>
+								<div class="radio checkout-radio-block radio-changeaddress">
+									<label class="checkout-radio">
+										<input type="radio" name="${pdict.CurrentForms.changeaddress.selectedAddress.htmlName}" class="address-radio" value="${aid}" id="${aid}" <isif condition="${address.countryCode !== 'US'}">disabled</isif>>
+										<div class="radio-text-block">
+											${Resource.msgf('address.saved.dropdown.format.name', 'forms', null, address.firstName, address.lastName)}<br>
+											${Resource.msgf('address.saved.dropdown.format.address1', 'forms', null, address.address1, address.city)}
+											<isif condition="${address.stateCode !== null}">
+												${Resource.msgf('address.saved.dropdown.format.stateCode', 'forms', null, address.stateCode)}
+											</isif>
+											${Resource.msgf('address.saved.dropdown.format.address2', 'forms', null, address.postalCode, address.countryCode)}</br>											${Resource.msgf('address.saved.dropdown.format.phone', 'forms', null, address.phone)}
+										</div>
+									</label>
+									<span class="selected-icon"><i class="fal fa-check-circle"></i></span>
+								</div>
+							</isif>
+						</isloop>
+		           	</div>
+		           	<div class="panel-section-cta text-center">
+						<a href="${URLUtils.url('Address-Add', 'scope', 'auto-delivery', 'plid', request.httpParameterMap.plid, 'addressType', request.httpParameterMap.addressType)}" class="btn btn-outline-secondary btn-sm">
+							${Resource.msg('account.addressbook.editaddress.addaddress','account',null)}
+						</a>
+					</div>
+				</isif>	            
+	         </div>
+	     </div>    
+	 </div>      
+    
+
+	<div class="modal-footer">
+    	<button type="button" class="btn btn-outline-secondary rounded" data-dismiss="modal">Cancel</button>
+      	<button type="submit" class="btn btn-primary rounded">Save</button>
+   	</div>
+    <input type="hidden" value="true" name="reload" />
+    <input type="hidden" value="${Resource.msg('global.submit','locale',null)}" name="${pdict.CurrentForms.changeaddress.apply.htmlName}" />
+</form>

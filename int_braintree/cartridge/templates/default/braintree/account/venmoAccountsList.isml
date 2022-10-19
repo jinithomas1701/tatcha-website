@@ -1,0 +1,49 @@
+<isscript>
+    var BraintreeHelper = require('~/cartridge/scripts/braintree/braintreeHelper');
+    var venmoMethod = dw.order.PaymentMgr.getPaymentMethod(BraintreeHelper.prefs.venmoMethodName);
+</isscript>
+
+<isif condition="${venmoMethod && venmoMethod.getPaymentProcessor().getID() == 'BRAINTREE_VENMO'}">
+    <isscript>
+        var isAllowedAddAccount = BraintreeHelper.getPrefs().BRAINTREE_VENMO_Vault_Mode != 'not';
+        var customerVenmoInstruments = BraintreeHelper.getCustomerVenmoPaymentInstruments();
+    </isscript>
+
+    <isif condition="${isAllowedAddAccount || customerVenmoInstruments.size() > 0}">
+        <h1>${Resource.msg('braintree.venmo.accountslist.title','locale',null)}</h1>
+    </isif>
+
+    <isif condition="${isAllowedAddAccount}">
+        <a class="section-header-note button js_braintree_addVenmoAccountBtn" href="${URLUtils.url('Braintree-AccountAddVenmoAccount')}" title="${Resource.msg('braintree.venmo.accountslist.addnew','locale',null)}">
+            ${Resource.msg('braintree.venmo.accountslist.addnew','locale',null)}
+        </a>
+    </isif>
+
+    <isif condition="${customerVenmoInstruments.size() > 0}">
+        <ul class="payment-list">
+            <isloop items="${customerVenmoInstruments}" var="instrument" status="loopstate">
+            <li>
+                <div class="userId">
+                    <span>${instrument.custom.braintreeVenmoUserId}</span>
+                    <isif condition="${instrument.custom.braintreeDefaultCard}"><b>${Resource.msg('braintree.venmo.accountslist.default','locale',null)}</b></isif>
+                </div>
+                <form action="${URLUtils.url('Braintree-AccountVenmoAccountActionHandle')}" method="post" id="venmoaccount_${loopstate.count}">
+                    <fieldset>
+                        <input type="hidden" name="${pdict.CurrentForms.braintreevenmoaccount.secureKeyHtmlName}" value="${pdict.CurrentForms.braintreevenmoaccount.secureKeyValue}" />
+                        <input type="hidden" name="${pdict.CurrentForms.braintreevenmoaccount.uuid.htmlName}" value="${instrument.getUUID()}" />
+                        <isif condition="${!instrument.custom.braintreeDefaultCard}">
+                            <button type="submit" class="button-text" value="true" name="${pdict.CurrentForms.braintreevenmoaccount.makedefault.htmlName}">
+                                ${Resource.msg('braintree.venmo.accountslist.button.makedefault','locale',null)}
+                            </button>
+                        </isif>
+                        <button type="submit" class="button-text js_braintree_venmo_delete_account" value="true" name="${pdict.CurrentForms.braintreevenmoaccount.deletepayment.htmlName}" data-confirm-message="${Resource.msgf('braintree.venmo.accountslist.button.delete.confirm.message','locale',null,instrument.custom.braintreeVenmoUserId)}">
+                            ${Resource.msg('braintree.venmo.accountslist.button.delete','locale',null)}
+                        </button>
+                    </fieldset>
+                </form>
+            </li>
+            </isloop>
+        </ul>
+    </isif>
+
+</isif>

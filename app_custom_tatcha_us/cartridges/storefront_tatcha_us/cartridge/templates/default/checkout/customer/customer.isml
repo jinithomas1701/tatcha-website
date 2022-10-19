@@ -1,0 +1,3 @@
+<div class="customer-section">
+    <isinclude template="checkout/customer/customerCard" />
+</div>

@@ -1,0 +1,35 @@
+<!--- TEMPLATENAME: googletagmanager.isml --->
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+  var dataLayerString = "{}";
+  var googleContainerId = 'GTM-NPWV8G';
+  if (dw.system.Site.current.preferences.custom.gtmContainerID != null && !empty(dw.system.Site.current.preferences.custom.gtmContainerID)){
+	googleContainerId = dw.system.Site.current.preferences.custom.gtmContainerID;
+  }
+  if(pdict.DataLayer != null && !empty(pdict.DataLayer)) {
+	dataLayerString = pdict.DataLayer;
+  }
+</isscript>
+
+<script>
+if (!window.dataLayer) {
+	window.dataLayer = [];
+}
+  dataLayer.push(<isprint value="${dataLayerString}" encoding="off"/>);
+</script>
+
+<!-- Google Tag Manager (noscript) -->
+<noscript>
+	<iframe
+		src='//www.googletagmanager.com/ns.html?id=<isprint value="${googleContainerId}" encoding="off"/>'
+		width="0" style="display: none; visibility: hidden"></iframe>
+</noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+<!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer', '<isprint value="${googleContainerId}" encoding="off"/>');</script>
+<!-- End Google Tag Manager -->

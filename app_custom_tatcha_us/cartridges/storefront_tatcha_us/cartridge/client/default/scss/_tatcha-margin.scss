@@ -1,0 +1,111 @@
+%m-top{
+    &.t-small{
+        @include media-breakpoint-up(xs) {
+            margin-top:0.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-top:1 * $g-unit;
+        }
+
+    }
+    &.t-medium{
+        @include media-breakpoint-up(xs) {
+            margin-top:1.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-top:2 * $g-unit;
+        }
+
+    }
+    &.t-large{
+        @include media-breakpoint-up(xs) {
+            margin-top:2.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-top:3 * $g-unit;
+        }
+    }
+}
+%m-bottom{
+    &.b-small{
+        @include media-breakpoint-up(xs) {
+            margin-bottom:0.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom:1 * $g-unit;
+        }
+
+    }
+    &.b-medium{
+        @include media-breakpoint-up(xs) {
+            margin-bottom:1.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom:2 * $g-unit;
+        }
+
+    }
+    &.b-large{
+        @include media-breakpoint-up(xs) {
+            margin-bottom:2.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom:3 * $g-unit;
+        }
+    }
+}
+
+.experience-component {
+    .t-small{
+        @include media-breakpoint-up(xs) {
+            margin-top:0.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-top:1 * $g-unit;
+        }
+
+    }
+    .t-medium{
+        @include media-breakpoint-up(xs) {
+            margin-top:1.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-top:2 * $g-unit;
+        }
+
+    }
+    .t-large{
+        @include media-breakpoint-up(xs) {
+            margin-top:2.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-top:3 * $g-unit;
+        }
+    }
+    .b-small{
+        @include media-breakpoint-up(xs) {
+            margin-bottom:0.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom:1 * $g-unit;
+        }
+
+    }
+    .b-medium{
+        @include media-breakpoint-up(xs) {
+            margin-bottom:1.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom:2 * $g-unit;
+        }
+
+    }
+    .b-large{
+        @include media-breakpoint-up(xs) {
+            margin-bottom:2.5 * $g-unit;
+        }
+        @include media-breakpoint-up(lg) {
+            margin-bottom:3 * $g-unit;
+        }
+    }
+}

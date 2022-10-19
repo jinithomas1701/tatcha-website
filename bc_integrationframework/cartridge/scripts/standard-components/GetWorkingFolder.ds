@@ -1,0 +1,30 @@
+/**
+ * Gets the working folder for the current 
+ * 
+ * @input CurrentWorkflowComponentInstance : Object
+ * @output WorkingFolder : dw.io.File
+ *
+ */
+importPackage(dw.system);
+importPackage(dw.util);
+importPackage(dw.io);
+importScript("standard-components/StandardFolders.ds");
+
+function execute(pdict : PipelineDictionary) : Number {
+	var workingFolder : File;
+	// prefer pre set working folder configuration
+	if ( !empty(pdict.CurrentWorkflowComponentInstance.getParameterValue('workingFolder')) ) {
+		var relativeFolder : String = pdict.CurrentWorkflowComponentInstance.getParameterValue('workingFolder')
+		if (relativeFolder.charAt(0) == File.SEPARATOR) {
+			relativeFolder = relativeFolder.substring(1);
+		}
+		workingFolder = new File(File.IMPEX + File.SEPARATOR + pdict.CurrentWorkflowComponentInstance.getParameterValue('workingFolder'));
+	} else {
+		// fall back to object type's standard folder
+		pdict.CurrentWorkflowComponentInstance.getParameterValue('objectType')
+		workingFolder = new File(File.IMPEX + File.SEPARATOR + StandardFolders[pdict.CurrentWorkflowComponentInstance.getParameterValue('objectType')]);
+	}	
+	
+	pdict.WorkingFolder = workingFolder;
+	return PIPELET_NEXT;
+}

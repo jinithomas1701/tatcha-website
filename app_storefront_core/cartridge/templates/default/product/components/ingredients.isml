@@ -1,0 +1,113 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<iscomment>
+Prints products ingredients.
+</iscomment>
+<isscript>
+var ProductUtils = require('~/cartridge/scripts/product/ProductUtils.js');
+var ingredients = ProductUtils.getIngredients(pdict.Product,true);
+</isscript>
+<isif condition="${!empty(ingredients)}">
+		<isif condition="${ingredients.showIngredients == true}">
+				<h2 class="section-anchor">${Resource.msg('global.product.ingredients.heading','locale',null)}</h2>
+				<div class="container">
+					<div class="row">
+						<div class="col-lg-8 offset-lg-2"">
+							<isif condition="${!empty(ingredients.whoItsFor)}">
+							<div class="product-ingredients-nons">
+								<isprint value="${ingredients.whoItsFor}">
+							</div>
+							</isif>
+							<isif condition="${!empty(ingredients.formulatedWithout)}">
+							<div class="product-ingredients-without">
+								<h3 class="product-ingredients-without-title">${Resource.msg('global.product.ingredients.formulatedWithout','locale',null)}</h3>
+								<isprint value="${ingredients.formulatedWithout}">
+							</div>
+							</isif>
+							<isif condition="${!empty(ingredients.fullIngredientsList)}">
+							<div class="product-ingredients-inci">
+								<a class="btn btn-default" href="#" data-toggle="modal" data-target="#inciModal">${Resource.msg('global.product.ingredients.fullList','locale',null)}</a>
+							</div>
+							<iscomment>Ingredients</iscomment>						
+							<div class="modal fade modal-primary modal-product-ingredients" id="inciModal" tabindex="-1" role="dialog" aria-labelledby="modalIngredients" style="display: none;">
+								<div class="modal-dialog" role="document">
+									<div class="modal-content">
+										<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+											<h4 class="modal-title"><strong>${Resource.msg('global.product.ingredients.heading', 'locale', null)}</strong></h4>
+										</div>
+										<div class="modal-body">
+											<div class="product-ingredients-editor">
+												<isif condition="${!empty(ingredients.fullIngredientsList)}">
+													<isprint value="${ingredients.fullIngredientsList}" encoding="off"></isprint>
+												</isif>	
+												<isif condition="${(ingredients.showHadasei == true)}">
+													<p><sup>*</sup>${Resource.msg('global.product.hadasei', 'locale', null)}</p>
+												</isif>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							</isif>
+							
+						</div>
+					</div>
+				</div>
+				
+				<iscomment> Spot Light Ingredients </iscomment>
+				<isif condition="${!empty(ingredients.spLightName1) && !empty(ingredients.spLightText1)  && !empty(ingredients.spLightImage1) }">
+				<div class="product-ingredient-spotlight product-full-content">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-6 col-lg-5 offset-lg-1 d-flex align-items-center">
+								<img class="img-responsive img-fluid product-ingredient-img lazyImage" alt="product ingredient image one" data-src="${ingredients.spLightImage1.httpURL}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+							</div>
+							<div class="col-md-6 col-lg-5 d-flex flex-column justify-content-center">
+								<h2><isprint value="${ingredients.spLightName1}"></h2>
+								<p><isprint value="${StringUtils.pad(ingredients.spLightText1,450)}"></p>
+							</div>
+						</div>
+					</div>
+				</div>				
+				</isif>
+		
+				<isif condition="${!empty(ingredients.spLightName2) && !empty(ingredients.spLightText2)  && !empty(ingredients.spLightImage2) }">
+				<div class="product-ingredient-spotlight  product-full-content">
+					<div class="container">
+						<div class="row flex-row-reverse">
+							<div class="col-md-6 col-lg-5 mr-auto d-flex align-items-center">
+								<img class="img-responsive img-fluid product-ingredient-img lazyImage" alt="product ingredient image two" data-src="${ingredients.spLightImage2.httpURL}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+							</div>
+							<div class="col-md-6 col-lg-5 ml-auto d-flex flex-column justify-content-center">
+								<h2><isprint value="${ingredients.spLightName2}"></h2>
+								<p><isprint value="${StringUtils.pad(ingredients.spLightText2,450)}"></p>
+							</div>
+						</div>
+					</div>
+				</div>
+				</isif>
+				
+				<isif condition="${!empty(ingredients.spLightName3) && !empty(ingredients.spLightText3)  && !empty(ingredients.spLightImage3) }">
+				<div class="product-ingredient-spotlight product-full-content">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-6 col-lg-5 offset-lg-1 d-flex align-items-center">
+								<img class="img-responsive img-fluid product-ingredient-img lazyImage" alt="product ingredient image three" data-src="${ingredients.spLightImage3.httpURL}" src="${URLUtils.staticURL('/images/bs4/placeholder_img.png')}">
+							</div>
+							<div class="col-md-6 col-lg-5 d-flex flex-column justify-content-center">
+								<h2><isprint value="${ingredients.spLightName3}"></h2>
+								<p><isprint value="${StringUtils.pad(ingredients.spLightText3,450)}"></p>
+							</div>
+						</div>
+					</div>
+				</div>				
+				</isif>		
+		
+				<isif condition="${(ingredients.showHadasei == true)}">
+					<div class="product-hadasei-3">
+						<isinclude url="${URLUtils.url('Page-Include', 'cid', 'tatcha-product-hadasei')}"/>			
+					</div>		
+				</isif>	
+				
+		</isif>	
+</isif>

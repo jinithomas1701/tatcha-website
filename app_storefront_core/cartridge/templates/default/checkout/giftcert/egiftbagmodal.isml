@@ -1,0 +1,60 @@
+<isinclude template="util/modules" />
+<isscript>
+	importScript("cart/CartUtils.ds");
+	importScript("int_tatcha_dis:common/GetImageUrl.ds");
+	var Site = require('dw/system/Site');
+	var giftproductId = Site.getCurrent().getCustomPreferenceValue('EgiftProduct-ID');
+	var giftproduct = dw.catalog.ProductMgr.getProduct(giftproductId);
+	var giftAmount = pdict.giftCardAmount;
+	var giftImage = pdict.giftCertLineItem.custom.giftCertificateImage;
+	var activeStep = session.custom.nextStep;
+
+</isscript>
+<div class="modal-header">
+	<button type="button" class="close" data-dismiss="modal" aria-label="Close"><i class="fal fa-times"></i></button>
+	<h4 class="modal-title"><strong>${Resource.msg('product.addtobag.addedtobag','product',null)}</strong></h4>
+</div>
+<div class="modal-body">
+	<div class="row">
+		<div class="col-sm-1"> </div>
+		<div class="col-sm-3 product-img-col">
+			<isif condition="${giftImage}">
+				<isset name="imageUrl" value="${getImageUrl(giftImage,'medium')}" scope="page"/>
+				<isset name="imageAlt" value="${getImageAlt(giftproduct)}" scope="page"/>
+				<isset name="imageTitle" value="${getImageTitle(giftproduct)}" scope="page"/>
+				<img class="img-responsive product-img img-fluid" style="padding: 14px 0;" src="${giftImage}" alt="${imageAlt}" title="${imageTitle}" />
+			<iselse>
+				<isif condition="${giftproduct != null && giftproduct.getImage('large',0) != null}">
+					<isset name="imageUrl" value="${getImageUrl(giftproduct,'medium')}" scope="page"/>
+					<isset name="imageAlt" value="${getImageAlt(giftproduct)}" scope="page"/>
+					<isset name="imageTitle" value="${getImageTitle(giftproduct)}" scope="page"/>
+					<img class="img-responsive product-img" src="${imageUrl}" alt="${imageAlt}" title="${imageTitle}" />
+				<iselse/>
+					<img class="img-responsive product-img" src="${URLUtils.staticURL('/images/noimagelarge.png')}" alt="${giftproduct.name}" title="${giftproduct.name}" />
+				</isif>
+			</isif>
+		</div>
+		<div class="col-sm-8 product-info-col">
+			<isset name="currencyCode" value="${session.getCurrency().getCurrencyCode()}" scope="page"/>
+			<isprint value="${giftproduct.name}" />
+			<div class="product-qty-price">
+				<isprint value="${dw.value.Money(giftAmount, currencyCode)}" formatter="*#0" />
+	       	</div>
+		</div>
+	</div>
+</div>
+<div class="modal-footer">
+	<div class="row">
+		<div class="col-sm-6">
+			<isif condition="${activeStep}">
+				<a class="btn btn-default btn-block" id="gift-bag-continue" style="margin-bottom:8px;" href="${URLUtils.url('Search-Show', 'cgid', 'shop_all')}">${Resource.msg('product.addtobag.continueshopping','product',null)}</a>
+			<iselse>
+				<button type="button" class="btn btn-default btn-block" data-dismiss="modal" id="gift-bag-continue">${Resource.msg('product.addtobag.continueshopping','product',null)}</button>
+			</isif>
+			
+		</div>
+		<div class="col-sm-6">
+			<a href="${URLUtils.https('Cart-Show')}" class="btn btn-primary btn-block cart-url">${Resource.msg('product.addtobag.viewbag','product',null)}</a>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,48 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isif condition="${dw.system.Site.getCurrent().getCustomPreferenceValue('klaviyo_subscription_sync_enabled')}">
+	<isset name="formURL" value="Klaviyo-Subscribe" scope="page" />
+<iselse/>
+	<isset name="formURL" value="Account-EditSubscribtion" scope="page" />
+</isif>
+	
+<isscript>
+	var Site = require('dw/system/Site');
+	var displayTime = 0;
+	displayTime = Site.getCurrent().getCustomPreferenceValue('newsLetterPopupDelay');
+</isscript>
+<div class="modal fade modal-primary modal-mecca-modal modal-bg-sm modal-display in" id="newsletterModal" tabindex="-1" role="dialog" style="display: none;">
+	<div class="newletterDisplay" style="display:none" data-val="${displayTime}" ></div>
+	<div class="modal-dialog" role="document">
+	<isif condition="${slotcontent != null}">
+	<isloop items="${slotcontent.content}" var="contentAsset">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"> <i class="fal fa-times fa-lg"></i></button>
+				<h4 class="modal-title text-center"><isprint value="${contentAsset.custom.homePopupTitle}" encoding="off"/></h4>
+			</div>
+			<div class="modal-body" style="padding: 16px 24px;">
+				<div class="signup-state text-center">
+					<img src="${contentAsset.custom.homePopupImage.url}" alt="complimentary product">
+					<p><isprint value="${contentAsset.custom.homePopupDescription1}" encoding="off"/></p>
+					<form class="m-top ajaxsubscribeForm" action="${URLUtils.url(formURL)}" method="post" name="SubscribeForm" id="SubscribeForm">
+						<div class="form-group form-inline">
+							<label for="loginEmail" class="control-label" id="emailLabel">Email</label>
+							<input type="email" class="form-control" id="loginEmail" name="${pdict.CurrentForms.subscribe.email.htmlName}" aria-labelledby="emailLabel" placeholder="beautiful@tatcha.com">
+  							<input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+  							<input type="hidden" name="${pdict.CurrentForms.subscribe.subscribe.htmlName}" value="subscribe"/>
+  							<input type="hidden" name="source" value="welcome-popup"/>
+      						<button type="submit" class="btn btn-primary demo-signup" aria-labelledby="subscriptionButton" value="SIGN UP"><span id="subscriptionButton">sign up</span></button>
+   						 </div>
+	 				</form>
+
+					<p style="line-height: 1.1;"><small><isprint value="${contentAsset.custom.homePopupDescription2}" encoding="off"/></small></p>
+				</div>
+				<div class="success-state" style="height: 332px; padding-top: 72px; display: none;">
+					<h2 class="text-center">Thank You!<br>Your promotion code will be emailed to you.</h2>
+				</div>
+			</div>
+		</div>
+	</isloop>
+	</isif>
+	</div>
+</div>

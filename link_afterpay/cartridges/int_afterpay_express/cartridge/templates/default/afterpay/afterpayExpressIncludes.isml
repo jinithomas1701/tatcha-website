@@ -1,0 +1,7 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<script src="${URLUtils.staticURL('/js/afterpayExpress.js')}" type="text/javascript"></script>
+<script src="${dw.system.Site.getCurrent().getCustomPreferenceValue('apExpressJavascriptURL')}"> </script>
+<input type="hidden" name="afterpayExpressProcessOrderUrl" id="afterpayExpressProcessOrderUrl" value="${URLUtils.url('Afterpay-AfterpayExpressFromCart')}" />
+<input type="hidden" name="afterpayExpressSummaryUrl" id="afterpayExpressSummaryUrl" value="${URLUtils.url('AfterpayHandleResponse-SummaryRedirect')}" />
+<input type="hidden" name="getAfterpayExpressShippingMethodsUrl" id="getAfterpayExpressShippingMethodsUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetShippingMethods')}" />
+<input type="hidden" name="getAfterpayExpressTokenUrl" id="getAfterpayExpressTokenUrl" value="${URLUtils.url('Afterpay-AfterpayExpressGetToken')}" />

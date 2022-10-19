@@ -1,0 +1,5 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+<isscript>
+	importScript( "util/ViewHelpers.ds" );
+</isscript>
+<isset name="marketingFlags" value="${getProductMarketingFlags(pdict.Product)}" scope="page"/>
